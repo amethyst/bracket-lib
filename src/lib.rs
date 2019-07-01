@@ -1,10 +1,11 @@
 mod color;
 mod font;
+mod shader;
+mod rltk;
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
+pub use self::rltk::Rltk;
+pub use self::color::*;
+
+pub trait GameState {
+    fn tick(&mut self, ctx : &mut Rltk);
 }
