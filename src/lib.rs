@@ -1,4 +1,5 @@
 mod color;
+mod font;
 
 #[cfg(test)]
 mod tests {
