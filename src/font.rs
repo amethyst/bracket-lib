@@ -67,6 +67,7 @@ impl Font {
     }
 }
 
+// Some unit testing for fonts
 
 #[cfg(test)]
 mod tests {
