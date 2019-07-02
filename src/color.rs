@@ -1,4 +1,5 @@
-#![allow(dead_code)]
+use std::ops;
+
 // Represents an R/G/B triplet, in the range 0..1 (32-bit float)
 #[derive(PartialEq, Copy, Clone)]
 pub struct RGB {
@@ -18,12 +19,49 @@ pub struct HSV {
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum HtmlColorConversionError { InvalidStringLength, MissingHash }
 
+// Implement operator overloading
+
+impl ops::Add<f32> for RGB {
+    type Output = RGB;
+    fn add(self, rhs: f32) -> RGB { RGB::from_f32(self.r + rhs, self.g + rhs, self.b + rhs) }
+}
+
+impl ops::Add<RGB> for RGB {
+    type Output = RGB;
+    fn add(self, rhs: RGB) -> RGB { RGB::from_f32(self.r + rhs.r, self.g + rhs.g, self.b + rhs.b) }
+}
+
+impl ops::Sub<f32> for RGB {
+    type Output = RGB;
+    fn sub(self, rhs: f32) -> RGB { RGB::from_f32(self.r - rhs, self.g - rhs, self.b - rhs) }
+}
+
+impl ops::Sub<RGB> for RGB {
+    type Output = RGB;
+    fn sub(self, rhs: RGB) -> RGB { RGB::from_f32(self.r - rhs.r, self.g - rhs.g, self.b - rhs.b) }
+}
+
+impl ops::Mul<f32> for RGB {
+    type Output = RGB;
+    fn mul(self, rhs: f32) -> RGB { RGB::from_f32(self.r * rhs, self.g * rhs, self.b * rhs) }
+}
+
+impl ops::Mul<RGB> for RGB {
+    type Output = RGB;
+    fn mul(self, rhs: RGB) -> RGB { RGB::from_f32(self.r * rhs.r, self.g * rhs.g, self.b * rhs.b) }
+}
+
 impl RGB {
     // Constructs a new, zeroed (black) RGB triplet.
     pub fn new() -> RGB { RGB{r:0.0, g:0.0, b:0.0} }
 
     // Constructs a new RGB color, from 3 32-bit floats in the range 0..1
-    pub fn from_f32(r:f32, g:f32, b:f32) -> RGB { RGB{ r:r, g:g, b:b } }
+    pub fn from_f32(r:f32, g:f32, b:f32) -> RGB { 
+        let r_clamped = f32::min(1.0, f32::max(0.0, r));
+        let g_clamped = f32::min(1.0, f32::max(0.0, g));
+        let b_clamped = f32::min(1.0, f32::max(0.0, b));
+        RGB{ r:r_clamped, g:g_clamped, b:b_clamped } 
+    }
 
     // Constructs a new RGB color, from 3 bytes in the range 0..255
     pub fn from_u8(r:u8, g:u8, b:u8) -> RGB { RGB{ r : r as f32 / 255.0, g : g as f32 / 255.0, b : b as f32 / 255.0 } }
@@ -88,6 +126,33 @@ impl RGB {
 
         HSV::from_f32(h, s, v)
     }
+
+    // Applies a quick grayscale conversion to the color
+    pub fn to_greyscale(&self) -> RGB {
+        let linear = (self.r * 0.2126) + (self.g * 0.7152) + (self.b * 0.0722);
+        return RGB::from_f32(linear, linear, linear);
+    }
+
+    // Applies a lengthier desaturate (via HSV) to the color
+    pub fn desaturate(&self) -> RGB {
+        let mut hsv = self.to_hsv();
+        hsv.s = 0.0;
+        return hsv.to_rgb();
+    }
+
+    // Lerps by a specified percentage (from 0 to 1) between this color and another
+    pub fn lerp(&self, color : RGB, percent : f32) -> RGB {
+        let range = (
+            color.r - self.r,
+            color.g - self.g,
+            color.b - self.b
+        );
+        let mut result = self.clone();
+        result.r += range.0 * percent;
+        result.g += range.1 * percent;
+        result.b += range.2 * percent;
+        result
+    }
 }
 
 impl HSV {
@@ -128,92 +193,92 @@ impl HSV {
 }
 
 // Named Colors (derived from X11 rgb.txt, which is also the source of HTML/W3C/SVG names)
-const SNOW : (u8,u8,u8) = (255, 250, 250);
-const GHOST_WHITE : (u8,u8,u8) = (248, 248, 255);
-const GHOSTWHITE : (u8,u8,u8) = (248, 248, 255);
-const WHITE_SMOKE : (u8,u8,u8) = (245, 245, 245);
-const WHITESMOKE : (u8,u8,u8) = (245, 245, 245);
-const GAINSBORO : (u8,u8,u8) = (220, 220, 220);
-const FLORAL_WHITE : (u8,u8,u8) = (255, 250, 240);
-const FLORALWHITE : (u8,u8,u8) = (255, 250, 240);
-const OLD_LACE : (u8,u8,u8) = (253, 245, 230);
-const OLDLACE : (u8,u8,u8) = (253, 245, 230);
-const LINEN : (u8,u8,u8) = (250, 240, 230);
-const ANTIQUE_WHITE : (u8,u8,u8) = (250, 235, 215);
-const ANTIQUEWHITE : (u8,u8,u8) = (250, 235, 215);
-const PAPAYA_WHIP : (u8,u8,u8) = (255, 239, 213);
-const PAPAYAWHIP : (u8,u8,u8) = (255, 239, 213);
-const BLANCHED_ALMOND : (u8,u8,u8) = (255, 235, 205);
-const BLANCHEDALMOND : (u8,u8,u8) = (255, 235, 205);
-const BISQUE : (u8,u8,u8) = (255, 228, 196);
-const PEACH_PUFF : (u8,u8,u8) = (255, 218, 185);
-const PEACHPUFF : (u8,u8,u8) = (255, 218, 185);
-const NAVAJO_WHITE : (u8,u8,u8) = (255, 222, 173);
-const NAVAJOWHITE : (u8,u8,u8) = (255, 222, 173);
-const MOCCASIN : (u8,u8,u8) = (255, 228, 181);
-const CORNSILK : (u8,u8,u8) = (255, 248, 220);
-const IVORY : (u8,u8,u8) = (255, 255, 240);
-const LEMON_CHIFFON : (u8,u8,u8) = (255, 250, 205);
-const LEMONCHIFFON : (u8,u8,u8) = (255, 250, 205);
-const SEASHELL : (u8,u8,u8) = (255, 245, 238);
-const HONEYDEW : (u8,u8,u8) = (240, 255, 240);
-const MINT_CREAM : (u8,u8,u8) = (245, 255, 250);
-const MINTCREAM : (u8,u8,u8) = (245, 255, 250);
-const AZURE : (u8,u8,u8) = (240, 255, 255);
-const ALICE_BLUE : (u8,u8,u8) = (240, 248, 255);
-const ALICEBLUE : (u8,u8,u8) = (240, 248, 255);
-const LAVENDER : (u8,u8,u8) = (230, 230, 250);
-const LAVENDER_BLUSH : (u8,u8,u8) = (255, 240, 245);
-const LAVENDERBLUSH : (u8,u8,u8) = (255, 240, 245);
-const MISTY_ROSE : (u8,u8,u8) = (255, 228, 225);
-const MISTYROSE : (u8,u8,u8) = (255, 228, 225);
-const WHITE : (u8,u8,u8) = (255, 255, 255);
-const BLACK : (u8,u8,u8) = (0, 0, 0);
-const DARK_SLATE : (u8,u8,u8) = (47, 79, 79);
-const DARKSLATEGRAY : (u8,u8,u8) = (47, 79, 79);
-const DARKSLATEGREY : (u8,u8,u8) = (47, 79, 79);
-const DIM_GRAY : (u8,u8,u8) = (105, 105, 105);
-const DIMGRAY : (u8,u8,u8) = (105, 105, 105);
-const DIM_GREY : (u8,u8,u8) = (105, 105, 105);
-const DIMGREY : (u8,u8,u8) = (105, 105, 105);
-const SLATE_GRAY : (u8,u8,u8) = (112, 128, 144);
-const SLATEGRAY : (u8,u8,u8) = (112, 128, 144);
-const SLATE_GREY : (u8,u8,u8) = (112, 128, 144);
-const SLATEGREY : (u8,u8,u8) = (112, 128, 144);
-const LIGHT_SLATE : (u8,u8,u8) = (119, 136, 153);
-const LIGHTSLATEGRAY : (u8,u8,u8) = (119, 136, 153);
-const LIGHTSLATEGREY : (u8,u8,u8) = (119, 136, 153);
-const GRAY : (u8,u8,u8) = (190, 190, 190);
-const GREY : (u8,u8,u8) = (190, 190, 190);
-const X11_GRAY : (u8,u8,u8) = (190, 190, 190);
-const X11GRAY : (u8,u8,u8) = (190, 190, 190);
-const X11_GREY : (u8,u8,u8) = (190, 190, 190);
-const X11GREY : (u8,u8,u8) = (190, 190, 190);
-const WEB_GRAY : (u8,u8,u8) = (128, 128, 128);
-const WEBGRAY : (u8,u8,u8) = (128, 128, 128);
-const WEB_GREY : (u8,u8,u8) = (128, 128, 128);
-const WEBGREY : (u8,u8,u8) = (128, 128, 128);
-const LIGHT_GREY : (u8,u8,u8) = (211, 211, 211);
-const LIGHTGREY : (u8,u8,u8) = (211, 211, 211);
-const LIGHT_GRAY : (u8,u8,u8) = (211, 211, 211);
-const LIGHTGRAY : (u8,u8,u8) = (211, 211, 211);
-const MIDNIGHT_BLUE : (u8,u8,u8) = (25, 25, 112);
-const MIDNIGHTBLUE : (u8,u8,u8) = (25, 25, 112);
-const NAVY : (u8,u8,u8) = (0, 0, 128);
-const NAVY_BLUE : (u8,u8,u8) = (0, 0, 128);
-const NAVYBLUE : (u8,u8,u8) = (0, 0, 128);
-const CORNFLOWER_BLUE : (u8,u8,u8) = (100, 149, 237);
-const CORNFLOWERBLUE : (u8,u8,u8) = (100, 149, 237);
-const DARKSLATEBLUE : (u8,u8,u8) = (72, 61, 139);
-const SLATE_BLUE : (u8,u8,u8) = (106, 90, 205);
-const SLATEBLUE : (u8,u8,u8) = (106, 90, 205);
-const MEDIUM_SLATE : (u8,u8,u8) = (123, 104, 238);
-const MEDIUMSLATEBLUE : (u8,u8,u8) = (123, 104, 238);
-const LIGHTSLATEBLUE : (u8,u8,u8) = (132, 112, 255);
-const MEDIUM_BLUE : (u8,u8,u8) = (0, 0, 205);
-const MEDIUMBLUE : (u8,u8,u8) = (0, 0, 205);
-const ROYAL_BLUE : (u8,u8,u8) = (65, 105, 225);
-const ROYALBLUE : (u8,u8,u8) = (65, 105, 225);
+pub const SNOW : (u8,u8,u8) = (255, 250, 250);
+pub const GHOST_WHITE : (u8,u8,u8) = (248, 248, 255);
+pub const GHOSTWHITE : (u8,u8,u8) = (248, 248, 255);
+pub const WHITE_SMOKE : (u8,u8,u8) = (245, 245, 245);
+pub const WHITESMOKE : (u8,u8,u8) = (245, 245, 245);
+pub const GAINSBORO : (u8,u8,u8) = (220, 220, 220);
+pub const FLORAL_WHITE : (u8,u8,u8) = (255, 250, 240);
+pub const FLORALWHITE : (u8,u8,u8) = (255, 250, 240);
+pub const OLD_LACE : (u8,u8,u8) = (253, 245, 230);
+pub const OLDLACE : (u8,u8,u8) = (253, 245, 230);
+pub const LINEN : (u8,u8,u8) = (250, 240, 230);
+pub const ANTIQUE_WHITE : (u8,u8,u8) = (250, 235, 215);
+pub const ANTIQUEWHITE : (u8,u8,u8) = (250, 235, 215);
+pub const PAPAYA_WHIP : (u8,u8,u8) = (255, 239, 213);
+pub const PAPAYAWHIP : (u8,u8,u8) = (255, 239, 213);
+pub const BLANCHED_ALMOND : (u8,u8,u8) = (255, 235, 205);
+pub const BLANCHEDALMOND : (u8,u8,u8) = (255, 235, 205);
+pub const BISQUE : (u8,u8,u8) = (255, 228, 196);
+pub const PEACH_PUFF : (u8,u8,u8) = (255, 218, 185);
+pub const PEACHPUFF : (u8,u8,u8) = (255, 218, 185);
+pub const NAVAJO_WHITE : (u8,u8,u8) = (255, 222, 173);
+pub const NAVAJOWHITE : (u8,u8,u8) = (255, 222, 173);
+pub const MOCCASIN : (u8,u8,u8) = (255, 228, 181);
+pub const CORNSILK : (u8,u8,u8) = (255, 248, 220);
+pub const IVORY : (u8,u8,u8) = (255, 255, 240);
+pub const LEMON_CHIFFON : (u8,u8,u8) = (255, 250, 205);
+pub const LEMONCHIFFON : (u8,u8,u8) = (255, 250, 205);
+pub const SEASHELL : (u8,u8,u8) = (255, 245, 238);
+pub const HONEYDEW : (u8,u8,u8) = (240, 255, 240);
+pub const MINT_CREAM : (u8,u8,u8) = (245, 255, 250);
+pub const MINTCREAM : (u8,u8,u8) = (245, 255, 250);
+pub const AZURE : (u8,u8,u8) = (240, 255, 255);
+pub const ALICE_BLUE : (u8,u8,u8) = (240, 248, 255);
+pub const ALICEBLUE : (u8,u8,u8) = (240, 248, 255);
+pub const LAVENDER : (u8,u8,u8) = (230, 230, 250);
+pub const LAVENDER_BLUSH : (u8,u8,u8) = (255, 240, 245);
+pub const LAVENDERBLUSH : (u8,u8,u8) = (255, 240, 245);
+pub const MISTY_ROSE : (u8,u8,u8) = (255, 228, 225);
+pub const MISTYROSE : (u8,u8,u8) = (255, 228, 225);
+pub const WHITE : (u8,u8,u8) = (255, 255, 255);
+pub const BLACK : (u8,u8,u8) = (0, 0, 0);
+pub const DARK_SLATE : (u8,u8,u8) = (47, 79, 79);
+pub const DARKSLATEGRAY : (u8,u8,u8) = (47, 79, 79);
+pub const DARKSLATEGREY : (u8,u8,u8) = (47, 79, 79);
+pub const DIM_GRAY : (u8,u8,u8) = (105, 105, 105);
+pub const DIMGRAY : (u8,u8,u8) = (105, 105, 105);
+pub const DIM_GREY : (u8,u8,u8) = (105, 105, 105);
+pub const DIMGREY : (u8,u8,u8) = (105, 105, 105);
+pub const SLATE_GRAY : (u8,u8,u8) = (112, 128, 144);
+pub const SLATEGRAY : (u8,u8,u8) = (112, 128, 144);
+pub const SLATE_GREY : (u8,u8,u8) = (112, 128, 144);
+pub const SLATEGREY : (u8,u8,u8) = (112, 128, 144);
+pub const LIGHT_SLATE : (u8,u8,u8) = (119, 136, 153);
+pub const LIGHTSLATEGRAY : (u8,u8,u8) = (119, 136, 153);
+pub const LIGHTSLATEGREY : (u8,u8,u8) = (119, 136, 153);
+pub const GRAY : (u8,u8,u8) = (190, 190, 190);
+pub const GREY : (u8,u8,u8) = (190, 190, 190);
+pub const X11_GRAY : (u8,u8,u8) = (190, 190, 190);
+pub const X11GRAY : (u8,u8,u8) = (190, 190, 190);
+pub const X11_GREY : (u8,u8,u8) = (190, 190, 190);
+pub const X11GREY : (u8,u8,u8) = (190, 190, 190);
+pub const WEB_GRAY : (u8,u8,u8) = (128, 128, 128);
+pub const WEBGRAY : (u8,u8,u8) = (128, 128, 128);
+pub const WEB_GREY : (u8,u8,u8) = (128, 128, 128);
+pub const WEBGREY : (u8,u8,u8) = (128, 128, 128);
+pub const LIGHT_GREY : (u8,u8,u8) = (211, 211, 211);
+pub const LIGHTGREY : (u8,u8,u8) = (211, 211, 211);
+pub const LIGHT_GRAY : (u8,u8,u8) = (211, 211, 211);
+pub const LIGHTGRAY : (u8,u8,u8) = (211, 211, 211);
+pub const MIDNIGHT_BLUE : (u8,u8,u8) = (25, 25, 112);
+pub const MIDNIGHTBLUE : (u8,u8,u8) = (25, 25, 112);
+pub const NAVY : (u8,u8,u8) = (0, 0, 128);
+pub const NAVY_BLUE : (u8,u8,u8) = (0, 0, 128);
+pub const NAVYBLUE : (u8,u8,u8) = (0, 0, 128);
+pub const CORNFLOWER_BLUE : (u8,u8,u8) = (100, 149, 237);
+pub const CORNFLOWERBLUE : (u8,u8,u8) = (100, 149, 237);
+pub const DARKSLATEBLUE : (u8,u8,u8) = (72, 61, 139);
+pub const SLATE_BLUE : (u8,u8,u8) = (106, 90, 205);
+pub const SLATEBLUE : (u8,u8,u8) = (106, 90, 205);
+pub const MEDIUM_SLATE : (u8,u8,u8) = (123, 104, 238);
+pub const MEDIUMSLATEBLUE : (u8,u8,u8) = (123, 104, 238);
+pub const LIGHTSLATEBLUE : (u8,u8,u8) = (132, 112, 255);
+pub const MEDIUM_BLUE : (u8,u8,u8) = (0, 0, 205);
+pub const MEDIUMBLUE : (u8,u8,u8) = (0, 0, 205);
+pub const ROYAL_BLUE : (u8,u8,u8) = (65, 105, 225);
+pub const ROYALBLUE : (u8,u8,u8) = (65, 105, 225);
 pub const BLUE : (u8,u8,u8) = (0, 0, 255);
 pub const DODGER_BLUE : (u8,u8,u8) = (30, 144, 255);
 pub const DODGERBLUE : (u8,u8,u8) = (30, 144, 255);
