@@ -25,3 +25,38 @@ cargo run
 ## Examples
 
 * [Example 1 - Hello World](examples/ex01-helloworld) is a small example, showing off a simple 8x8 console, and the boilerplate required to make RLTK run.
+
+
+## Using RLTK in your project
+
+In your `Cargo.toml` file, include the following:
+
+```toml
+[dependencies]
+rltk = { git = "https://github.com/thebracket/rltk_rs" }
+```
+
+*Note: we don't do that in the example files, we use a relative path - to avoid having nested git repos.*
+
+For the simplest possible *Hello World*, your source can look like this:
+
+```rust
+extern crate rltk;
+use rltk::{Rltk, GameState, Console, RGB};
+
+struct State {}
+impl GameState for State {
+    fn tick(&mut self, ctx : &mut Rltk) {
+        ctx.cls();
+        ctx.print(1, 1, "Hello RLTK World");
+    }
+}
+
+fn main() {
+    let mut context = Rltk::init_simple8x8(80, 50, "Hello RLTK World", "../../resources");
+    let mut gs = State{ y : 1, going_down: true };
+    context.main_loop(&mut gs);
+}
+```
+
+This is in active development, and will gain more features very soon.
