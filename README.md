@@ -38,7 +38,7 @@ rltk = { git = "https://github.com/thebracket/rltk_rs" }
 
 *Note: we don't do that in the example files, we use a relative path - to avoid having nested git repos.*
 
-For the simplest possible *Hello World*, your source can look like this:
+For the simplest possible *Hello World*, your source code (`main.rs`) can look like this:
 
 ```rust
 extern crate rltk;
