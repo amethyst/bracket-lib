@@ -22,15 +22,6 @@ cargo build
 cargo run
 ```
 
-## Examples
-
-### Example 1: Bouncing Hello World
-
-![Animated GIF](/screenshots/RLTK_RS_EXAMPLE01.gif)
-
-[Example 1 - Hello World](examples/ex01-helloworld) is a small example, showing off a simple 8x8 console, and the boilerplate required to make RLTK run.
-
-
 ## Using RLTK in your project
 
 In your `Cargo.toml` file, include the following:
@@ -65,4 +56,16 @@ fn main() {
 }
 ```
 
-This is in active development, and will gain more features very soon.
+## Examples
+
+### Example 1: Bouncing Hello World
+
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE01.gif)
+
+[Example 1 - Hello World](examples/ex01-helloworld) is a small example, showing off a simple 8x8 console, and the boilerplate required to make RLTK run.
+
+### Example 2: Multiple console layers
+
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE02.gif)
+
+[Example 2 - Sparse Layers](examples/ex02-sparse) is very similar to example 1, but it adds an additional layer - in a VGA 8x16 font, and renders the FPS and frame rate to it. This illustrates how easy it is to work with layers in RLTK.
