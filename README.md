@@ -56,7 +56,7 @@ impl GameState for State {
 
 fn main() {
     let mut context = Rltk::init_simple8x8(80, 50, "Hello RLTK World", "resources");
-    let mut gs = State{ y : 1, going_down: true };
+    let mut gs = State{ };
     context.main_loop(&mut gs);
 }
 ```

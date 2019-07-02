@@ -60,7 +60,7 @@ fn main() {
     let mut context = Rltk::init_simple8x8(80, 50, "Hello RLTK World", "../../resources");
 
     // Now we create an empty state object.
-    let mut gs = State{ };
+    let mut gs = State{ y : 1, going_down: true };
 
     // Call into RLTK to run the main loop. This handles rendering, and calls back into State's tick
     // function every cycle.
