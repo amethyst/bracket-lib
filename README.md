@@ -38,6 +38,8 @@ rltk = { git = "https://github.com/thebracket/rltk_rs" }
 
 *Note: we don't do that in the example files, we use a relative path - to avoid having nested git repos.*
 
+Copy all the files from the `resources` directory inside RLTK into your own `resources` folder. RLTK needs to be able to load the font file and OpenGL shaders.
+
 For the simplest possible *Hello World*, your source code (`main.rs`) can look like this:
 
 ```rust
@@ -53,7 +55,7 @@ impl GameState for State {
 }
 
 fn main() {
-    let mut context = Rltk::init_simple8x8(80, 50, "Hello RLTK World", "../../resources");
+    let mut context = Rltk::init_simple8x8(80, 50, "Hello RLTK World", "resources");
     let mut gs = State{ y : 1, going_down: true };
     context.main_loop(&mut gs);
 }
