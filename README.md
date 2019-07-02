@@ -69,3 +69,9 @@ fn main() {
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE02.gif)
 
 [Example 2 - Sparse Layers](examples/ex02-sparse) is very similar to example 1, but it adds an additional layer - in a VGA 8x16 font, and renders the FPS and frame rate to it. This illustrates how easy it is to work with layers in RLTK.
+
+### Example 3: Walking around
+
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE03.gif)
+
+[Example 3 - Walking Around](examples/ex03-walking_around) is the first step for a lot of roguelikes: we generate a random map (very random in this case), render the player as an `@`, and move him/her/it around with the cursor keys or numpad. This illustrates the simple keyboard input mechanism, and also how to handle basic game state.

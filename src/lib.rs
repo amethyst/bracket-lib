@@ -13,6 +13,7 @@ pub use self::console::*;
 pub use self::shader::Shader;
 pub use self::simple_console::SimpleConsole;
 pub use self::sparse_console::SparseConsole;
+pub use glfw::Key;
 
 pub trait GameState {
     fn tick(&mut self, ctx : &mut Rltk);

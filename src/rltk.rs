@@ -1,10 +1,11 @@
 extern crate glfw;
-use self::glfw::{Context};
+use self::glfw::{Context, Action};
 extern crate gl;
 use std::sync::mpsc::Receiver;
 use super::GameState;
 use std::time::{Instant};
 use super::{ font, Console, Shader, RGB, SimpleConsole };
+pub use glfw::Key;
 
 pub struct DisplayConsole {
     pub console : Box<Console>,
@@ -24,10 +25,12 @@ pub struct Rltk {
     pub consoles : Vec<DisplayConsole>,
     pub fps : f32,
     pub frame_time_ms : f32,
-    pub active_console : usize
+    pub active_console : usize,
+    pub key : Option<Key>
 }
 
 #[allow(dead_code)]
+#[allow(non_snake_case)]
 impl Rltk {
     // Initializes an OpenGL context and a window, stores the info in the Rltk structure.
     pub fn init_raw<S: ToString>(width_pixels:u32, height_pixels:u32, window_title: S, path_to_shaders: S) -> Rltk {        
@@ -66,21 +69,33 @@ impl Rltk {
             shaders: vec![vs],
             fps: 0.0,
             frame_time_ms: 0.0,
-            active_console : 0
+            active_console : 0,
+            key: None
         };
     }
 
     // Quick initialization for when you just want an 8x8 font terminal
     pub fn init_simple8x8<S: ToString>(width_chars : u32, height_chars: u32, window_title: S, path_to_shaders: S) -> Rltk {
         let font_path = format!("{}/terminal8x8.jpg", &path_to_shaders.to_string());
-        let mut context = Rltk::init_raw(width_chars * 8, height_chars * 7, window_title, path_to_shaders);
+        let mut context = Rltk::init_raw(width_chars * 8, height_chars * 8, window_title, path_to_shaders);
         let font = context.register_font(font::Font::load(&font_path.to_string(), (8,8)));
+        context.register_console(SimpleConsole::init(width_chars, height_chars), font);
+        context
+    }
+
+    // Quick initialization for when you just want an 8x16 VGA font terminal
+    pub fn init_simple8x16<S: ToString>(width_chars : u32, height_chars: u32, window_title: S, path_to_shaders: S) -> Rltk {
+        let font_path = format!("{}/vga8x16.jpg", &path_to_shaders.to_string());
+        let mut context = Rltk::init_raw(width_chars * 8, height_chars * 16, window_title, path_to_shaders);
+        let font = context.register_font(font::Font::load(&font_path.to_string(), (8,16)));
         context.register_console(SimpleConsole::init(width_chars, height_chars), font);
         context
     }
 
     // Message pump handler for RLTK applications
     fn process_events(&mut self) {
+        self.key = None; // To avoid infinite repetition
+
         for (_, event) in glfw::flush_messages(&self.events) {
 
             match event {
@@ -88,7 +103,16 @@ impl Rltk {
                     // make sure the viewport matches the new window dimensions; note that width and
                     // height will be significantly larger than specified on retina displays.
                     unsafe { gl::Viewport(0, 0, width, height) }
-                }                    
+                }
+
+                glfw::WindowEvent::Key(KEY, _, Action::Press, _) => {
+                    self.key = Some(KEY);
+                }
+
+                glfw::WindowEvent::Key(KEY, _, Action::Repeat, _) => {
+                    self.key = Some(KEY);
+                }
+
                 _ => { }
             }
         }
