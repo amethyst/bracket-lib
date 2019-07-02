@@ -24,7 +24,11 @@ cargo run
 
 ## Examples
 
-* [Example 1 - Hello World](examples/ex01-helloworld) is a small example, showing off a simple 8x8 console, and the boilerplate required to make RLTK run.
+### Example 1: Bouncing Hello World
+
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE01.gif)
+
+[Example 1 - Hello World](examples/ex01-helloworld) is a small example, showing off a simple 8x8 console, and the boilerplate required to make RLTK run.
 
 
 ## Using RLTK in your project
