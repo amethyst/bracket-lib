@@ -75,3 +75,9 @@ fn main() {
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE03.gif)
 
 [Example 3 - Walking Around](examples/ex03-walking_around) is the first step for a lot of roguelikes: we generate a random map (very random in this case), render the player as an `@`, and move him/her/it around with the cursor keys or numpad. This illustrates the simple keyboard input mechanism, and also how to handle basic game state.
+
+### Example 4: Field of view
+
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE04.gif)
+
+[Example 4 - Field of View/FOV](examples/ex04-fov) takes example 3, and adds field-of-view. To do this, it implements some traits from the RLTK library that allow it to provide helpers such as this.
