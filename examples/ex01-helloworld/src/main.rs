@@ -27,8 +27,8 @@ impl GameState for State {
     // later tutorials. For now, it just shows you the frame rate and says "Hello World".
     fn tick(&mut self, ctx : &mut Rltk) {
         let col1 = RGB::named(rltk::CYAN);
-        let col2 = RGB::named(rltk::RED);
-        let percent : f32 = self.y as f32 / (600.0 / 8.0);
+        let col2 = RGB::named(rltk::YELLOW);
+        let percent : f32 = self.y as f32 / 50.0;
         let fg = col1.lerp(col2, percent);
 
         ctx.cls();
@@ -37,7 +37,7 @@ impl GameState for State {
         // Lets make the hello bounce up and down
         if self.going_down {
             self.y += 1;
-            if self.y > (600/8)-2 { self.going_down = false; }
+            if self.y > 48 { self.going_down = false; }
         } else {
             self.y -= 1;
             if self.y < 2 { self.going_down = true; }
@@ -51,21 +51,13 @@ impl GameState for State {
 
 // Every program needs a main() function!
 fn main() {
-    // Ask RLTK to create an 800x600 window with the title "Hello RLTK World".
-    // We need to provide a path in which the minimal shaders required for console
-    // rendering are installed. In this case, we're using a relative path to fit with
-    // the structure of this repo; ordinarily, you'd copy them into "resources" or "assets"
-    // and use that.
-    let mut context = Rltk::init_raw(800, 600, "Hello RLTK World", "../../resources");
-
-    // Rendering text requires a font file. In this case, we're using an 8x8 CP437 sprite sheet.
-    // Passing the (8,8) defines the size of the characters on the sprite sheet. An x and y is required,
-    // because some fonts aren't square.
-    // Once again, we're using a big relative path to the font - so that all the examples can share it.
-    let font = context.register_font(rltk::Font::load("../../resources/terminal8x8.jpg", (8,8)));
-
-    // We need to create a console to write on, and register it with RLTK.
-    context.register_console(rltk::SimpleConsole::init(800/8, 600/8), font);
+    // RLTK provides a simple initializer for a simple 8x8 font window of a given number of
+    // characters. Since that's all we need here, we'll use it!
+    // We're specifying that we want an 80x50 console, with a title, and a relative path
+    // to where it can find the font files and shader files.
+    // These would normally be "resources" rather than "../../resources" - but to make it
+    // work in the repo without duplicating, they are a relative path.
+    let mut context = Rltk::init_simple8x8(80, 50, "Hello RLTK World", "../../resources");
 
     // Now we create an empty state object.
     let mut gs = State{ y : 1, going_down: true };

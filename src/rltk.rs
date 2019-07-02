@@ -1,13 +1,10 @@
 extern crate glfw;
-use self::glfw::{Context, Action};
+use self::glfw::{Context};
 extern crate gl;
 use std::sync::mpsc::Receiver;
 use super::GameState;
 use std::time::{Instant};
-use super::font;
-use super::Console;
-use super::Shader;
-use super::RGB;
+use super::{ font, Console, Shader, RGB, SimpleConsole };
 
 pub struct DisplayConsole {
     pub console : Box<Console>,
@@ -71,6 +68,15 @@ impl Rltk {
             frame_time_ms: 0.0,
             active_console : 0
         };
+    }
+
+    // Quick initialization for when you just want an 8x8 font terminal
+    pub fn init_simple8x8<S: ToString>(width_chars : u32, height_chars: u32, window_title: S, path_to_shaders: S) -> Rltk {
+        let font_path = format!("{}/terminal8x8.jpg", &path_to_shaders.to_string());
+        let mut context = Rltk::init_raw(width_chars * 8, height_chars * 7, window_title, path_to_shaders);
+        let font = context.register_font(font::Font::load(&font_path.to_string(), (8,8)));
+        context.register_console(SimpleConsole::init(width_chars, height_chars), font);
+        context
     }
 
     // Message pump handler for RLTK applications
