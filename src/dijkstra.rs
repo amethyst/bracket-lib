@@ -11,6 +11,13 @@ pub struct DijkstraMap {
     max_depth : f32
 }
 
+// Used internally when constructing maps in parallel
+struct ParallelDm {
+    map : Vec<f32>,
+    max_depth : f32,
+    starts : Vec<usize>
+}
+
 #[allow(dead_code)]
 impl DijkstraMap {
     pub fn new(size_x : i32, size_y: i32, starts: &Vec<i32>, map: &BaseMap, max_depth : f32) -> DijkstraMap {
@@ -28,9 +35,8 @@ impl DijkstraMap {
         return d;
     }
 
-    #[inline(always)]
-    fn add_if_open(dm : &DijkstraMap, idx : i32, open_list : &mut Vec<(i32, f32)>, closed_list : &mut Vec<bool>, new_depth : f32) {
-        if new_depth > dm.max_depth { return; }
+    fn add_if_open(max_depth: f32, idx : i32, open_list : &mut Vec<(i32, f32)>, closed_list : &mut Vec<bool>, new_depth : f32) {
+        if new_depth > max_depth { return; }
         if closed_list[idx as usize] { return; }
 
         closed_list[idx as usize] = true;
@@ -43,6 +49,10 @@ impl DijkstraMap {
     }
 
     pub fn build(dm : &mut DijkstraMap, starts: &Vec<i32>, map: &BaseMap) {
+        if starts.len() > rayon::current_num_threads() {
+            DijkstraMap::build_parallel(dm, starts, map);
+            return;
+        }
         let mapsize : usize = (dm.size_x * dm.size_y) as usize;
         let mut open_list : Vec<(i32, f32)> = Vec::with_capacity(mapsize*2);
         let mut closed_list : Vec<bool> = Vec::with_capacity(mapsize);
@@ -73,9 +83,66 @@ impl DijkstraMap {
 
                     let exits = map.get_available_exits(tile_idx);
                     for exit in exits.iter() {
-                        DijkstraMap::add_if_open(dm, exit.0, &mut open_list, &mut closed_list, depth + exit.1);
+                        DijkstraMap::add_if_open(dm.max_depth, exit.0, &mut open_list, &mut closed_list, depth + exit.1);
                     }
                 }
+            }
+        }
+    }    
+
+    fn build_parallel(dm : &mut DijkstraMap, starts: &Vec<i32>, map: &BaseMap) {
+        let mapsize : usize = (dm.size_x * dm.size_y) as usize;
+        let mut layers : Vec<ParallelDm> = Vec::with_capacity(starts.len());
+        for start_chunk in starts.chunks(rayon::current_num_threads()) {
+            let mut layer = ParallelDm{
+                map : Vec::with_capacity(mapsize),
+                max_depth : dm.max_depth,
+                starts : Vec::new()
+            };
+            for s in start_chunk.iter() { layer.starts.push(*s as usize); }
+            layers.push(layer);
+        }
+
+        let mut exits : Vec<Vec<(i32, f32)>> = Vec::with_capacity(mapsize);
+        for idx in 0 .. mapsize as i32 {
+            exits.push(map.get_available_exits(idx));
+        }
+
+        // Run each map in parallel
+        layers.par_iter_mut().for_each(|l| {
+            let mut open_list : Vec<(i32, f32)> = Vec::with_capacity(mapsize*2);
+            let mut closed_list : Vec<bool> = Vec::with_capacity(mapsize);
+            for _i in 0..mapsize { 
+                l.map.push(MAX);
+                closed_list.push(false);
+            }
+
+            for start in l.starts.iter() {
+                open_list.push((*start as i32, 0.0));
+
+                while !open_list.is_empty() {
+                    let last_idx = open_list.len()-1;
+                    let current_tile = open_list[last_idx];
+                    let tile_idx = current_tile.0;
+                    let depth = current_tile.1;
+                    unsafe { open_list.set_len(last_idx); }
+
+                    if l.map[tile_idx as usize] > depth {
+                        l.map[tile_idx as usize] = depth;
+
+                        let exits = &exits[tile_idx as usize];
+                        for exit in exits.iter() {
+                            DijkstraMap::add_if_open(l.max_depth, exit.0, &mut open_list, &mut closed_list, depth + exit.1);
+                        }
+                    }
+                }
+            }
+        });
+
+        // Recombine down to a single result
+        for l in layers.iter() {
+            for i in 0..mapsize {
+                dm.map[i] = f32::min(dm.map[i], l.map[i]);
             }
         }
     }
@@ -88,7 +155,7 @@ impl DijkstraMap {
         }
 
         if exits.is_empty() { return None; }
-        exits.sort_by(|a,b| a.1.partial_cmp(&b.1).unwrap() );
+        exits.par_sort_by(|a,b| a.1.partial_cmp(&b.1).unwrap());
 
         return Some(exits[0].0);
     }
@@ -101,7 +168,7 @@ impl DijkstraMap {
         }
 
         if exits.is_empty() { return None; }
-        exits.sort_by(|a,b| b.1.partial_cmp(&a.1).unwrap() );
+        exits.par_sort_by(|a,b| a.1.partial_cmp(&b.1).unwrap());
 
         return Some(exits[0].0);
     }
