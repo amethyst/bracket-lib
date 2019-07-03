@@ -1,6 +1,8 @@
 // Generates a map with FoV like example 4, and replaces human input with path-finding
 // to reveal the whole map. Uses RLTK's Dijkstra flow maps functionality.
 //
+// You may want to run this in release mode.
+//
 // Comments that duplicate previous examples have been removed for brevity.
 //////////////////////////////////////////////////////////////
 
@@ -15,13 +17,20 @@ use std::f32::MAX;
 #[derive(PartialEq, Copy, Clone)]
 enum TileType { Wall, Floor }
 
-// We've added a new field, revealed. If a tile isn't revealed, we have never seen it.
-struct State {
-    map : Vec<TileType>,
-    player_position : usize,
+// We're breaking the map structure out into its own, so we can hold a copy of both it
+// and various flow-mapping stuff without annoying the borrow checker.
+struct Map {
+    tiles : Vec<TileType>,   
     visible : Vec<bool>,
     revealed : Vec<bool>,
-    search_targets: Vec<i32>
+}
+
+// We've added a new field, revealed. If a tile isn't revealed, we have never seen it.
+struct State {
+    map : Map,
+    player_position : usize,
+    search_targets: Vec<i32>,
+    flow_map : DijkstraMap
 }
 
 pub fn xy_idx(x : i32, y : i32) -> usize {
@@ -35,54 +44,50 @@ pub fn idx_xy(idx : usize) -> (i32, i32) {
 impl State {
     pub fn new() -> State {
         let mut state = State{
-            map : Vec::new(),
+            map : Map{ tiles: Vec::new(), visible: Vec::new(), revealed: Vec::new() },
             player_position: xy_idx(40, 25),
-            visible: Vec::new(),
-            revealed: Vec::new(),
-            search_targets : Vec::with_capacity(80*50)
+            search_targets : Vec::with_capacity(80*50),
+            // Here we create an empty placeholder for the flow map; this way we don't allocate it repeatedly
+            flow_map : DijkstraMap::new_empty(80, 50, 2048.0)
         };
 
         for _i in 0 .. 80*50 {
-            state.map.push(TileType::Floor);
-            state.visible.push(false);
-            state.revealed.push(false);
+            state.map.tiles.push(TileType::Floor);
+            state.map.visible.push(false);
+            state.map.revealed.push(false);
         }
 
         for x in 0 .. 80 {
-            state.map[xy_idx(x, 0)] = TileType::Wall;
-            state.map[xy_idx(x, 49)] = TileType::Wall;
+            state.map.tiles[xy_idx(x, 0)] = TileType::Wall;
+            state.map.tiles[xy_idx(x, 49)] = TileType::Wall;
         }
         for y in 0 .. 50 {
-            state.map[xy_idx(0, y)] = TileType::Wall;
-            state.map[xy_idx(79, y)] = TileType::Wall;
+            state.map.tiles[xy_idx(0, y)] = TileType::Wall;
+            state.map.tiles[xy_idx(79, y)] = TileType::Wall;
         }
 
         let mut rng = rand::thread_rng();
 
+        // Lets add more walls to make it harder
         for _i in 0..1600 {
             let x = rng.gen_range(1, 79);
             let y = rng.gen_range(1, 49);
             let idx = xy_idx(x, y);
             if state.player_position != idx {
-                state.map[idx] = TileType::Wall;
+                state.map.tiles[idx] = TileType::Wall;
             }
         }
 
         // Populate the search targets
+        // Since the map doesn't change, we'll do this once. It's a list of indices of tiles that
+        // are not walls, and aren't revealed
         for i in 0 .. 80*50 {
-            if state.revealed[i]==false && state.map[i] == TileType::Floor {
+            if state.map.revealed[i]==false && state.map.tiles[i] == TileType::Floor {
                 state.search_targets.push(i as i32);
             }
         }
 
         state
-    }
-
-    #[inline(always)]
-    pub fn is_exit_valid(&self, x:i32, y:i32) -> bool {
-        if x < 1 || x > 80-1 || y < 1 || y > 50-1 { return false; }
-        let idx = ((y * 80) + x) as usize;
-        return self.map[idx] == TileType::Floor;
     }
 }
 
@@ -91,39 +96,38 @@ impl GameState for State {
     #[allow(non_snake_case)]
     fn tick(&mut self, ctx : &mut Rltk) {        
         // Set all tiles to not visible
-        for v in self.visible.iter_mut() { *v = false; }
+        for v in self.map.visible.iter_mut() { *v = false; }
 
         // Obtain the player's visible tile set, and apply it
-        let player_position = self.index_to_point2d(self.player_position as i32);
-        let fov = rltk::field_of_view(player_position, 8, self);
+        let player_position = self.map.index_to_point2d(self.player_position as i32);
+        let fov = rltk::field_of_view(player_position, 8, &self.map);
 
         // Note that the steps above would generally not be run every frame!
         for idx in fov.iter() {
             let mapidx = xy_idx(idx.x, idx.y);
-            self.visible[mapidx] = true;
-            if !self.revealed[mapidx] {
-                self.revealed[mapidx] = true;
+            self.map.visible[mapidx] = true;
+            if !self.map.revealed[mapidx] {
+                self.map.revealed[mapidx] = true;
                 let mapidx_i32 = mapidx as i32;
+                // We remove all elements of the search targets list that are now revealed.
                 self.search_targets.retain(|a| a != &mapidx_i32);
             }
         }
 
         // Use RLTK's DijkstraMap to build a flow map for finding unrevealed areas.
         let mut anything_left = true;
-        let flow_map = DijkstraMap::new(80, 50, &self.search_targets, self, 2048.0);        
-        if !(flow_map.map[self.player_position] < MAX) { anything_left = false; }
+        DijkstraMap::clear(&mut self.flow_map);
+        DijkstraMap::build(&mut self.flow_map, &self.search_targets, &self.map);
+        if !(self.flow_map.map[self.player_position] < MAX) { anything_left = false; }
         if anything_left {
             // Now we use the flow map to move
             // If its MAX, then there's nowhere to go.
-            let destination = flow_map.find_lowest_exit(self.player_position as i32, self);
+            let destination = DijkstraMap::find_lowest_exit(&self.flow_map, self.player_position as i32, &self.map);
             match destination {
                 None => {}
                 Some(idx) => { self.player_position = idx as usize; }
             }            
         }
-
-        // As an optimization, now that we have a flow map we can remove impossible tiles from it
-        self.search_targets.retain(|a| flow_map.map[*a as usize] < MAX);
 
         // Clear the screen
         ctx.cls();
@@ -132,27 +136,29 @@ impl GameState for State {
         let mut y = 0;
         let mut x = 0;
         let mut i : usize = 0;
-        for tile in self.map.iter() {
+        for tile in self.map.tiles.iter() {
             // New test: only render if its revealed
-            if self.revealed[i] {
+            let bg;
+            let distance = self.flow_map.map[i];
+            if distance == MAX {
+                bg = RGB::from_f32(0.0, 0.0, 1.0);
+            } else {
+                bg = RGB::from_f32(0.0, self.flow_map.map[i] / 32.0, 0.0);
+            }
+
+            if self.map.revealed[i] {
                 // Render a tile depending upon the tile type; now we check visibility as well!
                 let mut fg;
                 let mut glyph = ".";
-                let bg;
-
-                let distance = flow_map.map[i];
-                if distance == MAX {
-                    bg = RGB::from_f32(0.0, 0.0, 0.0);
-                } else {
-                    bg = RGB::from_f32(0.0, 0.0, 1.0 - (flow_map.map[i] / 256.0));
-                }
 
                 match tile {
                     TileType::Floor => { fg = RGB::from_f32(0.5, 0.5, 0.0); }
                     TileType::Wall => { fg = RGB::from_f32(0.0, 1.0, 0.0); glyph = "#"; }
                 }
-                if !self.visible[i] { fg = fg.to_greyscale(); }
+                if !self.map.visible[i] { fg = fg.to_greyscale(); }
                 ctx.print_color(x, y, fg, bg, glyph);
+            } else {
+                ctx.print_color(x, y, RGB::from_f32(0.5, 0.5, 0.0), bg, " ");
             }
 
             // Move the coordinates
@@ -169,18 +175,30 @@ impl GameState for State {
         ctx.print_color(ppos.0, ppos.1, RGB::from_f32(1.0, 1.0, 0.0), RGB::from_f32(0., 0., 0.), "@");
 
         if !anything_left {
-            ctx.print_color(30, 25, RGB::from_f32(1.0, 1.0, 0.0), RGB::from_f32(0., 0., 0.), "Search Complete");
+            ctx.print_color(30, 25, RGB::from_f32(1.0, 1.0, 1.0), RGB::from_f32(1., 0., 0.), "Search Complete");
         } else {
-            ctx.print_color(30, 25, RGB::from_f32(1.0, 1.0, 0.0), RGB::from_f32(0., 0., 0.), &format!("{} Targets Remain", self.search_targets.len()));
+            ctx.print_color(0, 0, RGB::from_f32(1.0, 1.0, 0.0), RGB::from_f32(0., 0., 0.), &format!("{} Targets Remain", self.search_targets.len()));
+            ctx.print_color(0, 1, RGB::from_f32(1.0, 1.0, 0.0), RGB::from_f32(0., 0., 0.), &format!("{} FPS", ctx.fps));
         }
     }
 }
 
-impl BaseMap for State {
-    fn is_opaque(&self, idx: i32) -> bool { self.map[idx as usize] == TileType::Wall }
+// Implementing a function called is_exit_valid to help our available exists
+// call. 
+impl Map {
+    #[inline(always)]
+    pub fn is_exit_valid(&self, x:i32, y:i32) -> bool {
+        if x < 1 || x > 79 || y < 1 || y > 49 { return false; }
+        let idx = ((y * 80) + x) as usize;
+        return self.tiles[idx] == TileType::Floor;
+    }
+}
+
+impl BaseMap for Map {
+    fn is_opaque(&self, idx: i32) -> bool { self.tiles[idx as usize] == TileType::Wall }
     
     fn get_available_exits(&self, idx:i32) -> Vec<(i32, f32)> {
-        let mut exits : Vec<(i32, f32)> = Vec::new();
+        let mut exits : Vec<(i32, f32)> = Vec::with_capacity(8);
         let x = idx % 80;
         let y = idx / 80;
 
@@ -206,7 +224,7 @@ impl BaseMap for State {
     }
 }
 
-impl Algorithm2D for State {
+impl Algorithm2D for Map {
     fn point2d_to_index(&self, pt : Point) -> i32 { xy_idx(pt.x, pt.y) as i32 }
     fn index_to_point2d(&self, idx:i32) -> Point { Point::new(idx % 80, idx / 80) }
 }
