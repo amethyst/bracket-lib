@@ -169,7 +169,7 @@ impl Algorithm2D for State {
 }
 
 fn main() {
-    let mut context = Rltk::init_simple8x8(80, 50, "RLTK Example 03 - Walking Around", "../../resources");
+    let mut context = Rltk::init_simple8x8(80, 50, "RLTK Example 04 - FOV", "../../resources");
     let mut gs = State::new();
     context.main_loop(&mut gs);
 }

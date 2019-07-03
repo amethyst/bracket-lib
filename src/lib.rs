@@ -7,6 +7,7 @@ mod simple_console;
 mod sparse_console;
 mod fieldofview;
 mod geometry;
+mod dijkstra;
 
 pub use self::rltk::Rltk;
 pub use self::color::*;
@@ -18,6 +19,7 @@ pub use self::sparse_console::SparseConsole;
 pub use glfw::Key;
 pub use self::fieldofview::field_of_view;
 pub use self::geometry::{ distance2d, distance2d_squared };
+pub use self::dijkstra::DijkstraMap;
 
 pub trait GameState {
     fn tick(&mut self, ctx : &mut Rltk);
