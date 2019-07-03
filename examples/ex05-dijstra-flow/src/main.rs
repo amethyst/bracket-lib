@@ -44,18 +44,12 @@ pub fn idx_xy(idx : usize) -> (i32, i32) {
 impl State {
     pub fn new() -> State {
         let mut state = State{
-            map : Map{ tiles: Vec::new(), visible: Vec::new(), revealed: Vec::new() },
+            map : Map{ tiles: vec![TileType::Floor; 80*50], visible: vec![false; 80*50], revealed: vec![false; 80*50] },
             player_position: xy_idx(40, 25),
             search_targets : Vec::with_capacity(80*50),
             // Here we create an empty placeholder for the flow map; this way we don't allocate it repeatedly
             flow_map : DijkstraMap::new_empty(80, 50, 2048.0)
         };
-
-        for _i in 0 .. 80*50 {
-            state.map.tiles.push(TileType::Floor);
-            state.map.visible.push(false);
-            state.map.revealed.push(false);
-        }
 
         for x in 0 .. 80 {
             state.map.tiles[xy_idx(x, 0)] = TileType::Wall;

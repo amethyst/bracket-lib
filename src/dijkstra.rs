@@ -21,16 +21,14 @@ struct ParallelDm {
 #[allow(dead_code)]
 impl DijkstraMap {
     pub fn new(size_x : i32, size_y: i32, starts: &Vec<i32>, map: &BaseMap, max_depth : f32) -> DijkstraMap {
-        let mut result : Vec<f32> = Vec::with_capacity((size_x * size_y) as usize);
-        for _i in 0 .. (size_x * size_y) { result.push(MAX) }
+        let result : Vec<f32> = vec![MAX ; (size_x * size_y) as usize];
         let mut d = DijkstraMap{ map : result, size_x : size_x, size_y : size_y, max_depth : max_depth};
         DijkstraMap::build(&mut d, starts, map);
         return d;
     }
 
     pub fn new_empty(size_x : i32, size_y: i32, max_depth : f32) -> DijkstraMap {
-        let mut result : Vec<f32> = Vec::with_capacity((size_x * size_y) as usize);
-        for _i in 0 .. (size_x * size_y) { result.push(MAX) }
+        let result : Vec<f32> = vec![MAX ; (size_x * size_y) as usize];
         let d = DijkstraMap{ map : result, size_x : size_x, size_y : size_y, max_depth : max_depth};
         return d;
     }
@@ -55,8 +53,7 @@ impl DijkstraMap {
         }
         let mapsize : usize = (dm.size_x * dm.size_y) as usize;
         let mut open_list : Vec<(i32, f32)> = Vec::with_capacity(mapsize*2);
-        let mut closed_list : Vec<bool> = Vec::with_capacity(mapsize);
-        for _i in 0..mapsize { closed_list.push(false); }
+        let mut closed_list : Vec<bool> = vec![false ; mapsize];
 
         for start in starts.iter() {
             // Clearing vec in debug mode is stupidly slow, so we do it the hard way!
@@ -95,7 +92,7 @@ impl DijkstraMap {
         let mut layers : Vec<ParallelDm> = Vec::with_capacity(starts.len());
         for start_chunk in starts.chunks(rayon::current_num_threads()) {
             let mut layer = ParallelDm{
-                map : Vec::with_capacity(mapsize),
+                map : vec![MAX;mapsize],
                 max_depth : dm.max_depth,
                 starts : Vec::new()
             };
@@ -111,11 +108,7 @@ impl DijkstraMap {
         // Run each map in parallel
         layers.par_iter_mut().for_each(|l| {
             let mut open_list : Vec<(i32, f32)> = Vec::with_capacity(mapsize*2);
-            let mut closed_list : Vec<bool> = Vec::with_capacity(mapsize);
-            for _i in 0..mapsize { 
-                l.map.push(MAX);
-                closed_list.push(false);
-            }
+            let mut closed_list : Vec<bool> = vec![false; mapsize];
 
             for start in l.starts.iter() {
                 open_list.push((*start as i32, 0.0));
