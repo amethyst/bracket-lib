@@ -26,7 +26,9 @@ pub struct Rltk {
     pub fps : f32,
     pub frame_time_ms : f32,
     pub active_console : usize,
-    pub key : Option<Key>
+    pub key : Option<Key>,
+    mouse_pos: (i32, i32),
+    pub left_click: bool,
 }
 
 #[allow(dead_code)]
@@ -70,7 +72,9 @@ impl Rltk {
             fps: 0.0,
             frame_time_ms: 0.0,
             active_console : 0,
-            key: None
+            key: None,
+            mouse_pos: (0,0),
+            left_click: false,
         };
     }
 
@@ -95,6 +99,7 @@ impl Rltk {
     // Message pump handler for RLTK applications
     fn process_events(&mut self) {
         self.key = None; // To avoid infinite repetition
+        self.left_click = false;
 
         for (_, event) in glfw::flush_messages(&self.events) {
 
@@ -111,6 +116,15 @@ impl Rltk {
 
                 glfw::WindowEvent::Key(KEY, _, Action::Repeat, _) => {
                     self.key = Some(KEY);
+                }
+
+                glfw::WindowEvent::CursorPos(x, y) => {
+                    self.mouse_pos.0 = x as i32;
+                    self.mouse_pos.1 = y as i32;
+                }
+
+                glfw::WindowEvent::MouseButton(glfw::MouseButton::Button1, Action::Press, _) => {
+                    self.left_click = true;
                 }
 
                 _ => { }
@@ -187,6 +201,15 @@ impl Rltk {
 
     pub fn set_active_console(&mut self, id : usize) {
         self.active_console = id;
+    }
+
+    pub fn mouse_pos(&self) -> (i32, i32) {
+        let font_size = self.fonts[self.consoles[self.active_console].font_index].tile_size;
+
+        (
+            (self.mouse_pos.0 as f32 / font_size.0 as f32) as i32,
+            (self.mouse_pos.1 as f32 / font_size.1 as f32) as i32,
+        )
     }
 }
 

@@ -86,4 +86,10 @@ fn main() {
 
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE05-2.gif)
 
-[Example 4 - Field of View/FOV](examples/ex05-dijkstra-flow) creates a random map, with a lot more walls. It uses RLTK's Dijkstra Flow Maps (see [this article](http://www.roguebasin.com/index.php?title=The_Incredible_Power_of_Dijkstra_Maps)) to solve an auto-explore problem for the map. I recommend compiling this one with `cargo run --release` - debug mode lacks a lot of optimizations and runs really slowly. (RLTK's Dijkstra implementation automatically uses a parallel algorithm for large numbers of targets).
+[Example 5 - Auto-explore with Dijkstra Flow Maps](examples/ex05-dijkstra-flow) creates a random map, with a lot more walls. It uses RLTK's Dijkstra Flow Maps (see [this article](http://www.roguebasin.com/index.php?title=The_Incredible_Power_of_Dijkstra_Maps)) to solve an auto-explore problem for the map. I recommend compiling this one with `cargo run --release` - debug mode lacks a lot of optimizations and runs really slowly. (RLTK's Dijkstra implementation automatically uses a parallel algorithm for large numbers of targets).
+
+### Example 6: Field of view
+
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE06.gif)
+
+[Example 6 - A Star with the Mouse](examples/ex06-astar-mouse) lets you use A-Star navigation to traverse a random map. Mouse over a destination, and your path is highlighted. Click, and the little @ runs there.

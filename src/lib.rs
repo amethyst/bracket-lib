@@ -21,7 +21,7 @@ pub use glfw::Key;
 pub use self::fieldofview::field_of_view;
 pub use self::geometry::{ distance2d, distance2d_squared };
 pub use self::dijkstra::DijkstraMap;
-pub use self::astar::a_star_search;
+pub use self::astar::{a_star_search, NavigationPath};
 
 pub trait GameState {
     fn tick(&mut self, ctx : &mut Rltk);
