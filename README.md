@@ -81,3 +81,9 @@ fn main() {
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE04.gif)
 
 [Example 4 - Field of View/FOV](examples/ex04-fov) takes example 3, and adds field-of-view. To do this, it implements some traits from the RLTK library that allow it to provide helpers such as this.
+
+### Example 5: Auto-explore with Dijkstra Flow Maps
+
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE05.gif)
+
+[Example 4 - Field of View/FOV](examples/ex05-dijkstra-flow) creates a random map, with a lot more walls. It uses RLTK's Dijkstra Flow Maps (see [this article](http://www.roguebasin.com/index.php?title=The_Incredible_Power_of_Dijkstra_Maps)) to solve an auto-explore problem for the map. I recommend compiling this one with `cargo run --release` - debug mode lacks a lot of optimizations and runs really slowly.
