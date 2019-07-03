@@ -20,7 +20,8 @@ struct State {
     map : Vec<TileType>,
     player_position : usize,
     visible : Vec<bool>,
-    revealed : Vec<bool>
+    revealed : Vec<bool>,
+    search_targets: Vec<i32>
 }
 
 pub fn xy_idx(x : i32, y : i32) -> usize {
@@ -37,7 +38,8 @@ impl State {
             map : Vec::new(),
             player_position: xy_idx(40, 25),
             visible: Vec::new(),
-            revealed: Vec::new()
+            revealed: Vec::new(),
+            search_targets : Vec::with_capacity(80*50)
         };
 
         for _i in 0 .. 80*50 {
@@ -63,6 +65,13 @@ impl State {
             let idx = xy_idx(x, y);
             if state.player_position != idx {
                 state.map[idx] = TileType::Wall;
+            }
+        }
+
+        // Populate the search targets
+        for i in 0 .. 80*50 {
+            if state.revealed[i]==false && state.map[i] == TileType::Floor {
+                state.search_targets.push(i as i32);
             }
         }
 
@@ -92,20 +101,16 @@ impl GameState for State {
         for idx in fov.iter() {
             let mapidx = xy_idx(idx.x, idx.y);
             self.visible[mapidx] = true;
-            self.revealed[mapidx] = true;
+            if !self.revealed[mapidx] {
+                self.revealed[mapidx] = true;
+                let mapidx_i32 = mapidx as i32;
+                self.search_targets.retain(|a| a != &mapidx_i32);
+            }
         }
 
         // Use RLTK's DijkstraMap to build a flow map for finding unrevealed areas.
-        let mut search_targets : Vec<i32> = Vec::with_capacity(80*50);
-        let mut added = 0;
-        for i in 0 .. 80*50 {
-            if self.revealed[i]==false && self.map[i] == TileType::Floor {
-                search_targets.push(i as i32);
-                added += 1;
-            }
-        }
-        let mut anything_left = added > 0;
-        let flow_map = DijkstraMap::new(80, 50, &search_targets, self, 2048.0);        
+        let mut anything_left = true;
+        let flow_map = DijkstraMap::new(80, 50, &self.search_targets, self, 2048.0);        
         if !(flow_map.map[self.player_position] < MAX) { anything_left = false; }
         if anything_left {
             // Now we use the flow map to move
@@ -116,6 +121,9 @@ impl GameState for State {
                 Some(idx) => { self.player_position = idx as usize; }
             }            
         }
+
+        // As an optimization, now that we have a flow map we can remove impossible tiles from it
+        self.search_targets.retain(|a| flow_map.map[*a as usize] < MAX);
 
         // Clear the screen
         ctx.cls();
@@ -162,6 +170,8 @@ impl GameState for State {
 
         if !anything_left {
             ctx.print_color(30, 25, RGB::from_f32(1.0, 1.0, 0.0), RGB::from_f32(0., 0., 0.), "Search Complete");
+        } else {
+            ctx.print_color(30, 25, RGB::from_f32(1.0, 1.0, 0.0), RGB::from_f32(0., 0., 0.), &format!("{} Targets Remain", self.search_targets.len()));
         }
     }
 }
