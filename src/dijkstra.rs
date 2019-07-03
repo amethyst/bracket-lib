@@ -60,7 +60,7 @@ impl DijkstraMap {
             unsafe { open_list.set_len(0); }
             // Zeroing the buffer is far too slow, so we're doing it the C way
             unsafe {
-                std::ptr::write_bytes(closed_list.as_mut_ptr() as _, 0, closed_list.len() * mem::size_of::<bool>());
+                std::ptr::write_bytes(closed_list.as_mut_ptr(), 0, closed_list.len() * mem::size_of::<bool>());
             }
             open_list.push((*start, 0.0));
 
