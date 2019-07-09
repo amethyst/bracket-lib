@@ -34,6 +34,9 @@ pub trait Console {
     /// Sets a single cell to a color/glyph combination.
     fn set(&mut self, x:i32, y:i32, fg:RGB, bg:RGB, glyph:u8);
 
+    /// Sets a single cell's background color
+    fn set_bg(&mut self, x:i32, y:i32, bg:RGB);
+
     /// Draws a box, starting at x/y with the extents width/height using CP437 line characters
     fn draw_box(&mut self, x:i32, y:i32, width:i32, height:i32, fg: RGB, bg: RGB);
 
@@ -42,4 +45,7 @@ pub trait Console {
 
     /// Draws a vertical progress bar
     fn draw_bar_vertical(&mut self, x:i32, y:i32, height:i32, n:i32, max:i32, fg:RGB, bg: RGB);
+
+    fn print_centered(&mut self, y:i32, text:&str);
+    fn print_color_centered(&mut self, y:i32, fg:RGB, bg:RGB, text:&str);
 }

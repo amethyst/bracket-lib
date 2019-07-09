@@ -34,11 +34,23 @@ pub use self::dijkstra::DijkstraMap;
 pub use self::astar::{a_star_search, NavigationPath};
 pub use glutin::event::VirtualKeyCode;
 
+#[cfg(feature = "serialization")]
+extern crate serde;
+
 /// Implement this trait on your state struct, so the engine knows what to call on each tick.
 pub trait GameState {
     fn tick(&mut self, ctx : &mut Rltk);
 }
 
+#[cfg(feature = "serialization")]
+#[derive(Eq, PartialEq, Copy, Clone, serde::Serialize, serde::Deserialize)]
+/// Helper function definint a 2D point in space.
+pub struct Point {
+    pub x: i32,
+    pub y: i32
+}
+
+#[cfg(not(feature = "serialization"))]
 #[derive(Eq, PartialEq, Copy, Clone)]
 /// Helper function definint a 2D point in space.
 pub struct Point {

@@ -1,5 +1,17 @@
 use std::ops;
+#[cfg(feature = "serialization")]
+extern crate serde;
 
+#[cfg(feature = "serialization")]
+#[derive(PartialEq, Copy, Clone, serde::Serialize, serde::Deserialize)]
+/// Represents an R/G/B triplet, in the range 0..1 (32-bit float)
+pub struct RGB {
+    pub r : f32,
+    pub g : f32,
+    pub b : f32
+}
+
+#[cfg(not(feature = "serialization"))]
 #[derive(PartialEq, Copy, Clone)]
 /// Represents an R/G/B triplet, in the range 0..1 (32-bit float)
 pub struct RGB {
@@ -7,6 +19,7 @@ pub struct RGB {
     pub g : f32,
     pub b : f32
 }
+
 
 #[derive(PartialEq, Copy, Clone)]
 /// Represents an H/S/V triplet, in the range 0..1 (32-bit float)

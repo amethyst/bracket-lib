@@ -38,7 +38,8 @@ pub struct Rltk {
     pub key : Option<glutin::event::VirtualKeyCode>,
     mouse_pos: (i32, i32),
     pub left_click: bool,
-    context_wrapper : Option<WrappedContext>
+    context_wrapper : Option<WrappedContext>,
+    quitting : bool
 }
 
 #[allow(dead_code)]
@@ -71,7 +72,8 @@ impl Rltk {
             key: None,
             mouse_pos: (0,0),
             left_click: false,
-            context_wrapper: Some(WrappedContext{ el: el, wc: windowed_context })
+            context_wrapper: Some(WrappedContext{ el: el, wc: windowed_context }),
+            quitting : false
         }
     }
 
@@ -122,6 +124,11 @@ impl Rltk {
             (self.mouse_pos.1 as f32 / font_size.1 as f32) as i32,
         )
     }
+
+    /// Tells the game to quit
+    pub fn quit(&mut self) {
+        self.quitting = true;
+    }
 }
 
 impl Console for Rltk {
@@ -137,9 +144,12 @@ impl Console for Rltk {
     fn print(&mut self, x:i32, y:i32, output:&str) { self.consoles[self.active_console].console.print(x, y, output); }
     fn print_color(&mut self, x:i32, y:i32, fg:RGB, bg:RGB, output:&str) { self.consoles[self.active_console].console.print_color(x,y,fg,bg,output); }
     fn set(&mut self, x:i32, y:i32, fg:RGB, bg:RGB, glyph:u8) { self.consoles[self.active_console].console.set(x,y,fg,bg,glyph); }
+    fn set_bg(&mut self, x:i32, y:i32, bg:RGB) { self.consoles[self.active_console].console.set_bg(x,y,bg); }
     fn draw_box(&mut self, x:i32, y:i32, width:i32, height:i32, fg: RGB, bg: RGB) { self.consoles[self.active_console].console.draw_box(x,y,width,height,fg,bg); }
     fn draw_bar_horizontal(&mut self, x:i32, y:i32, width:i32, n:i32, max:i32, fg:RGB, bg: RGB) { self.consoles[self.active_console].console.draw_bar_horizontal(x,y,width,n,max,fg,bg); }
     fn draw_bar_vertical(&mut self, x:i32, y:i32, height:i32, n:i32, max:i32, fg:RGB, bg: RGB) { self.consoles[self.active_console].console.draw_bar_vertical(x,y,height,n,max,fg,bg); }
+    fn print_centered(&mut self, y:i32, text:&str) { self.consoles[self.active_console].console.print_centered(y, text); }
+    fn print_color_centered(&mut self, y:i32, fg:RGB, bg:RGB, text:&str) { self.consoles[self.active_console].console.print_color_centered(y, fg, bg, text); }
 }
 
 #[allow(non_snake_case)]
@@ -161,6 +171,10 @@ pub fn main_loop(mut rltk : Rltk, mut gamestate: Box<GameState>) {
     el.run(move |event, _, control_flow| {
         //println!("{:?}", event);
         *control_flow = ControlFlow::Poll;
+
+        if rltk.quitting {
+            *control_flow = ControlFlow::Exit;
+        }
 
         match event {
             Event::NewEvents(_) => {

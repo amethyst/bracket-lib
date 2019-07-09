@@ -257,6 +257,12 @@ impl Console for SparseConsole {
         });
     }
 
+    /// Sets a single cell in the console's background
+    fn set_bg(&mut self, x:i32, y:i32, bg:RGB) {
+        let idx = self.at(x, y);
+        self.tiles[idx].bg = bg;
+    }
+
     /// Draws a box, starting at x/y with the extents width/height using CP437 line characters
     fn draw_box(&mut self, sx:i32, sy:i32, width:i32, height:i32, fg: RGB, bg: RGB) {
         for y in sy .. sy + height {
@@ -303,5 +309,15 @@ impl Console for SparseConsole {
                 self.set(sx, sy + y, fg, bg, 176);
             }
         }
+    }
+
+    fn print_centered(&mut self, y:i32, text:&str) {
+        self.is_dirty = true;
+        self.print((self.width as i32 / 2) - (text.to_string().len() as i32/2), y, text);
+    }
+
+    fn print_color_centered(&mut self, y:i32, fg:RGB, bg:RGB, text:&str) {
+        self.is_dirty = true;
+        self.print_color((self.width as i32 / 2) - (text.to_string().len() as i32/2), y, fg, bg, text);
     }
 }
