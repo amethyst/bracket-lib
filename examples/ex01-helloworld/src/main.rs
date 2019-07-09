@@ -57,12 +57,12 @@ fn main() {
     // to where it can find the font files and shader files.
     // These would normally be "resources" rather than "../../resources" - but to make it
     // work in the repo without duplicating, they are a relative path.
-    let mut context = Rltk::init_simple8x8(80, 50, "Hello RLTK World", "../../resources");
+    let context = Rltk::init_simple8x8(80, 50, "Hello RLTK World", "../../resources");
 
     // Now we create an empty state object.
-    let mut gs = State{ y : 1, going_down: true };
+    let gs : State = State{ y : 1, going_down: true };
 
     // Call into RLTK to run the main loop. This handles rendering, and calls back into State's tick
-    // function every cycle.
-    context.main_loop(&mut gs);
+    // function every cycle. The box is needed to work around lifetime handling.
+    rltk::main_loop(context, Box::new(gs));
 }

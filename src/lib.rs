@@ -1,3 +1,12 @@
+pub mod gl {
+    pub use self::Gles2 as Gl;
+    include!(concat!(env!("OUT_DIR"), "/gl_bindings.rs"));
+}
+
+pub struct Gl {
+    pub gl: gl::Gl,
+}
+
 mod color;
 mod font;
 mod shader;
@@ -10,6 +19,7 @@ mod geometry;
 mod dijkstra;
 mod astar;
 
+pub use self::rltk::main_loop;
 pub use self::rltk::Rltk;
 pub use self::color::*;
 pub use self::font::Font;
@@ -17,11 +27,11 @@ pub use self::console::*;
 pub use self::shader::Shader;
 pub use self::simple_console::SimpleConsole;
 pub use self::sparse_console::SparseConsole;
-pub use glfw::Key;
 pub use self::fieldofview::field_of_view;
 pub use self::geometry::{ distance2d, distance2d_squared };
 pub use self::dijkstra::DijkstraMap;
 pub use self::astar::{a_star_search, NavigationPath};
+pub use glutin::event::VirtualKeyCode;
 
 pub trait GameState {
     fn tick(&mut self, ctx : &mut Rltk);

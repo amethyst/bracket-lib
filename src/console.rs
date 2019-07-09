@@ -1,4 +1,5 @@
 use super::{RGB, Font, Shader};
+use super::gl;
 
 pub struct Tile {
     pub glyph: u8,
@@ -7,8 +8,8 @@ pub struct Tile {
 }
 
 pub trait Console {
-    fn rebuild_if_dirty(&mut self);
-    fn gl_draw(&mut self, font : &Font, shader : &Shader);
+    fn rebuild_if_dirty(&mut self, gl : &gl::Gles2);
+    fn gl_draw(&mut self, font : &Font, shader : &Shader, gl : &gl::Gles2);
 
     fn at(&self, x:i32, y:i32) -> usize;
     fn cls(&mut self);

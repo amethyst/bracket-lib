@@ -4,7 +4,7 @@
 //////////////////////////////////////////////////////////////
 
 extern crate rltk;
-use rltk::{Rltk, GameState, Console, RGB, Key, BaseMap, Algorithm2D, Point};
+use rltk::{Rltk, GameState, Console, RGB, VirtualKeyCode, BaseMap, Algorithm2D, Point};
 
 extern crate rand;
 use crate::rand::Rng;
@@ -84,22 +84,22 @@ impl GameState for State {
             Some(key) => { // A key is pressed or held
                 match key {
                     // Numpad
-                    Key::Kp8 => { self.move_player(0, -1); }
-                    Key::Kp4 => { self.move_player(-1, 0); }
-                    Key::Kp6 => { self.move_player(1, 0);  }
-                    Key::Kp2 => { self.move_player(0, 1); }
+                    VirtualKeyCode::Numpad8 => { self.move_player(0, -1); }
+                    VirtualKeyCode::Numpad4 => { self.move_player(-1, 0); }
+                    VirtualKeyCode::Numpad6 => { self.move_player(1, 0);  }
+                    VirtualKeyCode::Numpad2 => { self.move_player(0, 1); }
 
                     // Numpad diagonals
-                    Key::Kp7 => { self.move_player(-1, -1); }
-                    Key::Kp9 => { self.move_player(1, -1); }
-                    Key::Kp1 => { self.move_player(-1, 1); }
-                    Key::Kp3 => { self.move_player(1, 1); }
+                    VirtualKeyCode::Numpad7 => { self.move_player(-1, -1); }
+                    VirtualKeyCode::Numpad9 => { self.move_player(1, -1); }
+                    VirtualKeyCode::Numpad1 => { self.move_player(-1, 1); }
+                    VirtualKeyCode::Numpad3 => { self.move_player(1, 1); }
 
                     // Cursors
-                    Key::Up => { self.move_player(0, -1); }
-                    Key::Down => { self.move_player(0, 1); }
-                    Key::Left => { self.move_player(-1, 0); }
-                    Key::Right => { self.move_player(1, 0); }
+                    VirtualKeyCode::Up => { self.move_player(0, -1); }
+                    VirtualKeyCode::Down => { self.move_player(0, 1); }
+                    VirtualKeyCode::Left => { self.move_player(-1, 0); }
+                    VirtualKeyCode::Right => { self.move_player(1, 0); }
 
                     _ => {} // Ignore all the other possibilities
                 }
@@ -169,7 +169,7 @@ impl Algorithm2D for State {
 }
 
 fn main() {
-    let mut context = Rltk::init_simple8x8(80, 50, "RLTK Example 04 - FOV", "../../resources");
-    let mut gs = State::new();
-    context.main_loop(&mut gs);
+    let context = Rltk::init_simple8x8(80, 50, "RLTK Example 04 - FOV", "../../resources");
+    let gs = State::new();
+    rltk::main_loop(context, Box::new(gs));
 }

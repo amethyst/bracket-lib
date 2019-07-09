@@ -1,8 +1,10 @@
 use super::{Console, RGB, Font, Shader};
-use gl::types::*;
+//use gl::types::*;
 use std::ptr;
 use std::mem;
 use std::os::raw::c_void;
+use gl::types::*;
+use super::gl;
 
 pub struct SparseTile {
     pub idx : usize,
@@ -32,10 +34,10 @@ pub struct SparseConsole {
 #[allow(dead_code)]
 impl SparseConsole {
     #[allow(non_snake_case)]
-    pub fn init(width:u32, height: u32) -> Box<SparseConsole> {
+    pub fn init(width:u32, height: u32, gl : &gl::Gles2) -> Box<SparseConsole> {
         // Console backing init
 
-        let (VBO, VAO, EBO) = SparseConsole::init_gl_for_console();
+        let (VBO, VAO, EBO) = SparseConsole::init_gl_for_console(gl);
 
         let new_console = SparseConsole{
             width: width, 
@@ -53,32 +55,34 @@ impl SparseConsole {
     }
 
     #[allow(non_snake_case)]
-    fn init_gl_for_console() -> (u32, u32, u32) {
+    fn init_gl_for_console(gl : &gl::Gles2) -> (u32, u32, u32) {
         let (mut VBO, mut VAO, mut EBO) = (0, 0, 0);
+        
         unsafe {
             // Generate buffers and arrays, as well as attributes.
-            gl::GenVertexArrays(1, &mut VAO);
-            gl::GenBuffers(1, &mut VBO);
-            gl::GenBuffers(1, &mut EBO);
+            gl.GenVertexArrays(1, &mut VAO);
+            gl.GenBuffers(1, &mut VBO);
+            gl.GenBuffers(1, &mut EBO);
 
-            gl::BindVertexArray(VAO);
+            gl.BindVertexArray(VAO);
 
-            gl::BindBuffer(gl::ARRAY_BUFFER, VBO);
+            gl.BindBuffer(gl::ARRAY_BUFFER, VBO);
 
             let stride = 11 * mem::size_of::<GLfloat>() as GLsizei;
             // position attribute
-            gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, stride, ptr::null());
-            gl::EnableVertexAttribArray(0);
+            gl.VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, stride, ptr::null());
+            gl.EnableVertexAttribArray(0);
             // color attribute
-            gl::VertexAttribPointer(1, 3, gl::FLOAT, gl::FALSE, stride, (3 * mem::size_of::<GLfloat>()) as *const c_void);
-            gl::EnableVertexAttribArray(1);
+            gl.VertexAttribPointer(1, 3, gl::FLOAT, gl::FALSE, stride, (3 * mem::size_of::<GLfloat>()) as *const c_void);
+            gl.EnableVertexAttribArray(1);
              // bgcolor attribute
-            gl::VertexAttribPointer(2, 3, gl::FLOAT, gl::FALSE, stride, (6 * mem::size_of::<GLfloat>()) as *const c_void);
-            gl::EnableVertexAttribArray(2);
+            gl.VertexAttribPointer(2, 3, gl::FLOAT, gl::FALSE, stride, (6 * mem::size_of::<GLfloat>()) as *const c_void);
+            gl.EnableVertexAttribArray(2);
             // texture coord attribute
-            gl::VertexAttribPointer(3, 2, gl::FLOAT, gl::FALSE, stride, (9 * mem::size_of::<GLfloat>()) as *const c_void);
-            gl::EnableVertexAttribArray(3);
+            gl.VertexAttribPointer(3, 2, gl::FLOAT, gl::FALSE, stride, (9 * mem::size_of::<GLfloat>()) as *const c_void);
+            gl.EnableVertexAttribArray(3);
         };
+        
         (VBO, VAO, EBO)
     }
 
@@ -96,7 +100,7 @@ impl SparseConsole {
         vertex_buffer.push(uy);
     }
 
-    fn rebuild_vertices(&mut self) {
+    fn rebuild_vertices(&mut self, gl : &gl::Gles2) {
         if self.tiles.is_empty() { return; }
 
         self.vertex_buffer.clear();
@@ -140,16 +144,16 @@ impl SparseConsole {
 
             index_count += 4;
         }
-        
+                
         unsafe {
-            gl::BindBuffer(gl::ARRAY_BUFFER, self.VBO);
-            gl::BufferData(gl::ARRAY_BUFFER,
+            gl.BindBuffer(gl::ARRAY_BUFFER, self.VBO);
+            gl.BufferData(gl::ARRAY_BUFFER,
                         (self.vertex_buffer.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
                         &self.vertex_buffer[0] as *const f32 as *const c_void,
                         gl::STATIC_DRAW);
 
-            gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.EBO);
-            gl::BufferData(gl::ELEMENT_ARRAY_BUFFER,
+            gl.BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.EBO);
+            gl.BufferData(gl::ELEMENT_ARRAY_BUFFER,
                         (self.index_buffer.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
                         &self.index_buffer[0] as *const i32 as *const c_void,
                         gl::STATIC_DRAW);
@@ -158,24 +162,24 @@ impl SparseConsole {
 }
 
 impl Console for SparseConsole {
-    fn rebuild_if_dirty(&mut self) {
+    fn rebuild_if_dirty(&mut self, gl : &gl::Gles2) {
          if self.is_dirty {
-            self.rebuild_vertices();
+            self.rebuild_vertices(gl);
             self.is_dirty = false;
         }
     }
 
-    fn gl_draw(&mut self, font : &Font, shader : &Shader) {
+    fn gl_draw(&mut self, font : &Font, shader : &Shader, gl : &gl::Gles2) {
         unsafe {
             // bind Texture
-            font.bind_texture();
+            font.bind_texture(gl);
 
             // render container
-            shader.useProgram();
-            gl::BindVertexArray(self.VAO);
-            gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.EBO);
-            gl::BindBuffer(gl::ARRAY_BUFFER, self.VBO);
-            gl::DrawElements(gl::TRIANGLES, (self.tiles.len() * 6) as i32, gl::UNSIGNED_INT, ptr::null());
+            shader.useProgram(gl);
+            gl.BindVertexArray(self.VAO);
+            gl.BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.EBO);
+            gl.BindBuffer(gl::ARRAY_BUFFER, self.VBO);
+            gl.DrawElements(gl::TRIANGLES, (self.tiles.len() * 6) as i32, gl::UNSIGNED_INT, ptr::null());
         }
         self.is_dirty = false;
     }

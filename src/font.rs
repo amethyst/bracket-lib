@@ -1,8 +1,8 @@
 #[allow(dead_code)]
 extern crate image;
-use image::GenericImage;
-extern crate gl;
+use image::GenericImageView;
 use std::os::raw::c_void;
+use super::gl;
 
 #[derive(PartialEq, Clone)]
 pub struct Font {
@@ -27,22 +27,23 @@ impl Font {
     }
 
     // Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
-    pub fn setup_gl_texture(&mut self) -> u32 {
+    pub fn setup_gl_texture(&mut self, gl : &gl::Gles2) -> u32 {
         let mut texture : u32 = 0;
+        
         unsafe {
-            gl::GenTextures(1, &mut texture);
-            gl::BindTexture(gl::TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
+            gl.GenTextures(1, &mut texture);
+            gl.BindTexture(gl::TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
             // set the texture wrapping parameters
-            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT as i32); // set texture wrapping to gl::REPEAT (default wrapping method)
-            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::REPEAT as i32);
+            gl.TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT as i32); // set texture wrapping to gl::REPEAT (default wrapping method)
+            gl.TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::REPEAT as i32);
             // set texture filtering parameters
-            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as i32);
-            gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32);
+            gl.TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as i32);
+            gl.TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32);
 
             let img_orig = image::open(std::path::Path::new(&self.bitmap_file)).expect("Failed to load texture");
             let img = img_orig.flipv();
             let data = img.raw_pixels();
-            gl::TexImage2D(gl::TEXTURE_2D,
+            gl.TexImage2D(gl::TEXTURE_2D,
                         0,
                         gl::RGB as i32,
                         img.width() as i32,
@@ -51,7 +52,7 @@ impl Font {
                         gl::RGB,
                         gl::UNSIGNED_BYTE,
                         &data[0] as *const u8 as *const c_void);
-            gl::GenerateMipmap(gl::TEXTURE_2D);
+            gl.GenerateMipmap(gl::TEXTURE_2D);
         }
 
         self.gl_id = Some(texture);
@@ -60,9 +61,9 @@ impl Font {
     }
 
     // Sets this font file as the active texture
-    pub fn bind_texture(&self) {
+    pub fn bind_texture(&self, gl : &gl::Gles2) {
         unsafe {
-            gl::BindTexture(gl::TEXTURE_2D, self.gl_id.unwrap());
+            gl.BindTexture(gl::TEXTURE_2D, self.gl_id.unwrap());
         }
     }
 }
