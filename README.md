@@ -4,6 +4,8 @@ You can find the original C++ project here: [https://github.com/thebracket/rltk]
 
 To use this, you will want to have a working `Rust` and `Cargo` setup. On Windows, [rustup](https://rustup.rs/) should get you going.
 
+If you'd like to see a functional roguelike that uses `rltk_rs`, check out [Rusty Roguelike](https://github.com/thebracket/rustyroguelike). It was built for the 2019 */r/roguelikedev does the complete roguelike tutorial* event, and implements the [TCOD Tutorial](http://rogueliketutorials.com/tutorials/tcod/) - but using RLTK. It started out as the home of this project, which was then spun off into a separate crate.
+
 ## Running the examples
 
 The examples use Cargo's built-in support for example code. E.g. To run example 1, enter: `cargo run --example ex01-helloworld`.
