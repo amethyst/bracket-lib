@@ -33,4 +33,7 @@ pub trait Console {
 
     /// Sets a single cell to a color/glyph combination.
     fn set(&mut self, x:i32, y:i32, fg:RGB, bg:RGB, glyph:u8);
+
+    /// Draws a box, starting at x/y with the extents width/height using CP437 line characters
+    fn draw_box(&mut self, x:i32, y:i32, width:i32, height:i32, fg: RGB, bg: RGB);
 }

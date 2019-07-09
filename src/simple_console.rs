@@ -273,4 +273,26 @@ impl Console for SimpleConsole {
         self.tiles[idx].fg = fg;
         self.tiles[idx].bg = bg;
     }
+
+    /// Draws a box, starting at x/y with the extents width/height using CP437 line characters
+    fn draw_box(&mut self, sx:i32, sy:i32, width:i32, height:i32, fg: RGB, bg: RGB) {
+        for y in sy .. sy + height {
+            for x in sx .. sx + width {
+                self.set(x, y, RGB::from_f32(1.0, 1.0, 1.0), RGB::from_f32(0.0, 0.0, 0.0), 32);
+            }
+        }
+
+        self.set(sx, sy, fg, bg, 218);
+        self.set(sx + width, sy, fg, bg, 191);
+        self.set(sx, sy + height, fg, bg, 192);
+        self.set(sx + width, sy + height, fg, bg, 217);
+        for x in sx+1 .. sx + width {
+            self.set(x, sy, fg, bg, 196);
+            self.set(x, sy + height, fg, bg, 196);
+        }
+        for y in sy+1 .. sy + height {
+            self.set(sx, y, fg, bg, 179);
+            self.set(sx + width, y, fg, bg, 179);
+        }
+    }
 }
