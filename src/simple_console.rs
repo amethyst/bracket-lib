@@ -295,4 +295,30 @@ impl Console for SimpleConsole {
             self.set(sx + width, y, fg, bg, 179);
         }
     }
+
+    /// Draws a horizontal progress bar
+    fn draw_bar_horizontal(&mut self, sx:i32, sy:i32, width:i32, n:i32, max:i32, fg:RGB, bg: RGB) {
+        let percent = n as f32 / max as f32;
+        let fill_width = (percent * width as f32) as i32;
+        for x in 0..width {
+            if x <= fill_width {
+                self.set(sx + x, sy, fg, bg, 178);
+            } else {
+                self.set(sx + x, sy, fg, bg, 176);
+            }
+        }
+    }
+
+    /// Draws a vertical progress bar
+    fn draw_bar_vertical(&mut self, sx:i32, sy:i32, height:i32, n:i32, max:i32, fg:RGB, bg: RGB) {
+        let percent = n as f32 / max as f32;
+        let fill_height = height - ((percent * height as f32) as i32);
+        for y in 0..height {
+            if y >= fill_height {
+                self.set(sx, sy + y, fg, bg, 178);
+            } else {
+                self.set(sx, sy + y, fg, bg, 176);
+            }
+        }
+    }
 }
