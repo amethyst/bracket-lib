@@ -4,7 +4,7 @@
 //////////////////////////////////////////////////////////////
 
 extern crate rltk;
-use rltk::{Rltk, GameState, Console, RGB, VirtualKeyCode, BaseMap, Algorithm2D, Point};
+use rltk::{Rltk, GameState, Console, RGB, BaseMap, Algorithm2D, Point};
 
 extern crate rand;
 use crate::rand::Rng;
@@ -12,11 +12,15 @@ use crate::rand::Rng;
 #[derive(PartialEq, Copy, Clone)]
 enum TileType { Wall, Floor }
 
-// Just like example 3, but we're adding an additional vector: visible
+#[derive(PartialEq, Copy, Clone)]
+enum Mode { Waiting, Moving }
+
 struct State {
     map : Vec<TileType>,
     player_position : usize,
-    visible : Vec<bool>
+    visible : Vec<bool>,
+    mode : Mode,
+    path : rltk::NavigationPath
 }
 
 pub fn xy_idx(x : i32, y : i32) -> usize {
@@ -29,18 +33,13 @@ pub fn idx_xy(idx : usize) -> (i32, i32) {
 
 impl State {
     pub fn new() -> State {
-        // Same as example 3, but we've added the visible tiles
         let mut state = State{
-            map : Vec::new(),
+            map : vec![TileType::Floor; 80*50],
             player_position: xy_idx(40, 25),
-            visible: Vec::new()
+            visible: vec![false ; 80*50],
+            mode : Mode::Waiting,
+            path: rltk::NavigationPath::new()
         };
-
-        // We also want to add visible data
-        for _i in 0 .. 80*50 {
-            state.map.push(TileType::Floor);
-            state.visible.push(false);
-        }
 
         for x in 0 .. 80 {
             state.map[xy_idx(x, 0)] = TileType::Wall;
@@ -53,7 +52,7 @@ impl State {
 
         let mut rng = rand::thread_rng();
 
-        for _i in 0..400 {
+        for _i in 0..1400 {
             let x = rng.gen_range(1, 79);
             let y = rng.gen_range(1, 49);
             let idx = xy_idx(x, y);
@@ -65,47 +64,17 @@ impl State {
         state
     }
 
-    pub fn move_player(&mut self, delta_x : i32, delta_y : i32) {
-        let current_position = idx_xy(self.player_position);
-        let new_position = ( current_position.0 + delta_x, current_position.1 + delta_y );
-        let new_idx = xy_idx(new_position.0, new_position.1);
-        if self.map[new_idx] == TileType::Floor {
-            self.player_position = new_idx;
-        }
+    pub fn is_exit_valid(&self, x:i32, y:i32) -> bool {
+        if x < 1 || x > 79 || y < 1 || y > 49 { return false; }
+        let idx = (y * 80) + x;
+        return self.map[idx as usize] == TileType::Floor;
     }
 }
 
 // Implement the game loop
 impl GameState for State {
     #[allow(non_snake_case)]
-    fn tick(&mut self, ctx : &mut Rltk) {
-        match ctx.key {
-            None => {} // Nothing happened
-            Some(key) => { // A key is pressed or held
-                match key {
-                    // Numpad
-                    VirtualKeyCode::Numpad8 => { self.move_player(0, -1); }
-                    VirtualKeyCode::Numpad4 => { self.move_player(-1, 0); }
-                    VirtualKeyCode::Numpad6 => { self.move_player(1, 0);  }
-                    VirtualKeyCode::Numpad2 => { self.move_player(0, 1); }
-
-                    // Numpad diagonals
-                    VirtualKeyCode::Numpad7 => { self.move_player(-1, -1); }
-                    VirtualKeyCode::Numpad9 => { self.move_player(1, -1); }
-                    VirtualKeyCode::Numpad1 => { self.move_player(-1, 1); }
-                    VirtualKeyCode::Numpad3 => { self.move_player(1, 1); }
-
-                    // Cursors
-                    VirtualKeyCode::Up => { self.move_player(0, -1); }
-                    VirtualKeyCode::Down => { self.move_player(0, 1); }
-                    VirtualKeyCode::Left => { self.move_player(-1, 0); }
-                    VirtualKeyCode::Right => { self.move_player(1, 0); }
-
-                    _ => {} // Ignore all the other possibilities
-                }
-            }
-        }
-
+    fn tick(&mut self, ctx : &mut Rltk) {    
         // Set all tiles to not visible
         for v in self.visible.iter_mut() { *v = false; }
 
@@ -146,30 +115,77 @@ impl GameState for State {
             i += 1;
         }
 
+        // Either render the proposed path or run along it
+        if self.mode == Mode::Waiting {
+            // Render a mouse cursor
+            let mouse_pos = ctx.mouse_pos();      
+            let mouse_idx = self.point2d_to_index(Point::new(mouse_pos.0, mouse_pos.1));
+            ctx.print_color(mouse_pos.0, mouse_pos.1, RGB::from_f32(0.0, 1.0, 1.0), RGB::from_f32(0.0, 1.0, 1.0), "X");
+            if self.map[mouse_idx as usize] != TileType::Wall {
+                let path = rltk::a_star_search(self.player_position as i32, mouse_idx as i32, self);
+                if path.success {
+                    for loc in path.steps.iter().skip(1) {
+                        let x = loc % 80;
+                        let y = loc / 80;
+                        ctx.print_color(x, y, RGB::from_f32(1., 0., 0.), RGB::from_f32(0., 0., 0.), "*");
+                    }
+
+                    if ctx.left_click {
+                        self.mode = Mode::Moving;
+                        self.path = path.clone();
+                    }
+                }
+            }
+        } else {
+            self.player_position = self.path.steps[0] as usize;
+            self.path.steps.remove(0);
+            if self.path.steps.len() == 0 { self.mode = Mode::Waiting; }
+        }
+
         // Render the player @ symbol
         let ppos = idx_xy(self.player_position);
         ctx.print_color(ppos.0, ppos.1, RGB::from_f32(1.0, 1.0, 0.0), RGB::from_f32(0., 0., 0.), "@");
     }
+
 }
 
-// To work with RLTK's algorithm features, we need to implement some the Algorithm2D trait for our map.
-
-// First, default implementations of some we aren't using yet (more on these later!)
 impl BaseMap for State {
-    // We'll use this one - if its a wall, we can't see through it
     fn is_opaque(&self, idx: i32) -> bool { self.map[idx as usize] == TileType::Wall }
-    fn get_available_exits(&self, _idx:i32) -> Vec<(i32, f32)> { Vec::new() }
-    fn get_pathing_distance(&self, _idx1:i32, _idx2:i32) -> f32 { 0.0 }
+    
+    fn get_available_exits(&self, idx:i32) -> Vec<(i32, f32)> {
+        let mut exits : Vec<(i32, f32)> = Vec::new();
+        let x = idx % 80;
+        let y = idx / 80;
+
+        // Cardinal directions
+        if self.is_exit_valid(x-1, y) { exits.push((idx-1, 1.0)) };
+        if self.is_exit_valid(x+1, y) { exits.push((idx+1, 1.0)) };
+        if self.is_exit_valid(x, y-1) { exits.push((idx-80, 1.0)) };
+        if self.is_exit_valid(x, y+1) { exits.push((idx+80, 1.0)) };
+
+        // Diagonals
+        if self.is_exit_valid(x-1, y-1) { exits.push(((idx-80)-1, 1.4)); }
+        if self.is_exit_valid(x+1, y-1) { exits.push(((idx-80)+1, 1.4)); }
+        if self.is_exit_valid(x-1, y+1) { exits.push(((idx+80)-1, 1.4)); }
+        if self.is_exit_valid(x+1, y+1) { exits.push(((idx+80)+1, 1.4)); }
+
+        return exits;
+    }
+    
+    fn get_pathing_distance(&self, idx1:i32, idx2:i32) -> f32 { 
+        let p1 = Point::new(idx1 % 80, idx1 / 80);
+        let p2 = Point::new(idx2 % 80, idx2 / 80);
+        return rltk::distance2d(p1, p2);
+     }
 }
 
 impl Algorithm2D for State {
-    // Point translations that we need for field-of-view. Fortunately, we've already written them!
     fn point2d_to_index(&self, pt : Point) -> i32 { xy_idx(pt.x, pt.y) as i32 }
     fn index_to_point2d(&self, idx:i32) -> Point { Point::new(idx % 80, idx / 80) }
 }
 
 fn main() {
-    let context = Rltk::init_simple8x8(80, 50, "RLTK Example 04 - FOV", "../../resources");
+    let context = Rltk::init_simple8x8(80, 50, "RLTK Example 05 - A Star and a Mouse", "resources");
     let gs = State::new();
     rltk::main_loop(context, Box::new(gs));
 }

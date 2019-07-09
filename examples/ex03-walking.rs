@@ -155,7 +155,7 @@ impl GameState for State {
 }
 
 fn main() {
-    let context = Rltk::init_simple8x8(80, 50, "RLTK Example 03 - Walking Around", "../../resources");
+    let context = Rltk::init_simple8x8(80, 50, "RLTK Example 03 - Walking Around", "resources");
     let gs = State::new();
     rltk::main_loop(context, Box::new(gs));
 }

@@ -1,8 +1,0 @@
-[package]
-name = "ex01-helloworld"
-version = "0.1.0"
-authors = ["Herbert Wolverson <herberticus@gmail.com>"]
-edition = "2018"
-
-[dependencies]
-rltk = { path = "../../" }

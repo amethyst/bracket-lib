@@ -21,14 +21,7 @@ image = "0.21"
 cgmath = "0.16.1"
 bresenham = "0.1.1"
 rayon = "1.1.0"
+rand = "0.7.0-pre.1"
 
 [build-dependencies]
 gl_generator = "0.11"
-
-[workspace]
-members = [ "examples/ex01-helloworld", 
-    "examples/ex02-sparse", 
-    "examples/ex03-walking_around", 
-    "examples/ex04-fov",
-    "examples/ex05-dijkstra-flow",
-    "examples/ex06-astar-mouse" ]

@@ -66,13 +66,13 @@ fn main() {
     // to where it can find the font files and shader files.
     // These would normally be "resources" rather than "../../resources" - but to make it
     // work in the repo without duplicating, they are a relative path.
-    let mut context = Rltk::init_simple8x8(80, 50, "Hello RLTK World", "../../resources");
+    let mut context = Rltk::init_simple8x8(80, 50, "Hello RLTK World", "resources");
 
     // We want to add a second layer, using an 8x16 VGA font. It looks nicer, and shows how
     // RLTK can have layers.
     //
     // We start by loading the font.
-    let font = context.register_font(rltk::Font::load("../../resources/vga8x16.jpg", (8,16)));
+    let font = context.register_font(rltk::Font::load("resources/vga8x16.jpg", (8,16)));
 
     // Then we initialize it; notice 80x25 (half the height, since 8x16 is twice as tall).
     // This actually returns the console number, but it's always going to be 1.
