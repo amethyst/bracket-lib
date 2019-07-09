@@ -1,6 +1,6 @@
 use super::GameState;
 use std::time::{Instant};
-use super::{ font, Console, Shader, RGB, SimpleConsole, gl };
+use super::{ font, Console, Shader, RGB, SimpleConsole, gl, VirtualKeyCode };
 use glutin::event::{Event, WindowEvent};
 use glutin::event_loop::{ControlFlow, EventLoop};
 use glutin::window::WindowBuilder;
@@ -248,4 +248,37 @@ fn tock(rltk : &mut Rltk, gamestate: &mut Box<GameState>, frames: &mut i32, prev
         let shader = &rltk.shaders[cons.shader_index];
         cons.console.gl_draw(font, shader, &rltk.gl);
     } 
+}
+
+/// For A-Z menus, translates the keys A through Z into 0..25
+pub fn letter_to_option(key : VirtualKeyCode) -> i32 {
+    match key {
+        VirtualKeyCode::A => { return 0; }
+        VirtualKeyCode::B => { return 1; }
+        VirtualKeyCode::C => { return 2; }
+        VirtualKeyCode::D => { return 3; }
+        VirtualKeyCode::E => { return 4; }
+        VirtualKeyCode::F => { return 5; }
+        VirtualKeyCode::G => { return 6; }
+        VirtualKeyCode::H => { return 7; }
+        VirtualKeyCode::I => { return 8; }
+        VirtualKeyCode::J => { return 9; }
+        VirtualKeyCode::K => { return 10; }
+        VirtualKeyCode::L => { return 11; }
+        VirtualKeyCode::M => { return 12; }
+        VirtualKeyCode::N => { return 13; }
+        VirtualKeyCode::O => { return 14; }
+        VirtualKeyCode::P => { return 15; }
+        VirtualKeyCode::Q => { return 16; }
+        VirtualKeyCode::R => { return 17; }
+        VirtualKeyCode::S => { return 18; }
+        VirtualKeyCode::T => { return 19; }
+        VirtualKeyCode::U => { return 20; }
+        VirtualKeyCode::V => { return 21; }
+        VirtualKeyCode::W => { return 22; }
+        VirtualKeyCode::X => { return 23; }
+        VirtualKeyCode::Y => { return 24; }
+        VirtualKeyCode::Z => { return 25; }
+        _ => {return -1; }
+    }
 }
