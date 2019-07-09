@@ -265,4 +265,12 @@ impl Console for SimpleConsole {
             }
         }
     }
+
+    /// Sets a single cell in the console
+    fn set(&mut self, x:i32, y:i32, fg:RGB, bg:RGB, glyph:u8) {
+        let idx = self.at(x, y);
+        self.tiles[idx].glyph = glyph;
+        self.tiles[idx].fg = fg;
+        self.tiles[idx].bg = bg;
+    }
 }

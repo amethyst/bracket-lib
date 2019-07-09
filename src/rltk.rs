@@ -136,6 +136,7 @@ impl Console for Rltk {
     fn cls_bg(&mut self, background : RGB) { self.consoles[self.active_console].console.cls_bg(background); }
     fn print(&mut self, x:i32, y:i32, output:&str) { self.consoles[self.active_console].console.print(x, y, output); }
     fn print_color(&mut self, x:i32, y:i32, fg:RGB, bg:RGB, output:&str) { self.consoles[self.active_console].console.print_color(x,y,fg,bg,output); }
+    fn set(&mut self, x:i32, y:i32, fg:RGB, bg:RGB, glyph:u8) { self.consoles[self.active_console].console.set(x,y,fg,bg,glyph); }
 }
 
 #[allow(non_snake_case)]

@@ -30,4 +30,7 @@ pub trait Console {
 
     /// Print a string in color at the specified x/y coordinate, with specified foreground and background.
     fn print_color(&mut self, x:i32, y:i32, fg:RGB, bg:RGB, output:&str);
+
+    /// Sets a single cell to a color/glyph combination.
+    fn set(&mut self, x:i32, y:i32, fg:RGB, bg:RGB, glyph:u8);
 }

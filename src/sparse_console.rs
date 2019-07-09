@@ -245,4 +245,15 @@ impl Console for SparseConsole {
             idx += 1;
         }
     }
+
+    /// Sets a single cell in the console
+    fn set(&mut self, x:i32, y:i32, fg:RGB, bg:RGB, glyph:u8) {
+        let idx = self.at(x, y);
+        self.tiles.push(SparseTile{
+            idx: idx,
+            glyph: glyph,
+            fg: fg,
+            bg: bg,
+        });
+    }
 }
