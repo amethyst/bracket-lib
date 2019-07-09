@@ -6,6 +6,7 @@ use std::os::raw::c_void;
 use gl::types::*;
 use super::gl;
 
+/// Internal storage structure for sparse tiles.
 pub struct SparseTile {
     pub idx : usize,
     pub glyph: u8,
@@ -15,6 +16,8 @@ pub struct SparseTile {
 
 #[allow(non_snake_case)]
 #[allow(dead_code)]
+/// A sparse console. Rather than storing every cell on the screen, it stores just cells that have
+/// data.
 pub struct SparseConsole {
     pub width :u32,
     pub height: u32,
@@ -34,6 +37,7 @@ pub struct SparseConsole {
 #[allow(dead_code)]
 impl SparseConsole {
     #[allow(non_snake_case)]
+    /// Initializes the console.
     pub fn init(width:u32, height: u32, gl : &gl::Gles2) -> Box<SparseConsole> {
         // Console backing init
 
@@ -55,6 +59,7 @@ impl SparseConsole {
     }
 
     #[allow(non_snake_case)]
+    /// Initializes OpenGL for the sparse console.
     fn init_gl_for_console(gl : &gl::Gles2) -> (u32, u32, u32) {
         let (mut VBO, mut VAO, mut EBO) = (0, 0, 0);
         
@@ -86,6 +91,7 @@ impl SparseConsole {
         (VBO, VAO, EBO)
     }
 
+    /// Helper to push a point to the shader.
     fn push_point(vertex_buffer : &mut Vec<f32>, x:f32, y:f32, fg:RGB, bg:RGB, ux:f32, uy:f32) {
         vertex_buffer.push(x);
         vertex_buffer.push(y);
@@ -100,6 +106,7 @@ impl SparseConsole {
         vertex_buffer.push(uy);
     }
 
+    /// Helper to build vertices for the sparse grid.
     fn rebuild_vertices(&mut self, gl : &gl::Gles2) {
         if self.tiles.is_empty() { return; }
 
@@ -162,6 +169,7 @@ impl SparseConsole {
 }
 
 impl Console for SparseConsole {
+    /// If the console has changed, rebuild the vertex buffer.
     fn rebuild_if_dirty(&mut self, gl : &gl::Gles2) {
          if self.is_dirty {
             self.rebuild_vertices(gl);
@@ -169,6 +177,7 @@ impl Console for SparseConsole {
         }
     }
 
+    /// Draws the console to OpenGL.
     fn gl_draw(&mut self, font : &Font, shader : &Shader, gl : &gl::Gles2) {
         unsafe {
             // bind Texture
@@ -184,20 +193,24 @@ impl Console for SparseConsole {
         self.is_dirty = false;
     }
 
+    /// Translates x/y to an index entry. Not really useful.
     fn at(&self, x:i32, y:i32) -> usize {
         (((self.height-1 - y as u32) * self.width) + x as u32) as usize
     }
 
+    /// Clear the screen.
     fn cls(&mut self) {
         self.is_dirty = true;
         self.tiles.clear();
     }
 
+    /// Clear the screen. Since we don't HAVE a background, it doesn't use it.
     fn cls_bg(&mut self, _background : RGB) {
         self.is_dirty = true;
         self.tiles.clear();
     }
 
+    /// Prints a string to an x/y position.
     fn print(&mut self, x:i32, y:i32, output:&str) {
         self.is_dirty = true;
         let mut idx = self.at(x, y);
@@ -215,6 +228,7 @@ impl Console for SparseConsole {
         }
     }
 
+    /// Prints a string to an x/y position, with foreground and background colors.
     fn print_color(&mut self, x:i32, y:i32, fg:RGB, bg:RGB, output:&str) {
         self.is_dirty = true;
         let mut idx = self.at(x, y);

@@ -5,6 +5,7 @@ use std::os::raw::c_void;
 use super::gl;
 
 #[derive(PartialEq, Clone)]
+/// RLTK's representation of a font or tileset file.
 pub struct Font {
     pub bitmap_file : String,
     pub width: u32,
@@ -15,18 +16,18 @@ pub struct Font {
 
 #[allow(non_snake_case)]
 impl Font {
-    // Creates an unloaded texture with filename and size parameters provided.
+    /// Creates an unloaded texture with filename and size parameters provided.
     pub fn new<S:ToString>(filename : S, width: u32, height: u32, tile_size : (u32, u32)) -> Font {
         Font { bitmap_file : filename.to_string(), width: width, height: height, gl_id: None, tile_size: tile_size }
     }
 
-    // Loads a font file (texture) to obtain the width and height for you
+    /// Loads a font file (texture) to obtain the width and height for you
     pub fn load<S:ToString>(filename: S, tile_size : (u32, u32)) -> Font {
         let img = image::open(std::path::Path::new(&filename.to_string())).expect("Failed to load texture");
         Font { bitmap_file: filename.to_string(), width: img.width(), height: img.height(), gl_id : None, tile_size: tile_size }
     }
 
-    // Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
+    /// Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
     pub fn setup_gl_texture(&mut self, gl : &gl::Gles2) -> u32 {
         let mut texture : u32 = 0;
         
@@ -60,7 +61,7 @@ impl Font {
         texture
     }
 
-    // Sets this font file as the active texture
+    /// Sets this font file as the active texture
     pub fn bind_texture(&self, gl : &gl::Gles2) {
         unsafe {
             gl.BindTexture(gl::TEXTURE_2D, self.gl_id.unwrap());

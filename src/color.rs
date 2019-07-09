@@ -1,15 +1,15 @@
 use std::ops;
 
-// Represents an R/G/B triplet, in the range 0..1 (32-bit float)
 #[derive(PartialEq, Copy, Clone)]
+/// Represents an R/G/B triplet, in the range 0..1 (32-bit float)
 pub struct RGB {
     pub r : f32,
     pub g : f32,
     pub b : f32
 }
 
-// Represents an H/S/V triplet, in the range 0..1 (32-bit float)
 #[derive(PartialEq, Copy, Clone)]
+/// Represents an H/S/V triplet, in the range 0..1 (32-bit float)
 pub struct HSV {
     pub h : f32,
     pub s : f32,
@@ -17,45 +17,52 @@ pub struct HSV {
 }
 
 #[derive(Debug, PartialEq, Copy, Clone)]
+/// Error message type when failing to convert a hex code to RGB.
 pub enum HtmlColorConversionError { InvalidStringLength, MissingHash }
 
 // Implement operator overloading
 
+/// Support adding a float to a color. The result is clamped via the constructor.
 impl ops::Add<f32> for RGB {
     type Output = RGB;
     fn add(self, rhs: f32) -> RGB { RGB::from_f32(self.r + rhs, self.g + rhs, self.b + rhs) }
 }
 
+/// Support adding an RGB to a color. The result is clamped via the constructor.
 impl ops::Add<RGB> for RGB {
     type Output = RGB;
     fn add(self, rhs: RGB) -> RGB { RGB::from_f32(self.r + rhs.r, self.g + rhs.g, self.b + rhs.b) }
 }
 
+/// Support subtracting a float from a color. The result is clamped via the constructor.
 impl ops::Sub<f32> for RGB {
     type Output = RGB;
     fn sub(self, rhs: f32) -> RGB { RGB::from_f32(self.r - rhs, self.g - rhs, self.b - rhs) }
 }
 
+/// Support subtracting an RGB from a color. The result is clamped via the constructor.
 impl ops::Sub<RGB> for RGB {
     type Output = RGB;
     fn sub(self, rhs: RGB) -> RGB { RGB::from_f32(self.r - rhs.r, self.g - rhs.g, self.b - rhs.b) }
 }
 
+/// Support multiplying a color by a float. The result is clamped via the constructor.
 impl ops::Mul<f32> for RGB {
     type Output = RGB;
     fn mul(self, rhs: f32) -> RGB { RGB::from_f32(self.r * rhs, self.g * rhs, self.b * rhs) }
 }
 
+/// Support multiplying a color by another color. The result is clamped via the constructor.
 impl ops::Mul<RGB> for RGB {
     type Output = RGB;
     fn mul(self, rhs: RGB) -> RGB { RGB::from_f32(self.r * rhs.r, self.g * rhs.g, self.b * rhs.b) }
 }
 
 impl RGB {
-    // Constructs a new, zeroed (black) RGB triplet.
+    /// Constructs a new, zeroed (black) RGB triplet.
     pub fn new() -> RGB { RGB{r:0.0, g:0.0, b:0.0} }
 
-    // Constructs a new RGB color, from 3 32-bit floats in the range 0..1
+    /// Constructs a new RGB color, from 3 32-bit floats in the range 0..1
     pub fn from_f32(r:f32, g:f32, b:f32) -> RGB { 
         let r_clamped = f32::min(1.0, f32::max(0.0, r));
         let g_clamped = f32::min(1.0, f32::max(0.0, g));
@@ -63,13 +70,13 @@ impl RGB {
         RGB{ r:r_clamped, g:g_clamped, b:b_clamped } 
     }
 
-    // Constructs a new RGB color, from 3 bytes in the range 0..255
+    /// Constructs a new RGB color, from 3 bytes in the range 0..255
     pub fn from_u8(r:u8, g:u8, b:u8) -> RGB { RGB{ r : r as f32 / 255.0, g : g as f32 / 255.0, b : b as f32 / 255.0 } }
 
-    // Construct an RGB color from a tuple of u8, or a named constant
+    /// Construct an RGB color from a tuple of u8, or a named constant
     pub fn named(col : (u8, u8, u8)) -> RGB { RGB::from_u8(col.0, col.1, col.2) }
 
-    // Constructs from an HTML color code (e.g. "#eeffee")
+    /// Constructs from an HTML color code (e.g. "#eeffee")
     pub fn from_hex<S: ToString>(code : S) -> Result<RGB, HtmlColorConversionError> {
         let full_code = code.to_string().to_lowercase();
         let len = full_code.len();
@@ -87,7 +94,7 @@ impl RGB {
         Ok(RGB::from_f32(r as f32 / 255.0, g as f32 / 255.0, b as f32 / 255.0))
     }
 
-    // Converts an RGB triple to an HSV triple.
+    /// Converts an RGB triple to an HSV triple.
     pub fn to_hsv(&self) -> HSV {
         let r = self.r;
         let g = self.g;
@@ -127,20 +134,20 @@ impl RGB {
         HSV::from_f32(h, s, v)
     }
 
-    // Applies a quick grayscale conversion to the color
+    /// Applies a quick grayscale conversion to the color
     pub fn to_greyscale(&self) -> RGB {
         let linear = (self.r * 0.2126) + (self.g * 0.7152) + (self.b * 0.0722);
         return RGB::from_f32(linear, linear, linear);
     }
 
-    // Applies a lengthier desaturate (via HSV) to the color
+    /// Applies a lengthier desaturate (via HSV) to the color
     pub fn desaturate(&self) -> RGB {
         let mut hsv = self.to_hsv();
         hsv.s = 0.0;
         return hsv.to_rgb();
     }
 
-    // Lerps by a specified percentage (from 0 to 1) between this color and another
+    /// Lerps by a specified percentage (from 0 to 1) between this color and another
     pub fn lerp(&self, color : RGB, percent : f32) -> RGB {
         let range = (
             color.r - self.r,
@@ -156,13 +163,13 @@ impl RGB {
 }
 
 impl HSV {
-    // Constructs a new, zeroed (black) HSV triplet.
+    /// Constructs a new, zeroed (black) HSV triplet.
     pub fn new() -> HSV { HSV{h:0.0, s:0.0, v:0.0} }
 
-    // Constructs a new HSV color, from 3 32-bit floats
+    /// Constructs a new HSV color, from 3 32-bit floats
     pub fn from_f32(h:f32, s:f32, v:f32) -> HSV { return HSV{h:h, s:s, v:v}; }
 
-    // Converts an HSV triple to an RGB triple
+    /// Converts an HSV triple to an RGB triple
     pub fn to_rgb(&self) -> RGB {
         let h = self.h;
         let s = self.s;

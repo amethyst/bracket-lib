@@ -8,6 +8,7 @@ use gl::types::*;
 
 #[allow(non_snake_case)]
 #[allow(dead_code)]
+/// A simple console with background color.
 pub struct SimpleConsole {
     pub width :u32,
     pub height: u32,
@@ -29,6 +30,7 @@ pub struct SimpleConsole {
 #[allow(dead_code)]
 impl SimpleConsole {
     #[allow(non_snake_case)]
+    /// Initializes a console, ready to add to RLTK's console list.
     pub fn init(width:u32, height: u32, gl : &gl::Gles2) -> Box<SimpleConsole> {
         // Console backing init
         let num_tiles : usize = (width * height) as usize;
@@ -63,6 +65,7 @@ impl SimpleConsole {
     }
 
     #[allow(non_snake_case)]
+    /// Sets up the OpenGL backing.
     fn init_gl_for_console(gl : &gl::Gles2) -> (u32, u32, u32) {
         let mut texture = 0;
         let (mut VBO, mut VAO, mut EBO) = (0, 0, 0);
@@ -104,6 +107,7 @@ impl SimpleConsole {
         (VBO, VAO, EBO)
     }
 
+    /// Helper function to add all the elements required by the shader for a given point.
     fn push_point(&mut self, x:f32, y:f32, fg:RGB, bg:RGB, ux:f32, uy:f32) {
         self.vertex_buffer[self.vertex_counter] = x;
         self.vertex_buffer[self.vertex_counter+1] = y;
@@ -119,6 +123,7 @@ impl SimpleConsole {
         self.vertex_counter += 11;
     }
 
+    /// Rebuilds the OpenGL backing buffer.
     fn rebuild_vertices(&mut self, gl : &gl::Gles2) {
         self.vertex_counter = 0;
         self.index_counter = 0;
@@ -180,6 +185,7 @@ impl SimpleConsole {
 }
 
 impl Console for SimpleConsole {
+    /// Check if the console has changed, and if it has rebuild the backing buffer.
     fn rebuild_if_dirty(&mut self, gl : &gl::Gles2) {
          if self.is_dirty {
             self.rebuild_vertices(gl);
@@ -187,6 +193,7 @@ impl Console for SimpleConsole {
         }
     }
 
+    /// Sends the console to OpenGL.
     fn gl_draw(&mut self, font : &Font, shader : &Shader, gl : &gl::Gles2) {
         unsafe {
             // bind Texture
@@ -202,10 +209,12 @@ impl Console for SimpleConsole {
         self.is_dirty = false;
     }
 
+    /// Translate an x/y into an array index.
     fn at(&self, x:i32, y:i32) -> usize {
         (((self.height-1 - y as u32) * self.width) + x as u32) as usize
     }
 
+    /// Clears the screen.
     fn cls(&mut self) {
         self.is_dirty = true;
         for tile in self.tiles.iter_mut() {
@@ -215,6 +224,7 @@ impl Console for SimpleConsole {
         }
     }
 
+    /// Clears the screen with a background color.
     fn cls_bg(&mut self, background : RGB) {
         self.is_dirty = true;
         for tile in self.tiles.iter_mut() {
@@ -224,6 +234,7 @@ impl Console for SimpleConsole {
         }
     }
 
+    /// Prints a string at x/y.
     fn print(&mut self, x:i32, y:i32, output:&str) {
         self.is_dirty = true;
         let mut idx = self.at(x, y);
@@ -238,6 +249,7 @@ impl Console for SimpleConsole {
         }
     }
 
+    /// Prints a string at x/y, with foreground and background colors.
     fn print_color(&mut self, x:i32, y:i32, fg:RGB, bg:RGB, output:&str) {
         self.is_dirty = true;
         let mut idx = self.at(x, y);

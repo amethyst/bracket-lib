@@ -4,6 +4,10 @@ use std::mem;
 use rayon::prelude::*;
 
 #[allow(dead_code)]
+/// Representation of a Dijkstra flow map.
+/// map is a vector of floats, having a size equal to size_x * size_y (one per tile).
+/// size_x and size_y are stored for overflow avoidance.
+/// max_depth is the maximum number of iterations this search shall support.
 pub struct DijkstraMap {
     pub map : Vec<f32>,
     size_x : i32,
@@ -11,7 +15,7 @@ pub struct DijkstraMap {
     max_depth : f32
 }
 
-// Used internally when constructing maps in parallel
+/// Used internally when constructing maps in parallel
 struct ParallelDm {
     map : Vec<f32>,
     max_depth : f32,
@@ -20,6 +24,8 @@ struct ParallelDm {
 
 #[allow(dead_code)]
 impl DijkstraMap {
+    /// Construct a new Dijkstra map, ready to run. You must specify the map size, and link to an implementation
+    /// of a BaseMap trait that can generate exits lists. It then builds the map, giving you a result.
     pub fn new(size_x : i32, size_y: i32, starts: &Vec<i32>, map: &BaseMap, max_depth : f32) -> DijkstraMap {
         let result : Vec<f32> = vec![MAX ; (size_x * size_y) as usize];
         let mut d = DijkstraMap{ map : result, size_x : size_x, size_y : size_y, max_depth : max_depth};
@@ -27,12 +33,15 @@ impl DijkstraMap {
         return d;
     }
 
+    /// Creates an empty Dijkstra map node.
     pub fn new_empty(size_x : i32, size_y: i32, max_depth : f32) -> DijkstraMap {
         let result : Vec<f32> = vec![MAX ; (size_x * size_y) as usize];
         let d = DijkstraMap{ map : result, size_x : size_x, size_y : size_y, max_depth : max_depth};
         return d;
     }
 
+    /// Internal: add a node to the open list if it doesn't exceed max_depth, and isn't on the closed list.
+    /// Adds the entry to the closed list.
     fn add_if_open(max_depth: f32, idx : i32, open_list : &mut Vec<(i32, f32)>, closed_list : &mut Vec<bool>, new_depth : f32) {
         if new_depth > max_depth { return; }
         if closed_list[idx as usize] { return; }
@@ -41,11 +50,16 @@ impl DijkstraMap {
         open_list.push((idx, new_depth));
     }
 
+    /// Clears the Dijkstra map. Uses a parallel for each for performance.
     pub fn clear(dm: &mut DijkstraMap) {
-        //dm.map.iter_mut().map(|x| *x = MAX).count();
         dm.map.par_iter_mut().for_each(|x| *x = MAX);
     }
 
+    /// Builds the Dijkstra map: iterate from each starting point, to each exit provided by BaseMap's
+    /// exits implementation. Each step adds cost to the current depth, and is discarded if the new
+    /// depth is further than the current depth.
+    /// If you provide more starting points than you have CPUs, automatically branches to a parallel
+    /// version.
     pub fn build(dm : &mut DijkstraMap, starts: &Vec<i32>, map: &BaseMap) {
         if starts.len() > rayon::current_num_threads() {
             DijkstraMap::build_parallel(dm, starts, map);
@@ -83,6 +97,7 @@ impl DijkstraMap {
         }
     }    
 
+    /// Implementation of Parallel Dijkstra.
     fn build_parallel(dm : &mut DijkstraMap, starts: &Vec<i32>, map: &BaseMap) {
         let mapsize : usize = (dm.size_x * dm.size_y) as usize;
         let mut layers : Vec<ParallelDm> = Vec::with_capacity(starts.len());
@@ -136,6 +151,9 @@ impl DijkstraMap {
         }
     }
 
+    /// Helper for traversing maps as path-finding. Provides the index of the lowest available
+    /// exit from the specified position index, or None if there isn't one.
+    /// You would use this for pathing TOWARDS a starting node.
     pub fn find_lowest_exit(dm : &DijkstraMap, position : i32, map: &BaseMap) -> Option<i32> {
         let mut exits = map.get_available_exits(position);
 
@@ -149,6 +167,10 @@ impl DijkstraMap {
         return Some(exits[0].0);
     }
 
+    /// Helper for traversing maps as path-finding. Provides the index of the highest available
+    /// exit from the specified position index, or None if there isn't one.
+    /// You would use this for pathing AWAY from a starting node, for example if you are running
+    /// away.
     pub fn find_highest_exit(dm : &DijkstraMap, position : i32, map: &BaseMap) -> Option<i32> {
         let mut exits = map.get_available_exits(position);
 

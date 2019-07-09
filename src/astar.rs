@@ -2,12 +2,17 @@ use super::BaseMap;
 use std::collections::HashMap;
 
 #[allow(dead_code)]
+/// Bail out if the A* search exceeds this many steps.
 const MAX_DIRECT_PATH_CHECK : f32 = 2048.0;
 
 #[allow(dead_code)]
+/// Bail out if the A* search exceeds this many steps.
 const MAX_ASTAR_STEPS :i32 = 2048;
 
 #[allow(dead_code)]
+/// Request an A-Star search. The start and end are specified as index numbers (compatible with your
+/// BaseMap implementation), and it requires access to your map so as to call distance and exit
+/// determinations.
 pub fn a_star_search(start:i32, end:i32, map: &mut BaseMap) -> NavigationPath {
     let mut searcher = AStar::new(start, end);
     return searcher.search(map);
@@ -15,6 +20,10 @@ pub fn a_star_search(start:i32, end:i32, map: &mut BaseMap) -> NavigationPath {
 
 #[allow(dead_code)]
 #[derive(Clone)]
+/// Holds the result of an A-Star navigation query.
+/// `destination` is the index of the target tile.
+/// `success` is true if it reached the target, false otherwise.
+/// `steps` is a vector of each step towards the target, *including* the starting position.
 pub struct NavigationPath {
     pub destination: i32,
     pub success: bool,
@@ -23,6 +32,9 @@ pub struct NavigationPath {
 
 #[allow(dead_code)]
 #[derive(Copy, Clone)]
+/// Node is an internal step inside the A-Star path (not exposed/public). Idx is the current cell,
+/// f is the total cost, g the neighbor cost, and h the heuristic cost.
+/// See: https://en.wikipedia.org/wiki/A*_search_algorithm
 struct Node {
     idx : i32,
     f : f32,
@@ -32,13 +44,15 @@ struct Node {
 
 #[allow(dead_code)]
 impl NavigationPath {
+    /// Makes a new (empty) NavigationPath
     pub fn new() -> NavigationPath {
         return NavigationPath{destination:0, success:false, steps: Vec::new() };
     }
 }
 
 #[allow(dead_code)]
-pub struct AStar {
+/// Private structure for calculating an A-Star navigation path.
+struct AStar {
     start: i32,
     end : i32,
     open_list: Vec<Node>,
@@ -48,7 +62,8 @@ pub struct AStar {
 }
 
 impl AStar {
-    pub fn new(start : i32, end: i32) -> AStar {
+    /// Creates a new path, with specified starting and ending indices.
+    fn new(start : i32, end: i32) -> AStar {
         let mut open_list : Vec<Node> = Vec::new();
         open_list.push(Node{ idx : start, f: 0.0, g: 0.0, h: 0.0 });
 
@@ -61,10 +76,12 @@ impl AStar {
         };
     }
 
+    /// Wrapper to the BaseMap's distance function.
     fn distance_to_end(&self, idx :i32, map: &BaseMap) -> f32 {
         return map.get_pathing_distance(idx, self.end);
     }
 
+    /// Adds a successor; if we're at the end, marks success.
     fn add_successor(&mut self, q:Node, idx:i32, cost:f32, map: &BaseMap) -> bool {
         // Did we reach our goal?
         if idx == self.end {
@@ -96,6 +113,7 @@ impl AStar {
         }
     }
 
+    /// Helper function to unwrap a path once we've found the end-point.
     fn found_it(&self) -> NavigationPath {
         let mut result = NavigationPath::new();
         result.success = true;
@@ -112,6 +130,7 @@ impl AStar {
         return result;
     }
 
+    /// Performs an A-Star search
     fn search(&mut self, map: &BaseMap) -> NavigationPath {
         let result = NavigationPath::new();
         while self.open_list.len() != 0 && self.step_counter < MAX_ASTAR_STEPS {

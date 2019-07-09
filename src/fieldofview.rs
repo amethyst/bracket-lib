@@ -6,6 +6,7 @@ extern crate bresenham;
 use bresenham::Bresenham;
 
 #[allow(dead_code)]
+/// Calculates field-of-view for a map that supports Algorithm2D.
 pub fn field_of_view(start : Point, range : i32, fov_check : &Algorithm2D) -> Vec<Point> {
     let mut result : Vec<Point> = Vec::new();
 
@@ -36,6 +37,7 @@ pub fn field_of_view(start : Point, range : i32, fov_check : &Algorithm2D) -> Ve
     return result;
 }
 
+/// Helper method to scan along a line.
 fn scan_fov_line(start: Point, end: Point, range_squared : f32, fov_check : &Algorithm2D) -> Vec<Point> {
     let mut result : Vec<Point> = Vec::new();
     let line = Bresenham::new((start.x as isize, start.y as isize), (end.x as isize, end.y as isize));

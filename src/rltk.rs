@@ -8,18 +8,23 @@ use glutin::ContextBuilder;
 use glutin::dpi::LogicalSize;
 extern crate winit;
 
+/// A display console, used internally to provide console render support.
+/// Public in case you want to play with it, or access it directly.
 pub struct DisplayConsole {
     pub console : Box<Console>,
     pub shader_index : usize,
     pub font_index : usize
 }
 
+/// A helper, to get around difficulties with moving the event loop
+/// and window context types.
 struct WrappedContext {
     el : glutin::event_loop::EventLoop<()>, 
     wc : glutin::WindowedContext<glutin::PossiblyCurrent>
 }
 
 #[allow(non_snake_case)]
+/// An RLTK context.
 pub struct Rltk {
     pub gl : gl::Gles2,
     pub width_pixels : u32,
@@ -39,7 +44,7 @@ pub struct Rltk {
 #[allow(dead_code)]
 #[allow(non_snake_case)]
 impl Rltk {
-    // Initializes an OpenGL context and a window, stores the info in the Rltk structure.
+    /// Initializes an OpenGL context and a window, stores the info in the Rltk structure.
     pub fn init_raw<S: ToString>(width_pixels:u32, height_pixels:u32, window_title: S, path_to_shaders: S) -> Rltk {
         let el = EventLoop::new();
         let wb = WindowBuilder::new().with_title(window_title.to_string()).with_inner_size(LogicalSize::new(width_pixels as f64, height_pixels as f64));
@@ -70,7 +75,7 @@ impl Rltk {
         }
     }
 
-    // Quick initialization for when you just want an 8x8 font terminal
+    /// Quick initialization for when you just want an 8x8 font terminal
     pub fn init_simple8x8<S: ToString>(width_chars : u32, height_chars: u32, window_title: S, path_to_shaders: S) -> Rltk {
         let font_path = format!("{}/terminal8x8.jpg", &path_to_shaders.to_string());
         let mut context = Rltk::init_raw(width_chars * 8, height_chars * 8, window_title, path_to_shaders);
@@ -79,7 +84,7 @@ impl Rltk {
         context
     }
 
-    // Quick initialization for when you just want an 8x16 VGA font terminal
+    /// Quick initialization for when you just want an 8x16 VGA font terminal
     pub fn init_simple8x16<S: ToString>(width_chars : u32, height_chars: u32, window_title: S, path_to_shaders: S) -> Rltk {
         let font_path = format!("{}/vga8x16.jpg", &path_to_shaders.to_string());
         let mut context = Rltk::init_raw(width_chars * 8, height_chars * 16, window_title, path_to_shaders);
@@ -88,7 +93,7 @@ impl Rltk {
         context
     }    
 
-    // Registers a font, and returns its handle number. Also loads it into OpenGL.
+    /// Registers a font, and returns its handle number. Also loads it into OpenGL.
     pub fn register_font(&mut self, mut font : font::Font) -> usize {
         font.setup_gl_texture(&self.gl);
         font.bind_texture(&self.gl);
@@ -96,16 +101,19 @@ impl Rltk {
         self.fonts.len()-1
     }
 
-    // Registers a new console terminal for output, and returns its handle number.
+    /// Registers a new console terminal for output, and returns its handle number.
     pub fn register_console(&mut self, new_console : Box<Console>, font_index : usize) -> usize {
         self.consoles.push(DisplayConsole{ console:new_console, font_index: font_index, shader_index: 0 });
         self.consoles.len()-1
     }
 
+    /// Sets the currently active console number.
     pub fn set_active_console(&mut self, id : usize) {
         self.active_console = id;
     }
 
+    /// Applies the current physical mouse position to the active console, and translates
+    /// the coordinates into that console's coordinate space.
     pub fn mouse_pos(&self) -> (i32, i32) {
         let font_size = self.fonts[self.consoles[self.active_console].font_index].tile_size;
 
@@ -130,8 +138,8 @@ impl Console for Rltk {
     fn print_color(&mut self, x:i32, y:i32, fg:RGB, bg:RGB, output:&str) { self.consoles[self.active_console].console.print_color(x,y,fg,bg,output); }
 }
 
-// Runs the RLTK application, calling into the provided gamestate handler every tick.
 #[allow(non_snake_case)]
+/// Runs the RLTK application, calling into the provided gamestate handler every tick.
 pub fn main_loop(mut rltk : Rltk, mut gamestate: Box<GameState>) {
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
@@ -197,15 +205,10 @@ pub fn main_loop(mut rltk : Rltk, mut gamestate: Box<GameState>) {
             },
             _ => (),
         }
-
-        /*if event == Event::EventsCleared {
-            //println!("tock");
-            tock(&mut rltk, &mut gamestate, &mut frames, &mut prev_seconds, &mut prev_ms, &now);
-            wc.swap_buffers().unwrap();
-        }*/
     });
 }
 
+/// Internal handling of the main loop.
 fn tock(rltk : &mut Rltk, gamestate: &mut Box<GameState>, frames: &mut i32, prev_seconds : &mut u64, prev_ms : &mut u128, now : &Instant) {    
     let now_seconds = now.elapsed().as_secs();
     *frames += 1;
