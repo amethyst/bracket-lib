@@ -20,7 +20,7 @@ winit = "0.19"
 image = "0.21"
 cgmath = "0.16.1"
 bresenham = "0.1.1"
-rayon = "1.1.0"
+rayon = "1.0.3"
 rand = "0.7.0-pre.1"
 
 [build-dependencies]
