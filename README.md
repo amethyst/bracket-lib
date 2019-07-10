@@ -93,3 +93,11 @@ Run this example with `cargo run --example ex05-dijkstra --release` from the roo
 [Example 6 - A Star with the Mouse](examples/ex06-astar-mouse.rs) lets you use A-Star navigation to traverse a random map. Mouse over a destination, and your path is highlighted. Click, and the little @ runs there.
 
 Run this example with `cargo run --example ex06-astar-mouse` from the root of the cloned repository.
+
+### Example 7: Layered Tiles
+
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE07.gif)
+
+[Example 7 - Tiles](examples/ex07-tiles.rs) shows how you can use the font system for tiles. It creates two layers with the same font; the base layer is used for the map, and the second layer is drawn in "no background" mode to seamlessly overlay sprites atop the map without ugly borders. It uses the FOV code from example 4 to show how to recolor sprites, and uses a distance function to give a lighting effect.
+
+Run this example with `cargo run --example ex07-tiles` from the root of the cloned repository.

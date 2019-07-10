@@ -59,13 +59,17 @@ impl Rltk {
         let fragment_path = format!("{}/console_with_bg.fs", path_to_shaders.to_string());
         let vs = Shader::new(&gl, &vertex_path, &fragment_path);
 
+        let vertex_path2 = format!("{}/console_no_bg.vs", path_to_shaders.to_string());
+        let fragment_path2 = format!("{}/console_no_bg.fs", path_to_shaders.to_string());
+        let vs2 = Shader::new(&gl, &vertex_path2, &fragment_path2);
+
         Rltk{
             gl: gl,
             width_pixels : width_pixels,
             height_pixels: height_pixels,
             fonts : Vec::new(),
             consoles: Vec::new(),
-            shaders: vec![vs],
+            shaders: vec![vs, vs2],
             fps: 0.0,
             frame_time_ms: 0.0,
             active_console : 0,
@@ -106,6 +110,13 @@ impl Rltk {
     /// Registers a new console terminal for output, and returns its handle number.
     pub fn register_console(&mut self, new_console : Box<Console>, font_index : usize) -> usize {
         self.consoles.push(DisplayConsole{ console:new_console, font_index: font_index, shader_index: 0 });
+        self.consoles.len()-1
+    }
+
+    /// Registers a new console terminal for output, and returns its handle number. This variant requests
+    /// that the new console not render background colors, so it can be layered on top of other consoles.
+    pub fn register_console_no_bg(&mut self, new_console : Box<Console>, font_index : usize) -> usize {
+        self.consoles.push(DisplayConsole{ console:new_console, font_index: font_index, shader_index: 1 });
         self.consoles.len()-1
     }
 
