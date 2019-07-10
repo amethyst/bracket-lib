@@ -76,7 +76,7 @@ Run this example with `cargo run --example ex03-walking` from the root of the cl
 
 [Example 4 - Field of View/FOV](examples/ex04-fov.rs) takes example 3, and adds field-of-view. To do this, it implements some traits from the RLTK library that allow it to provide helpers such as this.
 
-Run this example with `cargo run --example ex04-walking` from the root of the cloned repository.
+Run this example with `cargo run --example ex04-fov` from the root of the cloned repository.
 
 ### Example 5: Auto-explore with Dijkstra Flow Maps
 
