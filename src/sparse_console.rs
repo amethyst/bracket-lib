@@ -311,11 +311,13 @@ impl Console for SparseConsole {
         }
     }
 
+    /// Prints text, centered to the whole console width, at vertical location y.
     fn print_centered(&mut self, y:i32, text:&str) {
         self.is_dirty = true;
         self.print((self.width as i32 / 2) - (text.to_string().len() as i32/2), y, text);
     }
 
+    /// Prints text in color, centered to the whole console width, at vertical location y.
     fn print_color_centered(&mut self, y:i32, fg:RGB, bg:RGB, text:&str) {
         self.is_dirty = true;
         self.print_color((self.width as i32 / 2) - (text.to_string().len() as i32/2), y, fg, bg, text);

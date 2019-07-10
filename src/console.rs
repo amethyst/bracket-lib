@@ -34,18 +34,21 @@ pub trait Console {
     /// Sets a single cell to a color/glyph combination.
     fn set(&mut self, x:i32, y:i32, fg:RGB, bg:RGB, glyph:u8);
 
-    /// Sets a single cell's background color
+    /// Sets a single cell's background color.
     fn set_bg(&mut self, x:i32, y:i32, bg:RGB);
 
     /// Draws a box, starting at x/y with the extents width/height using CP437 line characters
     fn draw_box(&mut self, x:i32, y:i32, width:i32, height:i32, fg: RGB, bg: RGB);
 
-    /// Draws a horizontal progress bar
+    /// Draws a horizontal progress bar.
     fn draw_bar_horizontal(&mut self, x:i32, y:i32, width:i32, n:i32, max:i32, fg:RGB, bg: RGB);
 
-    /// Draws a vertical progress bar
+    /// Draws a vertical progress bar.
     fn draw_bar_vertical(&mut self, x:i32, y:i32, height:i32, n:i32, max:i32, fg:RGB, bg: RGB);
 
+    /// Prints text, centered to the whole console width, at vertical location y.
     fn print_centered(&mut self, y:i32, text:&str);
+
+    /// Prints text in color, centered to the whole console width, at vertical location y.
     fn print_color_centered(&mut self, y:i32, fg:RGB, bg:RGB, text:&str);
 }
