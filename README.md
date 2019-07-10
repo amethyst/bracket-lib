@@ -106,7 +106,7 @@ Run this example with `cargo run --example ex07-tiles` from the root of the clon
 
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE08.jpg)
 
-[Example 8 - REX Paint Support](examples/ex08-rex.rs.rs) demonstrates loading a `.xp` file (created with
+[Example 8 - REX Paint Support](examples/ex08-rex.rs) demonstrates loading a `.xp` file (created with
 GridSageGames' excellent [REX Paint](https://www.gridsagegames.com/rexpaint/)), and displaying it on the console. Thanks to Mara "Alkahest"'s hard work (see original repo [here](https://gitlab.com/medusacle/rs-rexpaint)), you can load and save `.xp` files as you need them.
 
 Run this example with `cargo run --example ex08-rex` from the root of the cloned repository.
