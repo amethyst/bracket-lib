@@ -1,4 +1,6 @@
 use std::ops;
+use super::rex::XpColor;
+
 #[cfg(feature = "serialization")]
 extern crate serde;
 
@@ -105,6 +107,10 @@ impl RGB {
         let b = i32::from_str_radix(&blue, 16).unwrap();
 
         Ok(RGB::from_f32(r as f32 / 255.0, g as f32 / 255.0, b as f32 / 255.0))
+    }
+
+    pub fn from_xp(col : XpColor) -> RGB {
+        RGB::from_u8(col.r, col.g, col.b)
     }
 
     /// Converts an RGB triple to an HSV triple.

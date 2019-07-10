@@ -140,6 +140,11 @@ impl Rltk {
     pub fn quit(&mut self) {
         self.quitting = true;
     }
+
+    /// Render a REX Paint (https://www.gridsagegames.com/rexpaint/) file as a sprite
+    pub fn render_xp_sprite(&mut self, xp : &super::rex::XpFile, x : i32, y: i32) {
+        super::rex::xp_to_console(xp, &mut self.consoles[self.active_console].console, x, y);
+    }
 }
 
 impl Console for Rltk {

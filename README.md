@@ -101,3 +101,12 @@ Run this example with `cargo run --example ex06-astar-mouse` from the root of th
 [Example 7 - Tiles](examples/ex07-tiles.rs) shows how you can use the font system for tiles. It creates two layers with the same font; the base layer is used for the map, and the second layer is drawn in "no background" mode to seamlessly overlay sprites atop the map without ugly borders. It uses the FOV code from example 4 to show how to recolor sprites, and uses a distance function to give a lighting effect.
 
 Run this example with `cargo run --example ex07-tiles` from the root of the cloned repository.
+
+### Example 8: REX Paint Support
+
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE08.jpg)
+
+[Example 8 - REX Paint Support](examples/ex08-rex.rs.rs) demonstrates loading a `.xp` file (created with
+GridSageGames' excellent [REX Paint](https://www.gridsagegames.com/rexpaint/)), and displaying it on the console. Thanks to Mara "Alkahest"'s hard work (see original repo [here](https://gitlab.com/medusacle/rs-rexpaint)), you can load and save `.xp` files as you need them.
+
+Run this example with `cargo run --example ex08-rex` from the root of the cloned repository.

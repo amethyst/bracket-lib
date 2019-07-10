@@ -18,6 +18,7 @@ mod fieldofview;
 mod geometry;
 mod dijkstra;
 mod astar;
+pub mod rex;
 
 pub use self::rltk::main_loop;
 pub use self::rltk::Rltk;
