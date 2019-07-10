@@ -205,7 +205,9 @@ pub fn xp_to_console(xp : &XpFile, console : &mut Box<dyn Console>, offset_x : i
         for y in 0 .. layer.height {
             for x in 0 .. layer.width {
                 let cell = layer.get(x, y).unwrap();
-                console.set(x as i32 + offset_x, y as i32 + offset_y, RGB::from_xp(cell.fg), RGB::from_xp(cell.bg), cell.ch as u8);
+                if !cell.bg.is_transparent() {
+                    console.set(x as i32 + offset_x, y as i32 + offset_y, RGB::from_xp(cell.fg), RGB::from_xp(cell.bg), cell.ch as u8);
+                }
             }
         }
     }
