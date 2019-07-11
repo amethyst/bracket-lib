@@ -1,6 +1,6 @@
 extern crate rltk;
 
-use rltk::{Rltk, GameState, Console, RGB, VirtualKeyCode, to_cp437};
+use rltk::{Rltk, GameState, Console, RGB, to_cp437};
 
 struct State {
 }

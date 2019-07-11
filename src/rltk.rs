@@ -1,12 +1,16 @@
 use super::GameState;
 use std::time::{Instant};
-use super::{ font, Console, Shader, RGB, SimpleConsole, gl, VirtualKeyCode, rex::XpLayer, rex::XpFile };
+use super::{ font, Console, Shader, RGB, SimpleConsole, gl, VirtualKeyCode, rex::XpLayer, rex::XpFile, framebuffer::Framebuffer };
 use glutin::event::{Event, WindowEvent};
 use glutin::event_loop::{ControlFlow, EventLoop};
 use glutin::window::WindowBuilder;
 use glutin::ContextBuilder;
 use glutin::dpi::LogicalSize;
 extern crate winit;
+use gl::types::*;
+use std::os::raw::c_void;
+use std::mem;
+use std::ptr;
 
 /// A display console, used internally to provide console render support.
 /// Public in case you want to play with it, or access it directly.
@@ -39,7 +43,9 @@ pub struct Rltk {
     mouse_pos: (i32, i32),
     pub left_click: bool,
     context_wrapper : Option<WrappedContext>,
-    quitting : bool
+    quitting : bool,
+    backing_buffer : Framebuffer,
+    quad_vao : u32
 }
 
 #[allow(dead_code)]
@@ -63,13 +69,48 @@ impl Rltk {
         let fragment_path2 = format!("{}/console_no_bg.fs", path_to_shaders.to_string());
         let vs2 = Shader::new(&gl, &vertex_path2, &fragment_path2);
 
+        let vertex_path3 = format!("{}/backing.vs", path_to_shaders.to_string());
+        let fragment_path3 = format!("{}/backing.fs", path_to_shaders.to_string());
+        let vs3 = Shader::new(&gl, &vertex_path3, &fragment_path3);
+
+        // Build the backing frame-buffer
+        let backing_fbo = Framebuffer::build_fbo(&gl, width_pixels as i32, height_pixels as i32);
+
+        // Build a simple quad rendering vao
+        let quadVertices: [f32; 24] = [ // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+            // positions // texCoords
+            -1.0,  1.0,  0.0, 1.0,
+            -1.0, -1.0,  0.0, 0.0,
+             1.0, -1.0,  1.0, 0.0,
+
+            -1.0,  1.0,  0.0, 1.0,
+             1.0, -1.0,  1.0, 0.0,
+             1.0,  1.0,  1.0, 1.0
+        ];
+        let (mut quadVAO, mut quadVBO) = (0, 0);
+        unsafe {
+            gl.GenVertexArrays(1, &mut quadVAO);
+            gl.GenBuffers(1, &mut quadVBO);
+            gl.BindVertexArray(quadVBO);
+            gl.BindBuffer(gl::ARRAY_BUFFER, quadVBO);
+            gl.BufferData(gl::ARRAY_BUFFER,
+                        (quadVertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
+                        &quadVertices[0] as *const f32 as *const c_void,
+                        gl::STATIC_DRAW);
+            gl.EnableVertexAttribArray(0);
+            let stride = 4 * mem::size_of::<GLfloat>() as GLsizei;
+            gl.VertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE, stride, ptr::null());
+            gl.EnableVertexAttribArray(1);
+            gl.VertexAttribPointer(1, 2, gl::FLOAT, gl::FALSE, stride, (2 * mem::size_of::<GLfloat>()) as *const c_void);
+        }
+
         Rltk{
             gl: gl,
             width_pixels : width_pixels,
             height_pixels: height_pixels,
             fonts : Vec::new(),
             consoles: Vec::new(),
-            shaders: vec![vs, vs2],
+            shaders: vec![vs, vs2, vs3],
             fps: 0.0,
             frame_time_ms: 0.0,
             active_console : 0,
@@ -77,7 +118,9 @@ impl Rltk {
             mouse_pos: (0,0),
             left_click: false,
             context_wrapper: Some(WrappedContext{ el: el, wc: windowed_context }),
-            quitting : false
+            quitting : false,
+            backing_buffer : backing_fbo,
+            quad_vao : quadVAO
         }
     }
 
@@ -287,6 +330,9 @@ fn tock(rltk : &mut Rltk, gamestate: &mut Box<GameState>, frames: &mut i32, prev
         cons.console.rebuild_if_dirty(&rltk.gl);
     }
 
+    // Bind to the backing buffer
+    rltk.backing_buffer.bind(&rltk.gl);
+
     // Clear the screen
     unsafe {
         rltk.gl.ClearColor(0.2, 0.3, 0.3, 1.0);
@@ -299,6 +345,15 @@ fn tock(rltk : &mut Rltk, gamestate: &mut Box<GameState>, frames: &mut i32, prev
         let shader = &rltk.shaders[cons.shader_index];
         cons.console.gl_draw(font, shader, &rltk.gl);
     } 
+
+    // Now we return to the primary screen
+    rltk.backing_buffer.default(&rltk.gl);
+    unsafe {
+        rltk.shaders[2].useProgram(&rltk.gl);
+        rltk.gl.BindVertexArray(rltk.quad_vao);
+        rltk.gl.BindTexture(gl::TEXTURE_2D, rltk.backing_buffer.texture);
+        rltk.gl.DrawArrays(gl::TRIANGLES, 0, 6);
+    }
 }
 
 /// For A-Z menus, translates the keys A through Z into 0..25

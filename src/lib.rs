@@ -20,6 +20,7 @@ mod dijkstra;
 mod astar;
 pub mod rex;
 mod codepage437;
+mod framebuffer;
 
 pub use self::rltk::main_loop;
 pub use self::rltk::Rltk;
