@@ -32,7 +32,9 @@ impl GameState for State {
         let fg = col1.lerp(col2, percent);
 
         ctx.cls();
-        ctx.print_color(1, self.y, fg, RGB::named(rltk::BLACK), "Hello RLTK World");
+        // Notice that unicode conversion is active, so we can cut/paste characters from
+        // a CP437 reference such as http://dwarffortresswiki.org/index.php/Character_table
+        ctx.print_color(1, self.y, fg, RGB::named(rltk::BLACK), "♫ ♪ Hello RLTK World ☺");
 
         // Lets make the hello bounce up and down
         if self.going_down {

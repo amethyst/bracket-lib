@@ -238,9 +238,8 @@ impl Console for SimpleConsole {
     fn print(&mut self, x:i32, y:i32, output:&str) {
         self.is_dirty = true;
         let mut idx = self.at(x, y);
-        let text = output.to_string();
 
-        let bytes = text.as_bytes();
+        let bytes = super::string_to_cp437(output);
         for i in 0..bytes.len() {
             if idx < self.tiles.len() {
                 self.tiles[idx].glyph = bytes[i];
@@ -253,9 +252,8 @@ impl Console for SimpleConsole {
     fn print_color(&mut self, x:i32, y:i32, fg:RGB, bg:RGB, output:&str) {
         self.is_dirty = true;
         let mut idx = self.at(x, y);
-        let text = output.to_string();
 
-        let bytes = text.as_bytes();
+        let bytes = super::string_to_cp437(output);
         for i in 0..bytes.len() {
             if idx < self.tiles.len() {
                 self.tiles[idx].glyph = bytes[i];

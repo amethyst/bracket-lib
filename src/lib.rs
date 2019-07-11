@@ -19,6 +19,7 @@ mod geometry;
 mod dijkstra;
 mod astar;
 pub mod rex;
+mod codepage437;
 
 pub use self::rltk::main_loop;
 pub use self::rltk::Rltk;
@@ -34,6 +35,7 @@ pub use self::geometry::{ distance2d, distance2d_squared, line2d };
 pub use self::dijkstra::DijkstraMap;
 pub use self::astar::{a_star_search, NavigationPath};
 pub use glutin::event::VirtualKeyCode;
+pub use self::codepage437::{string_to_cp437, to_cp437};
 
 #[cfg(feature = "serialization")]
 extern crate serde;
