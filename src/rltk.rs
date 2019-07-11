@@ -346,7 +346,9 @@ fn tock(rltk : &mut Rltk, gamestate: &mut Box<GameState>, frames: &mut i32, prev
     }
 
     // Bind to the backing buffer
-    rltk.backing_buffer.bind(&rltk.gl);
+    if rltk.post_scanlines {
+        rltk.backing_buffer.bind(&rltk.gl);
+    }
 
     // Clear the screen
     unsafe {
@@ -361,19 +363,21 @@ fn tock(rltk : &mut Rltk, gamestate: &mut Box<GameState>, frames: &mut i32, prev
         cons.console.gl_draw(font, shader, &rltk.gl);
     } 
 
-    // Now we return to the primary screen
-    rltk.backing_buffer.default(&rltk.gl);
-    unsafe {
-        if rltk.post_scanlines {
-            rltk.shaders[3].useProgram(&rltk.gl);
-            rltk.shaders[3].setVec3(&rltk.gl, &CString::new("screenSize").unwrap(), rltk.width_pixels as f32, rltk.height_pixels as f32, 0.0);
-            rltk.shaders[3].setBool(&rltk.gl, &CString::new("screenBurn").unwrap(), rltk.post_screenburn);
-        } else {
-            rltk.shaders[2].useProgram(&rltk.gl);
+    if rltk.post_scanlines {
+        // Now we return to the primary screen
+        rltk.backing_buffer.default(&rltk.gl);
+        unsafe {
+            if rltk.post_scanlines {
+                rltk.shaders[3].useProgram(&rltk.gl);
+                rltk.shaders[3].setVec3(&rltk.gl, &CString::new("screenSize").unwrap(), rltk.width_pixels as f32, rltk.height_pixels as f32, 0.0);
+                rltk.shaders[3].setBool(&rltk.gl, &CString::new("screenBurn").unwrap(), rltk.post_screenburn);
+            } else {
+                rltk.shaders[2].useProgram(&rltk.gl);
+            }
+            rltk.gl.BindVertexArray(rltk.quad_vao);
+            rltk.gl.BindTexture(gl::TEXTURE_2D, rltk.backing_buffer.texture);
+            rltk.gl.DrawArrays(gl::TRIANGLES, 0, 6);
         }
-        rltk.gl.BindVertexArray(rltk.quad_vao);
-        rltk.gl.BindTexture(gl::TEXTURE_2D, rltk.backing_buffer.texture);
-        rltk.gl.DrawArrays(gl::TRIANGLES, 0, 6);
     }
 }
 
