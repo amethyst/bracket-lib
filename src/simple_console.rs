@@ -19,6 +19,10 @@ pub struct SimpleConsole {
     vertex_counter : usize,
     index_counter : usize,
 
+    // To handle offset tiles for people who want thin walls between tiles
+    offset_x : f32,
+    offset_y : f32,
+
     // GL Stuff
     vertex_buffer : Vec<f32>,
     index_buffer : Vec<i32>,
@@ -55,14 +59,16 @@ impl SimpleConsole {
             vertex_buffer : Vec::with_capacity(vertex_capacity),
             index_buffer : Vec::with_capacity(index_capacity),
             vertex_counter : 0,
-            index_counter: 0
+            index_counter: 0,
+            offset_x : 0.0,
+            offset_y : 0.0
         };
 
         for _i in 0..vertex_capacity { new_console.vertex_buffer.push(0.0); }
         for _i in 0..index_capacity { new_console.index_buffer.push(0); }
 
         Box::new(new_console)
-    }
+    }    
 
     #[allow(non_snake_case)]
     /// Sets up the OpenGL backing.
@@ -109,8 +115,8 @@ impl SimpleConsole {
 
     /// Helper function to add all the elements required by the shader for a given point.
     fn push_point(&mut self, x:f32, y:f32, fg:RGB, bg:RGB, ux:f32, uy:f32) {
-        self.vertex_buffer[self.vertex_counter] = x;
-        self.vertex_buffer[self.vertex_counter+1] = y;
+        self.vertex_buffer[self.vertex_counter] = x + self.offset_x;
+        self.vertex_buffer[self.vertex_counter+1] = y + self.offset_y;
         self.vertex_buffer[self.vertex_counter+2] = 0.0;
         self.vertex_buffer[self.vertex_counter+3] = fg.r;
         self.vertex_buffer[self.vertex_counter+4] = fg.g;
@@ -353,5 +359,13 @@ impl Console for SimpleConsole {
         }
 
         layer
+    }
+
+    /// Sets an offset to total console rendering, useful for layers that
+    /// draw between tiles. Offsets are specified as a percentage of total
+    /// character size; so -0.5 will offset half a character to the left/top.
+    fn set_offset(&mut self, x : f32, y : f32) {
+        self.offset_x = x * (2.0 / self.width as f32);
+        self.offset_y = y * (2.0 / self.height as f32);
     }
 }

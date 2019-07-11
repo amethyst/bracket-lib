@@ -26,6 +26,10 @@ pub struct SparseConsole {
     tiles: Vec<SparseTile>,
     is_dirty: bool,
 
+    // To handle offset tiles for people who want thin walls between tiles
+    offset_x : f32,
+    offset_y : f32,
+
     // GL Stuff
     vertex_buffer : Vec<f32>,
     index_buffer : Vec<i32>,
@@ -52,7 +56,9 @@ impl SparseConsole {
             tiles: Vec::new(),
             is_dirty: true,
             vertex_buffer : Vec::new(),
-            index_buffer : Vec::new()
+            index_buffer : Vec::new(),
+            offset_x : 0.0,
+            offset_y : 0.0
         };
 
         Box::new(new_console)
@@ -124,8 +130,8 @@ impl SparseConsole {
             let x = t.idx % self.width as usize;
             let y = t.idx / self.width as usize;
 
-            let screen_x = (step_x * x as f32) - 1.0;
-            let screen_y = (step_y * y as f32) - 1.0;
+            let screen_x = ((step_x * x as f32) - 1.0) + self.offset_x;
+            let screen_y = ((step_y * y as f32) - 1.0) + self.offset_y;
             let fg = t.fg;
             let bg = t.bg;
             let glyph = t.glyph;
@@ -343,5 +349,13 @@ impl Console for SparseConsole {
         }
 
         layer
+    }
+
+    /// Sets an offset to total console rendering, useful for layers that
+    /// draw between tiles. Offsets are specified as a percentage of total
+    /// character size; so -0.5 will offset half a character to the left/top.
+    fn set_offset(&mut self, x : f32, y : f32) {
+        self.offset_x = x * (2.0 / self.width as f32);
+        self.offset_y = y * (2.0 / self.height as f32);
     }
 }

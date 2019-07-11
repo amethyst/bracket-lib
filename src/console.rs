@@ -54,4 +54,8 @@ pub trait Console {
 
     /// Serializes the console layer to an XpFile
     fn to_xp_layer(&self) -> XpLayer;
+
+    /// Specify a global offset (by character count, so 0.5 is half a character). Useful for
+    /// drawing walls between tiles.
+    fn set_offset(&mut self, x : f32, y : f32);
 }

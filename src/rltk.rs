@@ -186,6 +186,7 @@ impl Console for Rltk {
     fn print_centered(&mut self, y:i32, text:&str) { self.consoles[self.active_console].console.print_centered(y, text); }
     fn print_color_centered(&mut self, y:i32, fg:RGB, bg:RGB, text:&str) { self.consoles[self.active_console].console.print_color_centered(y, fg, bg, text); }
     fn to_xp_layer(&self) -> XpLayer { self.consoles[self.active_console].console.to_xp_layer() }
+    fn set_offset(&mut self, x : f32, y : f32) { self.consoles[self.active_console].console.set_offset(x, y); }
 }
 
 #[allow(non_snake_case)]
