@@ -123,6 +123,6 @@ Run this example with `cargo run --example ex09-offsets` from the root of the cl
 
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE10.gif)
 
-[Example 10 - Post Process](examples/ex09-postprocess.rs) shows off the post-processing system built into RLTK. Scanlines, and optional screen-burn can be enabled for the truly retro experience.
+[Example 10 - Post Process](examples/ex10-postprocess.rs) shows off the post-processing system built into RLTK. Scanlines, and optional screen-burn can be enabled for the truly retro experience.
 
 Run this example with `cargo run --example ex10-postprocess` from the root of the cloned repository.
