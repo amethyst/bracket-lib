@@ -110,3 +110,11 @@ Run this example with `cargo run --example ex07-tiles` from the root of the clon
 GridSageGames' excellent [REX Paint](https://www.gridsagegames.com/rexpaint/)), and displaying it on the console. Thanks to Mara "Alkahest"'s hard work (see original repo [here](https://gitlab.com/medusacle/rs-rexpaint)), you can load and save `.xp` files as you need them.
 
 Run this example with `cargo run --example ex08-rex` from the root of the cloned repository.
+
+### Example 9: Layer Offsets
+
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE09.gif)
+
+[Example 9 - Offsets](examples/ex09-offsets.rs) demonstrates the ability to call `set_offset` on a console layer, to nudge it in a direction. In this case, it is used to render thin walls *between* the major tiles.
+
+Run this example with `cargo run --example ex09-offsets` from the root of the cloned repository.
