@@ -141,7 +141,9 @@ impl Rltk {
         self.quitting = true;
     }
 
-    /// Render a REX Paint (https://www.gridsagegames.com/rexpaint/) file as a sprite
+    /// Render a REX Paint (https://www.gridsagegames.com/rexpaint/) file as a sprite.
+    /// The sprite will be offset by offset_x and offset_y.
+    /// Transparent cells will not be rendered.
     pub fn render_xp_sprite(&mut self, xp : &super::rex::XpFile, x : i32, y: i32) {
         super::rex::xp_to_console(xp, &mut self.consoles[self.active_console].console, x, y);
     }
