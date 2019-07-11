@@ -11,6 +11,7 @@ use gl::types::*;
 use std::os::raw::c_void;
 use std::mem;
 use std::ptr;
+use std::ffi::CString;
 
 /// A display console, used internally to provide console render support.
 /// Public in case you want to play with it, or access it directly.
@@ -45,7 +46,9 @@ pub struct Rltk {
     context_wrapper : Option<WrappedContext>,
     quitting : bool,
     backing_buffer : Framebuffer,
-    quad_vao : u32
+    quad_vao : u32,
+    post_scanlines : bool,
+    post_screenburn : bool
 }
 
 #[allow(dead_code)]
@@ -72,6 +75,10 @@ impl Rltk {
         let vertex_path3 = format!("{}/backing.vs", path_to_shaders.to_string());
         let fragment_path3 = format!("{}/backing.fs", path_to_shaders.to_string());
         let vs3 = Shader::new(&gl, &vertex_path3, &fragment_path3);
+
+        let vertex_path4 = format!("{}/scanlines.vs", path_to_shaders.to_string());
+        let fragment_path4 = format!("{}/scanlines.fs", path_to_shaders.to_string());
+        let vs4 = Shader::new(&gl, &vertex_path4, &fragment_path4);
 
         // Build the backing frame-buffer
         let backing_fbo = Framebuffer::build_fbo(&gl, width_pixels as i32, height_pixels as i32);
@@ -110,7 +117,7 @@ impl Rltk {
             height_pixels: height_pixels,
             fonts : Vec::new(),
             consoles: Vec::new(),
-            shaders: vec![vs, vs2, vs3],
+            shaders: vec![vs, vs2, vs3, vs4],
             fps: 0.0,
             frame_time_ms: 0.0,
             active_console : 0,
@@ -120,7 +127,9 @@ impl Rltk {
             context_wrapper: Some(WrappedContext{ el: el, wc: windowed_context }),
             quitting : false,
             backing_buffer : backing_fbo,
-            quad_vao : quadVAO
+            quad_vao : quadVAO,
+            post_scanlines : false,
+            post_screenburn : false
         }
     }
 
@@ -206,6 +215,12 @@ impl Rltk {
         }
 
         xp
+    }
+
+    /// Enable scanlines post-processing effect.
+    pub fn with_post_scanlines(&mut self, with_burn : bool) {
+        self.post_scanlines = true;
+        self.post_screenburn = with_burn;
     }
 }
 
@@ -349,7 +364,13 @@ fn tock(rltk : &mut Rltk, gamestate: &mut Box<GameState>, frames: &mut i32, prev
     // Now we return to the primary screen
     rltk.backing_buffer.default(&rltk.gl);
     unsafe {
-        rltk.shaders[2].useProgram(&rltk.gl);
+        if rltk.post_scanlines {
+            rltk.shaders[3].useProgram(&rltk.gl);
+            rltk.shaders[3].setVec3(&rltk.gl, &CString::new("screenSize").unwrap(), rltk.width_pixels as f32, rltk.height_pixels as f32, 0.0);
+            rltk.shaders[3].setBool(&rltk.gl, &CString::new("screenBurn").unwrap(), rltk.post_screenburn);
+        } else {
+            rltk.shaders[2].useProgram(&rltk.gl);
+        }
         rltk.gl.BindVertexArray(rltk.quad_vao);
         rltk.gl.BindTexture(gl::TEXTURE_2D, rltk.backing_buffer.texture);
         rltk.gl.DrawArrays(gl::TRIANGLES, 0, 6);
