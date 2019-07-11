@@ -109,8 +109,18 @@ impl RGB {
         Ok(RGB::from_f32(r as f32 / 255.0, g as f32 / 255.0, b as f32 / 255.0))
     }
 
+    /// Converts an xp file color component to an RGB
     pub fn from_xp(col : XpColor) -> RGB {
         RGB::from_u8(col.r, col.g, col.b)
+    }
+
+    /// Converts an RGB to an xp file color component
+    pub fn to_xp(&self) -> XpColor {
+        XpColor::new(
+            (self.r * 255.0) as u8,
+            (self.g * 255.0) as u8,
+            (self.b * 255.0) as u8,
+        )
     }
 
     /// Converts an RGB triple to an HSV triple.

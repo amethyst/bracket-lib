@@ -1,4 +1,4 @@
-use super::{Console, RGB, Font, Shader};
+use super::{Console, RGB, Font, Shader, rex::XpLayer, rex::XpColor};
 //use gl::types::*;
 use std::ptr;
 use std::mem;
@@ -321,5 +321,29 @@ impl Console for SparseConsole {
     fn print_color_centered(&mut self, y:i32, fg:RGB, bg:RGB, text:&str) {
         self.is_dirty = true;
         self.print_color((self.width as i32 / 2) - (text.to_string().len() as i32/2), y, fg, bg, text);
+    }
+
+    /// Saves the layer to an XpFile structure
+    fn to_xp_layer(&self) -> XpLayer {
+        let mut layer = XpLayer::new(self.width as usize, self.height as usize);
+
+        // Clear all to transparent
+        for y in 0 .. self.height {
+            for x in 0 .. self.width {
+                let cell = layer.get_mut(x as usize, y as usize).unwrap();
+                cell.bg = XpColor::TRANSPARENT;
+            }
+        }
+
+        for c in self.tiles.iter() {
+            let x = c.idx % self.width as usize;
+            let y = c.idx / self.width as usize;
+            let cell = layer.get_mut(x as usize, y as usize).unwrap();
+            cell.ch = c.glyph as u32;
+            cell.fg = c.fg.to_xp();
+            cell.bg = c.bg.to_xp();
+        }
+
+        layer
     }
 }

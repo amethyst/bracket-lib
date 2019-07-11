@@ -1,4 +1,4 @@
-use super::{RGB, Font, Shader};
+use super::{RGB, Font, Shader, rex::XpLayer};
 use super::gl;
 
 /// The internal storage type for tiles in a simple console.
@@ -51,4 +51,7 @@ pub trait Console {
 
     /// Prints text in color, centered to the whole console width, at vertical location y.
     fn print_color_centered(&mut self, y:i32, fg:RGB, bg:RGB, text:&str);
+
+    /// Serializes the console layer to an XpFile
+    fn to_xp_layer(&self) -> XpLayer;
 }

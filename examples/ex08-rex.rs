@@ -1,6 +1,6 @@
 extern crate rltk;
 
-use rltk::{Rltk, GameState, Console, rex::XpFile, RGB};
+use rltk::{Rltk, GameState, Console, rex::XpFile, RGB, VirtualKeyCode};
 use std::fs::File;
 
 struct State {
@@ -13,7 +13,23 @@ impl GameState for State {
         ctx.cls();
         ctx.print_color(0, 0, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), "Hello Nyan Cat!");
         ctx.print_color(0, 1, RGB::named(rltk::GREEN), RGB::named(rltk::BLACK), "Loaded from REX Paint (https://www.gridsagegames.com/rexpaint/)");
-        ctx.render_xp_sprite(&self.nyan, 2, 3);
+        ctx.print_color(0, 2, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), "Press S to save this console to ./screenshot.xp");
+        ctx.render_xp_sprite(&self.nyan, 2, 4);
+
+        match ctx.key {
+            None => {} // Nothing happened
+            Some(key) => { // A key is pressed or held
+                match key {
+                    VirtualKeyCode::S => {
+                        // Demonstrates saving the console stack on an xp file
+                        let xpfile = ctx.to_xp_file(80, 50);
+                        let mut f = File::create("./screenshot.xp").expect("Unable to create file");
+                        xpfile.write(&mut f).expect("Unable to save file");
+                    }
+                    _ => {}
+                }
+            }
+        }
     }
 }
 

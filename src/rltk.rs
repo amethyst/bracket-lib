@@ -1,6 +1,6 @@
 use super::GameState;
 use std::time::{Instant};
-use super::{ font, Console, Shader, RGB, SimpleConsole, gl, VirtualKeyCode };
+use super::{ font, Console, Shader, RGB, SimpleConsole, gl, VirtualKeyCode, rex::XpLayer, rex::XpFile };
 use glutin::event::{Event, WindowEvent};
 use glutin::event_loop::{ControlFlow, EventLoop};
 use glutin::window::WindowBuilder;
@@ -147,6 +147,23 @@ impl Rltk {
     pub fn render_xp_sprite(&mut self, xp : &super::rex::XpFile, x : i32, y: i32) {
         super::rex::xp_to_console(xp, &mut self.consoles[self.active_console].console, x, y);
     }
+
+    /// Saves the entire console stack to a REX Paint xp file. If your consoles are of
+    /// varying sizes, the file format supports it - but REX doesn't. So you may want to
+    /// avoid that. You can also get individual layers with to_xp_layer.
+    pub fn to_xp_file(&self, width:usize, height:usize) -> XpFile {
+        let mut xp = XpFile::new(width, height);
+
+        xp.layers.push(self.consoles[self.active_console].console.to_xp_layer());
+
+        if self.consoles.len() > 1 {
+            for layer in self.consoles.iter().skip(1) {
+                xp.layers.push(layer.console.to_xp_layer());
+            }
+        }
+
+        xp
+    }
 }
 
 impl Console for Rltk {
@@ -168,6 +185,7 @@ impl Console for Rltk {
     fn draw_bar_vertical(&mut self, x:i32, y:i32, height:i32, n:i32, max:i32, fg:RGB, bg: RGB) { self.consoles[self.active_console].console.draw_bar_vertical(x,y,height,n,max,fg,bg); }
     fn print_centered(&mut self, y:i32, text:&str) { self.consoles[self.active_console].console.print_centered(y, text); }
     fn print_color_centered(&mut self, y:i32, fg:RGB, bg:RGB, text:&str) { self.consoles[self.active_console].console.print_color_centered(y, fg, bg, text); }
+    fn to_xp_layer(&self) -> XpLayer { self.consoles[self.active_console].console.to_xp_layer() }
 }
 
 #[allow(non_snake_case)]

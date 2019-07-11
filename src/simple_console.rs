@@ -1,4 +1,4 @@
-use super::{Console, Tile, RGB, color, Font, Shader};
+use super::{Console, Tile, RGB, color, Font, Shader, rex::XpLayer};
 //use gl::types::*;
 use std::ptr;
 use std::mem;
@@ -338,5 +338,22 @@ impl Console for SimpleConsole {
     fn print_color_centered(&mut self, y:i32, fg:RGB, bg:RGB, text:&str) {
         self.is_dirty = true;
         self.print_color((self.width as i32 / 2) - (text.to_string().len() as i32/2), y, fg, bg, text);
+    }
+
+    /// Saves the layer to an XpFile structure
+    fn to_xp_layer(&self) -> XpLayer {
+        let mut layer = XpLayer::new(self.width as usize, self.height as usize);
+
+        for y in 0 .. self.height {
+            for x in 0 .. self.width {
+                let cell = layer.get_mut(x as usize, y as usize).unwrap();
+                let idx = self.at(x as i32, y as i32);
+                cell.ch = self.tiles[idx].glyph as u32;
+                cell.fg = self.tiles[idx].fg.to_xp();
+                cell.bg = self.tiles[idx].bg.to_xp();
+            }
+        }
+
+        layer
     }
 }
