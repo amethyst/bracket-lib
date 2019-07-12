@@ -1,16 +1,12 @@
 use super::GameState;
 use std::time::{Instant};
-use super::{ font, Console, Shader, RGB, SimpleConsole, gl, VirtualKeyCode, rex::XpLayer, rex::XpFile, framebuffer::Framebuffer };
+use super::{ font, Console, Shader, RGB, SimpleConsole, gl, VirtualKeyCode, rex::XpLayer, rex::XpFile, framebuffer::Framebuffer, quadrender };
 use glutin::event::{Event, WindowEvent};
 use glutin::event_loop::{ControlFlow, EventLoop};
 use glutin::window::WindowBuilder;
 use glutin::ContextBuilder;
 use glutin::dpi::LogicalSize;
 extern crate winit;
-use gl::types::*;
-use std::os::raw::c_void;
-use std::mem;
-use std::ptr;
 use std::ffi::CString;
 
 /// A display console, used internally to provide console render support.
@@ -64,52 +60,19 @@ impl Rltk {
         let gl = gl::Gl::load_with(|ptr| windowed_context.get_proc_address(ptr) as *const _);
 
         // Load our basic shaders
-        let vertex_path = format!("{}/console_with_bg.vs", path_to_shaders.to_string());
-        let fragment_path = format!("{}/console_with_bg.fs", path_to_shaders.to_string());
-        let vs = Shader::new(&gl, &vertex_path, &fragment_path);
+        let mut shaders : Vec<Shader> = Vec::new();
 
-        let vertex_path2 = format!("{}/console_no_bg.vs", path_to_shaders.to_string());
-        let fragment_path2 = format!("{}/console_no_bg.fs", path_to_shaders.to_string());
-        let vs2 = Shader::new(&gl, &vertex_path2, &fragment_path2);
-
-        let vertex_path3 = format!("{}/backing.vs", path_to_shaders.to_string());
-        let fragment_path3 = format!("{}/backing.fs", path_to_shaders.to_string());
-        let vs3 = Shader::new(&gl, &vertex_path3, &fragment_path3);
-
-        let vertex_path4 = format!("{}/scanlines.vs", path_to_shaders.to_string());
-        let fragment_path4 = format!("{}/scanlines.fs", path_to_shaders.to_string());
-        let vs4 = Shader::new(&gl, &vertex_path4, &fragment_path4);
+        let shader_path = path_to_shaders.to_string();
+        shaders.push(Shader::new(&gl, "console_with_bg.vs", "console_with_bg.fs", &shader_path));
+        shaders.push(Shader::new(&gl, "console_no_bg.vs", "console_no_bg.fs", &shader_path));
+        shaders.push(Shader::new(&gl, "backing.vs", "backing.fs", &shader_path));
+        shaders.push(Shader::new(&gl, "scanlines.vs", "scanlines.fs", &shader_path));
 
         // Build the backing frame-buffer
         let backing_fbo = Framebuffer::build_fbo(&gl, width_pixels as i32, height_pixels as i32);
 
         // Build a simple quad rendering vao
-        let quadVertices: [f32; 24] = [ // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-            // positions // texCoords
-            -1.0,  1.0,  0.0, 1.0,
-            -1.0, -1.0,  0.0, 0.0,
-             1.0, -1.0,  1.0, 0.0,
-
-            -1.0,  1.0,  0.0, 1.0,
-             1.0, -1.0,  1.0, 0.0,
-             1.0,  1.0,  1.0, 1.0
-        ];
-        let (mut quadVAO, mut quadVBO) = (0, 0);
-        unsafe {
-            gl.GenVertexArrays(1, &mut quadVAO);
-            gl.GenBuffers(1, &mut quadVBO);
-            gl.BindVertexArray(quadVBO);
-            gl.BindBuffer(gl::ARRAY_BUFFER, quadVBO);
-            gl.BufferData(gl::ARRAY_BUFFER,
-                        (quadVertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-                        &quadVertices[0] as *const f32 as *const c_void,
-                        gl::STATIC_DRAW);
-            gl.EnableVertexAttribArray(0);
-            let stride = 4 * mem::size_of::<GLfloat>() as GLsizei;
-            gl.VertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE, stride, ptr::null());
-            gl.EnableVertexAttribArray(1);
-            gl.VertexAttribPointer(1, 2, gl::FLOAT, gl::FALSE, stride, (2 * mem::size_of::<GLfloat>()) as *const c_void);
-        }
+        let quadVAO = quadrender::setup_quad(&gl);
 
         Rltk{
             gl: gl,
@@ -117,7 +80,7 @@ impl Rltk {
             height_pixels: height_pixels,
             fonts : Vec::new(),
             consoles: Vec::new(),
-            shaders: vec![vs, vs2, vs3, vs4],
+            shaders: shaders,
             fps: 0.0,
             frame_time_ms: 0.0,
             active_console : 0,

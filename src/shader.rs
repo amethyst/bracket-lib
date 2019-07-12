@@ -18,13 +18,15 @@ pub struct Shader {
 #[allow(dead_code)]
 #[allow(non_snake_case)]
 impl Shader {
-    pub fn new(gl : &gl::Gles2, vertexPath: &str, fragmentPath: &str) -> Shader {
+    pub fn new<S: ToString>(gl : &gl::Gles2, vertex_path: S, fragment_path: S, path_to_shaders: S) -> Shader {
+        let shader_path = path_to_shaders.to_string();
+        let vertexPath = format!("{}/{}", &shader_path, vertex_path.to_string());
+        let fragmentPath = format!("{}/{}", &shader_path, fragment_path.to_string());
+
         let mut shader = Shader { ID: 0 };
         // 1. retrieve the vertex/fragment source code from filesystem
-        let mut vShaderFile = File::open(vertexPath)
-            .unwrap_or_else(|_| panic!("Failed to open {}", vertexPath));
-        let mut fShaderFile = File::open(fragmentPath)
-            .unwrap_or_else(|_| panic!("Failed to open {}", fragmentPath));
+        let mut vShaderFile = File::open(&vertexPath).unwrap_or_else(|_| panic!("Failed to open {}", vertexPath));
+        let mut fShaderFile = File::open(&fragmentPath).unwrap_or_else(|_| panic!("Failed to open {}", fragmentPath));
         let mut vertexCode = String::new();
         let mut fragmentCode = String::new();
         vShaderFile
