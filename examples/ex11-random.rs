@@ -38,7 +38,7 @@ impl GameState for State {
 }
 
 fn main() {
-    let context = Rltk::init_simple8x8(80, 50, "Example 11 - Random Numbers", "resources");
+    let context = Rltk::init_simple8x16(80, 23, "Example 11 - Random Numbers", "resources");
     let gs : State = State{ rng: RandomNumberGenerator::new(), n_rolls : 0, rolls : vec![0 ; 19] };
     rltk::main_loop(context, Box::new(gs));
 }
