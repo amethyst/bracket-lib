@@ -131,6 +131,6 @@ Run this example with `cargo run --example ex10-postprocess` from the root of th
 
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE11.gif)
 
-[Example 11 - Random](examples/ex10-random.rs) demonstrates how RLTK wraps the `rand` crate to give a more accessible random number generator. The demo plots the distribution of a series of `3d6` rolls.
+[Example 11 - Random](examples/ex11-random.rs) demonstrates how RLTK wraps the `rand` crate to give a more accessible random number generator. The demo plots the distribution of a series of `3d6` rolls.
 
 Run this example with `cargo run --example ex11-random` from the root of the cloned repository.
