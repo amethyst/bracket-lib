@@ -1,4 +1,4 @@
-use super::{Console, Tile, RGB, color, Font, Shader, rex::XpLayer};
+use super::{Console, Tile, RGB, color, Font, Shader, rex::XpLayer, codepage437::to_cp437};
 //use gl::types::*;
 use std::ptr;
 use std::mem;
@@ -292,17 +292,17 @@ impl Console for SimpleConsole {
             }
         }
 
-        self.set(sx, sy, fg, bg, 218);
-        self.set(sx + width, sy, fg, bg, 191);
-        self.set(sx, sy + height, fg, bg, 192);
-        self.set(sx + width, sy + height, fg, bg, 217);
+        self.set(sx, sy, fg, bg, to_cp437('┌'));
+        self.set(sx + width, sy, fg, bg, to_cp437('┐'));
+        self.set(sx, sy + height, fg, bg, to_cp437('└'));
+        self.set(sx + width, sy + height, fg, bg, to_cp437('┘'));
         for x in sx+1 .. sx + width {
-            self.set(x, sy, fg, bg, 196);
-            self.set(x, sy + height, fg, bg, 196);
+            self.set(x, sy, fg, bg, to_cp437('─'));
+            self.set(x, sy + height, fg, bg, to_cp437('─'));
         }
         for y in sy+1 .. sy + height {
-            self.set(sx, y, fg, bg, 179);
-            self.set(sx + width, y, fg, bg, 179);
+            self.set(sx, y, fg, bg, to_cp437('│'));
+            self.set(sx + width, y, fg, bg, to_cp437('│'));
         }
     }
 
