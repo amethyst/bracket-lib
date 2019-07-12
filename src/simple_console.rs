@@ -1,4 +1,4 @@
-use super::{Console, Tile, RGB, color, Font, Shader, rex::XpLayer, codepage437::to_cp437};
+use super::{Console, Tile, RGB, color, Font, Shader, rex::XpLayer, gui_helpers};
 //use gl::types::*;
 use std::ptr;
 use std::mem;
@@ -286,50 +286,22 @@ impl Console for SimpleConsole {
 
     /// Draws a box, starting at x/y with the extents width/height using CP437 line characters
     fn draw_box(&mut self, sx:i32, sy:i32, width:i32, height:i32, fg: RGB, bg: RGB) {
-        for y in sy .. sy + height {
-            for x in sx .. sx + width {
-                self.set(x, y, RGB::from_f32(1.0, 1.0, 1.0), RGB::from_f32(0.0, 0.0, 0.0), 32);
-            }
-        }
+        gui_helpers::draw_box(self, sx, sy, width, height, fg, bg);
+    }
 
-        self.set(sx, sy, fg, bg, to_cp437('┌'));
-        self.set(sx + width, sy, fg, bg, to_cp437('┐'));
-        self.set(sx, sy + height, fg, bg, to_cp437('└'));
-        self.set(sx + width, sy + height, fg, bg, to_cp437('┘'));
-        for x in sx+1 .. sx + width {
-            self.set(x, sy, fg, bg, to_cp437('─'));
-            self.set(x, sy + height, fg, bg, to_cp437('─'));
-        }
-        for y in sy+1 .. sy + height {
-            self.set(sx, y, fg, bg, to_cp437('│'));
-            self.set(sx + width, y, fg, bg, to_cp437('│'));
-        }
+    /// Draws a box, starting at x/y with the extents width/height using CP437 double line characters
+    fn draw_box_double(&mut self, sx:i32, sy:i32, width:i32, height:i32, fg: RGB, bg: RGB) {
+        gui_helpers::draw_box_double(self, sx, sy, width, height, fg, bg);
     }
 
     /// Draws a horizontal progress bar
     fn draw_bar_horizontal(&mut self, sx:i32, sy:i32, width:i32, n:i32, max:i32, fg:RGB, bg: RGB) {
-        let percent = n as f32 / max as f32;
-        let fill_width = (percent * width as f32) as i32;
-        for x in 0..width {
-            if x <= fill_width {
-                self.set(sx + x, sy, fg, bg, to_cp437('▓'));
-            } else {
-                self.set(sx + x, sy, fg, bg, to_cp437('░'));
-            }
-        }
+        gui_helpers::draw_bar_horizontal(self, sx, sy, width, n, max, fg, bg);
     }
 
     /// Draws a vertical progress bar
     fn draw_bar_vertical(&mut self, sx:i32, sy:i32, height:i32, n:i32, max:i32, fg:RGB, bg: RGB) {
-        let percent = n as f32 / max as f32;
-        let fill_height = height - ((percent * height as f32) as i32);
-        for y in 0..height {
-            if y >= fill_height {
-                self.set(sx, sy + y, fg, bg, to_cp437('▓'));
-            } else {
-                self.set(sx, sy + y, fg, bg, to_cp437('░'));
-            }
-        }
+        gui_helpers::draw_bar_vertical(self, sx, sy, height, n, max, fg, bg);
     }
 
     /// Prints text, centered to the whole console width, at vertical location y.

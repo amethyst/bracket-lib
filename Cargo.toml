@@ -16,7 +16,7 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 glutin = "0.22.0-alpha1"
-winit = "0.19"
+winit = "0.20.0-alpha2"
 image = "0.21"
 cgmath = "0.16.1"
 bresenham = "0.1.1"

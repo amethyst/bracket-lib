@@ -202,6 +202,7 @@ impl Console for Rltk {
     fn set(&mut self, x:i32, y:i32, fg:RGB, bg:RGB, glyph:u8) { self.consoles[self.active_console].console.set(x,y,fg,bg,glyph); }
     fn set_bg(&mut self, x:i32, y:i32, bg:RGB) { self.consoles[self.active_console].console.set_bg(x,y,bg); }
     fn draw_box(&mut self, x:i32, y:i32, width:i32, height:i32, fg: RGB, bg: RGB) { self.consoles[self.active_console].console.draw_box(x,y,width,height,fg,bg); }
+    fn draw_box_double(&mut self, x:i32, y:i32, width:i32, height:i32, fg: RGB, bg: RGB) { self.consoles[self.active_console].console.draw_box_double(x,y,width,height,fg,bg); }
     fn draw_bar_horizontal(&mut self, x:i32, y:i32, width:i32, n:i32, max:i32, fg:RGB, bg: RGB) { self.consoles[self.active_console].console.draw_bar_horizontal(x,y,width,n,max,fg,bg); }
     fn draw_bar_vertical(&mut self, x:i32, y:i32, height:i32, n:i32, max:i32, fg:RGB, bg: RGB) { self.consoles[self.active_console].console.draw_bar_vertical(x,y,height,n,max,fg,bg); }
     fn print_centered(&mut self, y:i32, text:&str) { self.consoles[self.active_console].console.print_centered(y, text); }

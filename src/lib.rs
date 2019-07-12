@@ -22,6 +22,7 @@ pub mod rex;
 mod codepage437;
 mod framebuffer;
 mod quadrender;
+mod gui_helpers;
 
 pub use self::rltk::main_loop;
 pub use self::rltk::Rltk;

@@ -53,6 +53,7 @@ impl GameState for State {
         // Again, this could be ctx.consoles[1] - but the short-hand is easier.
         ctx.set_active_console(1);
         ctx.cls();
+        ctx.draw_box_double(39, 0, 20, 3, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
         ctx.print_color(40, 1, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), &format!("FPS: {}", ctx.fps));
         ctx.print_color(40, 2, RGB::named(rltk::CYAN), RGB::named(rltk::BLACK),&format!("Frame Time: {} ms", ctx.frame_time_ms));
     }
