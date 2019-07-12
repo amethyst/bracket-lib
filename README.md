@@ -126,3 +126,11 @@ Run this example with `cargo run --example ex09-offsets` from the root of the cl
 [Example 10 - Post Process](examples/ex10-postprocess.rs) shows off the post-processing system built into RLTK. Scanlines, and optional screen-burn can be enabled for the truly retro experience.
 
 Run this example with `cargo run --example ex10-postprocess` from the root of the cloned repository.
+
+### Example 11: Dice Rolling
+
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE11.gif)
+
+[Example 11 - Random](examples/ex10-random.rs) demonstrates how RLTK wraps the `rand` crate to give a more accessible random number generator. The demo plots the distribution of a series of `3d6` rolls.
+
+Run this example with `cargo run --example ex11-random` from the root of the cloned repository.

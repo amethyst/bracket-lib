@@ -21,7 +21,8 @@ image = "0.21"
 cgmath = "0.16.1"
 bresenham = "0.1.1"
 rayon = "1.0.3"
-rand = "0.7.0-pre.1"
+rand = "0.7.0"
+rand_xorshift = "0.2.0"
 serde= { version = "1.0.93", features = ["derive"], optional = true }
 serde_json =  { version = "1.0.39", optional = true }
 flate2 = "1.0"

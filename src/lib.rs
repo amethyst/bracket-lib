@@ -23,6 +23,7 @@ mod codepage437;
 mod framebuffer;
 mod quadrender;
 mod gui_helpers;
+mod random;
 
 pub use self::rltk::main_loop;
 pub use self::rltk::Rltk;
@@ -39,6 +40,7 @@ pub use self::dijkstra::DijkstraMap;
 pub use self::astar::{a_star_search, NavigationPath};
 pub use glutin::event::VirtualKeyCode;
 pub use self::codepage437::{string_to_cp437, to_cp437};
+pub use self::random::RandomNumberGenerator;
 
 #[cfg(feature = "serialization")]
 extern crate serde;
