@@ -46,6 +46,7 @@ impl GameState for State {
         }
 
         // We'll also show the frame rate, since we generally care about keeping that high.
+        ctx.draw_box(39, 0, 20, 3, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
         ctx.print_color(40, 1, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), &format!("FPS: {}", ctx.fps));
         ctx.print_color(40, 2, RGB::named(rltk::CYAN), RGB::named(rltk::BLACK),&format!("Frame Time: {} ms", ctx.frame_time_ms));
     }
