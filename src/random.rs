@@ -2,6 +2,7 @@ extern crate rand;
 use rand::{Rng, SeedableRng};
 extern crate rand_xorshift;
 use rand_xorshift::XorShiftRng;
+use crate::random::rand::RngCore;
 
 #[allow(dead_code)]
 pub struct RandomNumberGenerator {
@@ -43,5 +44,9 @@ impl RandomNumberGenerator {
             total += self.range(1, die_type+1);
         }
         total
+    }
+
+    pub fn next_u64(&mut self) -> u64 {
+        self.rng.next_u64()
     }
 }

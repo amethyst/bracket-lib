@@ -276,7 +276,7 @@ impl FastNoise {
         let mut noise = FastNoise{
             rng : RandomNumberGenerator::seeded(1337),
             seed: 1337,
-            frequency : 0.0,
+            frequency : 1.0,
             interp : Interp::Quintic,
             noise_type : NoiseType::Simplex,
             octaves : 3,
@@ -326,18 +326,17 @@ impl FastNoise {
         self.seed = seed;
         self.rng = RandomNumberGenerator::seeded(seed);
 
-        for i in 0..255 {
+        for i in 0..=255 {
             self.perm[i as usize] = i;
         }
 
         for j in 0..256 {
-            let rng = self.rng.roll_dice(1, std::i32::MAX) % (256 - j);
+            let rng = self.rng.next_u64() % (256 - j);
             let k = rng + j;
             let l = self.perm[j as usize];
-            self.perm[j as usize] = self.perm[j as usize + 256];
-            self.perm[j as usize + 256] = self.perm[k as usize];
+            self.perm[j as usize] = self.perm[k as usize]; self.perm[j as usize + 256] = self.perm[k as usize];
 		    self.perm[k as usize] = l;
-		    self.perm12[j as usize] = self.perm12[j as usize + 256];
+		    self.perm12[j as usize] = self.perm[j as usize] % 12;
             self.perm12[j as usize + 256] = self.perm[j as usize] % 12;
         }
     }
@@ -503,7 +502,7 @@ impl FastNoise {
         }
     }
 
-    pub fn get_noise(&mut self, mut x: f32, mut y: f32) -> f32 {
+    pub fn get_noise(&self, mut x: f32, mut y: f32) -> f32 {
         x *= self.frequency;
         y *= self.frequency;
 

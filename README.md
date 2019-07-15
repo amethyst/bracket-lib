@@ -134,3 +134,11 @@ Run this example with `cargo run --example ex10-postprocess` from the root of th
 [Example 11 - Random](examples/ex11-random.rs) demonstrates how RLTK wraps the `rand` crate to give a more accessible random number generator. The demo plots the distribution of a series of `3d6` rolls.
 
 Run this example with `cargo run --example ex11-random` from the root of the cloned repository.
+
+### Example 12: Simplex Noise
+
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE12.gif)
+
+[Example 12 - Simplex Noise](examples/ex11-simplex.rs) demonstrates the port of [Auburn's FastNoise library](https://github.com/Auburns/FastNoise) to Rust (included in RLTK, because every Roguelike tooklit should have noise). It cycles through seeds and regenerates the terrain periodically.
+
+Run this example with `cargo run --example ex12-simplex` from the root of the cloned repository.
