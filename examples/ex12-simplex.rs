@@ -12,7 +12,7 @@ impl GameState for State {
 
     fn tick(&mut self, ctx : &mut Rltk) {
         self.timer += ctx.frame_time_ms;
-        if self.timer > 2000.0 {
+        if self.timer > 500.0 {
             self.timer = 0.0;
             self.rebuild_noise();
         }
