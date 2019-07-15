@@ -24,6 +24,7 @@ mod framebuffer;
 mod quadrender;
 mod gui_helpers;
 mod random;
+mod fastnoise;
 
 pub use self::rltk::main_loop;
 pub use self::rltk::Rltk;
