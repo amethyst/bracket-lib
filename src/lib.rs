@@ -25,6 +25,7 @@ mod quadrender;
 mod gui_helpers;
 mod random;
 mod fastnoise;
+pub mod textblock;
 
 pub use self::rltk::main_loop;
 pub use self::rltk::Rltk;
@@ -43,6 +44,7 @@ pub use glutin::event::VirtualKeyCode;
 pub use self::codepage437::{string_to_cp437, to_cp437};
 pub use self::random::RandomNumberGenerator;
 pub use self::fastnoise::*;
+pub use self::textblock::{TextBlock, TextBuilder};
 
 #[cfg(feature = "serialization")]
 extern crate serde;

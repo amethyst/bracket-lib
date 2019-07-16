@@ -2,6 +2,7 @@ use super::{RGB, Font, Shader, rex::XpLayer};
 use super::gl;
 
 /// The internal storage type for tiles in a simple console.
+#[derive(PartialEq, Copy, Clone)]
 pub struct Tile {
     pub glyph: u8,
     pub fg: RGB,

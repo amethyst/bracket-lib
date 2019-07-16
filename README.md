@@ -142,3 +142,12 @@ Run this example with `cargo run --example ex11-random` from the root of the clo
 [Example 12 - Simplex Noise](examples/ex12-simplex.rs) demonstrates the port of [Auburn's FastNoise library](https://github.com/Auburns/FastNoise) to Rust (included in RLTK, because every Roguelike tooklit should have noise). It cycles through seeds and regenerates the terrain periodically.
 
 Run this example with `cargo run --example ex12-simplex` from the root of the cloned repository.
+
+### Example 13: Formatting blocks
+
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE13.jpg)
+
+[Example 12 - Simplex Noise](examples/ex13-textblock.rs) demonstrates the `TextBlock` functionality for easily wrapping a set of formatting commands into a command sequence,
+and then rendering them together. This is useful for large amounts of text.
+
+Run this example with `cargo run --example ex13-textblock` from the root of the cloned repository.
