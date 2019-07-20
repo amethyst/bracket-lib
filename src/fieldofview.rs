@@ -1,5 +1,5 @@
 use super::Point;
-use super::geometry::distance2d_squared;
+use super::geometry::{distance2d, DistanceAlg};
 use super::Algorithm2D;
 
 extern crate bresenham;
@@ -47,7 +47,7 @@ fn scan_fov_line(start: Point, end: Point, range_squared : f32, fov_check : &Alg
     for (x, y) in line {
         if !blocked {
             let target = Point::new(x as i32, y as i32);
-            let dsq = distance2d_squared(start, target);
+            let dsq = distance2d(DistanceAlg::PythagorasSquared, start, target);
             if dsq <= range_squared {
                 if fov_check.is_opaque(fov_check.point2d_to_index(target)) {
                     blocked = true;

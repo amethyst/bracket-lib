@@ -4,7 +4,7 @@
 //////////////////////////////////////////////////////////////
 
 extern crate rltk;
-use rltk::{Rltk, GameState, Console, RGB, VirtualKeyCode, BaseMap, Algorithm2D, Point};
+use rltk::{Rltk, GameState, Console, RGB, VirtualKeyCode, BaseMap, Algorithm2D, Point, DistanceAlg};
 
 extern crate rand;
 use crate::rand::Rng;
@@ -139,7 +139,7 @@ impl GameState for State {
                 TileType::Wall => { glyph = 1; }
             }
             if !self.visible[i] { fg =  fg * 0.3; } else {
-                let distance = 1.0 - (rltk::distance2d(Point::new(x,y), player_position) as f32 / 10.0);
+                let distance = 1.0 - (rltk::distance2d(DistanceAlg::Pythagoras, Point::new(x,y), player_position) as f32 / 10.0);
                 fg = RGB::from_f32(distance, distance, distance);
             }
             ctx.set(x, y, fg, RGB::from_f32(0., 0., 0.), glyph);

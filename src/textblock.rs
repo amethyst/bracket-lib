@@ -77,8 +77,8 @@ impl TextBlock {
                     self.cursor.1 += 1;
                 }
 
-                CommandType::Foreground{col : col} => { self.fg = *col }
-                CommandType::Background{col : col} => { self.bg = *col }
+                CommandType::Foreground{col} => { self.fg = *col }
+                CommandType::Background{col} => { self.bg = *col }
                 CommandType::Reset{} => {
                     self.cursor = (0,0);
                     self.fg = RGB::from_f32(1.0, 1.0, 1.0);
