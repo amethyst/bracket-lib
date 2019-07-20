@@ -37,7 +37,7 @@ pub use self::shader::Shader;
 pub use self::simple_console::SimpleConsole;
 pub use self::sparse_console::SparseConsole;
 pub use self::fieldofview::field_of_view;
-pub use self::geometry::{ distance2d, DistanceAlg, line2d };
+pub use self::geometry::{ distance2d, DistanceAlg, line2d, project_angle };
 pub use self::dijkstra::DijkstraMap;
 pub use self::astar::{a_star_search, NavigationPath};
 pub use glutin::event::VirtualKeyCode;
@@ -55,7 +55,7 @@ pub trait GameState {
 }
 
 #[cfg(feature = "serialization")]
-#[derive(Eq, PartialEq, Copy, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Eq, PartialEq, Copy, Clone, serde::Serialize, serde::Deserialize, Debug)]
 /// Helper function definint a 2D point in space.
 pub struct Point {
     pub x: i32,
@@ -63,7 +63,7 @@ pub struct Point {
 }
 
 #[cfg(not(feature = "serialization"))]
-#[derive(Eq, PartialEq, Copy, Clone)]
+#[derive(Eq, PartialEq, Copy, Clone, Debug)]
 /// Helper function definint a 2D point in space.
 pub struct Point {
     pub x: i32,
