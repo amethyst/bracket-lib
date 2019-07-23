@@ -116,7 +116,7 @@ pub fn line2d(start: Point, end: Point) -> Vec<Point> {
 
 #[cfg(test)]
 mod tests {
-    use super::{distance2d, DistanceAlg, Point, project_angle};
+    use super::{distance2d, distance3d, DistanceAlg, Point, Point3, project_angle};
 
     #[test]
     fn test_pythagoras_distance() {
@@ -134,6 +134,18 @@ mod tests {
 
         d = distance2d(DistanceAlg::Pythagoras, Point::new(0,0), Point::new(5, 5));
         assert_eq!(d, 7.071068);
+    }
+
+    #[test]
+    fn test_pythagoras_distance3d() {
+        let mut d = distance3d(DistanceAlg::Pythagoras, Point3::new(0,0,0), Point3::new(5,0,0));
+        assert_eq!(d, 5.0);
+
+        d = distance3d(DistanceAlg::Pythagoras, Point3::new(0,0,0), Point3::new(-5,0,0));
+        assert_eq!(d, 5.0);
+
+        d = distance3d(DistanceAlg::Pythagoras, Point3::new(0,0,0), Point3::new(5,5,5));
+        assert_eq!(d, 8.6602545);
     }
 
     #[test]
@@ -155,6 +167,18 @@ mod tests {
     }
 
     #[test]
+    fn test_pythagoras_squared_distance3d() {
+        let mut d = distance3d(DistanceAlg::PythagorasSquared, Point3::new(0,0,0), Point3::new(5,0,0));
+        assert_eq!(d, 25.0);
+
+        d = distance3d(DistanceAlg::PythagorasSquared, Point3::new(0,0,0), Point3::new(-5,0,0));
+        assert_eq!(d, 25.0);
+
+        d = distance3d(DistanceAlg::PythagorasSquared, Point3::new(0,0,0), Point3::new(5,5,5));
+        assert_eq!(d, 75.0);
+    }
+
+    #[test]
     fn test_manhattan_distance() {
         let mut d = distance2d(DistanceAlg::Manhattan, Point::new(0,0), Point::new(5,0));
         assert_eq!(d, 5.0);
@@ -170,6 +194,18 @@ mod tests {
 
         d = distance2d(DistanceAlg::Manhattan, Point::new(0,0), Point::new(5, 5));
         assert_eq!(d, 10.0);
+    }
+
+    #[test]
+    fn test_manhattan_distance3d() {
+        let mut d = distance3d(DistanceAlg::Manhattan, Point3::new(0,0,0), Point3::new(5,0,0));
+        assert_eq!(d, 5.0);
+
+        d = distance3d(DistanceAlg::Manhattan, Point3::new(0,0,0), Point3::new(-5,0,0));
+        assert_eq!(d, 5.0);
+
+        d = distance3d(DistanceAlg::Manhattan, Point3::new(0,0,0), Point3::new(5,5,5));
+        assert_eq!(d, 15.0);
     }
 
     #[test]
