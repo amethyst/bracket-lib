@@ -1,4 +1,4 @@
-use super::Point;
+use super::{Point, Point3};
 use std::cmp::{max, min};
 
 extern crate bresenham;
@@ -19,6 +19,17 @@ pub fn distance2d(algorithm: DistanceAlg, start: Point, end: Point) -> f32 {
 }
 
 #[allow(dead_code)]
+/// Provides a 3D distance between points, using the specified algorithm.
+pub fn distance3d(algorithm: DistanceAlg, start: Point3, end: Point3) -> f32 {
+    match algorithm {
+        DistanceAlg::Pythagoras => { distance3d_pythagoras(start, end) }
+        DistanceAlg::PythagorasSquared => { distance3d_pythagoras_squared(start, end) }
+        DistanceAlg::Manhattan => { distance3d_manhattan(start, end) }
+        DistanceAlg::Chebyshev => { distance3d_pythagoras(start, end) } // Not implemented yet
+    }
+}
+
+#[allow(dead_code)]
 /// Calculates a Pythagoras distance between two points, and skips the square root for speed.
 fn distance2d_pythagoras_squared(start: Point, end: Point) -> f32 {
     let dx = (max(start.x, end.x) - min (start.x, end.x)) as f32;
@@ -35,6 +46,15 @@ fn distance2d_manhattan(start: Point, end: Point) -> f32 {
 }
 
 #[allow(dead_code)]
+/// Calculates a Manhattan distance between two 3D points
+fn distance3d_manhattan(start: Point3, end: Point3) -> f32 {
+    let dx = (max(start.x, end.x) - min (start.x, end.x)) as f32;
+    let dy = (max(start.y, end.y) - min (start.y, end.y)) as f32;
+    let dz = (max(start.z, end.z) - min (start.z, end.z)) as f32;
+    dx + dy + dz
+}
+
+#[allow(dead_code)]
 /// Calculates a Chebyshev distance between two points
 /// See: http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
 fn distance2d_chebyshev(start: Point, end: Point) -> f32 {
@@ -48,9 +68,25 @@ fn distance2d_chebyshev(start: Point, end: Point) -> f32 {
 }
 
 #[allow(dead_code)]
+/// Calculates a Pythagoras distance between two 3D points.
+fn distance3d_pythagoras_squared(start: Point3, end:Point3) -> f32 {
+    let dx = (max(start.x, end.x) - min (start.x, end.x)) as f32;
+    let dy = (max(start.y, end.y) - min (start.y, end.y)) as f32;
+    let dz = (max(start.z, end.z) - min (start.z, end.z)) as f32;
+    (dx*dx) + (dy*dy) + (dz*dz)
+}
+
+#[allow(dead_code)]
 /// Calculates a Pythagoras distance between two points.
 fn distance2d_pythagoras(start: Point, end: Point) -> f32 {
     let dsq = distance2d_pythagoras_squared(start, end);
+    f32::sqrt(dsq)
+}
+
+#[allow(dead_code)]
+/// Calculates a Pythagoras distance between two 3D points.
+fn distance3d_pythagoras(start: Point3, end: Point3) -> f32 {
+    let dsq = distance3d_pythagoras_squared(start, end);
     f32::sqrt(dsq)
 }
 
