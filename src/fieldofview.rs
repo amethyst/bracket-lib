@@ -16,7 +16,7 @@ pub fn field_of_view(start : Point, range : i32, fov_check : &Algorithm2D) -> Ve
     let bottom = start.y + range;
     let range_squared : f32 = (range as f32) * (range as f32);
 
-    for x in left .. right+1 {
+    for x in left ..= right {
         for pt in scan_fov_line(start, Point::new(x, top, ), range_squared, fov_check) {
             result.push(pt);
         }
@@ -25,7 +25,7 @@ pub fn field_of_view(start : Point, range : i32, fov_check : &Algorithm2D) -> Ve
         }
     }
 
-    for y in top .. bottom+1 {
+    for y in top ..= bottom {
         for pt in scan_fov_line(start, Point::new(left, y), range_squared, fov_check) {
             result.push(pt);
         }
