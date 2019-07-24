@@ -154,7 +154,7 @@ Run this example with `cargo run --example ex13-textblock` from the root of the 
 
 ### Example 14: Dwarf-Fortress Style 3D
 
-![Animated GIF](/screenshots/RLTK_RS_EXAMPLE14.jpg)
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE14.gif)
 
 [Example 14 - Text Blocks](examples/ex14-dwarfmap.rs) uses the `Algorithm3D` trait to provide A* pathing in three dimensions, and implements a simple Dwarf-Fortress (with DF-Hack "layer diving") renderer to display a noise-generated 3D map and traverse it.
 
