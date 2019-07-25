@@ -1,5 +1,7 @@
-use super::{Point, Point3};
 use std::cmp::{max, min};
+pub mod point;
+pub mod point3;
+pub use {point::Point, point3::Point3};
 
 extern crate bresenham;
 use bresenham::Bresenham;

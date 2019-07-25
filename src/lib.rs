@@ -34,7 +34,7 @@ pub use self::shader::Shader;
 pub use self::simple_console::SimpleConsole;
 pub use self::sparse_console::SparseConsole;
 pub use self::fieldofview::field_of_view;
-pub use self::geometry::{ distance2d, distance3d, DistanceAlg, line2d, project_angle };
+pub use self::geometry::{ distance2d, distance3d, DistanceAlg, line2d, project_angle, Point, Point3 };
 pub use self::pathfinding::dijkstra::DijkstraMap;
 pub use self::pathfinding::astar::{a_star_search, NavigationPath};
 pub use glutin::event::VirtualKeyCode;
@@ -49,54 +49,6 @@ extern crate serde;
 /// Implement this trait on your state struct, so the engine knows what to call on each tick.
 pub trait GameState {
     fn tick(&mut self, ctx : &mut Rltk);
-}
-
-#[cfg(feature = "serialization")]
-#[derive(Eq, PartialEq, Copy, Clone, serde::Serialize, serde::Deserialize, Debug)]
-/// Helper function definint a 2D point in space.
-pub struct Point {
-    pub x: i32,
-    pub y: i32
-}
-
-#[cfg(not(feature = "serialization"))]
-#[derive(Eq, PartialEq, Copy, Clone, Debug)]
-/// Helper function definint a 2D point in space.
-pub struct Point {
-    pub x: i32,
-    pub y: i32
-}
-
-impl Point {
-    /// Create a new point from an x/y coordinate.
-    pub fn new(x:i32, y:i32) -> Point {
-        return Point{x, y};
-    }
-}
-
-#[cfg(feature = "serialization")]
-#[derive(Eq, PartialEq, Copy, Clone, serde::Serialize, serde::Deserialize, Debug)]
-/// Helper function definint a 2D point in space.
-pub struct Point3 {
-    pub x: i32,
-    pub y: i32,
-    pub z: i32
-}
-
-#[cfg(not(feature = "serialization"))]
-#[derive(Eq, PartialEq, Copy, Clone, Debug)]
-/// Helper function definint a 2D point in space.
-pub struct Point3 {
-    pub x: i32,
-    pub y: i32,
-    pub z: i32
-}
-
-impl Point3 {
-    /// Create a new point from an x/y coordinate.
-    pub fn new(x:i32, y:i32, z:i32) -> Point3 {
-        return Point3{x, y, z};
-    }
 }
 
 /// Implement this trait to support path-finding functions.
