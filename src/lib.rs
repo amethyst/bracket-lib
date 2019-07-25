@@ -34,7 +34,7 @@ pub use self::shader::Shader;
 pub use self::simple_console::SimpleConsole;
 pub use self::sparse_console::SparseConsole;
 pub use self::fieldofview::field_of_view;
-pub use self::geometry::{ distance2d, distance3d, DistanceAlg, line2d, project_angle, Point, Point3 };
+pub use self::geometry::{ distance2d, distance3d, DistanceAlg, LineAlg, line2d, project_angle, Point, Point3 };
 pub use self::pathfinding::dijkstra::DijkstraMap;
 pub use self::pathfinding::astar::{a_star_search, NavigationPath};
 pub use glutin::event::VirtualKeyCode;

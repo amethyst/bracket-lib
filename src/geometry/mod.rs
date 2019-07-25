@@ -1,13 +1,14 @@
 use std::cmp::{max, min};
 pub mod point;
 pub mod point3;
-pub use {point::Point, point3::Point3};
-
-extern crate bresenham;
-use bresenham::Bresenham;
+pub mod lines;
+pub use {point::Point, point3::Point3, lines::line2d};
 
 /// Enumeration of available 2D Distance algorithms
 pub enum DistanceAlg { Pythagoras, PythagorasSquared, Manhattan, Chebyshev }
+
+/// Enumeration of available 2D Distance algorithms
+pub enum LineAlg { Bresenham, Vector }
 
 #[allow(dead_code)]
 /// Provides a 2D distance between points, using the specified algorithm.
@@ -101,19 +102,6 @@ pub fn project_angle(start:Point, radius: f32, angle_radians: f32) -> Point {
         (0.0 - (start.x as f32 + radius * f32::sin(degrees_radians))) as i32, 
         (start.y as f32 + radius * f32::cos(degrees_radians)) as i32
     )
-}
-
-#[allow(dead_code)]
-/// Plots a line between two 2D points and returns a vector of points along the line.
-pub fn line2d(start: Point, end: Point) -> Vec<Point> {
-    let mut result : Vec<Point> = Vec::new();
-
-    let line = Bresenham::new((start.x as isize, start.y as isize), (end.x as isize, end.y as isize));
-    for p in line {
-        result.push(Point::new(p.0 as i32, p.1 as i32));
-    }
-
-    result
 }
 
 #[cfg(test)]

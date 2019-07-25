@@ -2,9 +2,6 @@ use super::Point;
 use super::geometry::{distance2d, DistanceAlg};
 use super::Algorithm2D;
 
-extern crate bresenham;
-use bresenham::Bresenham;
-
 #[allow(dead_code)]
 /// Calculates field-of-view for a map that supports Algorithm2D.
 pub fn field_of_view(start : Point, range : i32, fov_check : &Algorithm2D) -> Vec<Point> {
@@ -40,19 +37,18 @@ pub fn field_of_view(start : Point, range : i32, fov_check : &Algorithm2D) -> Ve
 /// Helper method to scan along a line.
 fn scan_fov_line(start: Point, end: Point, range_squared : f32, fov_check : &Algorithm2D) -> Vec<Point> {
     let mut result : Vec<Point> = Vec::new();
-    let line = Bresenham::new((start.x as isize, start.y as isize), (end.x as isize, end.y as isize));
+    let line = super::line2d(super::LineAlg::Bresenham, start, end);
 
     let mut blocked = false;
 
-    for (x, y) in line {
+    for target in line.iter() {
         if !blocked {
-            let target = Point::new(x as i32, y as i32);
-            let dsq = distance2d(DistanceAlg::PythagorasSquared, start, target);
+            let dsq = distance2d(DistanceAlg::PythagorasSquared, start, *target);
             if dsq <= range_squared {
-                if fov_check.is_opaque(fov_check.point2d_to_index(target)) {
+                if fov_check.is_opaque(fov_check.point2d_to_index(*target)) {
                     blocked = true;
                 }
-                result.push(target);
+                result.push(*target);
             } else {
                 blocked = true;
             }
