@@ -39,14 +39,9 @@ pub fn idx_xy(idx : usize) -> (i32, i32) {
 impl State {
     pub fn new() -> State {
         let mut state = State{
-            map : Vec::new(),
+            map : vec![TileType::Floor; 80*50],
             player_position: xy_idx(40, 25)
         };
-
-        // Now we want to add 80x50 empty tiles.
-        for _i in 0 .. 80*50 {
-            state.map.push(TileType::Floor);
-        }
 
         // Make the boundaries walls
         for x in 0 .. 80 {

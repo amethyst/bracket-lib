@@ -34,16 +34,10 @@ impl State {
     pub fn new() -> State {
         // Same as example 3, but we've added the visible tiles
         let mut state = State{
-            map : Vec::new(),
+            map : vec![TileType::Floor; (WIDTH*HEIGHT) as usize],
             player_position: xy_idx(WIDTH/2, HEIGHT/2),
-            visible: Vec::new()
+            visible: vec![false; (WIDTH*HEIGHT) as usize]
         };
-
-        // We also want to add visible data
-        for _i in 0 .. WIDTH*HEIGHT {
-            state.map.push(TileType::Floor);
-            state.visible.push(false);
-        }
 
         for x in 0 .. WIDTH {
             state.map[xy_idx(x, 0)] = TileType::Wall;
