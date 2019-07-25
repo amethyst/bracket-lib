@@ -23,7 +23,7 @@ pub enum CellularDistanceFunction { Euclidean, Manhattan, Natural }
 
 #[derive(PartialEq, Copy, Clone)]
 #[allow(dead_code)]
-pub enum CellularReturnType { CellValue, NoiseLookup, Distance, Distance2, Distance2Add, Distance2Sub, Distance2Mul, Distance2Div }
+pub enum CellularReturnType { CellValue, Distance, Distance2, Distance2Add, Distance2Sub, Distance2Mul, Distance2Div }
 
 #[allow(dead_code)]
 pub struct FastNoise {
@@ -485,7 +485,6 @@ impl FastNoise {
             NoiseType::Cellular => {
                 match self.cellular_return_type {
                     CellularReturnType::CellValue => { self.single_cellular3d(x, y, z) }
-                    CellularReturnType::NoiseLookup => { self.single_cellular3d(x, y, z) }
                     CellularReturnType::Distance => { self.single_cellular3d(x, y, z) }
                     _ => { self.single_cellular_2edge3d(x, y, z) }
                 }
@@ -534,7 +533,6 @@ impl FastNoise {
             NoiseType::Cellular => {
                 match self.cellular_return_type {
                     CellularReturnType::CellValue => { self.single_cellular(x, y) }
-                    CellularReturnType::NoiseLookup => { self.single_cellular(x, y) }
                     CellularReturnType::Distance => { self.single_cellular(x, y) }
                     _ => { self.single_cellular_2edge(x, y) }
                 }
@@ -1679,7 +1677,6 @@ impl FastNoise {
 
         match self.cellular_return_type {
             CellularReturnType::CellValue => { self.single_cellular3d(x, y, z) }
-            CellularReturnType::NoiseLookup => { self.single_cellular3d(x, y, z) }
             CellularReturnType::Distance => { self.single_cellular3d(x, y, z) }
             _ => { self.single_cellular_2edge3d(x, y, z) }
         }
@@ -1780,14 +1777,6 @@ impl FastNoise {
         //let lutPos : u8;
         match self.cellular_return_type {
             CellularReturnType::CellValue => { self.val_coord_3d(self.seed as i32, xc, yc, zc) }
-            /*
-            CellularReturnType::NoiseLookup => {
-                assert(m_cellularNoiseLookup);
-
-                lutPos = self.index3d_256(0, xc, yc, zc);
-                return m_cellularNoiseLookup->GetNoise(xc + CELL_3D_X[lutPos] * m_cellularJitter, yc + CELL_3D_Y[lutPos] * m_cellularJitter, zc + CELL_3D_Z[lutPos] * m_cellularJitter);
-            }
-            */
             CellularReturnType::Distance => { distance }
             _ => { 0.0 }
         }
@@ -1889,7 +1878,6 @@ impl FastNoise {
 
         match self.cellular_return_type {
             CellularReturnType::CellValue => { self.single_cellular(x, y) }
-            CellularReturnType::NoiseLookup => { self.single_cellular(x, y) }
             CellularReturnType::Distance => { self.single_cellular(x, y) }
             _ => { self.single_cellular_2edge(x, y) }
         }
@@ -1900,8 +1888,6 @@ impl FastNoise {
         let yr = fast_round(y);
 
         let mut distance : f32 = 999999.0;
-        let mut xc;
-        let mut yc;
 
         match self.cellular_distance_function {
             CellularDistanceFunction::Euclidean => {
@@ -1919,8 +1905,6 @@ impl FastNoise {
                         if newDistance < distance
                         {
                             distance = newDistance;
-                            xc = xi;
-                            yc = yi;
                         }
                     }
                 }
@@ -1940,8 +1924,6 @@ impl FastNoise {
                         if newDistance < distance
                         {
                             distance = newDistance;
-                            xc = xi;
-                            yc = yi;
                         }
                     }
                 }
@@ -1961,8 +1943,6 @@ impl FastNoise {
                         if newDistance < distance
                         {
                             distance = newDistance;
-                            xc = xi;
-                            yc = yi;
                         }
                     }
                 }
@@ -1972,12 +1952,6 @@ impl FastNoise {
         //let lutPos : u8;
         match self.cellular_return_type {
             CellularReturnType::CellValue => { self.val_coord_2d(self.seed as i32, x as i32, y as i32) }
-            /*CellularReturnType::NoiseLookup => {
-                // This needs help
-                assert(self.cellular_noise_lookup);
-                lutPos = self.index2d_256(0, xc, yc);
-                self.cellular_noise_lookup->GetNoise(xc + CELL_2D_X[lutPos] * self.cellular_jitter, yc + CELL_2D_Y[lutPos] * self.cellular_jitter)
-            }*/
             _ => { 0.0 }
         }
     }
