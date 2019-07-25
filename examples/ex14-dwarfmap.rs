@@ -5,7 +5,7 @@
 //////////////////////////////////////////////////////////////
 
 extern crate rltk;
-use rltk::{Rltk, GameState, Console, RGB, VirtualKeyCode, FastNoise, FractalType, NoiseType, BaseMap, Algorithm3D, Point3, DistanceAlg};
+use rltk::{Rltk, GameState, Console, RGB, FastNoise, FractalType, NoiseType, BaseMap, Algorithm3D, Point3, DistanceAlg};
 
 #[derive(PartialEq, Copy, Clone)]
 enum TileType { Wall, Floor, Ramp, RampDown, OpenSpace }
