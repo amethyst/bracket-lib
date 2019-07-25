@@ -26,9 +26,7 @@ mod random;
 mod fastnoise;
 pub mod textblock;
 
-pub use self::rltk::main_loop;
-pub use self::rltk::Rltk;
-pub use self::rltk::letter_to_option;
+pub use self::rltk::{ main_loop, Rltk, letter_to_option };
 pub use self::color::*;
 pub use self::font::Font;
 pub use self::console::*;
