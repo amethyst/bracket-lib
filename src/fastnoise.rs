@@ -7,22 +7,27 @@ use super::RandomNumberGenerator;
 
 #[derive(PartialEq, Copy, Clone)]
 #[allow(dead_code)]
+/// Type of noise to generate
 pub enum NoiseType { Value, ValueFractal, Perlin, PerlinFractal, Simplex, SimplexFractal, Cellular, WhiteNoise, Cubic, CubicFractal }
 
 #[derive(PartialEq, Copy, Clone)]
 #[allow(dead_code)]
+/// Interpolation function to use
 pub enum Interp { Linear, Hermite, Quintic }
 
 #[derive(PartialEq, Copy, Clone)]
 #[allow(dead_code)]
+/// Fractal function to use
 pub enum FractalType { FBM, Billow, RigidMulti }
 
 #[derive(PartialEq, Copy, Clone)]
 #[allow(dead_code)]
+/// Cellular noise distance function to use
 pub enum CellularDistanceFunction { Euclidean, Manhattan, Natural }
 
 #[derive(PartialEq, Copy, Clone)]
 #[allow(dead_code)]
+/// What type of cellular noise result do you want
 pub enum CellularReturnType { CellValue, Distance, Distance2, Distance2Add, Distance2Sub, Distance2Mul, Distance2Div }
 
 #[allow(dead_code)]
@@ -271,7 +276,7 @@ fn cubic_lerp(a:f32, b:f32, c:f32, d:f32, t:f32) -> f32
 #[allow(dead_code)]
 #[allow(non_snake_case)]
 impl FastNoise {
-
+    /// Creates a new noise instance, using simplex noise defaults.
     pub fn new() -> FastNoise {
         let mut noise = FastNoise{
             rng : RandomNumberGenerator::seeded(1337),
@@ -297,6 +302,7 @@ impl FastNoise {
         noise
     }
 
+    /// Creates a new noise instance, using simplex noise defaults and specifying a random seed.
     pub fn seeded(seed: u64) -> FastNoise {
         let mut noise = FastNoise{
             rng : RandomNumberGenerator::seeded(seed),
@@ -322,6 +328,7 @@ impl FastNoise {
         noise
     }
 
+    /// Re-seeds the noise system with a new seed.
     pub fn set_seed(&mut self, seed: u64) {
         self.seed = seed;
         self.rng = RandomNumberGenerator::seeded(seed);
