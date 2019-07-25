@@ -1,5 +1,7 @@
 use super::BaseMap;
 use std::collections::HashMap;
+use std::collections::BinaryHeap;
+use std::cmp::Ordering;
 
 #[allow(dead_code)]
 /// Bail out if the A* search exceeds this many steps.
@@ -42,6 +44,26 @@ struct Node {
     h : f32
 }
 
+impl PartialEq for Node {
+    fn eq(&self, other: &Self) -> bool {
+        self.f == other.f
+    }
+}
+
+impl Eq for Node {}
+
+impl Ord for Node {
+    fn cmp(&self, b: &Self) -> Ordering {
+        b.f.partial_cmp(&self.f).unwrap()
+    }
+}
+
+impl PartialOrd for Node {
+    fn partial_cmp(&self, b: &Self) -> Option<Ordering> {
+        b.f.partial_cmp(&self.f)
+    }
+}
+
 #[allow(dead_code)]
 impl NavigationPath {
     /// Makes a new (empty) NavigationPath
@@ -55,7 +77,7 @@ impl NavigationPath {
 struct AStar {
     start: i32,
     end : i32,
-    open_list: Vec<Node>,
+    open_list: BinaryHeap<Node>,
     closed_list: HashMap<i32, f32>,
     parents: HashMap<i32, i32>,
     step_counter: i32
@@ -64,7 +86,7 @@ struct AStar {
 impl AStar {
     /// Creates a new path, with specified starting and ending indices.
     fn new(start : i32, end: i32) -> AStar {
-        let mut open_list : Vec<Node> = Vec::new();
+        let mut open_list : BinaryHeap<Node> = BinaryHeap::new();
         open_list.push(Node{ idx : start, f: 0.0, g: 0.0, h: 0.0 });
 
         return AStar{ start: start, 
@@ -137,8 +159,7 @@ impl AStar {
             self.step_counter += 1;
 
             // Pop Q off of the list
-            let q = self.open_list[0];
-            self.open_list.remove(0);
+            let q = self.open_list.pop().unwrap();
 
             // Generate successors
             let successors = map.get_available_exits(q.idx);
@@ -152,7 +173,6 @@ impl AStar {
 
             if self.closed_list.contains_key(&q.idx) { self.closed_list.remove(&q.idx); }
             self.closed_list.insert(q.idx, q.f);
-            self.open_list.sort_by(|a,b| a.f.partial_cmp(&b.f).unwrap());            
         }
         return result;
     }
