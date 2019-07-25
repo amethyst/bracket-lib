@@ -21,6 +21,7 @@ pub fn line2d_bresenham(start: Point, end: Point) -> Vec<Point> {
     for p in line {
         result.push(Point::new(p.0 as i32, p.1 as i32));
     }
+    result.push(end);
 
     result
 }
@@ -40,7 +41,7 @@ pub fn line2d_vector(start: Point, end:Point) -> Vec<Point> {
     while !arrived {
         pos.0 += slope.0;
         pos.1 += slope.1;
-        let new_point = Point::new(pos.0 as i32, pos.1 as i32);
+        let new_point = Point::new(f32::floor(pos.0) as i32, f32::floor(pos.1) as i32);
         if result.is_empty() || result[result.len()-1] != new_point {
             result.push(new_point);
         }
