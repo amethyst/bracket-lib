@@ -206,7 +206,7 @@ impl SparseConsole {
                 glyph_top,
             );
 
-            self.index_buffer.push(0 + index_count);
+            self.index_buffer.push(index_count);
             self.index_buffer.push(1 + index_count);
             self.index_buffer.push(3 + index_count);
             self.index_buffer.push(1 + index_count);
@@ -289,15 +289,17 @@ impl Console for SparseConsole {
         let mut idx = self.at(x, y);
 
         let bytes = super::string_to_cp437(output);
-        for i in 0..bytes.len() {
-            self.tiles.push(SparseTile {
+
+        self.tiles.extend(bytes.into_iter().map(|glyph| {
+            let tile = SparseTile {
                 idx,
-                glyph: bytes[i],
+                glyph,
                 fg: RGB::from_f32(1.0, 1.0, 1.0),
                 bg: RGB::from_f32(0.0, 0.0, 0.0),
-            });
+            };
             idx += 1;
-        }
+            tile
+        }));
     }
 
     /// Prints a string to an x/y position, with foreground and background colors.
@@ -306,15 +308,11 @@ impl Console for SparseConsole {
         let mut idx = self.at(x, y);
 
         let bytes = super::string_to_cp437(output);
-        for i in 0..bytes.len() {
-            self.tiles.push(SparseTile {
-                idx,
-                glyph: bytes[i],
-                fg,
-                bg,
-            });
+        self.tiles.extend(bytes.into_iter().map(|glyph| {
+            let tile = SparseTile { idx, glyph, fg, bg };
             idx += 1;
-        }
+            tile
+        }));
     }
 
     /// Sets a single cell in the console
