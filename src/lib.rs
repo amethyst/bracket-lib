@@ -47,7 +47,7 @@ pub use self::textblock::{TextBlock, TextBuilder};
 extern crate serde;
 
 /// Implement this trait on your state struct, so the engine knows what to call on each tick.
-pub trait GameState {
+pub trait GameState: 'static {
     fn tick(&mut self, ctx : &mut Rltk);
 }
 

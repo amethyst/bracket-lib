@@ -42,5 +42,5 @@ fn main() {
     // Returning to the default console is a good plan
     context.set_active_console(0);
     let gs : State = State{ };
-    rltk::main_loop(context, Box::new(gs));
+    rltk::main_loop(context, gs);
 }

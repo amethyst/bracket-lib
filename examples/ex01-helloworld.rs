@@ -67,5 +67,5 @@ fn main() {
 
     // Call into RLTK to run the main loop. This handles rendering, and calls back into State's tick
     // function every cycle. The box is needed to work around lifetime handling.
-    rltk::main_loop(context, Box::new(gs));
+    rltk::main_loop(context, gs);
 }

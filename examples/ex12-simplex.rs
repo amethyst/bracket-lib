@@ -57,5 +57,5 @@ fn main() {
     gs.rebuild_noise(); 
 
     let context = Rltk::init_simple8x8(80, 50, "Example 12 - Perlin Noise", "resources");
-    rltk::main_loop(context, Box::new(gs));
+    rltk::main_loop(context, gs);
 }
