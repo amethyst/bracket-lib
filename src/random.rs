@@ -38,11 +38,7 @@ impl RandomNumberGenerator {
 
     /// Rolls dice, using the classic 3d6 type of format: n is the number of dice, die_type is the size of the dice.
     pub fn roll_dice(&mut self, n: i32, die_type: i32) -> i32 {
-        let mut total = 0;
-        for _ in 0..n {
-            total += self.range(1, die_type + 1);
-        }
-        total
+        (0..n).map(|_| self.range(1, die_type + 1)).sum()
     }
 
     pub fn next_u64(&mut self) -> u64 {
