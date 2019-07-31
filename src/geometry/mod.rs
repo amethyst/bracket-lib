@@ -18,7 +18,6 @@ pub enum LineAlg {
     Vector,
 }
 
-#[allow(dead_code)]
 /// Provides a 2D distance between points, using the specified algorithm.
 pub fn distance2d(algorithm: DistanceAlg, start: Point, end: Point) -> f32 {
     match algorithm {
@@ -29,7 +28,6 @@ pub fn distance2d(algorithm: DistanceAlg, start: Point, end: Point) -> f32 {
     }
 }
 
-#[allow(dead_code)]
 /// Provides a 3D distance between points, using the specified algorithm.
 pub fn distance3d(algorithm: DistanceAlg, start: Point3, end: Point3) -> f32 {
     match algorithm {
@@ -40,7 +38,6 @@ pub fn distance3d(algorithm: DistanceAlg, start: Point3, end: Point3) -> f32 {
     }
 }
 
-#[allow(dead_code)]
 /// Calculates a Pythagoras distance between two points, and skips the square root for speed.
 fn distance2d_pythagoras_squared(start: Point, end: Point) -> f32 {
     let dx = (max(start.x, end.x) - min(start.x, end.x)) as f32;
@@ -48,7 +45,6 @@ fn distance2d_pythagoras_squared(start: Point, end: Point) -> f32 {
     (dx * dx) + (dy * dy)
 }
 
-#[allow(dead_code)]
 /// Calculates a Manhattan distance between two points
 fn distance2d_manhattan(start: Point, end: Point) -> f32 {
     let dx = (max(start.x, end.x) - min(start.x, end.x)) as f32;
@@ -56,7 +52,6 @@ fn distance2d_manhattan(start: Point, end: Point) -> f32 {
     dx + dy
 }
 
-#[allow(dead_code)]
 /// Calculates a Manhattan distance between two 3D points
 fn distance3d_manhattan(start: Point3, end: Point3) -> f32 {
     let dx = (max(start.x, end.x) - min(start.x, end.x)) as f32;
@@ -65,7 +60,6 @@ fn distance3d_manhattan(start: Point3, end: Point3) -> f32 {
     dx + dy + dz
 }
 
-#[allow(dead_code)]
 /// Calculates a Chebyshev distance between two points
 /// See: http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
 fn distance2d_chebyshev(start: Point, end: Point) -> f32 {
@@ -78,7 +72,6 @@ fn distance2d_chebyshev(start: Point, end: Point) -> f32 {
     }
 }
 
-#[allow(dead_code)]
 /// Calculates a Pythagoras distance between two 3D points.
 fn distance3d_pythagoras_squared(start: Point3, end: Point3) -> f32 {
     let dx = (max(start.x, end.x) - min(start.x, end.x)) as f32;
@@ -87,21 +80,18 @@ fn distance3d_pythagoras_squared(start: Point3, end: Point3) -> f32 {
     (dx * dx) + (dy * dy) + (dz * dz)
 }
 
-#[allow(dead_code)]
 /// Calculates a Pythagoras distance between two points.
 fn distance2d_pythagoras(start: Point, end: Point) -> f32 {
     let dsq = distance2d_pythagoras_squared(start, end);
     f32::sqrt(dsq)
 }
 
-#[allow(dead_code)]
 /// Calculates a Pythagoras distance between two 3D points.
 fn distance3d_pythagoras(start: Point3, end: Point3) -> f32 {
     let dsq = distance3d_pythagoras_squared(start, end);
     f32::sqrt(dsq)
 }
 
-#[allow(dead_code)]
 /// From a given start point, project forward radius units at an angle of angle_radians degrees.
 /// 0 Degrees is north (negative Y), 90 degrees is east (positive X)
 pub fn project_angle(start: Point, radius: f32, angle_radians: f32) -> Point {

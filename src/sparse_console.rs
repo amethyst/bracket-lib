@@ -14,8 +14,6 @@ pub struct SparseTile {
     pub bg: RGB,
 }
 
-#[allow(non_snake_case)]
-#[allow(dead_code)]
 /// A sparse console. Rather than storing every cell on the screen, it stores just cells that have
 /// data.
 pub struct SparseConsole {
@@ -33,26 +31,24 @@ pub struct SparseConsole {
     // GL Stuff
     vertex_buffer: Vec<f32>,
     index_buffer: Vec<i32>,
-    VBO: u32,
-    VAO: u32,
-    EBO: u32,
+    vbo: u32,
+    vao: u32,
+    ebo: u32,
 }
 
-#[allow(dead_code)]
 impl SparseConsole {
-    #[allow(non_snake_case)]
     /// Initializes the console.
     pub fn init(width: u32, height: u32, gl: &gl::Gles2) -> Box<SparseConsole> {
         // Console backing init
 
-        let (VBO, VAO, EBO) = SparseConsole::init_gl_for_console(gl);
+        let (vbo, vao, ebo) = SparseConsole::init_gl_for_console(gl);
 
         let new_console = SparseConsole {
-            width: width,
-            height: height,
-            VBO: VBO,
-            VAO: VAO,
-            EBO: EBO,
+            width,
+            height,
+            vbo,
+            vao,
+            ebo,
             tiles: Vec::new(),
             is_dirty: true,
             vertex_buffer: Vec::new(),
@@ -64,20 +60,19 @@ impl SparseConsole {
         Box::new(new_console)
     }
 
-    #[allow(non_snake_case)]
     /// Initializes OpenGL for the sparse console.
     fn init_gl_for_console(gl: &gl::Gles2) -> (u32, u32, u32) {
-        let (mut VBO, mut VAO, mut EBO) = (0, 0, 0);
+        let (mut vbo, mut vao, mut ebo) = (0, 0, 0);
 
         unsafe {
             // Generate buffers and arrays, as well as attributes.
-            gl.GenVertexArrays(1, &mut VAO);
-            gl.GenBuffers(1, &mut VBO);
-            gl.GenBuffers(1, &mut EBO);
+            gl.GenVertexArrays(1, &mut vao);
+            gl.GenBuffers(1, &mut vbo);
+            gl.GenBuffers(1, &mut ebo);
 
-            gl.BindVertexArray(VAO);
+            gl.BindVertexArray(vao);
 
-            gl.BindBuffer(gl::ARRAY_BUFFER, VBO);
+            gl.BindBuffer(gl::ARRAY_BUFFER, vbo);
 
             let stride = 11 * mem::size_of::<GLfloat>() as GLsizei;
             // position attribute
@@ -115,7 +110,7 @@ impl SparseConsole {
             gl.EnableVertexAttribArray(3);
         };
 
-        (VBO, VAO, EBO)
+        (vbo, vao, ebo)
     }
 
     /// Helper to push a point to the shader.
@@ -222,7 +217,7 @@ impl SparseConsole {
         }
 
         unsafe {
-            gl.BindBuffer(gl::ARRAY_BUFFER, self.VBO);
+            gl.BindBuffer(gl::ARRAY_BUFFER, self.vbo);
             gl.BufferData(
                 gl::ARRAY_BUFFER,
                 (self.vertex_buffer.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
@@ -230,7 +225,7 @@ impl SparseConsole {
                 gl::STATIC_DRAW,
             );
 
-            gl.BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.EBO);
+            gl.BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.ebo);
             gl.BufferData(
                 gl::ELEMENT_ARRAY_BUFFER,
                 (self.index_buffer.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
@@ -258,9 +253,9 @@ impl Console for SparseConsole {
 
             // render container
             shader.useProgram(gl);
-            gl.BindVertexArray(self.VAO);
-            gl.BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.EBO);
-            gl.BindBuffer(gl::ARRAY_BUFFER, self.VBO);
+            gl.BindVertexArray(self.vao);
+            gl.BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.ebo);
+            gl.BindBuffer(gl::ARRAY_BUFFER, self.vbo);
             gl.DrawElements(
                 gl::TRIANGLES,
                 (self.tiles.len() * 6) as i32,
@@ -296,7 +291,7 @@ impl Console for SparseConsole {
         let bytes = super::string_to_cp437(output);
         for i in 0..bytes.len() {
             self.tiles.push(SparseTile {
-                idx: idx,
+                idx,
                 glyph: bytes[i],
                 fg: RGB::from_f32(1.0, 1.0, 1.0),
                 bg: RGB::from_f32(0.0, 0.0, 0.0),
@@ -313,10 +308,10 @@ impl Console for SparseConsole {
         let bytes = super::string_to_cp437(output);
         for i in 0..bytes.len() {
             self.tiles.push(SparseTile {
-                idx: idx,
+                idx,
                 glyph: bytes[i],
-                fg: fg,
-                bg: bg,
+                fg,
+                bg,
             });
             idx += 1;
         }
@@ -326,10 +321,10 @@ impl Console for SparseConsole {
     fn set(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, glyph: u8) {
         let idx = self.at(x, y);
         self.tiles.push(SparseTile {
-            idx: idx,
+            idx,
             glyph: glyph,
-            fg: fg,
-            bg: bg,
+            fg,
+            bg,
         });
     }
 

@@ -2,7 +2,6 @@ use super::geometry::{distance2d, DistanceAlg};
 use super::Algorithm2D;
 use super::Point;
 
-#[allow(dead_code)]
 /// Calculates field-of-view for a map that supports Algorithm2D.
 pub fn field_of_view(start: Point, range: i32, fov_check: &dyn Algorithm2D) -> Vec<Point> {
     let mut result: Vec<Point> = Vec::new();
@@ -31,7 +30,7 @@ pub fn field_of_view(start: Point, range: i32, fov_check: &dyn Algorithm2D) -> V
         }
     }
 
-    return result;
+    result
 }
 
 /// Helper method to scan along a line.
@@ -59,5 +58,5 @@ fn scan_fov_line(
             }
         }
     }
-    return result;
+    result
 }

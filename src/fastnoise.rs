@@ -6,7 +6,6 @@
 use super::RandomNumberGenerator;
 
 #[derive(PartialEq, Copy, Clone)]
-#[allow(dead_code)]
 /// Type of noise to generate
 pub enum NoiseType {
     Value,
@@ -22,7 +21,6 @@ pub enum NoiseType {
 }
 
 #[derive(PartialEq, Copy, Clone)]
-#[allow(dead_code)]
 /// Interpolation function to use
 pub enum Interp {
     Linear,
@@ -31,7 +29,6 @@ pub enum Interp {
 }
 
 #[derive(PartialEq, Copy, Clone)]
-#[allow(dead_code)]
 /// Fractal function to use
 pub enum FractalType {
     FBM,
@@ -40,7 +37,6 @@ pub enum FractalType {
 }
 
 #[derive(PartialEq, Copy, Clone)]
-#[allow(dead_code)]
 /// Cellular noise distance function to use
 pub enum CellularDistanceFunction {
     Euclidean,
@@ -49,7 +45,6 @@ pub enum CellularDistanceFunction {
 }
 
 #[derive(PartialEq, Copy, Clone)]
-#[allow(dead_code)]
 /// What type of cellular noise result do you want
 pub enum CellularReturnType {
     CellValue,
@@ -61,7 +56,6 @@ pub enum CellularReturnType {
     Distance2Div,
 }
 
-#[allow(dead_code)]
 pub struct FastNoise {
     rng: RandomNumberGenerator,
     seed: u64,
@@ -83,13 +77,10 @@ pub struct FastNoise {
 }
 
 // Constants that used to be at the top
-#[allow(dead_code)]
 const GRAD_X: [f32; 12] = [1.0, -1., 1., -1., 1., -1., 1., -1., 0., 0., 0., 0.];
 
-#[allow(dead_code)]
 const GRAD_Y: [f32; 12] = [1., 1., -1., -1., 0., 0., 0., 0., 1., -1., 1., -1.];
 
-#[allow(dead_code)]
 const GRAD_Z: [f32; 12] = [0., 0., 0., 0., 1., 1., -1., -1., 1., 1., -1., -1.];
 
 #[allow(dead_code)]
@@ -102,7 +93,6 @@ const GRAD_4D: [f32; 128] = [
     -1., -1., 0., -1., 1., 1., 0., -1., 1., -1., 0., -1., -1., 1., 0., -1., -1., -1., 0.,
 ];
 
-#[allow(dead_code)]
 const VAL_LUT: [f32; 256] = [
     0.3490196078,
     0.4352941176,
@@ -362,7 +352,6 @@ const VAL_LUT: [f32; 256] = [
     -0.1529411765,
 ];
 
-#[allow(dead_code)]
 const CELL_2D_X: [f32; 256] = [
     -0.6440658039,
     -0.08028078721,
@@ -622,7 +611,6 @@ const CELL_2D_X: [f32; 256] = [
     0.664508256,
 ];
 
-#[allow(dead_code)]
 const CELL_2D_Y: [f32; 256] = [
     0.7649700911,
     0.9967722885,
@@ -882,7 +870,6 @@ const CELL_2D_Y: [f32; 256] = [
     0.7472809229,
 ];
 
-#[allow(dead_code)]
 const CELL_3D_X: [f32; 256] = [
     0.3752498686,
     0.687188096,
@@ -1142,7 +1129,6 @@ const CELL_3D_X: [f32; 256] = [
     -0.2509196808,
 ];
 
-#[allow(dead_code)]
 const CELL_3D_Y: [f32; 256] = [
     -0.6760585049,
     -0.09136176499,
@@ -1402,7 +1388,6 @@ const CELL_3D_Y: [f32; 256] = [
     0.8985888773,
 ];
 
-#[allow(dead_code)]
 const CELL_3D_Z: [f32; 256] = [
     -0.6341391283,
     -0.7207118346,
@@ -1662,37 +1647,25 @@ const CELL_3D_Z: [f32; 256] = [
     -0.3599685311,
 ];
 
-#[allow(dead_code)]
 const FN_CELLULAR_INDEX_MAX: usize = 3;
-#[allow(dead_code)]
 const X_PRIME: i32 = 1619;
-#[allow(dead_code)]
 const Y_PRIME: i32 = 31337;
-#[allow(dead_code)]
 const Z_PRIME: i32 = 6971;
 #[allow(dead_code)]
 const W_PRIME: i32 = 1013;
-#[allow(dead_code)]
 const F3: f32 = 1.0 / 3.0;
-#[allow(dead_code)]
 const G3: f32 = 1.0 / 6.0;
-#[allow(dead_code)]
 const SQRT3: f32 = 1.7320508075688772935274463415059;
-#[allow(dead_code)]
 const F2: f32 = 0.5 * (SQRT3 - 1.0);
-#[allow(dead_code)]
 const G2: f32 = (3.0 - SQRT3) / 6.0;
 #[allow(dead_code)]
 const F4: f32 = (2.23606797749979 - 1.0) / 4.0;
 #[allow(dead_code)]
 const G4: f32 = (5.0 - 2.23606797749979) / 20.0;
-#[allow(dead_code)]
 const CUBIC_3D_BOUNDING: f32 = 1.0 / (1.5 * 1.5 * 1.5);
-#[allow(dead_code)]
 const CUBIC_2D_BOUNDING: f32 = 1.0 / 1.5 * 1.5;
 
 // Utility functions
-#[allow(dead_code)]
 fn fast_floor(f: f32) -> i32 {
     if f >= 0.0 {
         f as i32
@@ -1701,7 +1674,6 @@ fn fast_floor(f: f32) -> i32 {
     }
 }
 
-#[allow(dead_code)]
 fn fast_round(f: f32) -> i32 {
     if f >= 0.0 {
         (f + 0.5) as i32
@@ -1715,34 +1687,27 @@ fn fast_abs(i: i32) -> i32 {
     i32::abs(i)
 }
 
-#[allow(dead_code)]
 fn fast_abs_f(i: f32) -> f32 {
     f32::abs(i)
 }
 
-#[allow(dead_code)]
 fn lerp(a: f32, b: f32, t: f32) -> f32 {
     a + t * (b - a)
 }
 
-#[allow(dead_code)]
 fn interp_hermite_func(t: f32) -> f32 {
     t * t * (3. - 2. * t)
 }
 
-#[allow(dead_code)]
 fn interp_quintic_func(t: f32) -> f32 {
     t * t * t * (t * (t * 6. - 15.) + 10.)
 }
 
-#[allow(dead_code)]
 fn cubic_lerp(a: f32, b: f32, c: f32, d: f32, t: f32) -> f32 {
     let p = (d - c) - (a - b);
     t * t * t * p + t * t * ((a - b) - p) + t * (c - a) + b
 }
 
-#[allow(dead_code)]
-#[allow(non_snake_case)]
 impl FastNoise {
     /// Creates a new noise instance, using simplex noise defaults.
     pub fn new() -> FastNoise {
@@ -1971,9 +1936,10 @@ impl FastNoise {
         n ^= Y_PRIME * y;
         n ^= Z_PRIME * z;
 
-        return (n * n * n * 60493) as f32 / 2147483648.0;
+        (n * n * n * 60493) as f32 / 2147483648.0
     }
 
+    #[allow(dead_code)]
     fn val_coord_4d(&self, seed: i32, x: i32, y: i32, z: i32, w: i32) -> f32 {
         let mut n = seed;
         n ^= X_PRIME * x;
@@ -1981,7 +1947,7 @@ impl FastNoise {
         n ^= Z_PRIME * z;
         n ^= W_PRIME * w;
 
-        return (n * n * n * 60493) as f32 / 2147483648.0;
+        (n * n * n * 60493) as f32 / 2147483648.0
     }
 
     fn val_coord_2d_fast(&self, offset: u8, x: i32, y: i32) -> f32 {
@@ -2001,6 +1967,7 @@ impl FastNoise {
         xd * GRAD_X[lut_pos] + yd * GRAD_Y[lut_pos] + zd * GRAD_Z[lut_pos]
     }
 
+    #[allow(dead_code)]
     fn grad_coord_4d(
         &self,
         offset: u8,
@@ -2097,6 +2064,7 @@ impl FastNoise {
         }
     }
 
+    #[allow(dead_code)]
     fn get_white_noise4d(&self, x: f32, y: f32, z: f32, w: f32) -> f32 {
         unsafe {
             let xc: i32 = std::mem::transmute_copy(&x);
@@ -2141,18 +2109,22 @@ impl FastNoise {
         }
     }
 
+    #[allow(dead_code)]
     fn get_white_noise_int4d(&self, x: i32, y: i32, z: i32, w: i32) -> f32 {
         self.val_coord_4d(self.seed as i32, x, y, z, w)
     }
 
+    #[allow(dead_code)]
     fn get_white_noise_int3d(&self, x: i32, y: i32, z: i32) -> f32 {
         self.val_coord_3d(self.seed as i32, x, y, z)
     }
 
+    #[allow(dead_code)]
     fn get_white_noise_int(&self, x: i32, y: i32) -> f32 {
         self.val_coord_2d(self.seed as i32, x, y)
     }
 
+    #[allow(dead_code)]
     // Value noise
     fn get_value_fractal3d(&self, mut x: f32, mut y: f32, mut z: f32) -> f32 {
         x *= self.frequency;
@@ -2166,6 +2138,7 @@ impl FastNoise {
         }
     }
 
+    #[allow(dead_code)]
     fn get_value_fractal(&self, mut x: f32, mut y: f32) -> f32 {
         x *= self.frequency;
         y *= self.frequency;
@@ -2193,7 +2166,7 @@ impl FastNoise {
             i += 1;
         }
 
-        return sum * self.fractal_bounding;
+        sum * self.fractal_bounding
     }
 
     fn single_value_fractal_billow3d(&self, mut x: f32, mut y: f32, mut z: f32) -> f32 {
@@ -2234,6 +2207,7 @@ impl FastNoise {
         sum
     }
 
+    #[allow(dead_code)]
     fn get_value3d(&self, x: f32, y: f32, z: f32) -> f32 {
         self.single_value3d(
             0,
@@ -2346,9 +2320,10 @@ impl FastNoise {
             i += 1;
         }
 
-        return sum;
+        sum
     }
 
+    #[allow(dead_code)]
     fn get_value(&self, x: f32, y: f32) -> f32 {
         self.single_value(0, x * self.frequency, y * self.frequency)
     }
@@ -2392,6 +2367,7 @@ impl FastNoise {
 
     // Perlin noise
 
+    #[allow(dead_code)]
     fn get_perlin_fractal3d(&self, mut x: f32, mut y: f32, mut z: f32) -> f32 {
         x *= self.frequency;
         y *= self.frequency;
@@ -2460,6 +2436,7 @@ impl FastNoise {
         sum
     }
 
+    #[allow(dead_code)]
     fn get_perlin3d(&self, x: f32, y: f32, z: f32) -> f32 {
         self.single_perlin3d(
             0,
@@ -2533,6 +2510,7 @@ impl FastNoise {
         lerp(yf0, yf1, zs)
     }
 
+    #[allow(dead_code)]
     fn get_perlin_fractal(&self, mut x: f32, mut y: f32) -> f32 {
         x *= self.frequency;
         y *= self.frequency;
@@ -2596,6 +2574,7 @@ impl FastNoise {
         sum
     }
 
+    #[allow(dead_code)]
     fn get_perlin(&self, x: f32, y: f32) -> f32 {
         self.single_perlin(0, x * self.frequency, y * self.frequency)
     }
@@ -2640,9 +2619,10 @@ impl FastNoise {
             xs,
         );
 
-        return lerp(xf0, xf1, ys);
+        lerp(xf0, xf1, ys)
     }
 
+    #[allow(dead_code)]
     // Simplex noise
     fn get_simplex_fractal3d(&self, mut x: f32, mut y: f32, mut z: f32) -> f32 {
         x *= self.frequency;
@@ -2711,6 +2691,7 @@ impl FastNoise {
         sum
     }
 
+    #[allow(dead_code)]
     fn get_simplex3d(&self, x: f32, y: f32, z: f32) -> f32 {
         self.single_simplex3d(
             0,
@@ -2727,13 +2708,13 @@ impl FastNoise {
         let k = fast_floor(z + t);
 
         t = (i + j + k) as f32 * G3;
-        let X0 = i as f32 - t;
-        let Y0 = j as f32 - t;
-        let Z0 = k as f32 - t;
+        let x0 = i as f32 - t;
+        let y0 = j as f32 - t;
+        let z0 = k as f32 - t;
 
-        let x0 = x - X0;
-        let y0 = y - Y0;
-        let z0 = z - Z0;
+        let x0 = x - x0;
+        let y0 = y - y0;
+        let z0 = z - z0;
 
         let i1: f32;
         let j1: f32;
@@ -2866,6 +2847,7 @@ impl FastNoise {
         32.0 * (n0 + n1 + n2 + n3)
     }
 
+    #[allow(dead_code)]
     fn get_simplex_fractal(&self, mut x: f32, mut y: f32) -> f32 {
         x *= self.frequency;
         y *= self.frequency;
@@ -2928,6 +2910,7 @@ impl FastNoise {
         sum
     }
 
+    #[allow(dead_code)]
     fn single_simplex_fractal_blend(&self, mut x: f32, mut y: f32) -> f32 {
         let mut sum = self.single_simplex(self.perm[0], x, y);
         let mut amp = 1.0;
@@ -2945,6 +2928,7 @@ impl FastNoise {
         sum * self.fractal_bounding
     }
 
+    #[allow(dead_code)]
     fn get_simplex(&self, x: f32, y: f32) -> f32 {
         self.single_simplex(0, x * self.frequency, y * self.frequency)
     }
@@ -2955,11 +2939,11 @@ impl FastNoise {
         let j = fast_floor(y + t);
 
         t = (i + j) as f32 * G2;
-        let X0 = i as f32 - t;
-        let Y0 = j as f32 - t;
+        let x0 = i as f32 - t;
+        let y0 = j as f32 - t;
 
-        let x0 = x - X0;
-        let y0 = y - Y0;
+        let x0 = x - x0;
+        let y0 = y - y0;
 
         let i1;
         let j1;
@@ -3007,6 +2991,7 @@ impl FastNoise {
         70.0 * (n0 + n1 + n2)
     }
 
+    #[allow(dead_code)]
     fn get_simplex_4d(&self, x: f32, y: f32, z: f32, w: f32) -> f32 {
         self.single_simplex4d(
             0,
@@ -3017,6 +3002,7 @@ impl FastNoise {
         )
     }
 
+    #[allow(dead_code)]
     fn greater_1_0(&self, n: i32, greater_than: i32) -> i32 {
         if n >= greater_than {
             1
@@ -3025,6 +3011,7 @@ impl FastNoise {
         }
     }
 
+    #[allow(dead_code)]
     fn single_simplex4d(&self, offset: u8, x: f32, y: f32, z: f32, w: f32) -> f32 {
         let n0: f32;
         let n1: f32;
@@ -3038,14 +3025,14 @@ impl FastNoise {
         let k = fast_floor(z + t) as f32;
         let l = fast_floor(w + t) as f32;
         t = (i + j + k + l) * G4;
-        let X0 = i - t;
-        let Y0 = j - t;
-        let Z0 = k - t;
-        let W0 = l - t;
-        let x0 = x - X0;
-        let y0 = y - Y0;
-        let z0 = z - Z0;
-        let w0 = w - W0;
+        let x0 = i - t;
+        let y0 = j - t;
+        let z0 = k - t;
+        let w0 = l - t;
+        let x0 = x - x0;
+        let y0 = y - y0;
+        let z0 = z - z0;
+        let w0 = w - w0;
 
         let mut rankx = 0;
         let mut ranky = 0;
@@ -3206,6 +3193,7 @@ impl FastNoise {
         27.0 * (n0 + n1 + n2 + n3 + n4) as f32
     }
 
+    #[allow(dead_code)]
     // Cubic Noise
     fn get_cubic_fractal3d(&self, mut x: f32, mut y: f32, mut z: f32) -> f32 {
         x *= self.frequency;
@@ -3271,6 +3259,7 @@ impl FastNoise {
         sum
     }
 
+    #[allow(dead_code)]
     fn get_cubic3d(&self, x: f32, y: f32, z: f32) -> f32 {
         self.single_cubic3d(
             0,
@@ -3299,7 +3288,7 @@ impl FastNoise {
         let ys = y - y1 as f32;
         let zs = z - z1 as f32;
 
-        return cubic_lerp(
+        cubic_lerp(
             cubic_lerp(
                 cubic_lerp(
                     self.val_coord_3d_fast(offset, x0, y0, z0),
@@ -3425,9 +3414,10 @@ impl FastNoise {
                 ys,
             ),
             zs,
-        ) * CUBIC_3D_BOUNDING;
+        ) * CUBIC_3D_BOUNDING
     }
 
+    #[allow(dead_code)]
     fn get_cubic_fractal(&self, mut x: f32, mut y: f32) -> f32 {
         x *= self.frequency;
         y *= self.frequency;
@@ -3490,6 +3480,7 @@ impl FastNoise {
         sum
     }
 
+    #[allow(dead_code)]
     fn get_cubic(&self, x: f32, y: f32) -> f32 {
         self.single_cubic(0, x * self.frequency, y * self.frequency)
     }
@@ -3508,7 +3499,7 @@ impl FastNoise {
         let xs = x - x1 as f32;
         let ys = y - y1 as f32;
 
-        return cubic_lerp(
+        cubic_lerp(
             cubic_lerp(
                 self.val_coord_2d_fast(offset, x0, y0),
                 self.val_coord_2d_fast(offset, x1, y0),
@@ -3538,9 +3529,10 @@ impl FastNoise {
                 xs,
             ),
             ys,
-        ) * CUBIC_2D_BOUNDING;
+        ) * CUBIC_2D_BOUNDING
     }
 
+    #[allow(dead_code)]
     // Cellular Noise
     fn get_cellular3d(&self, mut x: f32, mut y: f32, mut z: f32) -> f32 {
         x *= self.frequency;
@@ -3569,19 +3561,19 @@ impl FastNoise {
                 for xi in xr - 1..xr + 2 {
                     for yi in yr - 1..yr + 2 {
                         for zi in zr - 1..zr + 2 {
-                            let lutPos: u8 = self.index3d_256(0, xi, yi, zi);
+                            let lut_pos: u8 = self.index3d_256(0, xi, yi, zi);
 
-                            let vecX =
-                                xi as f32 - x + CELL_3D_X[lutPos as usize] * self.cellular_jitter;
-                            let vecY =
-                                yi as f32 - y + CELL_3D_Y[lutPos as usize] * self.cellular_jitter;
-                            let vecZ =
-                                zi as f32 - z + CELL_3D_Z[lutPos as usize] * self.cellular_jitter;
+                            let vec_x =
+                                xi as f32 - x + CELL_3D_X[lut_pos as usize] * self.cellular_jitter;
+                            let vec_y =
+                                yi as f32 - y + CELL_3D_Y[lut_pos as usize] * self.cellular_jitter;
+                            let vec_z =
+                                zi as f32 - z + CELL_3D_Z[lut_pos as usize] * self.cellular_jitter;
 
-                            let newDistance = vecX * vecX + vecY * vecY + vecZ * vecZ;
+                            let new_distance = vec_x * vec_x + vec_y * vec_y + vec_z * vec_z;
 
-                            if newDistance < distance {
-                                distance = newDistance;
+                            if new_distance < distance {
+                                distance = new_distance;
                                 xc = xi;
                                 yc = yi;
                                 zc = zi;
@@ -3594,20 +3586,20 @@ impl FastNoise {
                 for xi in xr - 1..xr + 2 {
                     for yi in yr - 1..yr + 2 {
                         for zi in zr - 1..zr + 2 {
-                            let lutPos: u8 = self.index3d_256(0, xi, yi, zi);
+                            let lut_pos: u8 = self.index3d_256(0, xi, yi, zi);
 
-                            let vecX =
-                                xi as f32 - x + CELL_3D_X[lutPos as usize] * self.cellular_jitter;
-                            let vecY =
-                                yi as f32 - y + CELL_3D_Y[lutPos as usize] * self.cellular_jitter;
-                            let vecZ =
-                                zi as f32 - z + CELL_3D_Z[lutPos as usize] * self.cellular_jitter;
+                            let vec_x =
+                                xi as f32 - x + CELL_3D_X[lut_pos as usize] * self.cellular_jitter;
+                            let vec_y =
+                                yi as f32 - y + CELL_3D_Y[lut_pos as usize] * self.cellular_jitter;
+                            let vec_z =
+                                zi as f32 - z + CELL_3D_Z[lut_pos as usize] * self.cellular_jitter;
 
-                            let newDistance =
-                                fast_abs_f(vecX) + fast_abs_f(vecY) + fast_abs_f(vecZ);
+                            let new_distance =
+                                fast_abs_f(vec_x) + fast_abs_f(vec_y) + fast_abs_f(vec_z);
 
-                            if newDistance < distance {
-                                distance = newDistance;
+                            if new_distance < distance {
+                                distance = new_distance;
                                 xc = xi;
                                 yc = yi;
                                 zc = zi;
@@ -3620,21 +3612,21 @@ impl FastNoise {
                 for xi in xr - 1..xr + 2 {
                     for yi in yr - 1..yr + 2 {
                         for zi in zr - 1..zr + 2 {
-                            let lutPos: u8 = self.index3d_256(0, xi, yi, zi);
+                            let lut_pos: u8 = self.index3d_256(0, xi, yi, zi);
 
-                            let vecX =
-                                xi as f32 - x + CELL_3D_X[lutPos as usize] * self.cellular_jitter;
-                            let vecY =
-                                yi as f32 - y + CELL_3D_Y[lutPos as usize] * self.cellular_jitter;
-                            let vecZ =
-                                zi as f32 - z + CELL_3D_Z[lutPos as usize] * self.cellular_jitter;
+                            let vec_x =
+                                xi as f32 - x + CELL_3D_X[lut_pos as usize] * self.cellular_jitter;
+                            let vec_y =
+                                yi as f32 - y + CELL_3D_Y[lut_pos as usize] * self.cellular_jitter;
+                            let vec_z =
+                                zi as f32 - z + CELL_3D_Z[lut_pos as usize] * self.cellular_jitter;
 
-                            let newDistance =
-                                (fast_abs_f(vecX) + fast_abs_f(vecY) + fast_abs_f(vecZ))
-                                    + (vecX * vecX + vecY * vecY + vecZ * vecZ);
+                            let new_distance =
+                                (fast_abs_f(vec_x) + fast_abs_f(vec_y) + fast_abs_f(vec_z))
+                                    + (vec_x * vec_x + vec_y * vec_y + vec_z * vec_z);
 
-                            if newDistance < distance {
-                                distance = newDistance;
+                            if new_distance < distance {
+                                distance = new_distance;
                                 xc = xi;
                                 yc = yi;
                                 zc = zi;
@@ -3645,7 +3637,7 @@ impl FastNoise {
             }
         }
 
-        //let lutPos : u8;
+        //let lut_pos : u8;
         match self.cellular_return_type {
             CellularReturnType::CellValue => self.val_coord_3d(self.seed as i32, xc, yc, zc),
             CellularReturnType::Distance => distance,
@@ -3666,24 +3658,24 @@ impl FastNoise {
                 for xi in xr - 1..xr + 2 {
                     for yi in yr - 1..yr + 2 {
                         for zi in zr - 1..zr + 2 {
-                            let lutPos: u8 = self.index3d_256(0, xi, yi, zi);
+                            let lut_pos: u8 = self.index3d_256(0, xi, yi, zi);
 
-                            let vecX =
-                                xi as f32 - x + CELL_3D_X[lutPos as usize] * self.cellular_jitter;
-                            let vecY =
-                                yi as f32 - y + CELL_3D_Y[lutPos as usize] * self.cellular_jitter;
-                            let vecZ =
-                                zi as f32 - z + CELL_3D_Z[lutPos as usize] * self.cellular_jitter;
+                            let vec_x =
+                                xi as f32 - x + CELL_3D_X[lut_pos as usize] * self.cellular_jitter;
+                            let vec_y =
+                                yi as f32 - y + CELL_3D_Y[lut_pos as usize] * self.cellular_jitter;
+                            let vec_z =
+                                zi as f32 - z + CELL_3D_Z[lut_pos as usize] * self.cellular_jitter;
 
-                            let newDistance = vecX * vecX + vecY * vecY + vecZ * vecZ;
+                            let new_distance = vec_x * vec_x + vec_y * vec_y + vec_z * vec_z;
 
                             for i in (0..self.cellular_distance_index.1).rev() {
                                 distance[i as usize] = f32::max(
-                                    f32::min(distance[i as usize], newDistance),
+                                    f32::min(distance[i as usize], new_distance),
                                     distance[i as usize - 1],
                                 );
                             }
-                            distance[0] = f32::min(distance[0], newDistance);
+                            distance[0] = f32::min(distance[0], new_distance);
                         }
                     }
                 }
@@ -3692,25 +3684,25 @@ impl FastNoise {
                 for xi in xr - 1..xr + 2 {
                     for yi in yr - 1..yr + 2 {
                         for zi in zr - 1..zr + 2 {
-                            let lutPos = self.index3d_256(0, xi, yi, zi);
+                            let lut_pos = self.index3d_256(0, xi, yi, zi);
 
-                            let vecX =
-                                xi as f32 - x + CELL_3D_X[lutPos as usize] * self.cellular_jitter;
-                            let vecY =
-                                yi as f32 - y + CELL_3D_Y[lutPos as usize] * self.cellular_jitter;
-                            let vecZ =
-                                zi as f32 - z + CELL_3D_Z[lutPos as usize] * self.cellular_jitter;
+                            let vec_x =
+                                xi as f32 - x + CELL_3D_X[lut_pos as usize] * self.cellular_jitter;
+                            let vec_y =
+                                yi as f32 - y + CELL_3D_Y[lut_pos as usize] * self.cellular_jitter;
+                            let vec_z =
+                                zi as f32 - z + CELL_3D_Z[lut_pos as usize] * self.cellular_jitter;
 
-                            let newDistance =
-                                fast_abs_f(vecX) + fast_abs_f(vecY) + fast_abs_f(vecZ);
+                            let new_distance =
+                                fast_abs_f(vec_x) + fast_abs_f(vec_y) + fast_abs_f(vec_z);
 
                             for i in (0..self.cellular_distance_index.1 + 1).rev() {
                                 distance[i as usize] = f32::max(
-                                    f32::min(distance[i as usize], newDistance),
+                                    f32::min(distance[i as usize], new_distance),
                                     distance[i as usize - 1],
                                 );
                             }
-                            distance[0] = f32::min(distance[0], newDistance);
+                            distance[0] = f32::min(distance[0], new_distance);
                         }
                     }
                 }
@@ -3719,26 +3711,26 @@ impl FastNoise {
                 for xi in xr - 1..xr + 2 {
                     for yi in yr - 1..yr + 2 {
                         for zi in zr - 1..zr + 2 {
-                            let lutPos = self.index3d_256(0, xi, yi, zi);
+                            let lut_pos = self.index3d_256(0, xi, yi, zi);
 
-                            let vecX =
-                                xi as f32 - x + CELL_3D_X[lutPos as usize] * self.cellular_jitter;
-                            let vecY =
-                                yi as f32 - y + CELL_3D_Y[lutPos as usize] * self.cellular_jitter;
-                            let vecZ =
-                                zi as f32 - z + CELL_3D_Z[lutPos as usize] * self.cellular_jitter;
+                            let vec_x =
+                                xi as f32 - x + CELL_3D_X[lut_pos as usize] * self.cellular_jitter;
+                            let vec_y =
+                                yi as f32 - y + CELL_3D_Y[lut_pos as usize] * self.cellular_jitter;
+                            let vec_z =
+                                zi as f32 - z + CELL_3D_Z[lut_pos as usize] * self.cellular_jitter;
 
-                            let newDistance =
-                                (fast_abs_f(vecX) + fast_abs_f(vecY) + fast_abs_f(vecZ))
-                                    + (vecX * vecX + vecY * vecY + vecZ * vecZ);
+                            let new_distance =
+                                (fast_abs_f(vec_x) + fast_abs_f(vec_y) + fast_abs_f(vec_z))
+                                    + (vec_x * vec_x + vec_y * vec_y + vec_z * vec_z);
 
                             for i in (0..self.cellular_distance_index.1 + 1).rev() {
                                 distance[i as usize] = f32::max(
-                                    f32::min(distance[i as usize], newDistance),
+                                    f32::min(distance[i as usize], new_distance),
                                     distance[i as usize - 1],
                                 );
                             }
-                            distance[0] = f32::min(distance[0], newDistance);
+                            distance[0] = f32::min(distance[0], new_distance);
                         }
                     }
                 }
@@ -3767,6 +3759,7 @@ impl FastNoise {
         }
     }
 
+    #[allow(dead_code)]
     fn get_cellular(&self, mut x: f32, mut y: f32) -> f32 {
         x *= self.frequency;
         y *= self.frequency;
@@ -3788,17 +3781,17 @@ impl FastNoise {
             CellularDistanceFunction::Euclidean => {
                 for xi in xr - 1..xr + 2 {
                     for yi in yr - 1..yr + 2 {
-                        let lutPos: u8 = self.index2d_256(0, xi, yi);
+                        let lut_pos: u8 = self.index2d_256(0, xi, yi);
 
-                        let vecX =
-                            xi as f32 - x + CELL_2D_X[lutPos as usize] * self.cellular_jitter;
-                        let vecY =
-                            yi as f32 - y + CELL_2D_Y[lutPos as usize] * self.cellular_jitter;
+                        let vec_x =
+                            xi as f32 - x + CELL_2D_X[lut_pos as usize] * self.cellular_jitter;
+                        let vec_y =
+                            yi as f32 - y + CELL_2D_Y[lut_pos as usize] * self.cellular_jitter;
 
-                        let newDistance = vecX * vecX + vecY * vecY;
+                        let new_distance = vec_x * vec_x + vec_y * vec_y;
 
-                        if newDistance < distance {
-                            distance = newDistance;
+                        if new_distance < distance {
+                            distance = new_distance;
                         }
                     }
                 }
@@ -3806,17 +3799,17 @@ impl FastNoise {
             CellularDistanceFunction::Manhattan => {
                 for xi in xr - 1..xr + 2 {
                     for yi in yr - 1..yr + 2 {
-                        let lutPos: u8 = self.index2d_256(0, xi, yi);
+                        let lut_pos: u8 = self.index2d_256(0, xi, yi);
 
-                        let vecX =
-                            xi as f32 - x + CELL_2D_X[lutPos as usize] * self.cellular_jitter;
-                        let vecY =
-                            yi as f32 - y + CELL_2D_Y[lutPos as usize] * self.cellular_jitter;
+                        let vec_x =
+                            xi as f32 - x + CELL_2D_X[lut_pos as usize] * self.cellular_jitter;
+                        let vec_y =
+                            yi as f32 - y + CELL_2D_Y[lut_pos as usize] * self.cellular_jitter;
 
-                        let newDistance = fast_abs_f(vecX) + fast_abs_f(vecY);
+                        let new_distance = fast_abs_f(vec_x) + fast_abs_f(vec_y);
 
-                        if newDistance < distance {
-                            distance = newDistance;
+                        if new_distance < distance {
+                            distance = new_distance;
                         }
                     }
                 }
@@ -3824,25 +3817,25 @@ impl FastNoise {
             CellularDistanceFunction::Natural => {
                 for xi in xr - 1..xr + 2 {
                     for yi in yr - 1..yr + 2 {
-                        let lutPos: u8 = self.index2d_256(0, xi, yi);
+                        let lut_pos: u8 = self.index2d_256(0, xi, yi);
 
-                        let vecX =
-                            xi as f32 - x + CELL_2D_X[lutPos as usize] * self.cellular_jitter;
-                        let vecY =
-                            yi as f32 - y + CELL_2D_Y[lutPos as usize] * self.cellular_jitter;
+                        let vec_x =
+                            xi as f32 - x + CELL_2D_X[lut_pos as usize] * self.cellular_jitter;
+                        let vec_y =
+                            yi as f32 - y + CELL_2D_Y[lut_pos as usize] * self.cellular_jitter;
 
-                        let newDistance =
-                            (fast_abs_f(vecX) + fast_abs_f(vecY)) + (vecX * vecX + vecY * vecY);
+                        let new_distance = (fast_abs_f(vec_x) + fast_abs_f(vec_y))
+                            + (vec_x * vec_x + vec_y * vec_y);
 
-                        if newDistance < distance {
-                            distance = newDistance;
+                        if new_distance < distance {
+                            distance = new_distance;
                         }
                     }
                 }
             }
         }
 
-        //let lutPos : u8;
+        //let lut_pos : u8;
         match self.cellular_return_type {
             CellularReturnType::CellValue => {
                 self.val_coord_2d(self.seed as i32, x as i32, y as i32)
@@ -3861,67 +3854,67 @@ impl FastNoise {
             CellularDistanceFunction::Euclidean => {
                 for xi in xr - 1..xr + 2 {
                     for yi in yr - 1..yr + 2 {
-                        let lutPos = self.index2d_256(0, xi, yi);
+                        let lut_pos = self.index2d_256(0, xi, yi);
 
-                        let vecX =
-                            xi as f32 - x + CELL_2D_X[lutPos as usize] * self.cellular_jitter;
-                        let vecY =
-                            yi as f32 - y + CELL_2D_Y[lutPos as usize] * self.cellular_jitter;
+                        let vec_x =
+                            xi as f32 - x + CELL_2D_X[lut_pos as usize] * self.cellular_jitter;
+                        let vec_y =
+                            yi as f32 - y + CELL_2D_Y[lut_pos as usize] * self.cellular_jitter;
 
-                        let newDistance = vecX * vecX + vecY * vecY;
+                        let new_distance = vec_x * vec_x + vec_y * vec_y;
 
                         for i in (0..self.cellular_distance_index.1 + 1).rev() {
                             distance[i as usize] = f32::max(
-                                f32::min(distance[i as usize], newDistance),
+                                f32::min(distance[i as usize], new_distance),
                                 distance[i as usize - 1],
                             );
                         }
-                        distance[0] = f32::min(distance[0], newDistance);
+                        distance[0] = f32::min(distance[0], new_distance);
                     }
                 }
             }
             CellularDistanceFunction::Manhattan => {
                 for xi in xr - 1..xr + 2 {
                     for yi in yr - 1..yr + 2 {
-                        let lutPos = self.index2d_256(0, xi, yi);
+                        let lut_pos = self.index2d_256(0, xi, yi);
 
-                        let vecX =
-                            xi as f32 - x + CELL_2D_X[lutPos as usize] * self.cellular_jitter;
-                        let vecY =
-                            yi as f32 - y + CELL_2D_Y[lutPos as usize] * self.cellular_jitter;
+                        let vec_x =
+                            xi as f32 - x + CELL_2D_X[lut_pos as usize] * self.cellular_jitter;
+                        let vec_y =
+                            yi as f32 - y + CELL_2D_Y[lut_pos as usize] * self.cellular_jitter;
 
-                        let newDistance = fast_abs_f(vecX) + fast_abs_f(vecY);
+                        let new_distance = fast_abs_f(vec_x) + fast_abs_f(vec_y);
 
                         for i in (0..self.cellular_distance_index.1 + 1).rev() {
                             distance[i as usize] = f32::max(
-                                f32::min(distance[i as usize], newDistance),
+                                f32::min(distance[i as usize], new_distance),
                                 distance[i as usize - 1],
                             );
                         }
-                        distance[0] = f32::min(distance[0], newDistance);
+                        distance[0] = f32::min(distance[0], new_distance);
                     }
                 }
             }
             CellularDistanceFunction::Natural => {
                 for xi in xr - 1..xr + 2 {
                     for yi in yr - 1..yr + 2 {
-                        let lutPos = self.index2d_256(0, xi, yi);
+                        let lut_pos = self.index2d_256(0, xi, yi);
 
-                        let vecX =
-                            xi as f32 - x + CELL_2D_X[lutPos as usize] * self.cellular_jitter;
-                        let vecY =
-                            yi as f32 - y + CELL_2D_Y[lutPos as usize] * self.cellular_jitter;
+                        let vec_x =
+                            xi as f32 - x + CELL_2D_X[lut_pos as usize] * self.cellular_jitter;
+                        let vec_y =
+                            yi as f32 - y + CELL_2D_Y[lut_pos as usize] * self.cellular_jitter;
 
-                        let newDistance =
-                            (fast_abs_f(vecX) + fast_abs_f(vecY)) + (vecX * vecX + vecY * vecY);
+                        let new_distance = (fast_abs_f(vec_x) + fast_abs_f(vec_y))
+                            + (vec_x * vec_x + vec_y * vec_y);
 
                         for i in (0..self.cellular_distance_index.1 + 1).rev() {
                             distance[i as usize] = f32::max(
-                                f32::min(distance[i as usize], newDistance),
+                                f32::min(distance[i as usize], new_distance),
                                 distance[i as usize - 1],
                             );
                         }
-                        distance[0] = f32::min(distance[0], newDistance);
+                        distance[0] = f32::min(distance[0], new_distance);
                     }
                 }
             }
@@ -3949,10 +3942,12 @@ impl FastNoise {
         }
     }
 
+    #[allow(dead_code)]
     fn gradient_perturb3d(&self, x: &mut f32, y: &mut f32, z: &mut f32) {
         self.single_gradient_perturb3d(0, self.gradient_perturb_amp, self.frequency, x, y, z);
     }
 
+    #[allow(dead_code)]
     fn gradient_perturb_fractal3d(&self, x: &mut f32, y: &mut f32, z: &mut f32) {
         let mut amp = self.gradient_perturb_amp * self.fractal_bounding;
         let mut freq = self.frequency;
@@ -3969,10 +3964,11 @@ impl FastNoise {
         }
     }
 
+    #[allow(dead_code)]
     fn single_gradient_perturb3d(
         &self,
         offset: u8,
-        warpAmp: f32,
+        warp_amp: f32,
         frequency: f32,
         x: &mut f32,
         y: &mut f32,
@@ -4010,47 +4006,97 @@ impl FastNoise {
             }
         }
 
-        let mut lutPos0 = self.index3d_256(offset, x0, y0, z0);
-        let mut lutPos1 = self.index3d_256(offset, x1, y0, z0);
+        let mut lut_pos0 = self.index3d_256(offset, x0, y0, z0);
+        let mut lut_pos1 = self.index3d_256(offset, x1, y0, z0);
 
-        let mut lx0x = lerp(CELL_3D_X[lutPos0 as usize], CELL_3D_X[lutPos1 as usize], xs);
-        let mut ly0x = lerp(CELL_3D_Y[lutPos0 as usize], CELL_3D_Y[lutPos1 as usize], xs);
-        let mut lz0x = lerp(CELL_3D_Z[lutPos0 as usize], CELL_3D_Z[lutPos1 as usize], xs);
+        let mut lx0x = lerp(
+            CELL_3D_X[lut_pos0 as usize],
+            CELL_3D_X[lut_pos1 as usize],
+            xs,
+        );
+        let mut ly0x = lerp(
+            CELL_3D_Y[lut_pos0 as usize],
+            CELL_3D_Y[lut_pos1 as usize],
+            xs,
+        );
+        let mut lz0x = lerp(
+            CELL_3D_Z[lut_pos0 as usize],
+            CELL_3D_Z[lut_pos1 as usize],
+            xs,
+        );
 
-        lutPos0 = self.index3d_256(offset, x0, y1, z0);
-        lutPos1 = self.index3d_256(offset, x1, y1, z0);
+        lut_pos0 = self.index3d_256(offset, x0, y1, z0);
+        lut_pos1 = self.index3d_256(offset, x1, y1, z0);
 
-        let mut lx1x = lerp(CELL_3D_X[lutPos0 as usize], CELL_3D_X[lutPos1 as usize], xs);
-        let mut ly1x = lerp(CELL_3D_Y[lutPos0 as usize], CELL_3D_Y[lutPos1 as usize], xs);
-        let mut lz1x = lerp(CELL_3D_Z[lutPos0 as usize], CELL_3D_Z[lutPos1 as usize], xs);
+        let mut lx1x = lerp(
+            CELL_3D_X[lut_pos0 as usize],
+            CELL_3D_X[lut_pos1 as usize],
+            xs,
+        );
+        let mut ly1x = lerp(
+            CELL_3D_Y[lut_pos0 as usize],
+            CELL_3D_Y[lut_pos1 as usize],
+            xs,
+        );
+        let mut lz1x = lerp(
+            CELL_3D_Z[lut_pos0 as usize],
+            CELL_3D_Z[lut_pos1 as usize],
+            xs,
+        );
 
         let lx0y = lerp(lx0x, lx1x, ys);
         let ly0y = lerp(ly0x, ly1x, ys);
         let lz0y = lerp(lz0x, lz1x, ys);
 
-        lutPos0 = self.index3d_256(offset, x0, y0, z1);
-        lutPos1 = self.index3d_256(offset, x1, y0, z1);
+        lut_pos0 = self.index3d_256(offset, x0, y0, z1);
+        lut_pos1 = self.index3d_256(offset, x1, y0, z1);
 
-        lx0x = lerp(CELL_3D_X[lutPos0 as usize], CELL_3D_X[lutPos1 as usize], xs);
-        ly0x = lerp(CELL_3D_Y[lutPos0 as usize], CELL_3D_Y[lutPos1 as usize], xs);
-        lz0x = lerp(CELL_3D_Z[lutPos0 as usize], CELL_3D_Z[lutPos1 as usize], xs);
+        lx0x = lerp(
+            CELL_3D_X[lut_pos0 as usize],
+            CELL_3D_X[lut_pos1 as usize],
+            xs,
+        );
+        ly0x = lerp(
+            CELL_3D_Y[lut_pos0 as usize],
+            CELL_3D_Y[lut_pos1 as usize],
+            xs,
+        );
+        lz0x = lerp(
+            CELL_3D_Z[lut_pos0 as usize],
+            CELL_3D_Z[lut_pos1 as usize],
+            xs,
+        );
 
-        lutPos0 = self.index3d_256(offset, x0, y1, z1);
-        lutPos1 = self.index3d_256(offset, x1, y1, z1);
+        lut_pos0 = self.index3d_256(offset, x0, y1, z1);
+        lut_pos1 = self.index3d_256(offset, x1, y1, z1);
 
-        lx1x = lerp(CELL_3D_X[lutPos0 as usize], CELL_3D_X[lutPos1 as usize], xs);
-        ly1x = lerp(CELL_3D_Y[lutPos0 as usize], CELL_3D_Y[lutPos1 as usize], xs);
-        lz1x = lerp(CELL_3D_Z[lutPos0 as usize], CELL_3D_Z[lutPos1 as usize], xs);
+        lx1x = lerp(
+            CELL_3D_X[lut_pos0 as usize],
+            CELL_3D_X[lut_pos1 as usize],
+            xs,
+        );
+        ly1x = lerp(
+            CELL_3D_Y[lut_pos0 as usize],
+            CELL_3D_Y[lut_pos1 as usize],
+            xs,
+        );
+        lz1x = lerp(
+            CELL_3D_Z[lut_pos0 as usize],
+            CELL_3D_Z[lut_pos1 as usize],
+            xs,
+        );
 
-        *x += lerp(lx0y, lerp(lx0x, lx1x, ys), zs) * warpAmp;
-        *y += lerp(ly0y, lerp(ly0x, ly1x, ys), zs) * warpAmp;
-        *z += lerp(lz0y, lerp(lz0x, lz1x, ys), zs) * warpAmp;
+        *x += lerp(lx0y, lerp(lx0x, lx1x, ys), zs) * warp_amp;
+        *y += lerp(ly0y, lerp(ly0x, ly1x, ys), zs) * warp_amp;
+        *z += lerp(lz0y, lerp(lz0x, lz1x, ys), zs) * warp_amp;
     }
 
+    #[allow(dead_code)]
     fn gradient_perturb(&self, x: &mut f32, y: &mut f32) {
         self.single_gradient_perturb(0, self.gradient_perturb_amp, self.frequency, x, y);
     }
 
+    #[allow(dead_code)]
     fn gradient_perturb_fractal(&self, x: &mut f32, y: &mut f32) {
         let mut amp = self.gradient_perturb_amp * self.fractal_bounding;
         let mut freq = self.frequency;
@@ -4066,10 +4112,11 @@ impl FastNoise {
         }
     }
 
+    #[allow(dead_code)]
     fn single_gradient_perturb(
         &self,
         offset: u8,
-        warpAmp: f32,
+        warp_amp: f32,
         frequency: f32,
         x: &mut f32,
         y: &mut f32,
@@ -4099,19 +4146,35 @@ impl FastNoise {
             }
         }
 
-        let mut lutPos0 = self.index2d_256(offset, x0, y0);
-        let mut lutPos1 = self.index2d_256(offset, x1, y0);
+        let mut lut_pos0 = self.index2d_256(offset, x0, y0);
+        let mut lut_pos1 = self.index2d_256(offset, x1, y0);
 
-        let lx0x = lerp(CELL_2D_X[lutPos0 as usize], CELL_2D_X[lutPos1 as usize], xs);
-        let ly0x = lerp(CELL_2D_Y[lutPos0 as usize], CELL_2D_Y[lutPos1 as usize], xs);
+        let lx0x = lerp(
+            CELL_2D_X[lut_pos0 as usize],
+            CELL_2D_X[lut_pos1 as usize],
+            xs,
+        );
+        let ly0x = lerp(
+            CELL_2D_Y[lut_pos0 as usize],
+            CELL_2D_Y[lut_pos1 as usize],
+            xs,
+        );
 
-        lutPos0 = self.index2d_256(offset, x0, y1);
-        lutPos1 = self.index2d_256(offset, x1, y1);
+        lut_pos0 = self.index2d_256(offset, x0, y1);
+        lut_pos1 = self.index2d_256(offset, x1, y1);
 
-        let lx1x = lerp(CELL_2D_X[lutPos0 as usize], CELL_2D_X[lutPos1 as usize], xs);
-        let ly1x = lerp(CELL_2D_Y[lutPos0 as usize], CELL_2D_Y[lutPos1 as usize], xs);
+        let lx1x = lerp(
+            CELL_2D_X[lut_pos0 as usize],
+            CELL_2D_X[lut_pos1 as usize],
+            xs,
+        );
+        let ly1x = lerp(
+            CELL_2D_Y[lut_pos0 as usize],
+            CELL_2D_Y[lut_pos1 as usize],
+            xs,
+        );
 
-        *x += lerp(lx0x, lx1x, ys) * warpAmp;
-        *y += lerp(ly0x, ly1x, ys) * warpAmp;
+        *x += lerp(lx0x, lx1x, ys) * warp_amp;
+        *y += lerp(ly0x, ly1x, ys) * warp_amp;
     }
 }

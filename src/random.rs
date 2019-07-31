@@ -1,23 +1,21 @@
 use rand::{Rng, RngCore, SeedableRng};
 use rand_xorshift::XorShiftRng;
 
-#[allow(dead_code)]
 pub struct RandomNumberGenerator {
     rng: XorShiftRng,
 }
 
-#[allow(dead_code)]
 impl RandomNumberGenerator {
     /// Creates a new RNG from a randomly generated seed
     pub fn new() -> RandomNumberGenerator {
         let rng: XorShiftRng = SeedableRng::from_entropy();
-        RandomNumberGenerator { rng: rng }
+        RandomNumberGenerator { rng }
     }
 
     /// Creates a new RNG from a specific seed
     pub fn seeded(seed: u64) -> RandomNumberGenerator {
         let rng: XorShiftRng = SeedableRng::seed_from_u64(seed);
-        RandomNumberGenerator { rng: rng }
+        RandomNumberGenerator { rng }
     }
 
     /// Returns a random value of whatever type you specify
@@ -41,7 +39,7 @@ impl RandomNumberGenerator {
     /// Rolls dice, using the classic 3d6 type of format: n is the number of dice, die_type is the size of the dice.
     pub fn roll_dice(&mut self, n: i32, die_type: i32) -> i32 {
         let mut total = 0;
-        for _i in 0..n {
+        for _ in 0..n {
             total += self.range(1, die_type + 1);
         }
         total

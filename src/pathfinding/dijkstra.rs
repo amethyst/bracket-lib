@@ -3,7 +3,6 @@ use rayon::prelude::*;
 use std::f32::MAX;
 use std::mem;
 
-#[allow(dead_code)]
 /// Representation of a Dijkstra flow map.
 /// map is a vector of floats, having a size equal to size_x * size_y (one per tile).
 /// size_x and size_y are stored for overflow avoidance.
@@ -36,12 +35,12 @@ impl DijkstraMap {
         let result: Vec<f32> = vec![MAX; (size_x * size_y) as usize];
         let mut d = DijkstraMap {
             map: result,
-            size_x: size_x,
-            size_y: size_y,
-            max_depth: max_depth,
+            size_x,
+            size_y,
+            max_depth,
         };
         DijkstraMap::build(&mut d, starts, map);
-        return d;
+        d
     }
 
     /// Creates an empty Dijkstra map node.
@@ -49,11 +48,11 @@ impl DijkstraMap {
         let result: Vec<f32> = vec![MAX; (size_x * size_y) as usize];
         let d = DijkstraMap {
             map: result,
-            size_x: size_x,
-            size_y: size_y,
-            max_depth: max_depth,
+            size_x,
+            size_y,
+            max_depth,
         };
-        return d;
+        d
     }
 
     /// Internal: add a node to the open list if it doesn't exceed max_depth, and isn't on the closed list.
@@ -216,7 +215,7 @@ impl DijkstraMap {
         }
         exits.par_sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
 
-        return Some(exits[0].0);
+        Some(exits[0].0)
     }
 
     /// Helper for traversing maps as path-finding. Provides the index of the highest available
@@ -235,6 +234,6 @@ impl DijkstraMap {
         }
         exits.par_sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
 
-        return Some(exits[0].0);
+        Some(exits[0].0)
     }
 }

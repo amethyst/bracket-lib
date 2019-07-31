@@ -1,7 +1,6 @@
 use super::{distance2d, DistanceAlg, LineAlg, Point};
 use bresenham::Bresenham;
 
-#[allow(dead_code)]
 /// Plots a line between two 2D points and returns a vector of points along the line.
 pub fn line2d(algorithm: LineAlg, start: Point, end: Point) -> Vec<Point> {
     match algorithm {
@@ -10,7 +9,6 @@ pub fn line2d(algorithm: LineAlg, start: Point, end: Point) -> Vec<Point> {
     }
 }
 
-#[allow(dead_code)]
 /// Uses a Bresenham's algorithm to plot a line between two points. On some CPUs, this is faster
 /// than Bresenham.
 pub fn line2d_bresenham(start: Point, end: Point) -> Vec<Point> {
@@ -28,7 +26,6 @@ pub fn line2d_bresenham(start: Point, end: Point) -> Vec<Point> {
     result
 }
 
-#[allow(dead_code)]
 /// Uses a 2D vector algorithm to plot a line between two points. On some CPUs, this is faster
 /// than Bresenham.
 pub fn line2d_vector(start: Point, end: Point) -> Vec<Point> {

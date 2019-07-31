@@ -14,10 +14,10 @@ pub struct TextBlock {
 impl TextBlock {
     pub fn new(x: i32, y: i32, width: i32, height: i32) -> TextBlock {
         TextBlock {
-            x: x,
-            y: y,
-            width: width,
-            height: height,
+            x,
+            y,
+            width,
+            height,
             fg: RGB::from_f32(1.0, 1.0, 1.0),
             bg: RGB::from_f32(0.0, 0.0, 0.0),
             buffer: vec![
