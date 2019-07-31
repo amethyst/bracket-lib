@@ -14,7 +14,7 @@ use std::time::Instant;
 /// A display console, used internally to provide console render support.
 /// Public in case you want to play with it, or access it directly.
 pub struct DisplayConsole {
-    pub console: Box<Console>,
+    pub console: Box<dyn Console>,
     pub shader_index: usize,
     pub font_index: usize,
 }
@@ -176,7 +176,7 @@ impl Rltk {
     }
 
     /// Registers a new console terminal for output, and returns its handle number.
-    pub fn register_console(&mut self, new_console: Box<Console>, font_index: usize) -> usize {
+    pub fn register_console(&mut self, new_console: Box<dyn Console>, font_index: usize) -> usize {
         self.consoles.push(DisplayConsole {
             console: new_console,
             font_index: font_index,
@@ -189,7 +189,7 @@ impl Rltk {
     /// that the new console not render background colors, so it can be layered on top of other consoles.
     pub fn register_console_no_bg(
         &mut self,
-        new_console: Box<Console>,
+        new_console: Box<dyn Console>,
         font_index: usize,
     ) -> usize {
         self.consoles.push(DisplayConsole {
