@@ -40,7 +40,7 @@ impl GameState for State {
 fn main() {
     let context = Rltk::init_simple8x8(80, 50, "Hello RLTK World", "resources");
     let gs = State{ };
-    rltk::main_loop(context, Box::new(gs));
+    rltk::main_loop(context, gs);
 }
 ```
 

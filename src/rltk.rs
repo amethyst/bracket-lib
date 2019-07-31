@@ -213,7 +213,7 @@ impl Console for Rltk {
 
 #[allow(non_snake_case)]
 /// Runs the RLTK application, calling into the provided gamestate handler every tick.
-pub fn main_loop(mut rltk : Rltk, mut gamestate: Box<GameState>) {
+pub fn main_loop<GS: GameState>(mut rltk : Rltk, mut gamestate: GS) {
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
     let mut prev_ms = now.elapsed().as_millis();
@@ -286,7 +286,7 @@ pub fn main_loop(mut rltk : Rltk, mut gamestate: Box<GameState>) {
 }
 
 /// Internal handling of the main loop.
-fn tock(rltk : &mut Rltk, gamestate: &mut Box<GameState>, frames: &mut i32, prev_seconds : &mut u64, prev_ms : &mut u128, now : &Instant) {    
+fn tock<GS: GameState>(rltk : &mut Rltk, gamestate: &mut GS, frames: &mut i32, prev_seconds : &mut u64, prev_ms : &mut u128, now : &Instant) {    
     let now_seconds = now.elapsed().as_secs();
     *frames += 1;
 

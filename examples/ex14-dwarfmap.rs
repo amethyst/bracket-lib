@@ -245,5 +245,5 @@ impl Algorithm3D for State {
 fn main() {
     let context = Rltk::init_simple8x8(80, 50, "RLTK Example 14 - Dwarf Fortress Map Style", "resources");
     let gs = State::new();
-    rltk::main_loop(context, Box::new(gs));
+    rltk::main_loop(context, gs);
 }

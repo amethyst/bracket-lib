@@ -177,5 +177,5 @@ fn main() {
     context.register_console(rltk::SimpleConsole::init(WIDTH as u32, HEIGHT as u32, &context.gl), font);
     context.register_console_no_bg(rltk::SparseConsole::init(WIDTH as u32, HEIGHT as u32, &context.gl), font);
     let gs = State::new();
-    rltk::main_loop(context, Box::new(gs));
+    rltk::main_loop(context, gs);
 }

@@ -39,5 +39,5 @@ fn main() {
     let mut context = Rltk::init_simple8x8(80, 50, "Example 10 - Post Process Effects", "resources");
     context.with_post_scanlines(true);
     let gs : State = State{ nyan: xp, burn: true };
-    rltk::main_loop(context, Box::new(gs));
+    rltk::main_loop(context, gs);
 }

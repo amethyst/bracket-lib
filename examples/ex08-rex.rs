@@ -39,5 +39,5 @@ fn main() {
 
     let context = Rltk::init_simple8x8(80, 50, "Example 8 - Hello Nyan Cat", "resources");
     let gs : State = State{ nyan: xp };
-    rltk::main_loop(context, Box::new(gs));
+    rltk::main_loop(context, gs);
 }
