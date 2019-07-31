@@ -12,15 +12,11 @@ pub fn line2d(algorithm: LineAlg, start: Point, end: Point) -> Vec<Point> {
 /// Uses a Bresenham's algorithm to plot a line between two points. On some CPUs, this is faster
 /// than Bresenham.
 pub fn line2d_bresenham(start: Point, end: Point) -> Vec<Point> {
-    let mut result: Vec<Point> = Vec::new();
-
     let line = Bresenham::new(
         (start.x as isize, start.y as isize),
         (end.x as isize, end.y as isize),
     );
-    for p in line {
-        result.push(Point::new(p.0 as i32, p.1 as i32));
-    }
+    let mut result: Vec<_> = line.map(|p| Point::new(p.0 as i32, p.1 as i32)).collect();
     result.push(end);
 
     result
@@ -29,23 +25,26 @@ pub fn line2d_bresenham(start: Point, end: Point) -> Vec<Point> {
 /// Uses a 2D vector algorithm to plot a line between two points. On some CPUs, this is faster
 /// than Bresenham.
 pub fn line2d_vector(start: Point, end: Point) -> Vec<Point> {
+    if start == end {
+        // not sure if it should return vec![] or vec![start]
+        return vec![start];
+    }
     let mut pos: (f32, f32) = (start.x as f32 + 0.5, start.y as f32 + 0.5);
     let dest: (f32, f32) = (end.x as f32 + 0.5, end.y as f32 + 0.5);
     let n_steps = distance2d(DistanceAlg::Pythagoras, start, end);
     let slope: (f32, f32) = ((dest.0 - pos.0) / n_steps, (dest.1 - pos.1) / n_steps);
-    let mut result: Vec<Point> = Vec::new();
-    result.push(start);
+    let mut result: Vec<Point> = vec![start];
 
-    let mut arrived = false;
-    while !arrived {
+    loop {
         pos.0 += slope.0;
         pos.1 += slope.1;
-        let new_point = Point::new(f32::floor(pos.0) as i32, f32::floor(pos.1) as i32);
-        if result.is_empty() || result[result.len() - 1] != new_point {
+        let new_point = Point::new(pos.0 as i32, pos.1 as i32);
+        if result[result.len() - 1] != new_point {
             result.push(new_point);
-        }
-        if new_point == end {
-            arrived = true;
+            if new_point == end {
+                // arrived
+                break;
+            }
         }
     }
 
