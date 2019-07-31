@@ -26,7 +26,6 @@ pub fn line2d_bresenham(start: Point, end: Point) -> Vec<Point> {
 /// than Bresenham.
 pub fn line2d_vector(start: Point, end: Point) -> Vec<Point> {
     if start == end {
-        // not sure if it should return vec![] or vec![start]
         return vec![start];
     }
     let mut pos: (f32, f32) = (start.x as f32 + 0.5, start.y as f32 + 0.5);
