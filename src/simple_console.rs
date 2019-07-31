@@ -198,7 +198,7 @@ impl SimpleConsole {
                 self.push_point(screen_x, screen_y, fg, bg, glyph_left, glyph_bottom);
                 self.push_point(screen_x, screen_y + step_y, fg, bg, glyph_left, glyph_top);
 
-                self.index_buffer[self.index_counter] = 0 + index_count;
+                self.index_buffer[self.index_counter] = index_count;
                 self.index_buffer[self.index_counter + 1] = 1 + index_count;
                 self.index_buffer[self.index_counter + 2] = 3 + index_count;
                 self.index_buffer[self.index_counter + 3] = 1 + index_count;
@@ -293,9 +293,9 @@ impl Console for SimpleConsole {
         let mut idx = self.at(x, y);
 
         let bytes = super::string_to_cp437(output);
-        for i in 0..bytes.len() {
+        for glyph in bytes {
             if idx < self.tiles.len() {
-                self.tiles[idx].glyph = bytes[i];
+                self.tiles[idx].glyph = glyph;
                 idx += 1;
             }
         }
@@ -307,9 +307,9 @@ impl Console for SimpleConsole {
         let mut idx = self.at(x, y);
 
         let bytes = super::string_to_cp437(output);
-        for i in 0..bytes.len() {
+        for glyph in bytes {
             if idx < self.tiles.len() {
-                self.tiles[idx].glyph = bytes[i];
+                self.tiles[idx].glyph = glyph;
                 self.tiles[idx].bg = bg;
                 self.tiles[idx].fg = fg;
                 idx += 1;
