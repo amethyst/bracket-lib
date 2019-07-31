@@ -28,7 +28,7 @@ impl DijkstraMap {
     pub fn new(
         size_x: i32,
         size_y: i32,
-        starts: &Vec<i32>,
+        starts: &[i32],
         map: &dyn BaseMap,
         max_depth: f32,
     ) -> DijkstraMap {
@@ -85,7 +85,7 @@ impl DijkstraMap {
     /// depth is further than the current depth.
     /// If you provide more starting points than you have CPUs, automatically branches to a parallel
     /// version.
-    pub fn build(dm: &mut DijkstraMap, starts: &Vec<i32>, map: &dyn BaseMap) {
+    pub fn build(dm: &mut DijkstraMap, starts: &[i32], map: &dyn BaseMap) {
         if starts.len() > rayon::current_num_threads() {
             DijkstraMap::build_parallel(dm, starts, map);
             return;
@@ -137,7 +137,7 @@ impl DijkstraMap {
     }
 
     /// Implementation of Parallel Dijkstra.
-    fn build_parallel(dm: &mut DijkstraMap, starts: &Vec<i32>, map: &dyn BaseMap) {
+    fn build_parallel(dm: &mut DijkstraMap, starts: &[i32], map: &dyn BaseMap) {
         let mapsize: usize = (dm.size_x * dm.size_y) as usize;
         let mut layers: Vec<ParallelDm> = Vec::with_capacity(starts.len());
         for start_chunk in starts.chunks(rayon::current_num_threads()) {
