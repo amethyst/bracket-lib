@@ -116,7 +116,7 @@ impl AStar {
         } else {
             let distance = self.distance_to_end(idx, map);
             let s = Node {
-                idx: idx,
+                idx,
                 f: distance + cost,
                 g: cost,
                 h: distance,
@@ -164,7 +164,7 @@ impl AStar {
     /// Performs an A-Star search
     fn search(&mut self, map: &dyn BaseMap) -> NavigationPath {
         let result = NavigationPath::new();
-        while self.open_list.len() != 0 && self.step_counter < MAX_ASTAR_STEPS {
+        while !self.open_list.is_empty() && self.step_counter < MAX_ASTAR_STEPS {
             self.step_counter += 1;
 
             // Pop Q off of the list

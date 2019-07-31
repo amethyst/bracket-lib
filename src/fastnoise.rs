@@ -2945,15 +2945,7 @@ impl FastNoise {
         let x0 = x - x0;
         let y0 = y - y0;
 
-        let i1;
-        let j1;
-        if x0 > y0 {
-            i1 = 1;
-            j1 = 0;
-        } else {
-            i1 = 0;
-            j1 = 1;
-        }
+        let (i1, j1) = if x0 > y0 { (1, 0) } else { (0, 1) };
 
         let x1 = x0 - i1 as f32 + G2;
         let y1 = y0 - j1 as f32 + G2;
@@ -3696,7 +3688,7 @@ impl FastNoise {
                             let new_distance =
                                 fast_abs_f(vec_x) + fast_abs_f(vec_y) + fast_abs_f(vec_z);
 
-                            for i in (0..self.cellular_distance_index.1 + 1).rev() {
+                            for i in (0..=self.cellular_distance_index.1).rev() {
                                 distance[i as usize] = f32::max(
                                     f32::min(distance[i as usize], new_distance),
                                     distance[i as usize - 1],
@@ -3724,7 +3716,7 @@ impl FastNoise {
                                 (fast_abs_f(vec_x) + fast_abs_f(vec_y) + fast_abs_f(vec_z))
                                     + (vec_x * vec_x + vec_y * vec_y + vec_z * vec_z);
 
-                            for i in (0..self.cellular_distance_index.1 + 1).rev() {
+                            for i in (0..=self.cellular_distance_index.1).rev() {
                                 distance[i as usize] = f32::max(
                                     f32::min(distance[i as usize], new_distance),
                                     distance[i as usize - 1],
@@ -3863,7 +3855,7 @@ impl FastNoise {
 
                         let new_distance = vec_x * vec_x + vec_y * vec_y;
 
-                        for i in (0..self.cellular_distance_index.1 + 1).rev() {
+                        for i in (0..=self.cellular_distance_index.1).rev() {
                             distance[i as usize] = f32::max(
                                 f32::min(distance[i as usize], new_distance),
                                 distance[i as usize - 1],
@@ -3885,7 +3877,7 @@ impl FastNoise {
 
                         let new_distance = fast_abs_f(vec_x) + fast_abs_f(vec_y);
 
-                        for i in (0..self.cellular_distance_index.1 + 1).rev() {
+                        for i in (0..=self.cellular_distance_index.1).rev() {
                             distance[i as usize] = f32::max(
                                 f32::min(distance[i as usize], new_distance),
                                 distance[i as usize - 1],
@@ -3908,7 +3900,7 @@ impl FastNoise {
                         let new_distance = (fast_abs_f(vec_x) + fast_abs_f(vec_y))
                             + (vec_x * vec_x + vec_y * vec_y);
 
-                        for i in (0..self.cellular_distance_index.1 + 1).rev() {
+                        for i in (0..=self.cellular_distance_index.1).rev() {
                             distance[i as usize] = f32::max(
                                 f32::min(distance[i as usize], new_distance),
                                 distance[i as usize - 1],
