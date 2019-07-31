@@ -95,7 +95,7 @@ fn distance3d_pythagoras(start: Point3, end: Point3) -> f32 {
 /// From a given start point, project forward radius units at an angle of angle_radians degrees.
 /// 0 Degrees is north (negative Y), 90 degrees is east (positive X)
 pub fn project_angle(start: Point, radius: f32, angle_radians: f32) -> Point {
-    let degrees_radians = angle_radians + 3.14159;
+    let degrees_radians = angle_radians + std::f32::consts::PI;
     Point::new(
         (0.0 - (start.x as f32 + radius * f32::sin(degrees_radians))) as i32,
         (start.y as f32 + radius * f32::cos(degrees_radians)) as i32,
