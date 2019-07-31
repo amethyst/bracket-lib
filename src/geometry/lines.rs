@@ -16,10 +16,9 @@ pub fn line2d_bresenham(start: Point, end: Point) -> Vec<Point> {
         (start.x as isize, start.y as isize),
         (end.x as isize, end.y as isize),
     );
-    let mut result: Vec<_> = line.map(|p| Point::new(p.0 as i32, p.1 as i32)).collect();
-    result.push(end);
-
-    result
+    line.map(|p| Point::new(p.0 as i32, p.1 as i32))
+        .chain(std::iter::once(end))
+        .collect()
 }
 
 /// Uses a 2D vector algorithm to plot a line between two points. On some CPUs, this is faster
