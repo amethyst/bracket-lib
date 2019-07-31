@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////////////
 
 extern crate rltk;
-use rltk::{Rltk, GameState, Console, RGB, BaseMap, Algorithm2D, Point, DijkstraMap, DistanceAlg};
+use rltk::{Algorithm2D, BaseMap, Console, DijkstraMap, DistanceAlg, GameState, Point, Rltk, RGB};
 
 extern crate rand;
 use crate::rand::Rng;
@@ -15,47 +15,54 @@ use crate::rand::Rng;
 use std::f32::MAX;
 
 #[derive(PartialEq, Copy, Clone)]
-enum TileType { Wall, Floor }
+enum TileType {
+    Wall,
+    Floor,
+}
 
 // We're breaking the map structure out into its own, so we can hold a copy of both it
 // and various flow-mapping stuff without annoying the borrow checker.
 struct Map {
-    tiles : Vec<TileType>,   
-    visible : Vec<bool>,
-    revealed : Vec<bool>,
+    tiles: Vec<TileType>,
+    visible: Vec<bool>,
+    revealed: Vec<bool>,
 }
 
 // We've added a new field, revealed. If a tile isn't revealed, we have never seen it.
 struct State {
-    map : Map,
-    player_position : usize,
+    map: Map,
+    player_position: usize,
     search_targets: Vec<i32>,
-    flow_map : DijkstraMap
+    flow_map: DijkstraMap,
 }
 
-pub fn xy_idx(x : i32, y : i32) -> usize {
+pub fn xy_idx(x: i32, y: i32) -> usize {
     (y as usize * 80) + x as usize
 }
 
-pub fn idx_xy(idx : usize) -> (i32, i32) {
+pub fn idx_xy(idx: usize) -> (i32, i32) {
     (idx as i32 % 80, idx as i32 / 80)
 }
 
 impl State {
     pub fn new() -> State {
-        let mut state = State{
-            map : Map{ tiles: vec![TileType::Floor; 80*50], visible: vec![false; 80*50], revealed: vec![false; 80*50] },
+        let mut state = State {
+            map: Map {
+                tiles: vec![TileType::Floor; 80 * 50],
+                visible: vec![false; 80 * 50],
+                revealed: vec![false; 80 * 50],
+            },
             player_position: xy_idx(40, 25),
-            search_targets : Vec::with_capacity(80*50),
+            search_targets: Vec::with_capacity(80 * 50),
             // Here we create an empty placeholder for the flow map; this way we don't allocate it repeatedly
-            flow_map : DijkstraMap::new_empty(80, 50, 2048.0)
+            flow_map: DijkstraMap::new_empty(80, 50, 2048.0),
         };
 
-        for x in 0 .. 80 {
+        for x in 0..80 {
             state.map.tiles[xy_idx(x, 0)] = TileType::Wall;
             state.map.tiles[xy_idx(x, 49)] = TileType::Wall;
         }
-        for y in 0 .. 50 {
+        for y in 0..50 {
             state.map.tiles[xy_idx(0, y)] = TileType::Wall;
             state.map.tiles[xy_idx(79, y)] = TileType::Wall;
         }
@@ -75,8 +82,8 @@ impl State {
         // Populate the search targets
         // Since the map doesn't change, we'll do this once. It's a list of indices of tiles that
         // are not walls, and aren't revealed
-        for i in 0 .. 80*50 {
-            if state.map.revealed[i]==false && state.map.tiles[i] == TileType::Floor {
+        for i in 0..80 * 50 {
+            if state.map.revealed[i] == false && state.map.tiles[i] == TileType::Floor {
                 state.search_targets.push(i as i32);
             }
         }
@@ -88,9 +95,11 @@ impl State {
 // Implement the game loop
 impl GameState for State {
     #[allow(non_snake_case)]
-    fn tick(&mut self, ctx : &mut Rltk) {        
+    fn tick(&mut self, ctx: &mut Rltk) {
         // Set all tiles to not visible
-        for v in self.map.visible.iter_mut() { *v = false; }
+        for v in self.map.visible.iter_mut() {
+            *v = false;
+        }
 
         // Obtain the player's visible tile set, and apply it
         let player_position = self.map.index_to_point2d(self.player_position as i32);
@@ -112,15 +121,23 @@ impl GameState for State {
         let mut anything_left = true;
         DijkstraMap::clear(&mut self.flow_map);
         DijkstraMap::build(&mut self.flow_map, &self.search_targets, &self.map);
-        if !(self.flow_map.map[self.player_position] < MAX) { anything_left = false; }
+        if !(self.flow_map.map[self.player_position] < MAX) {
+            anything_left = false;
+        }
         if anything_left {
             // Now we use the flow map to move
             // If its MAX, then there's nowhere to go.
-            let destination = DijkstraMap::find_lowest_exit(&self.flow_map, self.player_position as i32, &self.map);
+            let destination = DijkstraMap::find_lowest_exit(
+                &self.flow_map,
+                self.player_position as i32,
+                &self.map,
+            );
             match destination {
                 None => {}
-                Some(idx) => { self.player_position = idx as usize; }
-            }            
+                Some(idx) => {
+                    self.player_position = idx as usize;
+                }
+            }
         }
 
         // Clear the screen
@@ -129,7 +146,7 @@ impl GameState for State {
         // Iterate the map array, incrementing coordinates as we go.
         let mut y = 0;
         let mut x = 0;
-        let mut i : usize = 0;
+        let mut i: usize = 0;
         for tile in self.map.tiles.iter() {
             // New test: only render if its revealed
             let bg;
@@ -146,10 +163,17 @@ impl GameState for State {
                 let mut glyph = ".";
 
                 match tile {
-                    TileType::Floor => { fg = RGB::from_f32(0.5, 0.5, 0.0); }
-                    TileType::Wall => { fg = RGB::from_f32(0.0, 1.0, 0.0); glyph = "#"; }
+                    TileType::Floor => {
+                        fg = RGB::from_f32(0.5, 0.5, 0.0);
+                    }
+                    TileType::Wall => {
+                        fg = RGB::from_f32(0.0, 1.0, 0.0);
+                        glyph = "#";
+                    }
                 }
-                if !self.map.visible[i] { fg = fg.to_greyscale(); }
+                if !self.map.visible[i] {
+                    fg = fg.to_greyscale();
+                }
                 ctx.print_color(x, y, fg, bg, glyph);
             } else {
                 ctx.print_color(x, y, RGB::from_f32(0.5, 0.5, 0.0), bg, " ");
@@ -166,52 +190,96 @@ impl GameState for State {
 
         // Render the player @ symbol
         let ppos = idx_xy(self.player_position);
-        ctx.print_color(ppos.0, ppos.1, RGB::from_f32(1.0, 1.0, 0.0), RGB::from_f32(0., 0., 0.), "@");
+        ctx.print_color(
+            ppos.0,
+            ppos.1,
+            RGB::from_f32(1.0, 1.0, 0.0),
+            RGB::from_f32(0., 0., 0.),
+            "@",
+        );
 
         if !anything_left {
-            ctx.print_color(30, 25, RGB::from_f32(1.0, 1.0, 1.0), RGB::from_f32(1., 0., 0.), "Search Complete");
+            ctx.print_color(
+                30,
+                25,
+                RGB::from_f32(1.0, 1.0, 1.0),
+                RGB::from_f32(1., 0., 0.),
+                "Search Complete",
+            );
         } else {
-            ctx.print_color(0, 0, RGB::from_f32(1.0, 1.0, 0.0), RGB::from_f32(0., 0., 0.), &format!("{} Targets Remain", self.search_targets.len()));
-            ctx.print_color(0, 1, RGB::from_f32(1.0, 1.0, 0.0), RGB::from_f32(0., 0., 0.), &format!("{} FPS", ctx.fps));
+            ctx.print_color(
+                0,
+                0,
+                RGB::from_f32(1.0, 1.0, 0.0),
+                RGB::from_f32(0., 0., 0.),
+                &format!("{} Targets Remain", self.search_targets.len()),
+            );
+            ctx.print_color(
+                0,
+                1,
+                RGB::from_f32(1.0, 1.0, 0.0),
+                RGB::from_f32(0., 0., 0.),
+                &format!("{} FPS", ctx.fps),
+            );
         }
     }
 }
 
 // Implementing a function called is_exit_valid to help our available exists
-// call. 
+// call.
 impl Map {
     #[inline(always)]
-    pub fn is_exit_valid(&self, x:i32, y:i32) -> bool {
-        if x < 1 || x > 79 || y < 1 || y > 49 { return false; }
+    pub fn is_exit_valid(&self, x: i32, y: i32) -> bool {
+        if x < 1 || x > 79 || y < 1 || y > 49 {
+            return false;
+        }
         let idx = ((y * 80) + x) as usize;
         return self.tiles[idx] == TileType::Floor;
     }
 }
 
 impl BaseMap for Map {
-    fn is_opaque(&self, idx: i32) -> bool { self.tiles[idx as usize] == TileType::Wall }
-    
-    fn get_available_exits(&self, idx:i32) -> Vec<(i32, f32)> {
-        let mut exits : Vec<(i32, f32)> = Vec::with_capacity(8);
+    fn is_opaque(&self, idx: i32) -> bool {
+        self.tiles[idx as usize] == TileType::Wall
+    }
+
+    fn get_available_exits(&self, idx: i32) -> Vec<(i32, f32)> {
+        let mut exits: Vec<(i32, f32)> = Vec::with_capacity(8);
         let x = idx % 80;
         let y = idx / 80;
 
         // Cardinal directions
-        if self.is_exit_valid(x-1, y) { exits.push((idx-1, 1.0)) };
-        if self.is_exit_valid(x+1, y) { exits.push((idx+1, 1.0)) };
-        if self.is_exit_valid(x, y-1) { exits.push((idx-80, 1.0)) };
-        if self.is_exit_valid(x, y+1) { exits.push((idx+80, 1.0)) };
+        if self.is_exit_valid(x - 1, y) {
+            exits.push((idx - 1, 1.0))
+        };
+        if self.is_exit_valid(x + 1, y) {
+            exits.push((idx + 1, 1.0))
+        };
+        if self.is_exit_valid(x, y - 1) {
+            exits.push((idx - 80, 1.0))
+        };
+        if self.is_exit_valid(x, y + 1) {
+            exits.push((idx + 80, 1.0))
+        };
 
         // Diagonals
-        if self.is_exit_valid(x-1, y-1) { exits.push(((idx-80)-1, 1.4)); }
-        if self.is_exit_valid(x+1, y-1) { exits.push(((idx-80)+1, 1.4)); }
-        if self.is_exit_valid(x-1, y+1) { exits.push(((idx+80)-1, 1.4)); }
-        if self.is_exit_valid(x+1, y+1) { exits.push(((idx+80)+1, 1.4)); }
+        if self.is_exit_valid(x - 1, y - 1) {
+            exits.push(((idx - 80) - 1, 1.4));
+        }
+        if self.is_exit_valid(x + 1, y - 1) {
+            exits.push(((idx - 80) + 1, 1.4));
+        }
+        if self.is_exit_valid(x - 1, y + 1) {
+            exits.push(((idx + 80) - 1, 1.4));
+        }
+        if self.is_exit_valid(x + 1, y + 1) {
+            exits.push(((idx + 80) + 1, 1.4));
+        }
 
         return exits;
     }
-    
-    fn get_pathing_distance(&self, idx1:i32, idx2:i32) -> f32 {
+
+    fn get_pathing_distance(&self, idx1: i32, idx2: i32) -> f32 {
         let p1 = Point::new(idx1 % 80, idx1 / 80);
         let p2 = Point::new(idx2 % 80, idx2 / 80);
         return rltk::distance2d(DistanceAlg::Pythagoras, p1, p2);
@@ -219,8 +287,12 @@ impl BaseMap for Map {
 }
 
 impl Algorithm2D for Map {
-    fn point2d_to_index(&self, pt : Point) -> i32 { xy_idx(pt.x, pt.y) as i32 }
-    fn index_to_point2d(&self, idx:i32) -> Point { Point::new(idx % 80, idx / 80) }
+    fn point2d_to_index(&self, pt: Point) -> i32 {
+        xy_idx(pt.x, pt.y) as i32
+    }
+    fn index_to_point2d(&self, idx: i32) -> Point {
+        Point::new(idx % 80, idx / 80)
+    }
 }
 
 fn main() {

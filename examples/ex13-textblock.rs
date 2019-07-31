@@ -1,13 +1,11 @@
 extern crate rltk;
 
-use rltk::{Rltk, GameState, Console, TextBlock, TextBuilder, RGB};
+use rltk::{Console, GameState, Rltk, TextBlock, TextBuilder, RGB};
 
-struct State {
-}
+struct State {}
 
 impl GameState for State {
-
-    fn tick(&mut self, ctx : &mut Rltk) {
+    fn tick(&mut self, ctx: &mut Rltk) {
         ctx.cls();
         let mut block = TextBlock::new(0, 0, 80, 25);
 
@@ -31,15 +29,13 @@ impl GameState for State {
             ;
 
         block.print(&buf);
-        
-        block.render(&mut ctx.consoles[0].console);
 
+        block.render(&mut ctx.consoles[0].console);
     }
 }
 
-
 fn main() {
-    let gs : State = State{ };
+    let gs: State = State {};
 
     let context = Rltk::init_simple8x16(80, 25, "Example 13 - Text Blocks", "resources");
     rltk::main_loop(context, gs);

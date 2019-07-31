@@ -1,12 +1,12 @@
-use std::ffi::{CString, CStr};
+use super::gl;
+use cgmath::prelude::*;
+use cgmath::{Matrix, Matrix4, Vector3};
+use gl::types::*;
+use std::ffi::{CStr, CString};
 use std::fs::File;
 use std::io::Read;
 use std::ptr;
-use cgmath::{Matrix, Matrix4, Vector3};
-use cgmath::prelude::*;
-use gl::types::*;
 use std::str;
-use super::gl;
 
 #[allow(non_snake_case)]
 pub struct Shader {
@@ -18,15 +18,22 @@ pub struct Shader {
 #[allow(dead_code)]
 #[allow(non_snake_case)]
 impl Shader {
-    pub fn new<S: ToString>(gl : &gl::Gles2, vertex_path: S, fragment_path: S, path_to_shaders: S) -> Shader {
+    pub fn new<S: ToString>(
+        gl: &gl::Gles2,
+        vertex_path: S,
+        fragment_path: S,
+        path_to_shaders: S,
+    ) -> Shader {
         let shader_path = path_to_shaders.to_string();
         let vertexPath = format!("{}/{}", &shader_path, vertex_path.to_string());
         let fragmentPath = format!("{}/{}", &shader_path, fragment_path.to_string());
 
         let mut shader = Shader { ID: 0 };
         // 1. retrieve the vertex/fragment source code from filesystem
-        let mut vShaderFile = File::open(&vertexPath).unwrap_or_else(|_| panic!("Failed to open {}", vertexPath));
-        let mut fShaderFile = File::open(&fragmentPath).unwrap_or_else(|_| panic!("Failed to open {}", fragmentPath));
+        let mut vShaderFile =
+            File::open(&vertexPath).unwrap_or_else(|_| panic!("Failed to open {}", vertexPath));
+        let mut fShaderFile =
+            File::open(&fragmentPath).unwrap_or_else(|_| panic!("Failed to open {}", fragmentPath));
         let mut vertexCode = String::new();
         let mut fragmentCode = String::new();
         vShaderFile
@@ -68,60 +75,82 @@ impl Shader {
 
     /// activate the shader
     /// ------------------------------------------------------------------------
-    pub unsafe fn useProgram(&self, gl : &gl::Gles2) {
+    pub unsafe fn useProgram(&self, gl: &gl::Gles2) {
         gl.UseProgram(self.ID)
     }
 
     /// utility uniform functions
     /// ------------------------------------------------------------------------
-    pub unsafe fn setBool(&self, gl : &gl::Gles2, name: &CStr, value: bool) {
+    pub unsafe fn setBool(&self, gl: &gl::Gles2, name: &CStr, value: bool) {
         gl.Uniform1i(gl.GetUniformLocation(self.ID, name.as_ptr()), value as i32);
     }
     /// ------------------------------------------------------------------------
-    pub unsafe fn setInt(&self, gl : &gl::Gles2, name: &CStr, value: i32) {
+    pub unsafe fn setInt(&self, gl: &gl::Gles2, name: &CStr, value: i32) {
         gl.Uniform1i(gl.GetUniformLocation(self.ID, name.as_ptr()), value);
     }
     /// ------------------------------------------------------------------------
-    pub unsafe fn setFloat(&self, gl : &gl::Gles2, name: &CStr, value: f32) {
+    pub unsafe fn setFloat(&self, gl: &gl::Gles2, name: &CStr, value: f32) {
         gl.Uniform1f(gl.GetUniformLocation(self.ID, name.as_ptr()), value);
     }
     /// ------------------------------------------------------------------------
-    pub unsafe fn setVector3(&self, gl : &gl::Gles2, name: &CStr, value: &Vector3<f32>) {
-        gl.Uniform3fv(gl.GetUniformLocation(self.ID, name.as_ptr()), 1, value.as_ptr());
+    pub unsafe fn setVector3(&self, gl: &gl::Gles2, name: &CStr, value: &Vector3<f32>) {
+        gl.Uniform3fv(
+            gl.GetUniformLocation(self.ID, name.as_ptr()),
+            1,
+            value.as_ptr(),
+        );
     }
     /// ------------------------------------------------------------------------
-    pub unsafe fn setVec3(&self, gl : &gl::Gles2, name: &CStr, x: f32, y: f32, z: f32) {
+    pub unsafe fn setVec3(&self, gl: &gl::Gles2, name: &CStr, x: f32, y: f32, z: f32) {
         gl.Uniform3f(gl.GetUniformLocation(self.ID, name.as_ptr()), x, y, z);
     }
     /// ------------------------------------------------------------------------
-    pub unsafe fn setMat4(&self, gl : &gl::Gles2, name: &CStr, mat: &Matrix4<f32>) {
-        gl.UniformMatrix4fv(gl.GetUniformLocation(self.ID, name.as_ptr()), 1, gl::FALSE, mat.as_ptr());
+    pub unsafe fn setMat4(&self, gl: &gl::Gles2, name: &CStr, mat: &Matrix4<f32>) {
+        gl.UniformMatrix4fv(
+            gl.GetUniformLocation(self.ID, name.as_ptr()),
+            1,
+            gl::FALSE,
+            mat.as_ptr(),
+        );
     }
 
     /// utility function for checking shader compilation/linking errors.
     /// ------------------------------------------------------------------------
-    unsafe fn checkCompileErrors(&self, gl : &gl::Gles2, shader: u32, type_: &str) {
+    unsafe fn checkCompileErrors(&self, gl: &gl::Gles2, shader: u32, type_: &str) {
         let mut success = gl::FALSE as GLint;
         let mut infoLog = Vec::with_capacity(1024);
         infoLog.set_len(1024 - 1); // subtract 1 to skip the trailing null character
         if type_ != "PROGRAM" {
             gl.GetShaderiv(shader, gl::COMPILE_STATUS, &mut success);
             if success != gl::TRUE as GLint {
-                gl.GetShaderInfoLog(shader, 1024, ptr::null_mut(), infoLog.as_mut_ptr() as *mut GLchar);
-                println!("ERROR::SHADER_COMPILATION_ERROR of type: {}\n{}\n \
-                          -- --------------------------------------------------- -- ",
-                         type_,
-                         str::from_utf8(&infoLog).unwrap());
+                gl.GetShaderInfoLog(
+                    shader,
+                    1024,
+                    ptr::null_mut(),
+                    infoLog.as_mut_ptr() as *mut GLchar,
+                );
+                println!(
+                    "ERROR::SHADER_COMPILATION_ERROR of type: {}\n{}\n \
+                     -- --------------------------------------------------- -- ",
+                    type_,
+                    str::from_utf8(&infoLog).unwrap()
+                );
             }
-
         } else {
             gl.GetProgramiv(shader, gl::LINK_STATUS, &mut success);
             if success != gl::TRUE as GLint {
-                gl.GetProgramInfoLog(shader, 1024, ptr::null_mut(), infoLog.as_mut_ptr() as *mut GLchar);
-                println!("ERROR::PROGRAM_LINKING_ERROR of type: {}\n{}\n \
-                          -- --------------------------------------------------- -- ",
-                         type_,
-                         str::from_utf8(&infoLog).unwrap());
+                gl.GetProgramInfoLog(
+                    shader,
+                    1024,
+                    ptr::null_mut(),
+                    infoLog.as_mut_ptr() as *mut GLchar,
+                );
+                println!(
+                    "ERROR::PROGRAM_LINKING_ERROR of type: {}\n{}\n \
+                     -- --------------------------------------------------- -- ",
+                    type_,
+                    str::from_utf8(&infoLog).unwrap()
+                );
             }
         }
     }

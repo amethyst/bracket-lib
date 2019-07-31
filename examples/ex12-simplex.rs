@@ -1,16 +1,15 @@
 extern crate rltk;
 
-use rltk::{Rltk, GameState, Console, FastNoise, FractalType, NoiseType, RGB};
+use rltk::{Console, FastNoise, FractalType, GameState, NoiseType, Rltk, RGB};
 
 struct State {
-    colors : Vec<RGB>,
-    counter : u64,
-    timer : f32
+    colors: Vec<RGB>,
+    counter: u64,
+    timer: f32,
 }
 
 impl GameState for State {
-
-    fn tick(&mut self, ctx : &mut Rltk) {
+    fn tick(&mut self, ctx: &mut Rltk) {
         self.timer += ctx.frame_time_ms;
         if self.timer > 500.0 {
             self.timer = 0.0;
@@ -53,8 +52,12 @@ impl State {
 }
 
 fn main() {
-    let mut gs : State = State{ colors : vec![RGB::from_f32(0.,0.,0.) ; 80*50], counter : 0, timer : 0.0 };
-    gs.rebuild_noise(); 
+    let mut gs: State = State {
+        colors: vec![RGB::from_f32(0., 0., 0.); 80 * 50],
+        counter: 0,
+        timer: 0.0,
+    };
+    gs.rebuild_noise();
 
     let context = Rltk::init_simple8x8(80, 50, "Example 12 - Perlin Noise", "resources");
     rltk::main_loop(context, gs);

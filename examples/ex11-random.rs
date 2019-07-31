@@ -1,16 +1,15 @@
 extern crate rltk;
 
-use rltk::{Rltk, GameState, Console, RandomNumberGenerator, RGB};
+use rltk::{Console, GameState, RandomNumberGenerator, Rltk, RGB};
 
 struct State {
-    rng : RandomNumberGenerator,
-    n_rolls : u32,
-    rolls: Vec<u32>
+    rng: RandomNumberGenerator,
+    n_rolls: u32,
+    rolls: Vec<u32>,
 }
 
 impl GameState for State {
-
-    fn tick(&mut self, ctx : &mut Rltk) {
+    fn tick(&mut self, ctx: &mut Rltk) {
         self.n_rolls += 1;
 
         // Handle rollover
@@ -30,7 +29,15 @@ impl GameState for State {
         ctx.print(0, 1, "3d6 Distribution");
         for i in 3..19 {
             ctx.print(5, i, &format!("{:02}  : {}", i, self.rolls[i as usize]));
-            ctx.draw_bar_horizontal(20, i, 50, self.rolls[i as usize] as i32, *max as i32, RGB::named(rltk::GREEN), RGB::named(rltk::BLACK));
+            ctx.draw_bar_horizontal(
+                20,
+                i,
+                50,
+                self.rolls[i as usize] as i32,
+                *max as i32,
+                RGB::named(rltk::GREEN),
+                RGB::named(rltk::BLACK),
+            );
         }
 
         ctx.print(5, 22, &format!("Total rolls: {}", self.n_rolls));
@@ -39,6 +46,10 @@ impl GameState for State {
 
 fn main() {
     let context = Rltk::init_simple8x16(80, 23, "Example 11 - Random Numbers", "resources");
-    let gs : State = State{ rng: RandomNumberGenerator::new(), n_rolls : 0, rolls : vec![0 ; 19] };
+    let gs: State = State {
+        rng: RandomNumberGenerator::new(),
+        n_rolls: 0,
+        rolls: vec![0; 19],
+    };
     rltk::main_loop(context, gs);
 }

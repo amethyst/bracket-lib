@@ -4,43 +4,46 @@
 //////////////////////////////////////////////////////////////
 
 extern crate rltk;
-use rltk::{Rltk, GameState, Console, RGB, VirtualKeyCode, BaseMap, Algorithm2D, Point};
+use rltk::{Algorithm2D, BaseMap, Console, GameState, Point, Rltk, VirtualKeyCode, RGB};
 
 extern crate rand;
 use crate::rand::Rng;
 
 #[derive(PartialEq, Copy, Clone)]
-enum TileType { Wall, Floor }
+enum TileType {
+    Wall,
+    Floor,
+}
 
 // Just like example 3, but we're adding an additional vector: visible
 struct State {
-    map : Vec<TileType>,
-    player_position : usize,
-    visible : Vec<bool>
+    map: Vec<TileType>,
+    player_position: usize,
+    visible: Vec<bool>,
 }
 
-pub fn xy_idx(x : i32, y : i32) -> usize {
+pub fn xy_idx(x: i32, y: i32) -> usize {
     (y as usize * 80) + x as usize
 }
 
-pub fn idx_xy(idx : usize) -> (i32, i32) {
+pub fn idx_xy(idx: usize) -> (i32, i32) {
     (idx as i32 % 80, idx as i32 / 80)
 }
 
 impl State {
     pub fn new() -> State {
         // Same as example 3, but we've added the visible tiles
-        let mut state = State{
-            map : vec![TileType::Floor; 80*50],
+        let mut state = State {
+            map: vec![TileType::Floor; 80 * 50],
             player_position: xy_idx(40, 25),
-            visible: vec![false; 80*50]
+            visible: vec![false; 80 * 50],
         };
 
-        for x in 0 .. 80 {
+        for x in 0..80 {
             state.map[xy_idx(x, 0)] = TileType::Wall;
             state.map[xy_idx(x, 49)] = TileType::Wall;
         }
-        for y in 0 .. 50 {
+        for y in 0..50 {
             state.map[xy_idx(0, y)] = TileType::Wall;
             state.map[xy_idx(79, y)] = TileType::Wall;
         }
@@ -59,9 +62,9 @@ impl State {
         state
     }
 
-    pub fn move_player(&mut self, delta_x : i32, delta_y : i32) {
+    pub fn move_player(&mut self, delta_x: i32, delta_y: i32) {
         let current_position = idx_xy(self.player_position);
-        let new_position = ( current_position.0 + delta_x, current_position.1 + delta_y );
+        let new_position = (current_position.0 + delta_x, current_position.1 + delta_y);
         let new_idx = xy_idx(new_position.0, new_position.1);
         if self.map[new_idx] == TileType::Floor {
             self.player_position = new_idx;
@@ -72,28 +75,53 @@ impl State {
 // Implement the game loop
 impl GameState for State {
     #[allow(non_snake_case)]
-    fn tick(&mut self, ctx : &mut Rltk) {
+    fn tick(&mut self, ctx: &mut Rltk) {
         match ctx.key {
             None => {} // Nothing happened
-            Some(key) => { // A key is pressed or held
+            Some(key) => {
+                // A key is pressed or held
                 match key {
                     // Numpad
-                    VirtualKeyCode::Numpad8 => { self.move_player(0, -1); }
-                    VirtualKeyCode::Numpad4 => { self.move_player(-1, 0); }
-                    VirtualKeyCode::Numpad6 => { self.move_player(1, 0);  }
-                    VirtualKeyCode::Numpad2 => { self.move_player(0, 1); }
+                    VirtualKeyCode::Numpad8 => {
+                        self.move_player(0, -1);
+                    }
+                    VirtualKeyCode::Numpad4 => {
+                        self.move_player(-1, 0);
+                    }
+                    VirtualKeyCode::Numpad6 => {
+                        self.move_player(1, 0);
+                    }
+                    VirtualKeyCode::Numpad2 => {
+                        self.move_player(0, 1);
+                    }
 
                     // Numpad diagonals
-                    VirtualKeyCode::Numpad7 => { self.move_player(-1, -1); }
-                    VirtualKeyCode::Numpad9 => { self.move_player(1, -1); }
-                    VirtualKeyCode::Numpad1 => { self.move_player(-1, 1); }
-                    VirtualKeyCode::Numpad3 => { self.move_player(1, 1); }
+                    VirtualKeyCode::Numpad7 => {
+                        self.move_player(-1, -1);
+                    }
+                    VirtualKeyCode::Numpad9 => {
+                        self.move_player(1, -1);
+                    }
+                    VirtualKeyCode::Numpad1 => {
+                        self.move_player(-1, 1);
+                    }
+                    VirtualKeyCode::Numpad3 => {
+                        self.move_player(1, 1);
+                    }
 
                     // Cursors
-                    VirtualKeyCode::Up => { self.move_player(0, -1); }
-                    VirtualKeyCode::Down => { self.move_player(0, 1); }
-                    VirtualKeyCode::Left => { self.move_player(-1, 0); }
-                    VirtualKeyCode::Right => { self.move_player(1, 0); }
+                    VirtualKeyCode::Up => {
+                        self.move_player(0, -1);
+                    }
+                    VirtualKeyCode::Down => {
+                        self.move_player(0, 1);
+                    }
+                    VirtualKeyCode::Left => {
+                        self.move_player(-1, 0);
+                    }
+                    VirtualKeyCode::Right => {
+                        self.move_player(1, 0);
+                    }
 
                     _ => {} // Ignore all the other possibilities
                 }
@@ -101,7 +129,9 @@ impl GameState for State {
         }
 
         // Set all tiles to not visible
-        for v in self.visible.iter_mut() { *v = false; }
+        for v in self.visible.iter_mut() {
+            *v = false;
+        }
 
         // Obtain the player's visible tile set, and apply it
         let player_position = self.index_to_point2d(self.player_position as i32);
@@ -118,17 +148,24 @@ impl GameState for State {
         // Iterate the map array, incrementing coordinates as we go.
         let mut y = 0;
         let mut x = 0;
-        let mut i : usize = 0;
+        let mut i: usize = 0;
         for tile in self.map.iter() {
             // Render a tile depending upon the tile type; now we check visibility as well!
             let mut fg;
             let mut glyph = ".";
 
             match tile {
-                TileType::Floor => { fg = RGB::from_f32(0.5, 0.5, 0.0); }
-                TileType::Wall => { fg = RGB::from_f32(0.0, 1.0, 0.0); glyph = "#"; }
+                TileType::Floor => {
+                    fg = RGB::from_f32(0.5, 0.5, 0.0);
+                }
+                TileType::Wall => {
+                    fg = RGB::from_f32(0.0, 1.0, 0.0);
+                    glyph = "#";
+                }
             }
-            if !self.visible[i] { fg = fg.to_greyscale(); }
+            if !self.visible[i] {
+                fg = fg.to_greyscale();
+            }
             ctx.print_color(x, y, fg, RGB::from_f32(0., 0., 0.), glyph);
 
             // Move the coordinates
@@ -142,7 +179,13 @@ impl GameState for State {
 
         // Render the player @ symbol
         let ppos = idx_xy(self.player_position);
-        ctx.print_color(ppos.0, ppos.1, RGB::from_f32(1.0, 1.0, 0.0), RGB::from_f32(0., 0., 0.), "@");
+        ctx.print_color(
+            ppos.0,
+            ppos.1,
+            RGB::from_f32(1.0, 1.0, 0.0),
+            RGB::from_f32(0., 0., 0.),
+            "@",
+        );
     }
 }
 
@@ -151,15 +194,25 @@ impl GameState for State {
 // First, default implementations of some we aren't using yet (more on these later!)
 impl BaseMap for State {
     // We'll use this one - if its a wall, we can't see through it
-    fn is_opaque(&self, idx: i32) -> bool { self.map[idx as usize] == TileType::Wall }
-    fn get_available_exits(&self, _idx:i32) -> Vec<(i32, f32)> { Vec::new() }
-    fn get_pathing_distance(&self, _idx1:i32, _idx2:i32) -> f32 { 0.0 }
+    fn is_opaque(&self, idx: i32) -> bool {
+        self.map[idx as usize] == TileType::Wall
+    }
+    fn get_available_exits(&self, _idx: i32) -> Vec<(i32, f32)> {
+        Vec::new()
+    }
+    fn get_pathing_distance(&self, _idx1: i32, _idx2: i32) -> f32 {
+        0.0
+    }
 }
 
 impl Algorithm2D for State {
     // Point translations that we need for field-of-view. Fortunately, we've already written them!
-    fn point2d_to_index(&self, pt : Point) -> i32 { xy_idx(pt.x, pt.y) as i32 }
-    fn index_to_point2d(&self, idx:i32) -> Point { Point::new(idx % 80, idx / 80) }
+    fn point2d_to_index(&self, pt: Point) -> i32 {
+        xy_idx(pt.x, pt.y) as i32
+    }
+    fn index_to_point2d(&self, idx: i32) -> Point {
+        Point::new(idx % 80, idx / 80)
+    }
 }
 
 fn main() {
