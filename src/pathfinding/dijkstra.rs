@@ -148,7 +148,7 @@ impl DijkstraMap {
             };
             layer
                 .starts
-                .extend(start_chunk.into_iter().map(|&x| x as usize));
+                .extend(start_chunk.iter().copied().map(|x| x as usize));
             layers.push(layer);
         }
 
