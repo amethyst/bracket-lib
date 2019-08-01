@@ -256,6 +256,7 @@ impl HSV {
     }
 
     /// Converts an HSV triple to an RGB triple
+    #[allow(clippy::many_single_char_names)] // I like my short names for this one
     pub fn to_rgb(&self) -> RGB {
         let hue = self.h;
         let saturation = self.s;
