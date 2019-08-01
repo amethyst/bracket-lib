@@ -53,12 +53,12 @@ impl SimpleConsole {
         let index_capacity: usize = 6 * width as usize * height as usize;
 
         let mut new_console = SimpleConsole {
-            width: width,
-            height: height,
-            VBO: VBO,
-            VAO: VAO,
-            EBO: EBO,
-            tiles: tiles,
+            width,
+            height,
+            VBO,
+            VAO,
+            EBO,
+            tiles,
             is_dirty: true,
             vertex_buffer: Vec::with_capacity(vertex_capacity),
             index_buffer: Vec::with_capacity(index_capacity),
@@ -179,10 +179,10 @@ impl SimpleConsole {
                 let glyph_x = glyph % 16;
                 let glyph_y = 16 - (glyph / 16);
 
-                let glyph_left = glyph_x as f32 * glyph_size_x;
-                let glyph_right = (glyph_x + 1) as f32 * glyph_size_x;
-                let glyph_top = glyph_y as f32 * glyph_size_y;
-                let glyph_bottom = (glyph_y - 1) as f32 * glyph_size_y;
+                let glyph_left = f32::from(glyph_x) * glyph_size_x;
+                let glyph_right = f32::from(glyph_x + 1) * glyph_size_x;
+                let glyph_top = f32::from(glyph_y) * glyph_size_y;
+                let glyph_bottom = f32::from(glyph_y - 1) * glyph_size_y;
 
                 self.push_point(
                     screen_x + step_x,
@@ -203,7 +203,7 @@ impl SimpleConsole {
                 self.push_point(screen_x, screen_y, fg, bg, glyph_left, glyph_bottom);
                 self.push_point(screen_x, screen_y + step_y, fg, bg, glyph_left, glyph_top);
 
-                self.index_buffer[self.index_counter] = 0 + index_count;
+                self.index_buffer[self.index_counter] = index_count;
                 self.index_buffer[self.index_counter + 1] = 1 + index_count;
                 self.index_buffer[self.index_counter + 2] = 3 + index_count;
                 self.index_buffer[self.index_counter + 3] = 1 + index_count;
@@ -404,7 +404,7 @@ impl Console for SimpleConsole {
             for x in 0..self.width {
                 let cell = layer.get_mut(x as usize, y as usize).unwrap();
                 let idx = self.at(x as i32, y as i32);
-                cell.ch = self.tiles[idx].glyph as u32;
+                cell.ch = u32::from(self.tiles[idx].glyph);
                 cell.fg = self.tiles[idx].fg.to_xp();
                 cell.bg = self.tiles[idx].bg.to_xp();
             }

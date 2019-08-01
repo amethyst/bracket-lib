@@ -48,11 +48,11 @@ impl SparseConsole {
         let (VBO, VAO, EBO) = SparseConsole::init_gl_for_console(gl);
 
         let new_console = SparseConsole {
-            width: width,
-            height: height,
-            VBO: VBO,
-            VAO: VAO,
-            EBO: EBO,
+            width,
+            height,
+            VBO,
+            VAO,
+            EBO,
             tiles: Vec::new(),
             is_dirty: true,
             vertex_buffer: Vec::new(),
@@ -169,10 +169,10 @@ impl SparseConsole {
             let glyph_x = glyph % 16;
             let glyph_y = 16 - (glyph / 16);
 
-            let glyph_left = glyph_x as f32 * glyph_size_x;
-            let glyph_right = (glyph_x + 1) as f32 * glyph_size_x;
-            let glyph_top = glyph_y as f32 * glyph_size_y;
-            let glyph_bottom = (glyph_y - 1) as f32 * glyph_size_y;
+            let glyph_left = f32::from(glyph_x) * glyph_size_x;
+            let glyph_right = f32::from(glyph_x + 1) * glyph_size_x;
+            let glyph_top = f32::from(glyph_y) * glyph_size_y;
+            let glyph_bottom = f32::from(glyph_y - 1) * glyph_size_y;
 
             SparseConsole::push_point(
                 &mut self.vertex_buffer,
@@ -211,7 +211,7 @@ impl SparseConsole {
                 glyph_top,
             );
 
-            self.index_buffer.push(0 + index_count);
+            self.index_buffer.push(index_count);
             self.index_buffer.push(1 + index_count);
             self.index_buffer.push(3 + index_count);
             self.index_buffer.push(1 + index_count);
@@ -296,7 +296,7 @@ impl Console for SparseConsole {
         let bytes = super::string_to_cp437(output);
         for i in 0..bytes.len() {
             self.tiles.push(SparseTile {
-                idx: idx,
+                idx,
                 glyph: bytes[i],
                 fg: RGB::from_f32(1.0, 1.0, 1.0),
                 bg: RGB::from_f32(0.0, 0.0, 0.0),
@@ -313,10 +313,10 @@ impl Console for SparseConsole {
         let bytes = super::string_to_cp437(output);
         for i in 0..bytes.len() {
             self.tiles.push(SparseTile {
-                idx: idx,
+                idx,
                 glyph: bytes[i],
-                fg: fg,
-                bg: bg,
+                fg,
+                bg,
             });
             idx += 1;
         }
@@ -326,10 +326,10 @@ impl Console for SparseConsole {
     fn set(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, glyph: u8) {
         let idx = self.at(x, y);
         self.tiles.push(SparseTile {
-            idx: idx,
-            glyph: glyph,
-            fg: fg,
-            bg: bg,
+            idx,
+            glyph,
+            fg,
+            bg,
         });
     }
 
@@ -415,7 +415,7 @@ impl Console for SparseConsole {
             let x = c.idx % self.width as usize;
             let y = c.idx / self.width as usize;
             let cell = layer.get_mut(x as usize, y as usize).unwrap();
-            cell.ch = c.glyph as u32;
+            cell.ch = u32::from(c.glyph);
             cell.fg = c.fg.to_xp();
             cell.bg = c.bg.to_xp();
         }

@@ -12,15 +12,16 @@ pub struct RandomNumberGenerator {
 #[allow(dead_code)]
 impl RandomNumberGenerator {
     /// Creates a new RNG from a randomly generated seed
+    #[allow(clippy::new_without_default)] // XorShiftRng doesn't have a Default, so we don't either
     pub fn new() -> RandomNumberGenerator {
         let rng: XorShiftRng = SeedableRng::from_entropy();
-        RandomNumberGenerator { rng: rng }
+        RandomNumberGenerator { rng }
     }
 
     /// Creates a new RNG from a specific seed
     pub fn seeded(seed: u64) -> RandomNumberGenerator {
         let rng: XorShiftRng = SeedableRng::seed_from_u64(seed);
-        RandomNumberGenerator { rng: rng }
+        RandomNumberGenerator { rng }
     }
 
     /// Returns a random value of whatever type you specify

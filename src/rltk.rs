@@ -100,12 +100,12 @@ impl Rltk {
         let quadVAO = quadrender::setup_quad(&gl);
 
         Rltk {
-            gl: gl,
-            width_pixels: width_pixels,
-            height_pixels: height_pixels,
+            gl,
+            width_pixels,
+            height_pixels,
             fonts: Vec::new(),
             consoles: Vec::new(),
-            shaders: shaders,
+            shaders,
             fps: 0.0,
             frame_time_ms: 0.0,
             active_console: 0,
@@ -113,7 +113,7 @@ impl Rltk {
             mouse_pos: (0, 0),
             left_click: false,
             context_wrapper: Some(WrappedContext {
-                el: el,
+                el,
                 wc: windowed_context,
             }),
             quitting: false,
@@ -180,7 +180,7 @@ impl Rltk {
     pub fn register_console(&mut self, new_console: Box<Console>, font_index: usize) -> usize {
         self.consoles.push(DisplayConsole {
             console: new_console,
-            font_index: font_index,
+            font_index,
             shader_index: 0,
         });
         self.consoles.len() - 1
@@ -195,7 +195,7 @@ impl Rltk {
     ) -> usize {
         self.consoles.push(DisplayConsole {
             console: new_console,
-            font_index: font_index,
+            font_index,
             shader_index: 1,
         });
         self.consoles.len() - 1
@@ -517,85 +517,85 @@ fn tock<GS: GameState>(
 pub fn letter_to_option(key: VirtualKeyCode) -> i32 {
     match key {
         VirtualKeyCode::A => {
-            return 0;
+            0
         }
         VirtualKeyCode::B => {
-            return 1;
+            1
         }
         VirtualKeyCode::C => {
-            return 2;
+            2
         }
         VirtualKeyCode::D => {
-            return 3;
+            3
         }
         VirtualKeyCode::E => {
-            return 4;
+            4
         }
         VirtualKeyCode::F => {
-            return 5;
+            5
         }
         VirtualKeyCode::G => {
-            return 6;
+            6
         }
         VirtualKeyCode::H => {
-            return 7;
+            7
         }
         VirtualKeyCode::I => {
-            return 8;
+            8
         }
         VirtualKeyCode::J => {
-            return 9;
+            9
         }
         VirtualKeyCode::K => {
-            return 10;
+            10
         }
         VirtualKeyCode::L => {
-            return 11;
+            11
         }
         VirtualKeyCode::M => {
-            return 12;
+            12
         }
         VirtualKeyCode::N => {
-            return 13;
+            13
         }
         VirtualKeyCode::O => {
-            return 14;
+            14
         }
         VirtualKeyCode::P => {
-            return 15;
+            15
         }
         VirtualKeyCode::Q => {
-            return 16;
+            16
         }
         VirtualKeyCode::R => {
-            return 17;
+            17
         }
         VirtualKeyCode::S => {
-            return 18;
+            18
         }
         VirtualKeyCode::T => {
-            return 19;
+            19
         }
         VirtualKeyCode::U => {
-            return 20;
+            20
         }
         VirtualKeyCode::V => {
-            return 21;
+            21
         }
         VirtualKeyCode::W => {
-            return 22;
+            22
         }
         VirtualKeyCode::X => {
-            return 23;
+            23
         }
         VirtualKeyCode::Y => {
-            return 24;
+            24
         }
         VirtualKeyCode::Z => {
-            return 25;
+            25
         }
         _ => {
-            return -1;
+            -1
         }
     }
 }

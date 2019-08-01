@@ -14,10 +14,10 @@ pub struct TextBlock {
 impl TextBlock {
     pub fn new(x: i32, y: i32, width: i32, height: i32) -> TextBlock {
         TextBlock {
-            x: x,
-            y: y,
-            width: width,
-            height: height,
+            x,
+            y,
+            width,
+            height,
             fg: RGB::from_f32(1.0, 1.0, 1.0),
             bg: RGB::from_f32(0.0, 0.0, 0.0),
             buffer: vec![
@@ -174,11 +174,11 @@ impl TextBuilder {
         self
     }
     pub fn fg(&mut self, col: RGB) -> &mut Self {
-        self.commands.push(CommandType::Foreground { col: col });
+        self.commands.push(CommandType::Foreground { col });
         self
     }
     pub fn bg(&mut self, col: RGB) -> &mut Self {
-        self.commands.push(CommandType::Background { col: col });
+        self.commands.push(CommandType::Background { col });
         self
     }
     pub fn line_wrap(&mut self, text: &str) -> &mut Self {
