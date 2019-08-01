@@ -120,9 +120,9 @@ impl State {
             return false;
         }
         let idx = xyz_idx(x, y, z);
-        return self.map[idx as usize] == TileType::Floor
+        self.map[idx as usize] == TileType::Floor
             || self.map[idx as usize] == TileType::Ramp
-            || self.map[idx as usize] == TileType::RampDown;
+            || self.map[idx as usize] == TileType::RampDown
     }
 }
 
@@ -306,7 +306,7 @@ impl BaseMap for State {
             exits.push((idx - LAYER_SIZE as i32, 1.4));
         }
 
-        return exits;
+        exits
     }
 
     fn get_pathing_distance(&self, idx1: i32, idx2: i32) -> f32 {
@@ -314,7 +314,7 @@ impl BaseMap for State {
         let p1 = Point3::new(pt1.0, pt1.1, pt1.2);
         let pt2 = idx_xyz(idx2 as usize);
         let p2 = Point3::new(pt2.0, pt2.1, pt2.2);
-        return rltk::distance3d(DistanceAlg::Pythagoras, p1, p2);
+        DistanceAlg::Pythagoras.distance3d(p1, p2)
     }
 }
 

@@ -148,7 +148,7 @@ impl GameState for State {
                 fg = fg * 0.3;
             } else {
                 let distance = 1.0
-                    - (rltk::distance2d(DistanceAlg::Pythagoras, Point::new(x, y), player_position)
+                    - (DistanceAlg::Pythagoras.distance2d(Point::new(x, y), player_position)
                         as f32
                         / 10.0);
                 fg = RGB::from_f32(distance, distance, distance);

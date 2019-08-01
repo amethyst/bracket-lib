@@ -1,4 +1,4 @@
-use super::{distance2d, DistanceAlg, LineAlg, Point};
+use super::{DistanceAlg, LineAlg, Point};
 use bresenham::Bresenham;
 
 /// Plots a line between two 2D points and returns a vector of points along the line.
@@ -29,7 +29,7 @@ pub fn line2d_vector(start: Point, end: Point) -> Vec<Point> {
     }
     let mut pos: (f32, f32) = (start.x as f32 + 0.5, start.y as f32 + 0.5);
     let dest: (f32, f32) = (end.x as f32 + 0.5, end.y as f32 + 0.5);
-    let n_steps = distance2d(DistanceAlg::Pythagoras, start, end);
+    let n_steps = DistanceAlg::Pythagoras.distance2d(start, end);
     let slope: (f32, f32) = ((dest.0 - pos.0) / n_steps, (dest.1 - pos.1) / n_steps);
     let mut result: Vec<Point> = vec![start];
 

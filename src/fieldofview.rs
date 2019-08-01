@@ -1,4 +1,4 @@
-use super::geometry::{distance2d, DistanceAlg};
+use super::geometry::DistanceAlg;
 use super::Algorithm2D;
 use super::Point;
 
@@ -47,7 +47,7 @@ fn scan_fov_line(
 
     for target in line.iter() {
         if !blocked {
-            let dsq = distance2d(DistanceAlg::PythagorasSquared, start, *target);
+            let dsq = DistanceAlg::PythagorasSquared.distance2d(start, *target);
             if dsq <= range_squared {
                 if fov_check.is_opaque(fov_check.point2d_to_index(*target)) {
                     blocked = true;
