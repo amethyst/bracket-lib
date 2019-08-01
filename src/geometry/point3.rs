@@ -21,7 +21,7 @@ pub struct Point3 {
 impl Point3 {
     /// Create a new point from an x/y/z coordinate.
     pub fn new(x: i32, y: i32, z: i32) -> Point3 {
-        return Point3 { x, y, z };
+        Point3 { x, y, z }
     }
 }
 
