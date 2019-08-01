@@ -45,6 +45,7 @@ pub trait Console {
     fn draw_box_double(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB);
 
     /// Draws a horizontal progress bar.
+    #[allow(clippy::too_many_arguments)] // It has exactly as many arguments as it needs
     fn draw_bar_horizontal(
         &mut self,
         x: i32,
@@ -57,6 +58,7 @@ pub trait Console {
     );
 
     /// Draws a vertical progress bar.
+    #[allow(clippy::too_many_arguments)] // It has exactly as many arguments as it needs
     fn draw_bar_vertical(
         &mut self,
         x: i32,
