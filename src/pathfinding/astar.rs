@@ -1,11 +1,6 @@
 use super::BaseMap;
 use std::cmp::Ordering;
-use std::collections::BinaryHeap;
-use std::collections::HashMap;
-
-#[allow(dead_code)]
-/// Bail out if the A* search exceeds this many steps.
-const MAX_DIRECT_PATH_CHECK: f32 = 2048.0;
+use std::collections::{BinaryHeap, HashMap};
 
 /// Bail out if the A* search exceeds this many steps.
 const MAX_ASTAR_STEPS: i32 = 2048;
@@ -173,7 +168,7 @@ impl AStar {
             // Generate successors
             let successors = map.get_available_exits(q.idx);
 
-            for s in successors.iter() {
+            for s in successors {
                 if self.add_successor(q, s.0, s.1 + q.f, map) {
                     let success = self.found_it();
                     return success;
