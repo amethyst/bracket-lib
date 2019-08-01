@@ -31,7 +31,7 @@ pub fn field_of_view(start: Point, range: i32, fov_check: &Algorithm2D) -> Vec<P
         }
     }
 
-    return result;
+    result
 }
 
 /// Helper method to scan along a line.
@@ -59,5 +59,5 @@ fn scan_fov_line(
             }
         }
     }
-    return result;
+    result
 }
