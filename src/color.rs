@@ -1,16 +1,10 @@
 use super::rex::XpColor;
 use std::ops;
 
-#[cfg(feature = "serialization")]
-#[derive(PartialEq, Copy, Clone, serde::Serialize, serde::Deserialize)]
-/// Represents an R/G/B triplet, in the range 0..1 (32-bit float)
-pub struct RGB {
-    pub r: f32,
-    pub g: f32,
-    pub b: f32,
-}
-
-#[cfg(not(feature = "serialization"))]
+#[cfg_attr(
+    feature = "serialization",
+    derive(serde::Serialize, serde::Deserialize)
+)]
 #[derive(PartialEq, Copy, Clone)]
 /// Represents an R/G/B triplet, in the range 0..1 (32-bit float)
 pub struct RGB {
@@ -32,6 +26,7 @@ pub struct HSV {
 pub enum HtmlColorConversionError {
     InvalidStringLength,
     MissingHash,
+    InvalidCharacter,
 }
 
 // Implement operator overloading
@@ -39,48 +34,66 @@ pub enum HtmlColorConversionError {
 /// Support adding a float to a color. The result is clamped via the constructor.
 impl ops::Add<f32> for RGB {
     type Output = RGB;
-    fn add(self, rhs: f32) -> RGB {
-        RGB::from_f32(self.r + rhs, self.g + rhs, self.b + rhs)
+    fn add(mut self, rhs: f32) -> RGB {
+        self.r += rhs;
+        self.g += rhs;
+        self.b += rhs;
+        self
     }
 }
 
 /// Support adding an RGB to a color. The result is clamped via the constructor.
 impl ops::Add<RGB> for RGB {
     type Output = RGB;
-    fn add(self, rhs: RGB) -> RGB {
-        RGB::from_f32(self.r + rhs.r, self.g + rhs.g, self.b + rhs.b)
+    fn add(mut self, rhs: RGB) -> RGB {
+        self.r += rhs.r;
+        self.g += rhs.g;
+        self.b += rhs.b;
+        self
     }
 }
 
 /// Support subtracting a float from a color. The result is clamped via the constructor.
 impl ops::Sub<f32> for RGB {
     type Output = RGB;
-    fn sub(self, rhs: f32) -> RGB {
-        RGB::from_f32(self.r - rhs, self.g - rhs, self.b - rhs)
+    fn sub(mut self, rhs: f32) -> RGB {
+        self.r -= rhs;
+        self.g -= rhs;
+        self.b -= rhs;
+        self
     }
 }
 
 /// Support subtracting an RGB from a color. The result is clamped via the constructor.
 impl ops::Sub<RGB> for RGB {
     type Output = RGB;
-    fn sub(self, rhs: RGB) -> RGB {
-        RGB::from_f32(self.r - rhs.r, self.g - rhs.g, self.b - rhs.b)
+    fn sub(mut self, rhs: RGB) -> RGB {
+        self.r -= rhs.r;
+        self.g -= rhs.g;
+        self.b -= rhs.b;
+        self
     }
 }
 
 /// Support multiplying a color by a float. The result is clamped via the constructor.
 impl ops::Mul<f32> for RGB {
     type Output = RGB;
-    fn mul(self, rhs: f32) -> RGB {
-        RGB::from_f32(self.r * rhs, self.g * rhs, self.b * rhs)
+    fn mul(mut self, rhs: f32) -> RGB {
+        self.r *= rhs;
+        self.g *= rhs;
+        self.b *= rhs;
+        self
     }
 }
 
 /// Support multiplying a color by another color. The result is clamped via the constructor.
 impl ops::Mul<RGB> for RGB {
     type Output = RGB;
-    fn mul(self, rhs: RGB) -> RGB {
-        RGB::from_f32(self.r * rhs.r, self.g * rhs.g, self.b * rhs.b)
+    fn mul(mut self, rhs: RGB) -> RGB {
+        self.r *= rhs.r;
+        self.g *= rhs.g;
+        self.b *= rhs.b;
+        self
     }
 }
 
@@ -121,41 +134,71 @@ impl RGB {
     }
 
     /// Constructs from an HTML color code (e.g. "#eeffee")
-    pub fn from_hex<S: ToString>(code: S) -> Result<RGB, HtmlColorConversionError> {
-        let full_code = code.to_string().to_lowercase();
-        let len = full_code.len();
-        if len != 7 {
+    pub fn from_hex<S: AsRef<str>>(code: S) -> Result<RGB, HtmlColorConversionError> {
+        let mut full_code = code.as_ref().chars();
+
+        if let Some(hash) = full_code.next() {
+            if hash != '#' {
+                return Err(HtmlColorConversionError::MissingHash);
+            }
+        } else {
             return Err(HtmlColorConversionError::InvalidStringLength);
         }
-        if full_code.chars().nth(0).unwrap() != '#' {
-            return Err(HtmlColorConversionError::MissingHash);
+
+        let red1 = match full_code.next() {
+            Some(red) => match red.to_digit(16) {
+                Some(red) => red * 16,
+                None => return Err(HtmlColorConversionError::InvalidCharacter),
+            },
+            None => return Err(HtmlColorConversionError::InvalidStringLength),
+        };
+        let red2 = match full_code.next() {
+            Some(red) => match red.to_digit(16) {
+                Some(red) => red,
+                None => return Err(HtmlColorConversionError::InvalidCharacter),
+            },
+            None => return Err(HtmlColorConversionError::InvalidStringLength),
+        };
+
+        let green1 = match full_code.next() {
+            Some(green) => match green.to_digit(16) {
+                Some(green) => green * 16,
+                None => return Err(HtmlColorConversionError::InvalidCharacter),
+            },
+            None => return Err(HtmlColorConversionError::InvalidStringLength),
+        };
+        let green2 = match full_code.next() {
+            Some(green) => match green.to_digit(16) {
+                Some(green) => green,
+                None => return Err(HtmlColorConversionError::InvalidCharacter),
+            },
+            None => return Err(HtmlColorConversionError::InvalidStringLength),
+        };
+
+        let blue1 = match full_code.next() {
+            Some(blue) => match blue.to_digit(16) {
+                Some(blue) => blue * 16,
+                None => return Err(HtmlColorConversionError::InvalidCharacter),
+            },
+            None => return Err(HtmlColorConversionError::InvalidStringLength),
+        };
+        let blue2 = match full_code.next() {
+            Some(blue) => match blue.to_digit(16) {
+                Some(blue) => blue,
+                None => return Err(HtmlColorConversionError::InvalidCharacter),
+            },
+            None => return Err(HtmlColorConversionError::InvalidStringLength),
+        };
+
+        if full_code.next().is_some() {
+            return Err(HtmlColorConversionError::InvalidStringLength);
         }
 
-        let red = format!(
-            "{}{}",
-            full_code.chars().nth(1).unwrap(),
-            full_code.chars().nth(2).unwrap()
-        );
-        let green = format!(
-            "{}{}",
-            full_code.chars().nth(3).unwrap(),
-            full_code.chars().nth(4).unwrap()
-        );
-        let blue = format!(
-            "{}{}",
-            full_code.chars().nth(5).unwrap(),
-            full_code.chars().nth(6).unwrap()
-        );
-
-        let r = i32::from_str_radix(&red, 16).unwrap();
-        let g = i32::from_str_radix(&green, 16).unwrap();
-        let b = i32::from_str_radix(&blue, 16).unwrap();
-
-        Ok(RGB::from_f32(
-            r as f32 / 255.0,
-            g as f32 / 255.0,
-            b as f32 / 255.0,
-        ))
+        Ok(RGB {
+            r: (red1 + red2) as f32 / 255.0,
+            g: (green1 + green2) as f32 / 255.0,
+            b: (blue1 + blue2) as f32 / 255.0,
+        })
     }
 
     /// Converts an xp file color component to an RGB
@@ -229,11 +272,11 @@ impl RGB {
     /// Lerps by a specified percentage (from 0 to 1) between this color and another
     pub fn lerp(&self, color: RGB, percent: f32) -> RGB {
         let range = (color.r - self.r, color.g - self.g, color.b - self.b);
-        let mut result = self.clone();
-        result.r += range.0 * percent;
-        result.g += range.1 * percent;
-        result.b += range.2 * percent;
-        result
+        RGB {
+            r: self.r + range.0 * percent,
+            g: self.g + range.1 * percent,
+            b: self.b + range.2 * percent,
+        }
     }
 }
 
