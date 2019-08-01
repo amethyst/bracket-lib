@@ -17,11 +17,11 @@ const MAX_ASTAR_STEPS: i32 = 2048;
 /// determinations.
 pub fn a_star_search(start: i32, end: i32, map: &mut BaseMap) -> NavigationPath {
     let mut searcher = AStar::new(start, end);
-    return searcher.search(map);
+    searcher.search(map)
 }
 
 #[allow(dead_code)]
-#[derive(Clone)]
+#[derive(Clone, Default)]
 /// Holds the result of an A-Star navigation query.
 /// `destination` is the index of the target tile.
 /// `success` is true if it reached the target, false otherwise.
@@ -68,11 +68,11 @@ impl PartialOrd for Node {
 impl NavigationPath {
     /// Makes a new (empty) NavigationPath
     pub fn new() -> NavigationPath {
-        return NavigationPath {
+        NavigationPath {
             destination: 0,
             success: false,
             steps: Vec::new(),
-        };
+        }
     }
 }
 
@@ -98,19 +98,19 @@ impl AStar {
             h: 0.0,
         });
 
-        return AStar {
-            start: start,
-            end: end,
-            open_list: open_list,
+        AStar {
+            start,
+            end,
+            open_list,
             parents: HashMap::new(),
             closed_list: HashMap::new(),
             step_counter: 0,
-        };
+        }
     }
 
     /// Wrapper to the BaseMap's distance function.
     fn distance_to_end(&self, idx: i32, map: &BaseMap) -> f32 {
-        return map.get_pathing_distance(idx, self.end);
+        map.get_pathing_distance(idx, self.end)
     }
 
     /// Adds a successor; if we're at the end, marks success.
@@ -118,11 +118,11 @@ impl AStar {
         // Did we reach our goal?
         if idx == self.end {
             self.parents.insert(idx, q.idx);
-            return true;
+            true
         } else {
             let distance = self.distance_to_end(idx, map);
             let s = Node {
-                idx: idx,
+                idx,
                 f: distance + cost,
                 g: cost,
                 h: distance,
@@ -146,7 +146,7 @@ impl AStar {
                 self.parents.insert(idx, q.idx);
             }
 
-            return false;
+            false
         }
     }
 
@@ -164,13 +164,13 @@ impl AStar {
             current = parent;
         }
 
-        return result;
+        result
     }
 
     /// Performs an A-Star search
     fn search(&mut self, map: &BaseMap) -> NavigationPath {
         let result = NavigationPath::new();
-        while self.open_list.len() != 0 && self.step_counter < MAX_ASTAR_STEPS {
+        while !self.open_list.is_empty() && self.step_counter < MAX_ASTAR_STEPS {
             self.step_counter += 1;
 
             // Pop Q off of the list
@@ -191,6 +191,6 @@ impl AStar {
             }
             self.closed_list.insert(q.idx, q.f);
         }
-        return result;
+        result
     }
 }
