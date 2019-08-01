@@ -5,7 +5,7 @@ use std::ops;
 extern crate serde;
 
 #[cfg(feature = "serialization")]
-#[derive(PartialEq, Copy, Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Default, PartialEq, Copy, Clone, serde::Serialize, serde::Deserialize)]
 /// Represents an R/G/B triplet, in the range 0..1 (32-bit float)
 pub struct RGB {
     pub r: f32,
@@ -14,7 +14,7 @@ pub struct RGB {
 }
 
 #[cfg(not(feature = "serialization"))]
-#[derive(PartialEq, Copy, Clone)]
+#[derive(Default, PartialEq, Copy, Clone)]
 /// Represents an R/G/B triplet, in the range 0..1 (32-bit float)
 pub struct RGB {
     pub r: f32,
