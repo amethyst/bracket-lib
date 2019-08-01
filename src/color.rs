@@ -235,18 +235,18 @@ impl RGB {
             s = d / max;
         }
 
-        if max == min {
+        if (max - min).abs() < std::f32::EPSILON {
             h = 0.0; // Achromatic
         } else {
-            if max == r {
+            if (max - r).abs() < std::f32::EPSILON {
                 if g < b {
                     h = (g - b) / d + 6.0;
                 } else {
                     h = (g - b) / d;
                 }
-            } else if max == g {
+            } else if (max - g).abs() < std::f32::EPSILON {
                 h = (b - r) / d + 2.0;
-            } else if max == b {
+            } else if (max - b).abs() < std::f32::EPSILON {
                 h = (r - g) / d + 4.0;
             }
 
