@@ -325,12 +325,7 @@ impl Console for SparseConsole {
     /// Sets a single cell in the console
     fn set(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, glyph: u8) {
         let idx = self.at(x, y);
-        self.tiles.push(SparseTile {
-            idx,
-            glyph,
-            fg,
-            bg,
-        });
+        self.tiles.push(SparseTile { idx, glyph, fg, bg });
     }
 
     /// Sets a single cell in the console's background

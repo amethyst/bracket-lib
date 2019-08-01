@@ -2782,7 +2782,7 @@ impl FastNoise {
                 j2 = 0.;
                 k2 = 1.;
             } else {
-            // x0 < z0            
+                // x0 < z0
                 i1 = 0.;
                 j1 = 0.;
                 k1 = 1.;
@@ -2791,7 +2791,7 @@ impl FastNoise {
                 k2 = 1.;
             }
         } else {
-        // x0 < y0        
+            // x0 < y0
             if y0 < z0 {
                 i1 = 0.;
                 j1 = 0.;
@@ -2807,7 +2807,7 @@ impl FastNoise {
                 j2 = 1.;
                 k2 = 1.;
             } else {
-            // x0 >= z0
+                // x0 >= z0
                 i1 = 0.;
                 j1 = 1.;
                 k1 = 0.;

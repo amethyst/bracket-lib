@@ -516,86 +516,32 @@ fn tock<GS: GameState>(
 /// For A-Z menus, translates the keys A through Z into 0..25
 pub fn letter_to_option(key: VirtualKeyCode) -> i32 {
     match key {
-        VirtualKeyCode::A => {
-            0
-        }
-        VirtualKeyCode::B => {
-            1
-        }
-        VirtualKeyCode::C => {
-            2
-        }
-        VirtualKeyCode::D => {
-            3
-        }
-        VirtualKeyCode::E => {
-            4
-        }
-        VirtualKeyCode::F => {
-            5
-        }
-        VirtualKeyCode::G => {
-            6
-        }
-        VirtualKeyCode::H => {
-            7
-        }
-        VirtualKeyCode::I => {
-            8
-        }
-        VirtualKeyCode::J => {
-            9
-        }
-        VirtualKeyCode::K => {
-            10
-        }
-        VirtualKeyCode::L => {
-            11
-        }
-        VirtualKeyCode::M => {
-            12
-        }
-        VirtualKeyCode::N => {
-            13
-        }
-        VirtualKeyCode::O => {
-            14
-        }
-        VirtualKeyCode::P => {
-            15
-        }
-        VirtualKeyCode::Q => {
-            16
-        }
-        VirtualKeyCode::R => {
-            17
-        }
-        VirtualKeyCode::S => {
-            18
-        }
-        VirtualKeyCode::T => {
-            19
-        }
-        VirtualKeyCode::U => {
-            20
-        }
-        VirtualKeyCode::V => {
-            21
-        }
-        VirtualKeyCode::W => {
-            22
-        }
-        VirtualKeyCode::X => {
-            23
-        }
-        VirtualKeyCode::Y => {
-            24
-        }
-        VirtualKeyCode::Z => {
-            25
-        }
-        _ => {
-            -1
-        }
+        VirtualKeyCode::A => 0,
+        VirtualKeyCode::B => 1,
+        VirtualKeyCode::C => 2,
+        VirtualKeyCode::D => 3,
+        VirtualKeyCode::E => 4,
+        VirtualKeyCode::F => 5,
+        VirtualKeyCode::G => 6,
+        VirtualKeyCode::H => 7,
+        VirtualKeyCode::I => 8,
+        VirtualKeyCode::J => 9,
+        VirtualKeyCode::K => 10,
+        VirtualKeyCode::L => 11,
+        VirtualKeyCode::M => 12,
+        VirtualKeyCode::N => 13,
+        VirtualKeyCode::O => 14,
+        VirtualKeyCode::P => 15,
+        VirtualKeyCode::Q => 16,
+        VirtualKeyCode::R => 17,
+        VirtualKeyCode::S => 18,
+        VirtualKeyCode::T => 19,
+        VirtualKeyCode::U => 20,
+        VirtualKeyCode::V => 21,
+        VirtualKeyCode::W => 22,
+        VirtualKeyCode::X => 23,
+        VirtualKeyCode::Y => 24,
+        VirtualKeyCode::Z => 25,
+        _ => -1,
     }
 }

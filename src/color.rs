@@ -204,9 +204,9 @@ impl RGB {
                 } else {
                     h = (green - blue) / d;
                 }
-            } else if f32::abs(max-green) < std::f32::EPSILON {
+            } else if f32::abs(max - green) < std::f32::EPSILON {
                 h = (blue - red) / d + 2.0;
-            } else if f32::abs(max-blue) < std::f32::EPSILON {
+            } else if f32::abs(max - blue) < std::f32::EPSILON {
                 h = (red - green) / d + 4.0;
             }
 
@@ -1139,7 +1139,7 @@ mod tests {
     fn convert_blue_to_hsv() {
         let blue = RGB::from_f32(0.0, 0.0, 1.0);
         let hsv = blue.to_hsv();
-        assert!(f32::abs(hsv.h - 240.0/360.0) < std::f32::EPSILON);
+        assert!(f32::abs(hsv.h - 240.0 / 360.0) < std::f32::EPSILON);
         assert!(f32::abs(hsv.s - 1.0) < std::f32::EPSILON);
         assert!(f32::abs(hsv.v - 1.0) < std::f32::EPSILON);
     }
@@ -1149,7 +1149,7 @@ mod tests {
     fn convert_olive_to_hsv() {
         let grey = RGB::from_u8(128, 128, 0);
         let hsv = grey.to_hsv();
-        assert!(f32::abs(hsv.h - 60.0/360.0) < std::f32::EPSILON);
+        assert!(f32::abs(hsv.h - 60.0 / 360.0) < std::f32::EPSILON);
         assert!(f32::abs(hsv.s - 1.0) < std::f32::EPSILON);
         assert!(f32::abs(hsv.v - 0.5019_608) < std::f32::EPSILON);
     }
@@ -1159,8 +1159,8 @@ mod tests {
     fn convert_olive_to_rgb() {
         let grey = HSV::from_f32(60.0 / 360.0, 1.0, 0.501_960_8);
         let rgb = grey.to_rgb();
-        assert!(f32::abs(rgb.r - 128.0/255.0) < std::f32::EPSILON);
-        assert!(f32::abs(rgb.g - 128.0/255.0) < std::f32::EPSILON);
+        assert!(f32::abs(rgb.r - 128.0 / 255.0) < std::f32::EPSILON);
+        assert!(f32::abs(rgb.g - 128.0 / 255.0) < std::f32::EPSILON);
         assert!(rgb.b < std::f32::EPSILON);
     }
 

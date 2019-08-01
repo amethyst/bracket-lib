@@ -141,7 +141,7 @@ mod tests {
             Point3::new(0, 0, 0),
             Point3::new(5, 0, 0),
         );
-        
+
         assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = distance3d(
