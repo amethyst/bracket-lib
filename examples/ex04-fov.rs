@@ -105,7 +105,7 @@ impl GameState for State {
         }
 
         // Set all tiles to not visible
-        for v in self.visible.iter_mut() {
+        for v in &mut self.visible {
             *v = false;
         }
 
@@ -114,7 +114,7 @@ impl GameState for State {
         let fov = rltk::field_of_view(player_position, 8, self);
 
         // Note that the steps above would generally not be run every frame!
-        for idx in fov.iter() {
+        for idx in &fov {
             self.visible[xy_idx(idx.x, idx.y)] = true;
         }
 
@@ -125,7 +125,7 @@ impl GameState for State {
         let mut y = 0;
         let mut x = 0;
         let mut i: usize = 0;
-        for tile in self.map.iter() {
+        for tile in &self.map {
             // Render a tile depending upon the tile type; now we check visibility as well!
             let mut fg;
             let mut glyph = ".";

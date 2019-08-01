@@ -152,7 +152,7 @@ impl SparseConsole {
         let step_y: f32 = 2.0 / self.height as f32;
 
         let mut index_count: i32 = 0;
-        for t in self.tiles.iter() {
+        for t in &self.tiles {
             let x = t.idx % self.width as usize;
             let y = t.idx / self.width as usize;
 
@@ -404,7 +404,7 @@ impl Console for SparseConsole {
             }
         }
 
-        for c in self.tiles.iter() {
+        for c in &self.tiles {
             let x = c.idx % self.width as usize;
             let y = c.idx / self.width as usize;
             let cell = layer.get_mut(x as usize, y as usize).unwrap();

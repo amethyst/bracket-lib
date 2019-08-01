@@ -60,10 +60,10 @@ impl TextBlock {
     }
 
     pub fn print(&mut self, text: &TextBuilder) {
-        for cmd in text.commands.iter() {
+        for cmd in &text.commands {
             match cmd {
                 CommandType::Text { block: t } => {
-                    for c in t.iter() {
+                    for c in t {
                         let idx = self.at(self.cursor.0, self.cursor.1);
                         self.buffer[idx].glyph = *c;
                         self.buffer[idx].fg = self.fg;
@@ -80,7 +80,7 @@ impl TextBlock {
                     let text_width = t.len() as i32;
                     let half_width = text_width / 2;
                     self.cursor.0 = (self.width / 2) - half_width;
-                    for c in t.iter() {
+                    for c in t {
                         let idx = self.at(self.cursor.0, self.cursor.1);
                         self.buffer[idx].glyph = *c;
                         self.buffer[idx].fg = self.fg;
@@ -116,9 +116,9 @@ impl TextBlock {
                             self.cursor.0 = 0;
                             self.cursor.1 += 1;
                         }
-                        for c in chrs.iter() {
+                        for c in chrs {
                             let idx = self.at(self.cursor.0, self.cursor.1);
-                            self.buffer[idx].glyph = *c;
+                            self.buffer[idx].glyph = c;
                             self.buffer[idx].fg = self.fg;
                             self.buffer[idx].bg = self.bg;
                             self.cursor.0 += 1;

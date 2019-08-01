@@ -129,7 +129,7 @@ impl GameState for State {
         // Iterate the map array, incrementing coordinates as we go.
         let mut y = 0;
         let mut x = 0;
-        for tile in self.map.iter() {
+        for tile in &self.map {
             // Render a tile depending upon the tile type
             match tile {
                 TileType::Floor => {

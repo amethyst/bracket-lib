@@ -202,7 +202,7 @@ impl XpFile {
 
 /// Applies an XpFile to a given console, with 0,0 offset by offset_x and offset-y.
 pub fn xp_to_console(xp: &XpFile, console: &mut Box<dyn Console>, offset_x: i32, offset_y: i32) {
-    for layer in xp.layers.iter() {
+    for layer in &xp.layers {
         for y in 0..layer.height {
             for x in 0..layer.width {
                 let cell = layer.get(x, y).unwrap();

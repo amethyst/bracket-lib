@@ -270,7 +270,7 @@ impl Console for SimpleConsole {
     /// Clears the screen.
     fn cls(&mut self) {
         self.is_dirty = true;
-        for tile in self.tiles.iter_mut() {
+        for tile in &mut self.tiles {
             tile.glyph = 32;
             tile.fg = RGB::named(color::WHITE);
             tile.bg = RGB::named(color::BLACK);
@@ -280,7 +280,7 @@ impl Console for SimpleConsole {
     /// Clears the screen with a background color.
     fn cls_bg(&mut self, background: RGB) {
         self.is_dirty = true;
-        for tile in self.tiles.iter_mut() {
+        for tile in &mut self.tiles {
             tile.glyph = 32;
             tile.fg = RGB::named(color::WHITE);
             tile.bg = background;

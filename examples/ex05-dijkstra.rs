@@ -97,7 +97,7 @@ impl GameState for State {
     #[allow(non_snake_case)]
     fn tick(&mut self, ctx: &mut Rltk) {
         // Set all tiles to not visible
-        for v in self.map.visible.iter_mut() {
+        for v in &mut self.map.visible {
             *v = false;
         }
 
@@ -106,7 +106,7 @@ impl GameState for State {
         let fov = rltk::field_of_view(player_position, 8, &self.map);
 
         // Note that the steps above would generally not be run every frame!
-        for idx in fov.iter() {
+        for idx in &fov {
             let mapidx = xy_idx(idx.x, idx.y);
             self.map.visible[mapidx] = true;
             if !self.map.revealed[mapidx] {
@@ -147,7 +147,7 @@ impl GameState for State {
         let mut y = 0;
         let mut x = 0;
         let mut i: usize = 0;
-        for tile in self.map.tiles.iter() {
+        for tile in &self.map.tiles {
             // New test: only render if its revealed
             let bg;
             let distance = self.flow_map.map[i];

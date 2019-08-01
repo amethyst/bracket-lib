@@ -457,7 +457,7 @@ fn tock<GS: GameState>(
     gamestate.tick(rltk);
 
     // Console structure - doesn't really have to be every frame...
-    for cons in rltk.consoles.iter_mut() {
+    for cons in &mut rltk.consoles {
         cons.console.rebuild_if_dirty(&rltk.gl);
     }
 
@@ -473,7 +473,7 @@ fn tock<GS: GameState>(
     }
 
     // Tell each console to draw itself
-    for cons in rltk.consoles.iter_mut() {
+    for cons in &mut rltk.consoles {
         let font = &rltk.fonts[cons.font_index];
         let shader = &rltk.shaders[cons.shader_index];
         cons.console.gl_draw(font, shader, &rltk.gl);

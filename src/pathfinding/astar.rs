@@ -119,7 +119,7 @@ impl AStar {
 
             // If a node with the same position as successor is in the open list with a lower f, skip add
             let mut should_add = true;
-            for e in self.open_list.iter() {
+            for e in &self.open_list {
                 if e.f < s.f && e.idx == idx {
                     should_add = false;
                 }
