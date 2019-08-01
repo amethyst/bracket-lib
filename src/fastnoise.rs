@@ -103,6 +103,8 @@ const GRAD_4D: [f32; 128] = [
 ];
 
 #[allow(dead_code)]
+#[allow(clippy::unreadable_literal)]
+#[allow(clippy::excessive_precision)]
 const VAL_LUT: [f32; 256] = [
     0.3490196078,
     0.4352941176,
@@ -363,6 +365,8 @@ const VAL_LUT: [f32; 256] = [
 ];
 
 #[allow(dead_code)]
+#[allow(clippy::unreadable_literal)]
+#[allow(clippy::excessive_precision)]
 const CELL_2D_X: [f32; 256] = [
     -0.6440658039,
     -0.08028078721,
@@ -623,6 +627,8 @@ const CELL_2D_X: [f32; 256] = [
 ];
 
 #[allow(dead_code)]
+#[allow(clippy::unreadable_literal)]
+#[allow(clippy::excessive_precision)]
 const CELL_2D_Y: [f32; 256] = [
     0.7649700911,
     0.9967722885,
@@ -883,6 +889,8 @@ const CELL_2D_Y: [f32; 256] = [
 ];
 
 #[allow(dead_code)]
+#[allow(clippy::unreadable_literal)]
+#[allow(clippy::excessive_precision)]
 const CELL_3D_X: [f32; 256] = [
     0.3752498686,
     0.687188096,
@@ -1143,6 +1151,8 @@ const CELL_3D_X: [f32; 256] = [
 ];
 
 #[allow(dead_code)]
+#[allow(clippy::unreadable_literal)]
+#[allow(clippy::excessive_precision)]
 const CELL_3D_Y: [f32; 256] = [
     -0.6760585049,
     -0.09136176499,
@@ -1403,6 +1413,8 @@ const CELL_3D_Y: [f32; 256] = [
 ];
 
 #[allow(dead_code)]
+#[allow(clippy::unreadable_literal)]
+#[allow(clippy::excessive_precision)]
 const CELL_3D_Z: [f32; 256] = [
     -0.6341391283,
     -0.7207118346,
@@ -1677,14 +1689,20 @@ const F3: f32 = 1.0 / 3.0;
 #[allow(dead_code)]
 const G3: f32 = 1.0 / 6.0;
 #[allow(dead_code)]
+#[allow(clippy::unreadable_literal)]
+#[allow(clippy::excessive_precision)]
 const SQRT3: f32 = 1.7320508075688772935274463415059;
 #[allow(dead_code)]
 const F2: f32 = 0.5 * (SQRT3 - 1.0);
 #[allow(dead_code)]
 const G2: f32 = (3.0 - SQRT3) / 6.0;
 #[allow(dead_code)]
+#[allow(clippy::unreadable_literal)]
+#[allow(clippy::excessive_precision)]
 const F4: f32 = (2.23606797749979 - 1.0) / 4.0;
 #[allow(dead_code)]
+#[allow(clippy::unreadable_literal)]
+#[allow(clippy::excessive_precision)]
 const G4: f32 = (5.0 - 2.23606797749979) / 20.0;
 #[allow(dead_code)]
 const CUBIC_3D_BOUNDING: f32 = 1.0 / (1.5 * 1.5 * 1.5);
@@ -1736,6 +1754,7 @@ fn interp_quintic_func(t: f32) -> f32 {
 }
 
 #[allow(dead_code)]
+#[allow(clippy::many_single_char_names)]
 fn cubic_lerp(a: f32, b: f32, c: f32, d: f32, t: f32) -> f32 {
     let p = (d - c) - (a - b);
     t * t * t * p + t * t * ((a - b) - p) + t * (c - a) + b
@@ -1743,6 +1762,7 @@ fn cubic_lerp(a: f32, b: f32, c: f32, d: f32, t: f32) -> f32 {
 
 #[allow(dead_code)]
 #[allow(non_snake_case)]
+#[allow(clippy::new_without_default)] // I don't want a default
 impl FastNoise {
     /// Creates a new noise instance, using simplex noise defaults.
     pub fn new() -> FastNoise {
@@ -1774,7 +1794,7 @@ impl FastNoise {
     pub fn seeded(seed: u64) -> FastNoise {
         let mut noise = FastNoise {
             rng: RandomNumberGenerator::seeded(seed),
-            seed: seed,
+            seed,
             frequency: 0.0,
             interp: Interp::Quintic,
             noise_type: NoiseType::Simplex,
@@ -1958,6 +1978,7 @@ impl FastNoise {
                     as usize] as usize]
     }
 
+    #[allow(clippy::unreadable_literal)]
     fn val_coord_2d(&self, seed: i32, x: i32, y: i32) -> f32 {
         let mut n = seed;
         n ^= X_PRIME * x;
@@ -1965,15 +1986,18 @@ impl FastNoise {
         (n * n * n * 60493) as f32 / 2147483648.0
     }
 
+    #[allow(clippy::unreadable_literal)]
     fn val_coord_3d(&self, seed: i32, x: i32, y: i32, z: i32) -> f32 {
         let mut n = seed;
         n ^= X_PRIME * x;
         n ^= Y_PRIME * y;
         n ^= Z_PRIME * z;
 
-        return (n * n * n * 60493) as f32 / 2147483648.0;
+        (n * n * n * 60493) as f32 / 2147483648.0
     }
 
+    #[allow(clippy::many_single_char_names)]
+    #[allow(clippy::unreadable_literal)]
     fn val_coord_4d(&self, seed: i32, x: i32, y: i32, z: i32, w: i32) -> f32 {
         let mut n = seed;
         n ^= X_PRIME * x;
@@ -1981,7 +2005,7 @@ impl FastNoise {
         n ^= Z_PRIME * z;
         n ^= W_PRIME * w;
 
-        return (n * n * n * 60493) as f32 / 2147483648.0;
+        (n * n * n * 60493) as f32 / 2147483648.0
     }
 
     fn val_coord_2d_fast(&self, offset: u8, x: i32, y: i32) -> f32 {
@@ -1996,11 +2020,13 @@ impl FastNoise {
         xd * GRAD_X[lut_pos] + yd * GRAD_Y[lut_pos]
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn grad_coord_3d(&self, offset: u8, x: i32, y: i32, z: i32, xd: f32, yd: f32, zd: f32) -> f32 {
         let lut_pos = self.index3d_12(offset, x, y, z) as usize;
         xd * GRAD_X[lut_pos] + yd * GRAD_Y[lut_pos] + zd * GRAD_Z[lut_pos]
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn grad_coord_4d(
         &self,
         offset: u8,
@@ -2104,14 +2130,13 @@ impl FastNoise {
             let zc: i32 = std::mem::transmute_copy(&z);
             let wc: i32 = std::mem::transmute_copy(&w);
 
-            let result = self.val_coord_4d(
+            self.val_coord_4d(
                 self.seed as i32,
                 xc ^ (xc as i32 >> 16),
                 yc ^ (yc >> 16),
                 zc ^ (zc >> 16),
                 wc ^ (wc >> 16),
-            );
-            result
+            )
         }
     }
 
@@ -2121,13 +2146,12 @@ impl FastNoise {
             let yc: i32 = std::mem::transmute_copy(&y);
             let zc: i32 = std::mem::transmute_copy(&z);
 
-            let result = self.val_coord_3d(
+            self.val_coord_3d(
                 self.seed as i32,
                 xc ^ (xc >> 16),
                 yc ^ (yc >> 16),
                 zc ^ (zc >> 16),
-            );
-            result
+            )
         }
     }
 
@@ -2136,8 +2160,7 @@ impl FastNoise {
             let xc: i32 = std::mem::transmute_copy(&x);
             let yc: i32 = std::mem::transmute_copy(&y);
 
-            let result = self.val_coord_2d(self.seed as i32, xc ^ (xc >> 16), yc ^ (yc >> 16));
-            result
+            self.val_coord_2d(self.seed as i32, xc ^ (xc >> 16), yc ^ (yc >> 16))
         }
     }
 
@@ -2193,7 +2216,7 @@ impl FastNoise {
             i += 1;
         }
 
-        return sum * self.fractal_bounding;
+        sum * self.fractal_bounding
     }
 
     fn single_value_fractal_billow3d(&self, mut x: f32, mut y: f32, mut z: f32) -> f32 {
@@ -2346,7 +2369,7 @@ impl FastNoise {
             i += 1;
         }
 
-        return sum;
+        sum
     }
 
     fn get_value(&self, x: f32, y: f32) -> f32 {
@@ -2640,7 +2663,7 @@ impl FastNoise {
             xs,
         );
 
-        return lerp(xf0, xf1, ys);
+        lerp(xf0, xf1, ys)
     }
 
     // Simplex noise
@@ -2720,6 +2743,7 @@ impl FastNoise {
         )
     }
 
+    #[allow(clippy::many_single_char_names)]
     fn single_simplex3d(&self, offset: u8, x: f32, y: f32, z: f32) -> f32 {
         let mut t: f32 = (x + y + z) * F3;
         let i = fast_floor(x + t);
@@ -2757,9 +2781,8 @@ impl FastNoise {
                 i2 = 1.;
                 j2 = 0.;
                 k2 = 1.;
-            } else
-            // x0 < z0
-            {
+            } else {
+            // x0 < z0            
                 i1 = 0.;
                 j1 = 0.;
                 k1 = 1.;
@@ -2767,9 +2790,8 @@ impl FastNoise {
                 j2 = 0.;
                 k2 = 1.;
             }
-        } else
-        // x0 < y0
-        {
+        } else {
+        // x0 < y0        
             if y0 < z0 {
                 i1 = 0.;
                 j1 = 0.;
@@ -2784,9 +2806,8 @@ impl FastNoise {
                 i2 = 0.;
                 j2 = 1.;
                 k2 = 1.;
-            } else
+            } else {
             // x0 >= z0
-            {
                 i1 = 0.;
                 j1 = 1.;
                 k1 = 0.;
@@ -2949,6 +2970,8 @@ impl FastNoise {
         self.single_simplex(0, x * self.frequency, y * self.frequency)
     }
 
+    #[allow(clippy::many_single_char_names)]
+    #[allow(clippy::useless_let_if_seq)] // Really not sure what its telling me
     fn single_simplex(&self, offset: u8, x: f32, y: f32) -> f32 {
         let mut t: f32 = (x + y) * F2;
         let i = fast_floor(x + t);
@@ -3025,6 +3048,7 @@ impl FastNoise {
         }
     }
 
+    #[allow(clippy::many_single_char_names)]
     fn single_simplex4d(&self, offset: u8, x: f32, y: f32, z: f32, w: f32) -> f32 {
         let n0: f32;
         let n1: f32;
@@ -3299,7 +3323,7 @@ impl FastNoise {
         let ys = y - y1 as f32;
         let zs = z - z1 as f32;
 
-        return cubic_lerp(
+        cubic_lerp(
             cubic_lerp(
                 cubic_lerp(
                     self.val_coord_3d_fast(offset, x0, y0, z0),
@@ -3425,7 +3449,7 @@ impl FastNoise {
                 ys,
             ),
             zs,
-        ) * CUBIC_3D_BOUNDING;
+        ) * CUBIC_3D_BOUNDING
     }
 
     fn get_cubic_fractal(&self, mut x: f32, mut y: f32) -> f32 {
@@ -3508,7 +3532,7 @@ impl FastNoise {
         let xs = x - x1 as f32;
         let ys = y - y1 as f32;
 
-        return cubic_lerp(
+        cubic_lerp(
             cubic_lerp(
                 self.val_coord_2d_fast(offset, x0, y0),
                 self.val_coord_2d_fast(offset, x1, y0),
@@ -3538,7 +3562,7 @@ impl FastNoise {
                 xs,
             ),
             ys,
-        ) * CUBIC_2D_BOUNDING;
+        ) * CUBIC_2D_BOUNDING
     }
 
     // Cellular Noise
@@ -3554,6 +3578,7 @@ impl FastNoise {
         }
     }
 
+    #[allow(clippy::unreadable_literal)]
     fn single_cellular3d(&self, x: f32, y: f32, z: f32) -> f32 {
         let xr = fast_round(x);
         let yr = fast_round(y);
@@ -3653,6 +3678,7 @@ impl FastNoise {
         }
     }
 
+    #[allow(clippy::unreadable_literal)]
     fn single_cellular_2edge3d(&self, x: f32, y: f32, z: f32) -> f32 {
         let xr = fast_round(x);
         let yr = fast_round(y);
@@ -3704,7 +3730,7 @@ impl FastNoise {
                             let newDistance =
                                 fast_abs_f(vecX) + fast_abs_f(vecY) + fast_abs_f(vecZ);
 
-                            for i in (0..self.cellular_distance_index.1 + 1).rev() {
+                            for i in (0..=self.cellular_distance_index.1).rev() {
                                 distance[i as usize] = f32::max(
                                     f32::min(distance[i as usize], newDistance),
                                     distance[i as usize - 1],
@@ -3732,7 +3758,7 @@ impl FastNoise {
                                 (fast_abs_f(vecX) + fast_abs_f(vecY) + fast_abs_f(vecZ))
                                     + (vecX * vecX + vecY * vecY + vecZ * vecZ);
 
-                            for i in (0..self.cellular_distance_index.1 + 1).rev() {
+                            for i in (0..=self.cellular_distance_index.1).rev() {
                                 distance[i as usize] = f32::max(
                                     f32::min(distance[i as usize], newDistance),
                                     distance[i as usize - 1],
@@ -3778,6 +3804,7 @@ impl FastNoise {
         }
     }
 
+    #[allow(clippy::unreadable_literal)]
     fn single_cellular(&self, x: f32, y: f32) -> f32 {
         let xr = fast_round(x);
         let yr = fast_round(y);
@@ -3851,6 +3878,7 @@ impl FastNoise {
         }
     }
 
+    #[allow(clippy::unreadable_literal)]
     fn single_cellular_2edge(&self, x: f32, y: f32) -> f32 {
         let xr = fast_round(x);
         let yr = fast_round(y);
@@ -3870,7 +3898,7 @@ impl FastNoise {
 
                         let newDistance = vecX * vecX + vecY * vecY;
 
-                        for i in (0..self.cellular_distance_index.1 + 1).rev() {
+                        for i in (0..=self.cellular_distance_index.1).rev() {
                             distance[i as usize] = f32::max(
                                 f32::min(distance[i as usize], newDistance),
                                 distance[i as usize - 1],
@@ -3892,7 +3920,7 @@ impl FastNoise {
 
                         let newDistance = fast_abs_f(vecX) + fast_abs_f(vecY);
 
-                        for i in (0..self.cellular_distance_index.1 + 1).rev() {
+                        for i in (0..=self.cellular_distance_index.1).rev() {
                             distance[i as usize] = f32::max(
                                 f32::min(distance[i as usize], newDistance),
                                 distance[i as usize - 1],
@@ -3915,7 +3943,7 @@ impl FastNoise {
                         let newDistance =
                             (fast_abs_f(vecX) + fast_abs_f(vecY)) + (vecX * vecX + vecY * vecY);
 
-                        for i in (0..self.cellular_distance_index.1 + 1).rev() {
+                        for i in (0..=self.cellular_distance_index.1).rev() {
                             distance[i as usize] = f32::max(
                                 f32::min(distance[i as usize], newDistance),
                                 distance[i as usize - 1],
