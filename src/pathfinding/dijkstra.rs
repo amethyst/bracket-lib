@@ -94,7 +94,7 @@ impl DijkstraMap {
         let mut open_list: Vec<(i32, f32)> = Vec::with_capacity(mapsize * 2);
         let mut closed_list: Vec<bool> = vec![false; mapsize];
 
-        for start in starts.iter() {
+        for start in starts {
             // Clearing vec in debug mode is stupidly slow, so we do it the hard way!
             unsafe {
                 open_list.set_len(0);
@@ -122,7 +122,7 @@ impl DijkstraMap {
                     dm.map[tile_idx as usize] = depth;
 
                     let exits = map.get_available_exits(tile_idx);
-                    for exit in exits.iter() {
+                    for exit in exits {
                         DijkstraMap::add_if_open(
                             dm.max_depth,
                             exit.0,
@@ -146,24 +146,23 @@ impl DijkstraMap {
                 max_depth: dm.max_depth,
                 starts: Vec::new(),
             };
-            for s in start_chunk.iter() {
-                layer.starts.push(*s as usize);
-            }
+            layer
+                .starts
+                .extend(start_chunk.into_iter().map(|&x| x as usize));
             layers.push(layer);
         }
 
-        let mut exits: Vec<Vec<(i32, f32)>> = Vec::with_capacity(mapsize);
-        for idx in 0..mapsize as i32 {
-            exits.push(map.get_available_exits(idx));
-        }
+        let exits: Vec<Vec<(i32, f32)>> = (0..mapsize as i32)
+            .map(|idx| map.get_available_exits(idx))
+            .collect();
 
         // Run each map in parallel
         layers.par_iter_mut().for_each(|l| {
             let mut open_list: Vec<(i32, f32)> = Vec::with_capacity(mapsize * 2);
             let mut closed_list: Vec<bool> = vec![false; mapsize];
 
-            for start in l.starts.iter() {
-                open_list.push((*start as i32, 0.0));
+            for start in l.starts.iter().copied() {
+                open_list.push((start as i32, 0.0));
 
                 while !open_list.is_empty() {
                     let last_idx = open_list.len() - 1;
@@ -178,7 +177,7 @@ impl DijkstraMap {
                         l.map[tile_idx as usize] = depth;
 
                         let exits = &exits[tile_idx as usize];
-                        for exit in exits.iter() {
+                        for exit in exits {
                             DijkstraMap::add_if_open(
                                 l.max_depth,
                                 exit.0,
@@ -193,7 +192,7 @@ impl DijkstraMap {
         });
 
         // Recombine down to a single result
-        for l in layers.iter() {
+        for l in layers {
             for i in 0..mapsize {
                 dm.map[i] = f32::min(dm.map[i], l.map[i]);
             }
@@ -206,14 +205,15 @@ impl DijkstraMap {
     pub fn find_lowest_exit(dm: &DijkstraMap, position: i32, map: &dyn BaseMap) -> Option<i32> {
         let mut exits = map.get_available_exits(position);
 
-        for exit in exits.iter_mut() {
-            exit.1 = dm.map[exit.0 as usize] as f32;
-        }
-
         if exits.is_empty() {
             return None;
         }
-        exits.par_sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+
+        exits.par_sort_by(|a, b| {
+            dm.map[a.0 as usize]
+                .partial_cmp(&dm.map[b.0 as usize])
+                .unwrap()
+        });
 
         Some(exits[0].0)
     }
@@ -225,14 +225,15 @@ impl DijkstraMap {
     pub fn find_highest_exit(dm: &DijkstraMap, position: i32, map: &dyn BaseMap) -> Option<i32> {
         let mut exits = map.get_available_exits(position);
 
-        for exit in exits.iter_mut() {
-            exit.1 = dm.map[exit.0 as usize] as f32;
-        }
-
         if exits.is_empty() {
             return None;
         }
-        exits.par_sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
+
+        exits.par_sort_by(|a, b| {
+            dm.map[a.0 as usize]
+                .partial_cmp(&dm.map[b.0 as usize])
+                .unwrap()
+        });
 
         Some(exits[0].0)
     }
