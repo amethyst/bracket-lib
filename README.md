@@ -159,3 +159,9 @@ Run this example with `cargo run --example ex13-textblock` from the root of the 
 [Example 14 - Text Blocks](examples/ex14-dwarfmap.rs) uses the `Algorithm3D` trait to provide A* pathing in three dimensions, and implements a simple Dwarf Fortress (with DFHack "layer diving") renderer to display a noise-generated 3D map and traverse it. This also uses the noise system.
 
 Run this example with `cargo run --example ex14-dwarfmap` from the root of the cloned repository.
+
+### Example 15: SPECS
+
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE15.gif)
+
+[Example 15 - SPECS](examples/ex15-specs.rs) uses the Entity Component System SPECS, alongside RLTK, to implement the old DOS game *Bouncing Babies*. It illustrates how to setup SPECS and do very simple integration to render a simple console-based game.
