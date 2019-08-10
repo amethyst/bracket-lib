@@ -1863,7 +1863,7 @@ impl FastNoise {
     fn calculate_fractal_bounding(&mut self) {
         let mut amp: f32 = self.gain;
         let mut amp_fractal: f32 = 1.0;
-        for _i in 0..self.octaves {
+        for _ in 0..self.octaves {
             amp_fractal += amp;
             amp *= self.gain;
         }

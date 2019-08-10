@@ -107,9 +107,7 @@ impl TextBlock {
                 }
 
                 CommandType::TextWrapper { block: t } => {
-                    let words = t.split(' ');
-
-                    for word in words {
+                    for word in t.split(' ') {
                         let mut chrs = string_to_cp437(&word);
                         chrs.push(32);
                         if self.cursor.0 + chrs.len() as i32 >= self.width {

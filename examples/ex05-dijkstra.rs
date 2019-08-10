@@ -70,7 +70,7 @@ impl State {
         let mut rng = rand::thread_rng();
 
         // Lets add more walls to make it harder
-        for _i in 0..1600 {
+        for _ in 0..1600 {
             let x = rng.gen_range(1, 79);
             let y = rng.gen_range(1, 49);
             let idx = xy_idx(x, y);

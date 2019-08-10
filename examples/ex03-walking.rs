@@ -60,7 +60,7 @@ impl State {
         // First, obtain the thread-local RNG:
         let mut rng = rand::thread_rng();
 
-        for _i in 0..400 {
+        for _ in 0..400 {
             // rand provides a gen_range function to get numbers in a range.
             let x = rng.gen_range(1, 79);
             let y = rng.gen_range(1, 49);

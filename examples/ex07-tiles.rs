@@ -55,7 +55,7 @@ impl State {
 
         let mut rng = rand::thread_rng();
 
-        for _i in 0..400 {
+        for _ in 0..400 {
             let x = rng.gen_range(1, WIDTH - 1);
             let y = rng.gen_range(1, HEIGHT - 1);
             let idx = xy_idx(x, y);

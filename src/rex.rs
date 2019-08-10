@@ -157,15 +157,15 @@ impl XpFile {
 
         let mut layers = Vec::<XpLayer>::new();
         layers.reserve(num_layers as usize);
-        for _layer in 0..num_layers {
+        for _ in 0..num_layers {
             let width = rdr.read_u32::<LittleEndian>()? as usize;
             let height = rdr.read_u32::<LittleEndian>()? as usize;
 
             let mut cells = Vec::<XpCell>::new();
             cells.reserve(width * height);
-            for _y in 0..width {
+            for _ in 0..width {
                 // column-major order
-                for _x in 0..height {
+                for _ in 0..height {
                     let ch = rdr.read_u32::<LittleEndian>()?;
                     let fg = XpColor::read(&mut rdr)?;
                     let bg = XpColor::read(&mut rdr)?;

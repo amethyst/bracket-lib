@@ -35,7 +35,7 @@ impl SimpleConsole {
         // Console backing init
         let num_tiles: usize = (width * height) as usize;
         let mut tiles: Vec<Tile> = Vec::with_capacity(num_tiles);
-        for _i in 0..num_tiles {
+        for _ in 0..num_tiles {
             tiles.push(Tile {
                 glyph: 0,
                 fg: RGB::named(color::WHITE),
@@ -64,10 +64,10 @@ impl SimpleConsole {
             offset_y: 0.0,
         };
 
-        for _i in 0..vertex_capacity {
+        for _ in 0..vertex_capacity {
             new_console.vertex_buffer.push(0.0);
         }
-        for _i in 0..index_capacity {
+        for _ in 0..index_capacity {
             new_console.index_buffer.push(0);
         }
 

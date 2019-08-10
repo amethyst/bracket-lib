@@ -358,7 +358,6 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     let wc = unwrap.wc;
 
     el.run(move |event, _, control_flow| {
-        //println!("{:?}", event);
         *control_flow = ControlFlow::Poll;
 
         if rltk.quitting {
@@ -419,7 +418,6 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                         },
                     ..
                 } => {
-                    //println!("{:?}", event);
                     rltk.key = Some(*virtual_keycode);
                 }
 
