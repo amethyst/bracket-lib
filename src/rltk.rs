@@ -176,7 +176,7 @@ impl Rltk {
     pub fn register_console(&mut self, new_console: Box<dyn Console>, font_index: usize) -> usize {
         self.consoles.push(DisplayConsole {
             console: new_console,
-            font_index: font_index,
+            font_index,
             shader_index: 0,
         });
         self.consoles.len() - 1
@@ -191,7 +191,7 @@ impl Rltk {
     ) -> usize {
         self.consoles.push(DisplayConsole {
             console: new_console,
-            font_index: font_index,
+            font_index,
             shader_index: 1,
         });
         self.consoles.len() - 1

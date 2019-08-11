@@ -44,7 +44,7 @@ impl Framebuffer {
         }
 
         Framebuffer {
-            fbo: fbo,
+            fbo,
             texture: buffer,
         }
     }

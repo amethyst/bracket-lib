@@ -1739,7 +1739,7 @@ impl FastNoise {
     pub fn seeded(seed: u64) -> FastNoise {
         let mut noise = FastNoise {
             rng: RandomNumberGenerator::seeded(seed),
-            seed: seed,
+            seed,
             frequency: 0.0,
             interp: Interp::Quintic,
             noise_type: NoiseType::Simplex,

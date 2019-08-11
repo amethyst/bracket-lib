@@ -320,7 +320,7 @@ impl Console for SparseConsole {
         let idx = self.at(x, y);
         self.tiles.push(SparseTile {
             idx,
-            glyph: glyph,
+            glyph,
             fg,
             bg,
         });
