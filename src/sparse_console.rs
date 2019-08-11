@@ -123,17 +123,7 @@ impl SparseConsole {
         ux: f32,
         uy: f32,
     ) {
-        vertex_buffer.push(x);
-        vertex_buffer.push(y);
-        vertex_buffer.push(0.0);
-        vertex_buffer.push(fg.r);
-        vertex_buffer.push(fg.g);
-        vertex_buffer.push(fg.b);
-        vertex_buffer.push(bg.r);
-        vertex_buffer.push(bg.g);
-        vertex_buffer.push(bg.b);
-        vertex_buffer.push(ux);
-        vertex_buffer.push(uy);
+        vertex_buffer.extend_from_slice(&[x, y, 0.0, fg.r, fg.g, fg.b, bg.r, bg.g, bg.b, ux, uy]);
     }
 
     /// Helper to build vertices for the sparse grid.
