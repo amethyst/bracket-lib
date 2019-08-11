@@ -392,20 +392,11 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                 }
                 WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
 
-                WindowEvent::CursorMoved {
-                    device_id: _,
-                    position: pos,
-                    modifiers: _,
-                } => {
+                WindowEvent::CursorMoved { position: pos, .. } => {
                     rltk.mouse_pos = (pos.x as i32, pos.y as i32);
                 }
 
-                WindowEvent::MouseInput {
-                    device_id: _,
-                    state: _,
-                    button: _,
-                    modifiers: _,
-                } => {
+                WindowEvent::MouseInput { .. } => {
                     rltk.left_click = true;
                 }
 
