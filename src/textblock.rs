@@ -45,10 +45,10 @@ impl TextBlock {
         ((y * self.width) + x) as usize
     }
 
-    pub fn render(&self, console: &mut Box<dyn Console>) {
+    pub fn render(&self, mut console: impl AsMut<dyn Console>) {
         for y in 0..self.height {
             for x in 0..self.width {
-                console.set(
+                console.as_mut().set(
                     x + self.x,
                     y + self.y,
                     self.buffer[self.at(x, y)].fg,
@@ -172,11 +172,11 @@ impl TextBuilder {
         self
     }
     pub fn fg(&mut self, col: RGB) -> &mut Self {
-        self.commands.push(CommandType::Foreground { col: col });
+        self.commands.push(CommandType::Foreground { col });
         self
     }
     pub fn bg(&mut self, col: RGB) -> &mut Self {
-        self.commands.push(CommandType::Background { col: col });
+        self.commands.push(CommandType::Background { col });
         self
     }
     pub fn line_wrap(&mut self, text: &str) -> &mut Self {
