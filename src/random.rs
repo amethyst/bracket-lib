@@ -1,15 +1,10 @@
-extern crate rand;
-use rand::{Rng, SeedableRng};
-extern crate rand_xorshift;
-use crate::random::rand::RngCore;
+use rand::{Rng, RngCore, SeedableRng};
 use rand_xorshift::XorShiftRng;
 
-#[allow(dead_code)]
 pub struct RandomNumberGenerator {
     rng: XorShiftRng,
 }
 
-#[allow(dead_code)]
 impl RandomNumberGenerator {
     /// Creates a new RNG from a randomly generated seed
     #[allow(clippy::new_without_default)] // XorShiftRng doesn't have a Default, so we don't either
@@ -44,11 +39,7 @@ impl RandomNumberGenerator {
 
     /// Rolls dice, using the classic 3d6 type of format: n is the number of dice, die_type is the size of the dice.
     pub fn roll_dice(&mut self, n: i32, die_type: i32) -> i32 {
-        let mut total = 0;
-        for _i in 0..n {
-            total += self.range(1, die_type + 1);
-        }
-        total
+        (0..n).map(|_| self.range(1, die_type + 1)).sum()
     }
 
     pub fn next_u64(&mut self) -> u64 {

@@ -157,15 +157,15 @@ impl XpFile {
 
         let mut layers = Vec::<XpLayer>::new();
         layers.reserve(num_layers as usize);
-        for _layer in 0..num_layers {
+        for _ in 0..num_layers {
             let width = rdr.read_u32::<LittleEndian>()? as usize;
             let height = rdr.read_u32::<LittleEndian>()? as usize;
 
             let mut cells = Vec::<XpCell>::new();
             cells.reserve(width * height);
-            for _y in 0..width {
+            for _ in 0..width {
                 // column-major order
-                for _x in 0..height {
+                for _ in 0..height {
                     let ch = rdr.read_u32::<LittleEndian>()?;
                     let fg = XpColor::read(&mut rdr)?;
                     let bg = XpColor::read(&mut rdr)?;
@@ -201,13 +201,18 @@ impl XpFile {
 }
 
 /// Applies an XpFile to a given console, with 0,0 offset by offset_x and offset-y.
-pub fn xp_to_console(xp: &XpFile, console: &mut Box<dyn Console>, offset_x: i32, offset_y: i32) {
-    for layer in xp.layers.iter() {
+pub fn xp_to_console(
+    xp: &XpFile,
+    mut console: impl AsMut<dyn Console>,
+    offset_x: i32,
+    offset_y: i32,
+) {
+    for layer in &xp.layers {
         for y in 0..layer.height {
             for x in 0..layer.width {
                 let cell = layer.get(x, y).unwrap();
                 if !cell.bg.is_transparent() {
-                    console.set(
+                    console.as_mut().set(
                         x as i32 + offset_x,
                         y as i32 + offset_y,
                         RGB::from_xp(cell.fg),

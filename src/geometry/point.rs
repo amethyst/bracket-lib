@@ -1,14 +1,9 @@
 use std::ops;
 
-#[cfg(feature = "serialization")]
-#[derive(Eq, PartialEq, Copy, Clone, serde::Serialize, serde::Deserialize, Debug)]
-/// Helper struct defining a 2D point in space.
-pub struct Point {
-    pub x: i32,
-    pub y: i32,
-}
-
-#[cfg(not(feature = "serialization"))]
+#[cfg_attr(
+    feature = "serialization",
+    derive(serde::Serialize, serde::Deserialize)
+)]
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 /// Helper struct defining a 2D point in space.
 pub struct Point {
@@ -29,80 +24,100 @@ impl Point {
 /// Support adding a point to a point
 impl ops::Add<Point> for Point {
     type Output = Point;
-    fn add(self, rhs: Point) -> Point {
-        Point::new(self.x + rhs.x, self.y + rhs.y)
+    fn add(mut self, rhs: Point) -> Point {
+        self.x += rhs.x;
+        self.y += rhs.y;
+        self
     }
 }
 
 /// Support adding an int to a point
 impl ops::Add<i32> for Point {
     type Output = Point;
-    fn add(self, rhs: i32) -> Point {
-        Point::new(self.x + rhs, self.y + rhs)
+    fn add(mut self, rhs: i32) -> Point {
+        self.x += rhs;
+        self.y += rhs;
+        self
     }
 }
 
 /// Support subtracting a point from a point
 impl ops::Sub<Point> for Point {
     type Output = Point;
-    fn sub(self, rhs: Point) -> Point {
-        Point::new(self.x - rhs.x, self.y - rhs.y)
+    fn sub(mut self, rhs: Point) -> Point {
+        self.x -= rhs.x;
+        self.y -= rhs.y;
+        self
     }
 }
 
 /// Support subtracting an int from a point
 impl ops::Sub<i32> for Point {
     type Output = Point;
-    fn sub(self, rhs: i32) -> Point {
-        Point::new(self.x - rhs, self.y - rhs)
+    fn sub(mut self, rhs: i32) -> Point {
+        self.x -= rhs;
+        self.y -= rhs;
+        self
     }
 }
 
 /// Support multiplying a point by a point
 impl ops::Mul<Point> for Point {
     type Output = Point;
-    fn mul(self, rhs: Point) -> Point {
-        Point::new(self.x * rhs.x, self.y * rhs.y)
+    fn mul(mut self, rhs: Point) -> Point {
+        self.x *= rhs.x;
+        self.y *= rhs.y;
+        self
     }
 }
 
 /// Support multiplying a point by an int
 impl ops::Mul<i32> for Point {
     type Output = Point;
-    fn mul(self, rhs: i32) -> Point {
-        Point::new(self.x * rhs, self.y * rhs)
+    fn mul(mut self, rhs: i32) -> Point {
+        self.x *= rhs;
+        self.y *= rhs;
+        self
     }
 }
 
 /// Support multiplying a point by an f32
 impl ops::Mul<f32> for Point {
     type Output = Point;
-    fn mul(self, rhs: f32) -> Point {
-        Point::new((self.x as f32 * rhs) as i32, (self.y as f32 * rhs) as i32)
+    fn mul(mut self, rhs: f32) -> Point {
+        self.x = (self.x as f32 * rhs) as i32;
+        self.y = (self.y as f32 * rhs) as i32;
+        self
     }
 }
 
 /// Support dividing a point by a point
 impl ops::Div<Point> for Point {
     type Output = Point;
-    fn div(self, rhs: Point) -> Point {
-        Point::new(self.x / rhs.x, self.y / rhs.y)
+    fn div(mut self, rhs: Point) -> Point {
+        self.x /= rhs.x;
+        self.y /= rhs.y;
+        self
     }
 }
 
 /// Support dividing a point by an int
 impl ops::Div<i32> for Point {
     type Output = Point;
-    fn div(self, rhs: i32) -> Point {
-        Point::new(self.x / rhs, self.y / rhs)
+    fn div(mut self, rhs: i32) -> Point {
+        self.x /= rhs;
+        self.y /= rhs;
+        self
     }
 }
 
 /// Support dividing a point by an f32
 impl ops::Div<f32> for Point {
     type Output = Point;
-    fn div(self, rhs: f32) -> Point {
-        Point::new((self.x as f32 / rhs) as i32, (self.y as f32 / rhs) as i32)
+    fn div(mut self, rhs: f32) -> Point {
+        self.x = (self.x as f32 / rhs) as i32;
+        self.y = (self.y as f32 / rhs) as i32;
+        self
     }
 }
 

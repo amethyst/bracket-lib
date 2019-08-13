@@ -1,5 +1,5 @@
 extern crate rltk;
-use rltk::{Rltk, GameState, Console, RGB, VirtualKeyCode};
+use rltk::{Console, GameState, Rltk, VirtualKeyCode, RGB};
 extern crate specs;
 use specs::prelude::*;
 
@@ -7,8 +7,8 @@ use specs::prelude::*;
 
 /// Pos is a screen position
 struct Pos {
-    x : i32,
-    y : i32
+    x: i32,
+    y: i32,
 }
 
 impl Component for Pos {
@@ -17,9 +17,9 @@ impl Component for Pos {
 
 /// Renderable is a glyph definition
 struct Renderable {
-    glyph : u8,
-    fg : RGB,
-    bg : RGB
+    glyph: u8,
+    fg: RGB,
+    bg: RGB,
 }
 
 impl Component for Renderable {
@@ -43,15 +43,15 @@ impl Component for BouncingBacy {
 // State gets a new World entry for Specs, an RNG, and a score counter
 
 struct State {
-    ecs : World,
-    time : f32,
-    rng : rltk::RandomNumberGenerator,
-    saved : i32,
-    squished: i32
+    ecs: World,
+    time: f32,
+    rng: rltk::RandomNumberGenerator,
+    saved: i32,
+    squished: i32,
 }
 
 impl GameState for State {
-    fn tick(&mut self, ctx : &mut Rltk) {
+    fn tick(&mut self, ctx: &mut Rltk) {
         // Readable data stores
         let mut positions = self.ecs.write_storage::<Pos>();
         let renderables = self.ecs.write_storage::<Renderable>();
@@ -63,23 +63,25 @@ impl GameState for State {
         // Player movement
         match ctx.key {
             None => {} // Nothing happened
-            Some(key) => {
-                match key {
-                    VirtualKeyCode::Left => {
-                        for (_player, pos) in (&mut players, &mut positions).join() {
-                            pos.x -= 1;
-                            if pos.x < 0 { pos.x = 0; }
+            Some(key) => match key {
+                VirtualKeyCode::Left => {
+                    for (_player, pos) in (&mut players, &mut positions).join() {
+                        pos.x -= 1;
+                        if pos.x < 0 {
+                            pos.x = 0;
                         }
                     }
-                    VirtualKeyCode::Right => {
-                        for (_player, pos) in (&mut players, &mut positions).join() {
-                            pos.x += 1;
-                            if pos.x > 79 { pos.x = 79; }
-                        }
-                    }
-                    _ => {}
                 }
-            }
+                VirtualKeyCode::Right => {
+                    for (_player, pos) in (&mut players, &mut positions).join() {
+                        pos.x += 1;
+                        if pos.x > 79 {
+                            pos.x = 79;
+                        }
+                    }
+                }
+                _ => {}
+            },
         }
 
         self.time += ctx.frame_time_ms;
@@ -95,8 +97,8 @@ impl GameState for State {
             // Baby movement
             for (_baby, pos) in (&mut babies, &mut positions).join() {
                 pos.y += 1;
-                if pos.y > 48 { 
-                    pos.y = 0; 
+                if pos.y > 48 {
+                    pos.y = 0;
                     if player_x == pos.x {
                         // We saved them
                         self.saved += 1;
@@ -108,7 +110,7 @@ impl GameState for State {
                 }
             }
         }
-        
+
         // Draw renderables
         for (pos, render) in (&positions, &renderables).join() {
             ctx.set(pos.x, pos.y, render.fg, render.bg, render.glyph);
@@ -116,37 +118,58 @@ impl GameState for State {
 
         // Print the score
         ctx.print_centered(0, "Left & right arrows to move. Catch the falling babies!");
-        ctx.print_centered(2, &format!("Saved {}, Squished {}", self.saved, self.squished));
+        ctx.print_centered(
+            2,
+            &format!("Saved {}, Squished {}", self.saved, self.squished),
+        );
     }
 }
 
 fn main() {
-    let mut gs = State{ 
-        ecs : World::new(),
-        time : 0.0,
-        rng : rltk::RandomNumberGenerator::new(),
-        saved : 0,
-        squished : 0
+    let mut gs = State {
+        ecs: World::new(),
+        time: 0.0,
+        rng: rltk::RandomNumberGenerator::new(),
+        saved: 0,
+        squished: 0,
     };
     gs.ecs.register::<Pos>();
     gs.ecs.register::<Renderable>();
     gs.ecs.register::<Player>();
     gs.ecs.register::<BouncingBacy>();
 
-    gs.ecs.create_entity()
-        .with(Pos{x:40, y:49})
-        .with(Renderable{ glyph : rltk::to_cp437('@'), fg : RGB::named(rltk::YELLOW), bg : RGB::named(rltk::BLACK) })
-        .with(Player{})
+    gs.ecs
+        .create_entity()
+        .with(Pos { x: 40, y: 49 })
+        .with(Renderable {
+            glyph: rltk::to_cp437('@'),
+            fg: RGB::named(rltk::YELLOW),
+            bg: RGB::named(rltk::BLACK),
+        })
+        .with(Player {})
         .build();
 
     for i in 0..3 {
-        gs.ecs.create_entity()
-            .with(Pos{x:(i*22)+12, y: gs.rng.roll_dice(1, 20)})
-            .with(Renderable{ glyph : rltk::to_cp437('☺'), fg : RGB::named(rltk::MAGENTA), bg : RGB::named(rltk::BLACK) })
-            .with(BouncingBacy{})
+        gs.ecs
+            .create_entity()
+            .with(Pos {
+                x: (i * 22) + 12,
+                y: gs.rng.roll_dice(1, 20),
+            })
+            .with(Renderable {
+                glyph: rltk::to_cp437('☺'),
+                fg: RGB::named(rltk::MAGENTA),
+                bg: RGB::named(rltk::BLACK),
+            })
+            .with(BouncingBacy {})
             .build();
     }
 
-    let context = Rltk::init_simple8x8(80, 50, "Example 15 - Bouncing Babies with SPECS", "resources");
+    let context = Rltk::init_simple8x8(
+        80,
+        50,
+        "Example 15 - Bouncing Babies with SPECS",
+        "resources",
+    );
     rltk::main_loop(context, gs);
 }

@@ -58,7 +58,7 @@ impl State {
 
         let mut rng = rand::thread_rng();
 
-        for _i in 0..1400 {
+        for _ in 0..1400 {
             let x = rng.gen_range(1, 79);
             let y = rng.gen_range(1, 49);
             let idx = xy_idx(x, y);
@@ -84,7 +84,7 @@ impl GameState for State {
     #[allow(non_snake_case)]
     fn tick(&mut self, ctx: &mut Rltk) {
         // Set all tiles to not visible
-        for v in self.visible.iter_mut() {
+        for v in &mut self.visible {
             *v = false;
         }
 
@@ -93,7 +93,7 @@ impl GameState for State {
         let fov = rltk::field_of_view(player_position, 8, self);
 
         // Note that the steps above would generally not be run every frame!
-        for idx in fov.iter() {
+        for idx in &fov {
             self.visible[xy_idx(idx.x, idx.y)] = true;
         }
 
@@ -103,7 +103,8 @@ impl GameState for State {
         // Iterate the map array, incrementing coordinates as we go.
         let mut y = 0;
         let mut x = 0;
-        for (i, tile) in self.map.iter().enumerate() {
+        let mut i: usize = 0;
+        for tile in &self.map {
             // Render a tile depending upon the tile type; now we check visibility as well!
             let mut fg;
             let mut glyph = ".";
@@ -166,7 +167,7 @@ impl GameState for State {
         } else {
             self.player_position = self.path.steps[0] as usize;
             self.path.steps.remove(0);
-            if self.path.steps.is_empty() {
+            if self.path.steps.len() == 0 {
                 self.mode = Mode::Waiting;
             }
         }
@@ -227,7 +228,7 @@ impl BaseMap for State {
     fn get_pathing_distance(&self, idx1: i32, idx2: i32) -> f32 {
         let p1 = Point::new(idx1 % 80, idx1 / 80);
         let p2 = Point::new(idx2 % 80, idx2 / 80);
-        rltk::distance2d(DistanceAlg::Pythagoras, p1, p2)
+        DistanceAlg::Pythagoras.distance2d(p1, p2)
     }
 }
 

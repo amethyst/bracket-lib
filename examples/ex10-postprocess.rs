@@ -38,9 +38,12 @@ impl GameState for State {
             None => {} // Nothing happened
             Some(key) => {
                 // A key is pressed or held
-                if let VirtualKeyCode::B = key {
-                    self.burn = !self.burn;
-                    ctx.with_post_scanlines(self.burn);
+                match key {
+                    VirtualKeyCode::B => {
+                        self.burn = !self.burn;
+                        ctx.with_post_scanlines(self.burn);
+                    }
+                    _ => {}
                 }
             }
         }

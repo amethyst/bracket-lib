@@ -73,7 +73,6 @@ pub fn draw_box_double(
 }
 
 /// Draws a horizontal progress bar
-#[allow(clippy::too_many_arguments)] // It has exactly as many arguments as it needs
 pub fn draw_bar_horizontal(
     console: &mut dyn Console,
     sx: i32,
@@ -96,7 +95,6 @@ pub fn draw_bar_horizontal(
 }
 
 /// Draws a vertical progress bar
-#[allow(clippy::too_many_arguments)] // It has exactly as many arguments as it needs
 pub fn draw_bar_vertical(
     console: &mut dyn Console,
     sx: i32,

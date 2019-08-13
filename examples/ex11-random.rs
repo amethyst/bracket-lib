@@ -15,7 +15,7 @@ impl GameState for State {
         // Handle rollover
         if self.n_rolls == std::u32::MAX {
             self.n_rolls = 1;
-            for d in self.rolls.iter_mut() {
+            for d in &mut self.rolls {
                 *d = 0;
             }
         }

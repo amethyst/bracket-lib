@@ -37,11 +37,14 @@ impl GameState for State {
             None => {} // Nothing happened
             Some(key) => {
                 // A key is pressed or held
-                if let VirtualKeyCode::S = key {
-                    // Demonstrates saving the console stack on an xp file
-                    let xpfile = ctx.to_xp_file(80, 50);
-                    let mut f = File::create("./screenshot.xp").expect("Unable to create file");
-                    xpfile.write(&mut f).expect("Unable to save file");
+                match key {
+                    VirtualKeyCode::S => {
+                        // Demonstrates saving the console stack on an xp file
+                        let xpfile = ctx.to_xp_file(80, 50);
+                        let mut f = File::create("./screenshot.xp").expect("Unable to create file");
+                        xpfile.write(&mut f).expect("Unable to save file");
+                    }
+                    _ => {}
                 }
             }
         }

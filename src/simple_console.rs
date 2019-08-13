@@ -6,8 +6,6 @@ use std::mem;
 use std::os::raw::c_void;
 use std::ptr;
 
-#[allow(non_snake_case)]
-#[allow(dead_code)]
 /// A simple console with background color.
 pub struct SimpleConsole {
     pub width: u32,
@@ -26,20 +24,18 @@ pub struct SimpleConsole {
     // GL Stuff
     vertex_buffer: Vec<f32>,
     index_buffer: Vec<i32>,
-    VBO: u32,
-    VAO: u32,
-    EBO: u32,
+    vbo: u32,
+    vao: u32,
+    ebo: u32,
 }
 
-#[allow(dead_code)]
 impl SimpleConsole {
-    #[allow(non_snake_case)]
     /// Initializes a console, ready to add to RLTK's console list.
     pub fn init(width: u32, height: u32, gl: &gl::Gles2) -> Box<SimpleConsole> {
         // Console backing init
         let num_tiles: usize = (width * height) as usize;
         let mut tiles: Vec<Tile> = Vec::with_capacity(num_tiles);
-        for _i in 0..num_tiles {
+        for _ in 0..num_tiles {
             tiles.push(Tile {
                 glyph: 0,
                 fg: RGB::named(color::WHITE),
@@ -47,7 +43,7 @@ impl SimpleConsole {
             });
         }
 
-        let (VBO, VAO, EBO) = SimpleConsole::init_gl_for_console(gl);
+        let (vbo, vao, ebo) = SimpleConsole::init_gl_for_console(gl);
 
         let vertex_capacity: usize = (11 * width as usize * height as usize) * 4;
         let index_capacity: usize = 6 * width as usize * height as usize;
@@ -55,9 +51,9 @@ impl SimpleConsole {
         let mut new_console = SimpleConsole {
             width,
             height,
-            VBO,
-            VAO,
-            EBO,
+            vbo,
+            vao,
+            ebo,
             tiles,
             is_dirty: true,
             vertex_buffer: Vec::with_capacity(vertex_capacity),
@@ -68,31 +64,30 @@ impl SimpleConsole {
             offset_y: 0.0,
         };
 
-        for _i in 0..vertex_capacity {
+        for _ in 0..vertex_capacity {
             new_console.vertex_buffer.push(0.0);
         }
-        for _i in 0..index_capacity {
+        for _ in 0..index_capacity {
             new_console.index_buffer.push(0);
         }
 
         Box::new(new_console)
     }
 
-    #[allow(non_snake_case)]
     /// Sets up the OpenGL backing.
     fn init_gl_for_console(gl: &gl::Gles2) -> (u32, u32, u32) {
         let mut texture = 0;
-        let (mut VBO, mut VAO, mut EBO) = (0, 0, 0);
+        let (mut vbo, mut vao, mut ebo) = (0, 0, 0);
 
         unsafe {
             // Generate buffers and arrays, as well as attributes.
-            gl.GenVertexArrays(1, &mut VAO);
-            gl.GenBuffers(1, &mut VBO);
-            gl.GenBuffers(1, &mut EBO);
+            gl.GenVertexArrays(1, &mut vao);
+            gl.GenBuffers(1, &mut vbo);
+            gl.GenBuffers(1, &mut ebo);
 
-            gl.BindVertexArray(VAO);
+            gl.BindVertexArray(vao);
 
-            gl.BindBuffer(gl::ARRAY_BUFFER, VBO);
+            gl.BindBuffer(gl::ARRAY_BUFFER, vbo);
 
             let stride = 11 * mem::size_of::<GLfloat>() as GLsizei;
             // position attribute
@@ -139,7 +134,7 @@ impl SimpleConsole {
             gl.TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32);
         };
 
-        (VBO, VAO, EBO)
+        (vbo, vao, ebo)
     }
 
     /// Helper function to add all the elements required by the shader for a given point.
@@ -179,10 +174,10 @@ impl SimpleConsole {
                 let glyph_x = glyph % 16;
                 let glyph_y = 16 - (glyph / 16);
 
-                let glyph_left = f32::from(glyph_x) * glyph_size_x;
-                let glyph_right = f32::from(glyph_x + 1) * glyph_size_x;
-                let glyph_top = f32::from(glyph_y) * glyph_size_y;
-                let glyph_bottom = f32::from(glyph_y - 1) * glyph_size_y;
+                let glyph_left = glyph_x as f32 * glyph_size_x;
+                let glyph_right = (glyph_x + 1) as f32 * glyph_size_x;
+                let glyph_top = glyph_y as f32 * glyph_size_y;
+                let glyph_bottom = (glyph_y - 1) as f32 * glyph_size_y;
 
                 self.push_point(
                     screen_x + step_x,
@@ -218,7 +213,7 @@ impl SimpleConsole {
         }
 
         unsafe {
-            gl.BindBuffer(gl::ARRAY_BUFFER, self.VBO);
+            gl.BindBuffer(gl::ARRAY_BUFFER, self.vbo);
             gl.BufferData(
                 gl::ARRAY_BUFFER,
                 (self.vertex_buffer.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
@@ -226,7 +221,7 @@ impl SimpleConsole {
                 gl::STATIC_DRAW,
             );
 
-            gl.BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.EBO);
+            gl.BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.ebo);
             gl.BufferData(
                 gl::ELEMENT_ARRAY_BUFFER,
                 (self.index_buffer.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
@@ -254,9 +249,9 @@ impl Console for SimpleConsole {
 
             // render container
             shader.useProgram(gl);
-            gl.BindVertexArray(self.VAO);
-            gl.BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.EBO);
-            gl.BindBuffer(gl::ARRAY_BUFFER, self.VBO);
+            gl.BindVertexArray(self.vao);
+            gl.BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.ebo);
+            gl.BindBuffer(gl::ARRAY_BUFFER, self.vbo);
             gl.DrawElements(
                 gl::TRIANGLES,
                 (self.width * self.height * 6) as i32,
@@ -275,7 +270,7 @@ impl Console for SimpleConsole {
     /// Clears the screen.
     fn cls(&mut self) {
         self.is_dirty = true;
-        for tile in self.tiles.iter_mut() {
+        for tile in &mut self.tiles {
             tile.glyph = 32;
             tile.fg = RGB::named(color::WHITE);
             tile.bg = RGB::named(color::BLACK);
@@ -285,7 +280,7 @@ impl Console for SimpleConsole {
     /// Clears the screen with a background color.
     fn cls_bg(&mut self, background: RGB) {
         self.is_dirty = true;
-        for tile in self.tiles.iter_mut() {
+        for tile in &mut self.tiles {
             tile.glyph = 32;
             tile.fg = RGB::named(color::WHITE);
             tile.bg = background;
@@ -298,9 +293,9 @@ impl Console for SimpleConsole {
         let mut idx = self.at(x, y);
 
         let bytes = super::string_to_cp437(output);
-        for i in 0..bytes.len() {
+        for glyph in bytes {
             if idx < self.tiles.len() {
-                self.tiles[idx].glyph = bytes[i];
+                self.tiles[idx].glyph = glyph;
                 idx += 1;
             }
         }
@@ -312,9 +307,9 @@ impl Console for SimpleConsole {
         let mut idx = self.at(x, y);
 
         let bytes = super::string_to_cp437(output);
-        for i in 0..bytes.len() {
+        for glyph in bytes {
             if idx < self.tiles.len() {
-                self.tiles[idx].glyph = bytes[i];
+                self.tiles[idx].glyph = glyph;
                 self.tiles[idx].bg = bg;
                 self.tiles[idx].fg = fg;
                 idx += 1;

@@ -50,7 +50,7 @@ impl State {
 
         let mut rng = rand::thread_rng();
 
-        for _i in 0..400 {
+        for _ in 0..400 {
             let x = rng.gen_range(1, 79);
             let y = rng.gen_range(1, 49);
             let idx = xy_idx(x, y);
@@ -82,46 +82,22 @@ impl GameState for State {
                 // A key is pressed or held
                 match key {
                     // Numpad
-                    VirtualKeyCode::Numpad8 => {
-                        self.move_player(0, -1);
-                    }
-                    VirtualKeyCode::Numpad4 => {
-                        self.move_player(-1, 0);
-                    }
-                    VirtualKeyCode::Numpad6 => {
-                        self.move_player(1, 0);
-                    }
-                    VirtualKeyCode::Numpad2 => {
-                        self.move_player(0, 1);
-                    }
+                    VirtualKeyCode::Numpad8 => self.move_player(0, -1),
+                    VirtualKeyCode::Numpad4 => self.move_player(-1, 0),
+                    VirtualKeyCode::Numpad6 => self.move_player(1, 0),
+                    VirtualKeyCode::Numpad2 => self.move_player(0, 1),
 
                     // Numpad diagonals
-                    VirtualKeyCode::Numpad7 => {
-                        self.move_player(-1, -1);
-                    }
-                    VirtualKeyCode::Numpad9 => {
-                        self.move_player(1, -1);
-                    }
-                    VirtualKeyCode::Numpad1 => {
-                        self.move_player(-1, 1);
-                    }
-                    VirtualKeyCode::Numpad3 => {
-                        self.move_player(1, 1);
-                    }
+                    VirtualKeyCode::Numpad7 => self.move_player(-1, -1),
+                    VirtualKeyCode::Numpad9 => self.move_player(1, -1),
+                    VirtualKeyCode::Numpad1 => self.move_player(-1, 1),
+                    VirtualKeyCode::Numpad3 => self.move_player(1, 1),
 
                     // Cursors
-                    VirtualKeyCode::Up => {
-                        self.move_player(0, -1);
-                    }
-                    VirtualKeyCode::Down => {
-                        self.move_player(0, 1);
-                    }
-                    VirtualKeyCode::Left => {
-                        self.move_player(-1, 0);
-                    }
-                    VirtualKeyCode::Right => {
-                        self.move_player(1, 0);
-                    }
+                    VirtualKeyCode::Up => self.move_player(0, -1),
+                    VirtualKeyCode::Down => self.move_player(0, 1),
+                    VirtualKeyCode::Left => self.move_player(-1, 0),
+                    VirtualKeyCode::Right => self.move_player(1, 0),
 
                     _ => {} // Ignore all the other possibilities
                 }

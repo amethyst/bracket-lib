@@ -25,8 +25,7 @@ impl GameState for State {
             .append("FPS: ")
             .fg(RGB::named(rltk::MAGENTA))
             .append(&format!("{}", ctx.fps))
-            .reset()
-            ;
+            .reset();
 
         block.print(&buf);
 
