@@ -32,9 +32,7 @@ pub use self::console::*;
 pub use self::fastnoise::*;
 pub use self::fieldofview::field_of_view;
 pub use self::font::Font;
-pub use self::geometry::{
-    distance2d, distance3d, line2d, project_angle, DistanceAlg, LineAlg, Point, Point3,
-};
+pub use self::geometry::{line2d, project_angle, DistanceAlg, LineAlg, Point, Point3};
 pub use self::pathfinding::astar::{a_star_search, NavigationPath};
 pub use self::pathfinding::dijkstra::DijkstraMap;
 pub use self::random::RandomNumberGenerator;
@@ -44,9 +42,6 @@ pub use self::simple_console::SimpleConsole;
 pub use self::sparse_console::SparseConsole;
 pub use self::textblock::{TextBlock, TextBuilder};
 pub use glutin::event::VirtualKeyCode;
-
-#[cfg(feature = "serialization")]
-extern crate serde;
 
 /// Implement this trait on your state struct, so the engine knows what to call on each tick.
 pub trait GameState: 'static {

@@ -1,4 +1,3 @@
-extern crate image;
 use super::gl;
 use image::GenericImageView;
 use std::os::raw::c_void;

@@ -45,10 +45,10 @@ impl TextBlock {
         ((y * self.width) + x) as usize
     }
 
-    pub fn render(&self, console: &mut Box<Console>) {
+    pub fn render(&self, mut console: impl AsMut<dyn Console>) {
         for y in 0..self.height {
             for x in 0..self.width {
-                console.set(
+                console.as_mut().set(
                     x + self.x,
                     y + self.y,
                     self.buffer[self.at(x, y)].fg,
@@ -60,10 +60,10 @@ impl TextBlock {
     }
 
     pub fn print(&mut self, text: &TextBuilder) {
-        for cmd in text.commands.iter() {
+        for cmd in &text.commands {
             match cmd {
                 CommandType::Text { block: t } => {
-                    for c in t.iter() {
+                    for c in t {
                         let idx = self.at(self.cursor.0, self.cursor.1);
                         self.buffer[idx].glyph = *c;
                         self.buffer[idx].fg = self.fg;
@@ -80,7 +80,7 @@ impl TextBlock {
                     let text_width = t.len() as i32;
                     let half_width = text_width / 2;
                     self.cursor.0 = (self.width / 2) - half_width;
-                    for c in t.iter() {
+                    for c in t {
                         let idx = self.at(self.cursor.0, self.cursor.1);
                         self.buffer[idx].glyph = *c;
                         self.buffer[idx].fg = self.fg;
@@ -107,18 +107,16 @@ impl TextBlock {
                 }
 
                 CommandType::TextWrapper { block: t } => {
-                    let words = t.split(' ');
-
-                    for word in words {
+                    for word in t.split(' ') {
                         let mut chrs = string_to_cp437(&word);
                         chrs.push(32);
                         if self.cursor.0 + chrs.len() as i32 >= self.width {
                             self.cursor.0 = 0;
                             self.cursor.1 += 1;
                         }
-                        for c in chrs.iter() {
+                        for c in chrs {
                             let idx = self.at(self.cursor.0, self.cursor.1);
-                            self.buffer[idx].glyph = *c;
+                            self.buffer[idx].glyph = c;
                             self.buffer[idx].fg = self.fg;
                             self.buffer[idx].bg = self.bg;
                             self.cursor.0 += 1;

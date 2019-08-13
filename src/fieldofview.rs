@@ -1,10 +1,9 @@
-use super::geometry::{distance2d, DistanceAlg};
+use super::geometry::DistanceAlg;
 use super::Algorithm2D;
 use super::Point;
 
-#[allow(dead_code)]
 /// Calculates field-of-view for a map that supports Algorithm2D.
-pub fn field_of_view(start: Point, range: i32, fov_check: &Algorithm2D) -> Vec<Point> {
+pub fn field_of_view(start: Point, range: i32, fov_check: &dyn Algorithm2D) -> Vec<Point> {
     let mut result: Vec<Point> = Vec::new();
 
     let left = start.x - range;
@@ -39,7 +38,7 @@ fn scan_fov_line(
     start: Point,
     end: Point,
     range_squared: f32,
-    fov_check: &Algorithm2D,
+    fov_check: &dyn Algorithm2D,
 ) -> Vec<Point> {
     let mut result: Vec<Point> = Vec::new();
     let line = super::line2d(super::LineAlg::Bresenham, start, end);
@@ -48,7 +47,7 @@ fn scan_fov_line(
 
     for target in line.iter() {
         if !blocked {
-            let dsq = distance2d(DistanceAlg::PythagorasSquared, start, *target);
+            let dsq = DistanceAlg::PythagorasSquared.distance2d(start, *target);
             if dsq <= range_squared {
                 if fov_check.is_opaque(fov_check.point2d_to_index(*target)) {
                     blocked = true;

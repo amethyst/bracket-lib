@@ -70,7 +70,7 @@ impl State {
         let mut rng = rand::thread_rng();
 
         // Lets add more walls to make it harder
-        for _i in 0..1600 {
+        for _ in 0..1600 {
             let x = rng.gen_range(1, 79);
             let y = rng.gen_range(1, 49);
             let idx = xy_idx(x, y);
@@ -97,7 +97,7 @@ impl GameState for State {
     #[allow(non_snake_case)]
     fn tick(&mut self, ctx: &mut Rltk) {
         // Set all tiles to not visible
-        for v in self.map.visible.iter_mut() {
+        for v in &mut self.map.visible {
             *v = false;
         }
 
@@ -106,7 +106,7 @@ impl GameState for State {
         let fov = rltk::field_of_view(player_position, 8, &self.map);
 
         // Note that the steps above would generally not be run every frame!
-        for idx in fov.iter() {
+        for idx in &fov {
             let mapidx = xy_idx(idx.x, idx.y);
             self.map.visible[mapidx] = true;
             if !self.map.revealed[mapidx] {
@@ -146,7 +146,7 @@ impl GameState for State {
         // Iterate the map array, incrementing coordinates as we go.
         let mut y = 0;
         let mut x = 0;
-        for (i, tile) in self.map.tiles.iter().enumerate() {
+        for (i,tile) in self.map.tiles.iter().enumerate() {
             // New test: only render if its revealed
             let bg;
             let distance = self.flow_map.map[i];
@@ -280,7 +280,7 @@ impl BaseMap for Map {
     fn get_pathing_distance(&self, idx1: i32, idx2: i32) -> f32 {
         let p1 = Point::new(idx1 % 80, idx1 / 80);
         let p2 = Point::new(idx2 % 80, idx2 / 80);
-        rltk::distance2d(DistanceAlg::Pythagoras, p1, p2)
+        DistanceAlg::Pythagoras.distance2d(p1, p2)
     }
 }
 

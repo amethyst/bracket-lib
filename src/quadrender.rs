@@ -6,24 +6,23 @@ use std::ptr;
 
 /// Sets up a simple VAO/VBO to render a single quad
 /// Used for presenting the backing buffer and in post-process chains.
-#[allow(non_snake_case)]
 pub fn setup_quad(gl: &gl::Gles2) -> u32 {
-    let quadVertices: [f32; 24] = [
+    let quad_vertices: [f32; 24] = [
         // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
         // positions // texCoords
         -1.0, 1.0, 0.0, 1.0, -1.0, -1.0, 0.0, 0.0, 1.0, -1.0, 1.0, 0.0, -1.0, 1.0, 0.0, 1.0, 1.0,
         -1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0,
     ];
-    let (mut quadVAO, mut quadVBO) = (0, 0);
+    let (mut quad_vao, mut quad_vbo) = (0, 0);
     unsafe {
-        gl.GenVertexArrays(1, &mut quadVAO);
-        gl.GenBuffers(1, &mut quadVBO);
-        gl.BindVertexArray(quadVBO);
-        gl.BindBuffer(gl::ARRAY_BUFFER, quadVBO);
+        gl.GenVertexArrays(1, &mut quad_vao);
+        gl.GenBuffers(1, &mut quad_vbo);
+        gl.BindVertexArray(quad_vbo);
+        gl.BindBuffer(gl::ARRAY_BUFFER, quad_vbo);
         gl.BufferData(
             gl::ARRAY_BUFFER,
-            (quadVertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-            &quadVertices[0] as *const f32 as *const c_void,
+            (quad_vertices.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
+            &quad_vertices[0] as *const f32 as *const c_void,
             gl::STATIC_DRAW,
         );
         gl.EnableVertexAttribArray(0);
@@ -40,5 +39,5 @@ pub fn setup_quad(gl: &gl::Gles2) -> u32 {
         );
     }
 
-    quadVAO
+    quad_vao
 }

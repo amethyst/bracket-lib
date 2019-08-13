@@ -60,7 +60,7 @@ impl State {
         // First, obtain the thread-local RNG:
         let mut rng = rand::thread_rng();
 
-        for _i in 0..400 {
+        for _ in 0..400 {
             // rand provides a gen_range function to get numbers in a range.
             let x = rng.gen_range(1, 79);
             let y = rng.gen_range(1, 49);
@@ -90,9 +90,6 @@ impl State {
 
 // Implement the game loop
 impl GameState for State {
-    // We're allowing non snake-case here, because the underlying GL library exports
-    // keys in a way that makes Rust complain.
-    #[allow(non_snake_case)]
     fn tick(&mut self, ctx: &mut Rltk) {
         // New: handle keyboard inputs.
         match ctx.key {
@@ -104,46 +101,22 @@ impl GameState for State {
                     // and applying movement via the move_player function.
 
                     // Numpad
-                    VirtualKeyCode::Numpad8 => {
-                        self.move_player(0, -1);
-                    }
-                    VirtualKeyCode::Numpad4 => {
-                        self.move_player(-1, 0);
-                    }
-                    VirtualKeyCode::Numpad6 => {
-                        self.move_player(1, 0);
-                    }
-                    VirtualKeyCode::Numpad2 => {
-                        self.move_player(0, 1);
-                    }
+                    VirtualKeyCode::Numpad8 => self.move_player(0, -1),
+                    VirtualKeyCode::Numpad4 => self.move_player(-1, 0),
+                    VirtualKeyCode::Numpad6 => self.move_player(1, 0),
+                    VirtualKeyCode::Numpad2 => self.move_player(0, 1),
 
                     // Numpad diagonals
-                    VirtualKeyCode::Numpad7 => {
-                        self.move_player(-1, -1);
-                    }
-                    VirtualKeyCode::Numpad9 => {
-                        self.move_player(1, -1);
-                    }
-                    VirtualKeyCode::Numpad1 => {
-                        self.move_player(-1, 1);
-                    }
-                    VirtualKeyCode::Numpad3 => {
-                        self.move_player(1, 1);
-                    }
+                    VirtualKeyCode::Numpad7 => self.move_player(-1, -1),
+                    VirtualKeyCode::Numpad9 => self.move_player(1, -1),
+                    VirtualKeyCode::Numpad1 => self.move_player(-1, 1),
+                    VirtualKeyCode::Numpad3 => self.move_player(1, 1),
 
                     // Cursors
-                    VirtualKeyCode::Up => {
-                        self.move_player(0, -1);
-                    }
-                    VirtualKeyCode::Down => {
-                        self.move_player(0, 1);
-                    }
-                    VirtualKeyCode::Left => {
-                        self.move_player(-1, 0);
-                    }
-                    VirtualKeyCode::Right => {
-                        self.move_player(1, 0);
-                    }
+                    VirtualKeyCode::Up => self.move_player(0, -1),
+                    VirtualKeyCode::Down => self.move_player(0, 1),
+                    VirtualKeyCode::Left => self.move_player(-1, 0),
+                    VirtualKeyCode::Right => self.move_player(1, 0),
 
                     _ => {} // Ignore all the other possibilities
                 }
@@ -156,7 +129,7 @@ impl GameState for State {
         // Iterate the map array, incrementing coordinates as we go.
         let mut y = 0;
         let mut x = 0;
-        for tile in self.map.iter() {
+        for tile in &self.map {
             // Render a tile depending upon the tile type
             match tile {
                 TileType::Floor => {
