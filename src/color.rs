@@ -122,9 +122,9 @@ impl RGB {
     /// Constructs a new RGB color, from 3 bytes in the range 0..255
     pub fn from_u8(r: u8, g: u8, b: u8) -> RGB {
         RGB {
-            r: r as f32 / 255.0,
-            g: g as f32 / 255.0,
-            b: b as f32 / 255.0,
+            r: f32::from(r) / 255.0,
+            g: f32::from(g) / 255.0,
+            b: f32::from(b) / 255.0,
         }
     }
 

@@ -1399,6 +1399,7 @@ const CELL_3D_Y: [f32; 256] = [
 ];
 
 #[allow(clippy::unreadable_literal)]
+#[allow(clippy::excessive_precision)]
 const CELL_3D_Z: [f32; 256] = [
     -0.6341391283,
     -0.7207118346,
@@ -1672,8 +1673,12 @@ const SQRT3: f32 = 1.7320508075688772935274463415059;
 const F2: f32 = 0.5 * (SQRT3 - 1.0);
 const G2: f32 = (3.0 - SQRT3) / 6.0;
 #[allow(dead_code)]
+#[allow(clippy::excessive_precision)]
+#[allow(clippy::unreadable_literal)]
 const F4: f32 = (2.23606797749979 - 1.0) / 4.0;
 #[allow(dead_code)]
+#[allow(clippy::excessive_precision)]
+#[allow(clippy::unreadable_literal)]
 const G4: f32 = (5.0 - 2.23606797749979) / 20.0;
 const CUBIC_3D_BOUNDING: f32 = 1.0 / (1.5 * 1.5 * 1.5);
 const CUBIC_2D_BOUNDING: f32 = 1.0 / 1.5 * 1.5;
@@ -1716,11 +1721,14 @@ fn interp_quintic_func(t: f32) -> f32 {
     t * t * t * (t * (t * 6. - 15.) + 10.)
 }
 
+#[allow(clippy::many_single_char_names)]
 fn cubic_lerp(a: f32, b: f32, c: f32, d: f32, t: f32) -> f32 {
     let p = (d - c) - (a - b);
     t * t * t * p + t * t * ((a - b) - p) + t * (c - a) + b
 }
 
+#[allow(clippy::unreadable_literal)]
+#[allow(clippy::new_without_default)]
 impl FastNoise {
     /// Creates a new noise instance, using simplex noise defaults.
     pub fn new() -> FastNoise {
@@ -1953,6 +1961,7 @@ impl FastNoise {
     }
 
     #[allow(dead_code)]
+    #[allow(clippy::many_single_char_names)]
     fn val_coord_4d(&self, seed: i32, x: i32, y: i32, z: i32, w: i32) -> f32 {
         let mut n = seed;
         n ^= X_PRIME * x;
@@ -1975,12 +1984,14 @@ impl FastNoise {
         xd * GRAD_X[lut_pos] + yd * GRAD_Y[lut_pos]
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn grad_coord_3d(&self, offset: u8, x: i32, y: i32, z: i32, xd: f32, yd: f32, zd: f32) -> f32 {
         let lut_pos = self.index3d_12(offset, x, y, z) as usize;
         xd * GRAD_X[lut_pos] + yd * GRAD_Y[lut_pos] + zd * GRAD_Z[lut_pos]
     }
 
     #[allow(dead_code)]
+    #[allow(clippy::too_many_arguments)]
     fn grad_coord_4d(
         &self,
         offset: u8,
@@ -2085,14 +2096,13 @@ impl FastNoise {
             let zc: i32 = std::mem::transmute_copy(&z);
             let wc: i32 = std::mem::transmute_copy(&w);
 
-            let result = self.val_coord_4d(
+            self.val_coord_4d(
                 self.seed as i32,
                 xc ^ (xc as i32 >> 16),
                 yc ^ (yc >> 16),
                 zc ^ (zc >> 16),
                 wc ^ (wc >> 16),
-            );
-            result
+            )
         }
     }
 
@@ -2102,13 +2112,12 @@ impl FastNoise {
             let yc: i32 = std::mem::transmute_copy(&y);
             let zc: i32 = std::mem::transmute_copy(&z);
 
-            let result = self.val_coord_3d(
+            self.val_coord_3d(
                 self.seed as i32,
                 xc ^ (xc >> 16),
                 yc ^ (yc >> 16),
                 zc ^ (zc >> 16),
-            );
-            result
+            )
         }
     }
 
@@ -2117,8 +2126,7 @@ impl FastNoise {
             let xc: i32 = std::mem::transmute_copy(&x);
             let yc: i32 = std::mem::transmute_copy(&y);
 
-            let result = self.val_coord_2d(self.seed as i32, xc ^ (xc >> 16), yc ^ (yc >> 16));
-            result
+            self.val_coord_2d(self.seed as i32, xc ^ (xc >> 16), yc ^ (yc >> 16))
         }
     }
 
@@ -2714,6 +2722,9 @@ impl FastNoise {
         )
     }
 
+    #[allow(clippy::many_single_char_names)]
+    #[allow(clippy::collapsible_if)]
+    #[allow(clippy::suspicious_else_formatting)]
     fn single_simplex3d(&self, offset: u8, x: f32, y: f32, z: f32) -> f32 {
         let mut t: f32 = (x + y + z) * F3;
         let i = fast_floor(x + t);
@@ -2946,6 +2957,7 @@ impl FastNoise {
         self.single_simplex(0, x * self.frequency, y * self.frequency)
     }
 
+    #[allow(clippy::many_single_char_names)]
     fn single_simplex(&self, offset: u8, x: f32, y: f32) -> f32 {
         let mut t: f32 = (x + y) * F2;
         let i = fast_floor(x + t);
@@ -3017,6 +3029,7 @@ impl FastNoise {
     }
 
     #[allow(dead_code)]
+    #[allow(clippy::many_single_char_names)]
     fn single_simplex4d(&self, offset: u8, x: f32, y: f32, z: f32, w: f32) -> f32 {
         let n0: f32;
         let n1: f32;
