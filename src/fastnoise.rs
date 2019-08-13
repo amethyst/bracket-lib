@@ -93,6 +93,8 @@ const GRAD_4D: [f32; 128] = [
     -1., -1., 0., -1., 1., 1., 0., -1., 1., -1., 0., -1., -1., 1., 0., -1., -1., -1., 0.,
 ];
 
+#[allow(clippy::unreadable_literal)]
+#[allow(clippy::excessive_precision)]
 const VAL_LUT: [f32; 256] = [
     0.3490196078,
     0.4352941176,
@@ -352,6 +354,8 @@ const VAL_LUT: [f32; 256] = [
     -0.1529411765,
 ];
 
+#[allow(clippy::unreadable_literal)]
+#[allow(clippy::excessive_precision)]
 const CELL_2D_X: [f32; 256] = [
     -0.6440658039,
     -0.08028078721,
@@ -611,6 +615,8 @@ const CELL_2D_X: [f32; 256] = [
     0.664508256,
 ];
 
+#[allow(clippy::unreadable_literal)]
+#[allow(clippy::excessive_precision)]
 const CELL_2D_Y: [f32; 256] = [
     0.7649700911,
     0.9967722885,
@@ -870,6 +876,8 @@ const CELL_2D_Y: [f32; 256] = [
     0.7472809229,
 ];
 
+#[allow(clippy::unreadable_literal)]
+#[allow(clippy::excessive_precision)]
 const CELL_3D_X: [f32; 256] = [
     0.3752498686,
     0.687188096,
@@ -1129,6 +1137,8 @@ const CELL_3D_X: [f32; 256] = [
     -0.2509196808,
 ];
 
+#[allow(clippy::unreadable_literal)]
+#[allow(clippy::excessive_precision)]
 const CELL_3D_Y: [f32; 256] = [
     -0.6760585049,
     -0.09136176499,
@@ -1388,6 +1398,7 @@ const CELL_3D_Y: [f32; 256] = [
     0.8985888773,
 ];
 
+#[allow(clippy::unreadable_literal)]
 const CELL_3D_Z: [f32; 256] = [
     -0.6341391283,
     -0.7207118346,
@@ -1655,6 +1666,8 @@ const Z_PRIME: i32 = 6971;
 const W_PRIME: i32 = 1013;
 const F3: f32 = 1.0 / 3.0;
 const G3: f32 = 1.0 / 6.0;
+#[allow(clippy::excessive_precision)]
+#[allow(clippy::unreadable_literal)]
 const SQRT3: f32 = 1.7320508075688772935274463415059;
 const F2: f32 = 0.5 * (SQRT3 - 1.0);
 const G2: f32 = (3.0 - SQRT3) / 6.0;

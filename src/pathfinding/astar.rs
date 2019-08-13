@@ -12,11 +12,11 @@ pub fn a_star_search(start: i32, end: i32, map: &mut dyn BaseMap) -> NavigationP
     AStar::new(start, end).search(map)
 }
 
-#[derive(Clone)]
 /// Holds the result of an A-Star navigation query.
 /// `destination` is the index of the target tile.
 /// `success` is true if it reached the target, false otherwise.
 /// `steps` is a vector of each step towards the target, *including* the starting position.
+#[derive(Clone, Default)]
 pub struct NavigationPath {
     pub destination: i32,
     pub success: bool,

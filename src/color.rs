@@ -5,7 +5,7 @@ use std::ops;
     feature = "serialization",
     derive(serde::Serialize, serde::Deserialize)
 )]
-#[derive(PartialEq, Copy, Clone)]
+#[derive(PartialEq, Copy, Clone, Default)]
 /// Represents an R/G/B triplet, in the range 0..1 (32-bit float)
 pub struct RGB {
     pub r: f32,
@@ -13,7 +13,7 @@ pub struct RGB {
     pub b: f32,
 }
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(PartialEq, Copy, Clone, Default)]
 /// Represents an H/S/V triplet, in the range 0..1 (32-bit float)
 pub struct HSV {
     pub h: f32,
@@ -216,6 +216,7 @@ impl RGB {
     }
 
     /// Converts an RGB triple to an HSV triple.
+    #[allow(clippy::many_single_char_names)]
     pub fn to_hsv(&self) -> HSV {
         let r = self.r;
         let g = self.g;

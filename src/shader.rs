@@ -123,12 +123,12 @@ impl Shader {
     /// utility function for checking shader compilation/linking errors.
     /// ------------------------------------------------------------------------
     unsafe fn checkCompileErrors(&self, gl: &gl::Gles2, shader: u32, type_: &str) {
-        let mut success = gl::FALSE as GLint;
+        let mut success = i32::from(gl::FALSE);
         let mut infoLog = Vec::with_capacity(1024);
         infoLog.set_len(1024 - 1); // subtract 1 to skip the trailing null character
         if type_ != "PROGRAM" {
             gl.GetShaderiv(shader, gl::COMPILE_STATUS, &mut success);
-            if success != gl::TRUE as GLint {
+            if success != i32::from(gl::TRUE) {
                 gl.GetShaderInfoLog(
                     shader,
                     1024,
@@ -144,7 +144,7 @@ impl Shader {
             }
         } else {
             gl.GetProgramiv(shader, gl::LINK_STATUS, &mut success);
-            if success != gl::TRUE as GLint {
+            if success != i32::from(gl::TRUE) {
                 gl.GetProgramInfoLog(
                     shader,
                     1024,

@@ -59,7 +59,7 @@ impl Rltk {
         let el = EventLoop::new();
         let wb = WindowBuilder::new()
             .with_title(window_title.to_string())
-            .with_inner_size(LogicalSize::new(width_pixels as f64, height_pixels as f64));
+            .with_inner_size(LogicalSize::new(f64::from(width_pixels), f64::from(height_pixels)));
         let windowed_context = ContextBuilder::new().build_windowed(wb, &el).unwrap();
         let windowed_context = unsafe { windowed_context.make_current().unwrap() };
 

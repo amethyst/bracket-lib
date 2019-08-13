@@ -46,13 +46,12 @@ impl DijkstraMap {
     /// Creates an empty Dijkstra map node.
     pub fn new_empty(size_x: i32, size_y: i32, max_depth: f32) -> DijkstraMap {
         let result: Vec<f32> = vec![MAX; (size_x * size_y) as usize];
-        let d = DijkstraMap {
+        DijkstraMap {
             map: result,
             size_x,
             size_y,
             max_depth,
-        };
-        d
+        }
     }
 
     /// Internal: add a node to the open list if it doesn't exceed max_depth, and isn't on the closed list.

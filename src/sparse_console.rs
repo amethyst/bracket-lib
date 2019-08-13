@@ -154,10 +154,10 @@ impl SparseConsole {
             let glyph_x = glyph % 16;
             let glyph_y = 16 - (glyph / 16);
 
-            let glyph_left = glyph_x as f32 * glyph_size_x;
-            let glyph_right = (glyph_x + 1) as f32 * glyph_size_x;
-            let glyph_top = glyph_y as f32 * glyph_size_y;
-            let glyph_bottom = (glyph_y - 1) as f32 * glyph_size_y;
+            let glyph_left = f32::from(glyph_x) * glyph_size_x;
+            let glyph_right = f32::from(glyph_x + 1) * glyph_size_x;
+            let glyph_top = f32::from(glyph_y) * glyph_size_y;
+            let glyph_bottom = f32::from(glyph_y - 1) * glyph_size_y;
 
             SparseConsole::push_point(
                 &mut self.vertex_buffer,
