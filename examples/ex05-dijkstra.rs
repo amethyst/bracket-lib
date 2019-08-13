@@ -146,8 +146,7 @@ impl GameState for State {
         // Iterate the map array, incrementing coordinates as we go.
         let mut y = 0;
         let mut x = 0;
-        let mut i: usize = 0;
-        for tile in &self.map.tiles {
+        for (i,tile) in self.map.tiles.iter().enumerate() {
             // New test: only render if its revealed
             let bg;
             let distance = self.flow_map.map[i];
