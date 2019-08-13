@@ -83,7 +83,7 @@ impl State {
         // Since the map doesn't change, we'll do this once. It's a list of indices of tiles that
         // are not walls, and aren't revealed
         for i in 0..80 * 50 {
-            if state.map.revealed[i] == false && state.map.tiles[i] == TileType::Floor {
+            if !state.map.revealed[i] && state.map.tiles[i] == TileType::Floor {
                 state.search_targets.push(i as i32);
             }
         }
@@ -121,7 +121,7 @@ impl GameState for State {
         let mut anything_left = true;
         DijkstraMap::clear(&mut self.flow_map);
         DijkstraMap::build(&mut self.flow_map, &self.search_targets, &self.map);
-        if !(self.flow_map.map[self.player_position] < MAX) {
+        if self.flow_map.map[self.player_position] >= MAX {
             anything_left = false;
         }
         if anything_left {

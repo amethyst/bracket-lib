@@ -130,8 +130,7 @@ impl GameState for State {
         // Iterate the map array, incrementing coordinates as we go.
         let mut y = 0;
         let mut x = 0;
-        let mut i: usize = 0;
-        for tile in &self.map {
+        for (i,tile) in self.map.iter().enumerate() {
             // Render a tile depending upon the tile type; now we check visibility as well!
             let mut fg = RGB::from_f32(1.0, 1.0, 1.0);
             let glyph: u8;

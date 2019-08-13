@@ -245,7 +245,7 @@ impl GameState for State {
         } else {
             self.player_position = self.path.steps[0] as usize;
             self.path.steps.remove(0);
-            if self.path.steps.len() == 0 {
+            if self.path.steps.is_empty() {
                 self.mode = Mode::Waiting;
             }
         }
