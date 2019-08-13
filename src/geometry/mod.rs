@@ -110,110 +110,110 @@ mod tests {
     #[test]
     fn test_pythagoras_distance() {
         let mut d = DistanceAlg::Pythagoras.distance2d(Point::new(0, 0), Point::new(5, 0));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = DistanceAlg::Pythagoras.distance2d(Point::new(0, 0), Point::new(-5, 0));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = DistanceAlg::Pythagoras.distance2d(Point::new(0, 0), Point::new(0, 5));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = DistanceAlg::Pythagoras.distance2d(Point::new(0, 0), Point::new(0, -5));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = DistanceAlg::Pythagoras.distance2d(Point::new(0, 0), Point::new(5, 5));
-        assert_eq!(d, 7.071068);
+        assert!(f32::abs(d - 7.071_068) < std::f32::EPSILON);
     }
 
     #[test]
     fn test_pythagoras_distance3d() {
         let mut d = DistanceAlg::Pythagoras.distance3d(Point3::new(0, 0, 0), Point3::new(5, 0, 0));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = DistanceAlg::Pythagoras.distance3d(Point3::new(0, 0, 0), Point3::new(-5, 0, 0));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = DistanceAlg::Pythagoras.distance3d(Point3::new(0, 0, 0), Point3::new(5, 5, 5));
-        assert_eq!(d, 8.6602545);
+        assert!(f32::abs(d - 8.660_254_5) < std::f32::EPSILON);
     }
 
     #[test]
     fn test_pythagoras_squared_distance() {
         let mut d = DistanceAlg::PythagorasSquared.distance2d(Point::new(0, 0), Point::new(5, 0));
-        assert_eq!(d, 25.0);
+        assert!(f32::abs(d - 25.0) < std::f32::EPSILON);
 
         d = DistanceAlg::PythagorasSquared.distance2d(Point::new(0, 0), Point::new(-5, 0));
-        assert_eq!(d, 25.0);
+        assert!(f32::abs(d - 25.0) < std::f32::EPSILON);
 
         d = DistanceAlg::PythagorasSquared.distance2d(Point::new(0, 0), Point::new(0, 5));
-        assert_eq!(d, 25.0);
+        assert!(f32::abs(d - 25.0) < std::f32::EPSILON);
 
         d = DistanceAlg::PythagorasSquared.distance2d(Point::new(0, 0), Point::new(0, -5));
-        assert_eq!(d, 25.0);
+        assert!(f32::abs(d - 25.0) < std::f32::EPSILON);
 
         d = DistanceAlg::PythagorasSquared.distance2d(Point::new(0, 0), Point::new(5, 5));
-        assert_eq!(d, 50.0);
+        assert!(f32::abs(d - 50.0) < std::f32::EPSILON);
     }
 
     #[test]
     fn test_pythagoras_squared_distance3d() {
         let mut d =
             DistanceAlg::PythagorasSquared.distance3d(Point3::new(0, 0, 0), Point3::new(5, 0, 0));
-        assert_eq!(d, 25.0);
+        assert!(f32::abs(d - 25.0) < std::f32::EPSILON);
 
         d = DistanceAlg::PythagorasSquared.distance3d(Point3::new(0, 0, 0), Point3::new(-5, 0, 0));
-        assert_eq!(d, 25.0);
+        assert!(f32::abs(d - 25.0) < std::f32::EPSILON);
 
         d = DistanceAlg::PythagorasSquared.distance3d(Point3::new(0, 0, 0), Point3::new(5, 5, 5));
-        assert_eq!(d, 75.0);
+        assert!(f32::abs(d - 75.0) < std::f32::EPSILON);
     }
 
     #[test]
     fn test_manhattan_distance() {
         let mut d = DistanceAlg::Manhattan.distance2d(Point::new(0, 0), Point::new(5, 0));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = DistanceAlg::Manhattan.distance2d(Point::new(0, 0), Point::new(-5, 0));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = DistanceAlg::Manhattan.distance2d(Point::new(0, 0), Point::new(0, 5));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = DistanceAlg::Manhattan.distance2d(Point::new(0, 0), Point::new(0, -5));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = DistanceAlg::Manhattan.distance2d(Point::new(0, 0), Point::new(5, 5));
-        assert_eq!(d, 10.0);
+        assert!(f32::abs(d - 10.0) < std::f32::EPSILON);
     }
 
     #[test]
     fn test_manhattan_distance3d() {
         let mut d = DistanceAlg::Manhattan.distance3d(Point3::new(0, 0, 0), Point3::new(5, 0, 0));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = DistanceAlg::Manhattan.distance3d(Point3::new(0, 0, 0), Point3::new(-5, 0, 0));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = DistanceAlg::Manhattan.distance3d(Point3::new(0, 0, 0), Point3::new(5, 5, 5));
-        assert_eq!(d, 15.0);
+        assert!(f32::abs(d - 15.0) < std::f32::EPSILON);
     }
 
     #[test]
     fn test_chebyshev_distance() {
         let mut d = DistanceAlg::Chebyshev.distance2d(Point::new(0, 0), Point::new(5, 0));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = DistanceAlg::Chebyshev.distance2d(Point::new(0, 0), Point::new(-5, 0));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = DistanceAlg::Chebyshev.distance2d(Point::new(0, 0), Point::new(0, 5));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = DistanceAlg::Chebyshev.distance2d(Point::new(0, 0), Point::new(0, -5));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
 
         d = DistanceAlg::Chebyshev.distance2d(Point::new(0, 0), Point::new(5, 5));
-        assert_eq!(d, 5.0);
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
     }
 
     #[test]
