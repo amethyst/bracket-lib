@@ -1,8 +1,8 @@
-use cgmath::{Vector3};
+use cgmath::Vector3;
+use glow::HasContext;
 use std::fs::File;
 use std::io::Read;
 use std::str;
-use glow::HasContext;
 
 #[allow(non_snake_case)]
 pub struct Shader {
@@ -95,28 +95,19 @@ impl Shader {
             gl.get_uniform_location(self.ID, name),
             value.x,
             value.y,
-            value.z
+            value.z,
         );
     }
 
     #[allow(non_snake_case)]
     /// ------------------------------------------------------------------------
     pub unsafe fn setVec3(&self, gl: &glow::Context, name: &str, x: f32, y: f32, z: f32) {
-        gl.uniform_3_f32(
-            gl.get_uniform_location(self.ID, name),
-            x,
-            y,
-            z
-        );
+        gl.uniform_3_f32(gl.get_uniform_location(self.ID, name), x, y, z);
     }
 
     #[allow(non_snake_case)]
     /// ------------------------------------------------------------------------
     pub unsafe fn setMat4(&self, gl: &glow::Context, name: &str, mat: &[f32; 16]) {
-        gl.uniform_matrix_4_f32_slice(
-            gl.get_uniform_location(self.ID, name),
-            false,
-            mat
-        );
+        gl.uniform_matrix_4_f32_slice(gl.get_uniform_location(self.ID, name), false, mat);
     }
 }

@@ -1,7 +1,7 @@
 use super::GameState;
 use super::{
-    font, framebuffer::Framebuffer, rex::XpFile, rex::XpLayer, Console, Shader,
-    SimpleConsole, VirtualKeyCode, RGB, platform_specific
+    font, framebuffer::Framebuffer, platform_specific, rex::XpFile, rex::XpLayer, Console, Shader,
+    SimpleConsole, VirtualKeyCode, RGB,
 };
 
 /// A display console, used internally to provide console render support.

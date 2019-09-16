@@ -1,7 +1,7 @@
 use super::{color, gui_helpers, rex::XpLayer, Console, Font, Shader, Tile, RGB};
 //use glow::types::*;
-use std::mem;
 use glow::HasContext;
+use std::mem;
 
 /// A simple console with background color.
 pub struct SimpleConsole {
@@ -73,7 +73,7 @@ impl SimpleConsole {
 
     /// Sets up the OpenGL backing.
     fn init_gl_for_console(gl: &glow::Context) -> (u32, u32, u32) {
-        let texture : u32;
+        let texture: u32;
         let (vbo, vao, ebo);
 
         unsafe {
@@ -123,12 +123,20 @@ impl SimpleConsole {
 
             texture = gl.create_texture().unwrap();
             gl.bind_texture(glow::TEXTURE_2D, Some(texture)); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
-                                                     // set the texture wrapping parameters
+                                                              // set the texture wrapping parameters
             gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_S, glow::REPEAT as i32); // set texture wrapping to glow::REPEAT (default wrapping method)
             gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_T, glow::REPEAT as i32);
             // set texture filtering parameters
-            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_MIN_FILTER, glow::LINEAR as i32);
-            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_MAG_FILTER, glow::LINEAR as i32);
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_MIN_FILTER,
+                glow::LINEAR as i32,
+            );
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_MAG_FILTER,
+                glow::LINEAR as i32,
+            );
         };
 
         (vbo, vao, ebo)
@@ -211,10 +219,18 @@ impl SimpleConsole {
 
         unsafe {
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
-            gl.buffer_data_u8_slice(glow::ARRAY_BUFFER, &self.vertex_buffer.align_to::<u8>().1, glow::STATIC_DRAW);
+            gl.buffer_data_u8_slice(
+                glow::ARRAY_BUFFER,
+                &self.vertex_buffer.align_to::<u8>().1,
+                glow::STATIC_DRAW,
+            );
 
             gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
-            gl.buffer_data_u8_slice(glow::ELEMENT_ARRAY_BUFFER, &self.index_buffer.align_to::<u8>().1, glow::STATIC_DRAW);
+            gl.buffer_data_u8_slice(
+                glow::ELEMENT_ARRAY_BUFFER,
+                &self.index_buffer.align_to::<u8>().1,
+                glow::STATIC_DRAW,
+            );
         }
     }
 }
@@ -243,7 +259,7 @@ impl Console for SimpleConsole {
                 glow::TRIANGLES,
                 (self.width * self.height * 6) as i32,
                 glow::UNSIGNED_INT,
-                0
+                0,
             );
         }
         self.is_dirty = false;

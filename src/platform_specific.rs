@@ -1,11 +1,13 @@
-use super::{Rltk, Shader, framebuffer::Framebuffer, quadrender, GameState};
+use super::{framebuffer::Framebuffer, quadrender, GameState, Rltk, Shader};
 
 #[cfg(not(target_arch = "wasm32"))]
-use glutin::{ ContextBuilder, dpi::LogicalSize, event::Event, event::WindowEvent, 
-    event_loop::ControlFlow, event_loop::EventLoop, window::WindowBuilder };
+use glutin::{
+    dpi::LogicalSize, event::Event, event::WindowEvent, event_loop::ControlFlow,
+    event_loop::EventLoop, window::WindowBuilder, ContextBuilder,
+};
 
-use std::time::Instant;
 use glow::HasContext;
+use std::time::Instant;
 
 // Glutin version:
 
@@ -28,12 +30,20 @@ pub fn init_raw<S: ToString>(
     let el = EventLoop::new();
     let wb = WindowBuilder::new()
         .with_title(window_title.to_string())
-        .with_inner_size(LogicalSize::new(f64::from(width_pixels), f64::from(height_pixels)));
-    let windowed_context = ContextBuilder::new().with_vsync(true).build_windowed(wb, &el).unwrap();
+        .with_inner_size(LogicalSize::new(
+            f64::from(width_pixels),
+            f64::from(height_pixels),
+        ));
+    let windowed_context = ContextBuilder::new()
+        .with_vsync(true)
+        .build_windowed(wb, &el)
+        .unwrap();
     let windowed_context = unsafe { windowed_context.make_current().unwrap() };
 
     //let gl = glow::glow::load_with(|ptr| windowed_context.get_proc_address(ptr) as *const _);
-    let gl = glow::Context::from_loader_function(|ptr| windowed_context.get_proc_address(ptr) as *const _);
+    let gl = glow::Context::from_loader_function(|ptr| {
+        windowed_context.get_proc_address(ptr) as *const _
+    });
 
     // Load our basic shaders
     let mut shaders: Vec<Shader> = Vec::new();
@@ -231,11 +241,7 @@ fn tock<GS: GameState>(
                     rltk.height_pixels as f32,
                     0.0,
                 );
-                rltk.shaders[3].setBool(
-                    &rltk.gl,
-                    "screenBurn",
-                    rltk.post_screenburn,
-                );
+                rltk.shaders[3].setBool(&rltk.gl, "screenBurn", rltk.post_screenburn);
             } else {
                 rltk.shaders[2].useProgram(&rltk.gl);
             }

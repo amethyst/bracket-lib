@@ -1,5 +1,5 @@
-use image::GenericImageView;
 use glow::HasContext;
+use image::GenericImageView;
 
 #[derive(PartialEq, Clone)]
 /// RLTK's representation of a font or tileset file.
@@ -47,8 +47,16 @@ impl Font {
             gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_S, glow::REPEAT as i32);
             gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_T, glow::REPEAT as i32);
             // set texture filtering parameters
-            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_MIN_FILTER, glow::LINEAR as i32);
-            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_MAG_FILTER, glow::LINEAR as i32);
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_MIN_FILTER,
+                glow::LINEAR as i32,
+            );
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_MAG_FILTER,
+                glow::LINEAR as i32,
+            );
 
             let img_orig = image::open(std::path::Path::new(&self.bitmap_file))
                 .expect("Failed to load texture");
@@ -63,7 +71,7 @@ impl Font {
                 0,
                 glow::RGB,
                 glow::UNSIGNED_BYTE,
-                Some(&data)
+                Some(&data),
             );
             //gl.GenerateMipmap(glow::TEXTURE_2D);
         }

@@ -1,7 +1,7 @@
 use super::{gui_helpers, rex::XpColor, rex::XpLayer, Console, Font, Shader, RGB};
 //use glow::types::*;
-use std::mem;
 use glow::HasContext;
+use std::mem;
 
 /// Internal storage structure for sparse tiles.
 pub struct SparseTile {
@@ -205,10 +205,18 @@ impl SparseConsole {
 
         unsafe {
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
-            gl.buffer_data_u8_slice(glow::ARRAY_BUFFER, &self.vertex_buffer.align_to::<u8>().1, glow::STATIC_DRAW);
+            gl.buffer_data_u8_slice(
+                glow::ARRAY_BUFFER,
+                &self.vertex_buffer.align_to::<u8>().1,
+                glow::STATIC_DRAW,
+            );
 
             gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
-            gl.buffer_data_u8_slice(glow::ELEMENT_ARRAY_BUFFER, &self.index_buffer.align_to::<u8>().1, glow::STATIC_DRAW);
+            gl.buffer_data_u8_slice(
+                glow::ELEMENT_ARRAY_BUFFER,
+                &self.index_buffer.align_to::<u8>().1,
+                glow::STATIC_DRAW,
+            );
         }
     }
 }
@@ -237,7 +245,7 @@ impl Console for SparseConsole {
                 glow::TRIANGLES,
                 (self.tiles.len() * 6) as i32,
                 glow::UNSIGNED_INT,
-                0
+                0,
             );
         }
         self.is_dirty = false;
