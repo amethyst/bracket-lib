@@ -15,8 +15,7 @@ license = "MIT"
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-glutin = "0.22.0-alpha3"
-winit = "0.20.0-alpha3"
+glow = "0.3.0-alpha2"
 image = "0.22.2"
 cgmath = "0.17.0"
 bresenham = "0.1.1"
@@ -27,6 +26,9 @@ serde= { version = "1.0.98", features = ["derive"], optional = true }
 serde_json =  { version = "1.0.40", optional = true }
 flate2 = "1.0.9"
 byteorder = "1.3.2"
+
+[target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
+glutin = "0.22.0-alpha3"
 
 [dev-dependencies]
 specs = "0.15.0"
