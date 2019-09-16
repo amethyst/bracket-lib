@@ -1,6 +1,6 @@
 [package]
 name = "rltk"
-version = "0.2.5"
+version = "0.2.6"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = false
@@ -15,9 +15,9 @@ license = "MIT"
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-glutin = "0.22.0-alpha1"
-winit = "0.20.0-alpha2"
-image = "0.22.1"
+glutin = "0.22.0-alpha3"
+winit = "0.20.0-alpha3"
+image = "0.22.2"
 cgmath = "0.17.0"
 bresenham = "0.1.1"
 rayon = "1.1.0"
