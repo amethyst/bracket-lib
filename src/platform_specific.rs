@@ -117,7 +117,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     let wc = unwrap.wc;
 
     el.run(move |event, _, control_flow| {
-        *control_flow = ControlFlow::Poll;
+        *control_flow = ControlFlow::Wait;
 
         if rltk.quitting {
             *control_flow = ControlFlow::Exit;
