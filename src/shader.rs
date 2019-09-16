@@ -1,8 +1,6 @@
 use cgmath::{Vector3};
-use std::ffi::{CString};
 use std::fs::File;
 use std::io::Read;
-use std::ptr;
 use std::str;
 use glow::HasContext;
 
@@ -38,9 +36,6 @@ impl Shader {
         f_shader_file
             .read_to_string(&mut fragment_code)
             .expect("Failed to read fragment shader");
-
-        let v_shader_code = CString::new(vertex_code.as_bytes()).unwrap();
-        let f_shader_code = CString::new(fragment_code.as_bytes()).unwrap();
 
         // 2. compile shaders
         unsafe {

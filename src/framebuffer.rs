@@ -1,4 +1,3 @@
-use std::ptr;
 use glow::HasContext;
 
 pub struct Framebuffer {
@@ -8,8 +7,8 @@ pub struct Framebuffer {
 
 impl Framebuffer {
     pub fn build_fbo(gl: &glow::Context, width: i32, height: i32) -> Framebuffer {
-        let mut fbo: u32 = 0;
-        let mut buffer: u32 = 0;
+        let fbo: u32;
+        let buffer: u32;
 
         unsafe {
             fbo = gl.create_framebuffer().unwrap();

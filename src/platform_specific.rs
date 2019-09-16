@@ -5,7 +5,6 @@ use glutin::{ ContextBuilder, dpi::LogicalSize, event::Event, event::WindowEvent
     event_loop::ControlFlow, event_loop::EventLoop, window::WindowBuilder };
 
 use std::time::Instant;
-use std::ffi::CString;
 use glow::HasContext;
 
 // Glutin version:
@@ -130,7 +129,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                 );
                 wc.swap_buffers().unwrap();
             }
-            Event::LoopDestroyed => return,
+            Event::LoopDestroyed => (),
             Event::WindowEvent { ref event, .. } => match event {
                 WindowEvent::Resized(_logical_size) => {
                     // Commenting out to see if it helps the Linux world

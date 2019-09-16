@@ -1,5 +1,4 @@
 use image::GenericImageView;
-use std::os::raw::c_void;
 use glow::HasContext;
 
 #[derive(PartialEq, Clone)]
@@ -40,7 +39,7 @@ impl Font {
 
     /// Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
     pub fn setup_gl_texture(&mut self, gl: &glow::Context) -> u32 {
-        let mut texture: u32 = 0;
+        let texture: u32;
 
         unsafe {
             texture = gl.create_texture().unwrap();

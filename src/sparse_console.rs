@@ -1,8 +1,6 @@
 use super::{gui_helpers, rex::XpColor, rex::XpLayer, Console, Font, Shader, RGB};
 //use glow::types::*;
 use std::mem;
-use std::os::raw::c_void;
-use std::ptr;
 use glow::HasContext;
 
 /// Internal storage structure for sparse tiles.
@@ -61,7 +59,7 @@ impl SparseConsole {
 
     /// Initializes OpenGL for the sparse console.
     fn init_gl_for_console(gl: &glow::Context) -> (u32, u32, u32) {
-        let (mut vbo, mut vao, mut ebo) = (0, 0, 0);
+        let (vbo, vao, ebo);
 
         unsafe {
             // Generate buffers and arrays, as well as attributes.

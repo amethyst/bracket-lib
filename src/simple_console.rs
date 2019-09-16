@@ -1,8 +1,6 @@
 use super::{color, gui_helpers, rex::XpLayer, Console, Font, Shader, Tile, RGB};
 //use glow::types::*;
 use std::mem;
-use std::os::raw::c_void;
-use std::ptr;
 use glow::HasContext;
 
 /// A simple console with background color.
@@ -75,8 +73,8 @@ impl SimpleConsole {
 
     /// Sets up the OpenGL backing.
     fn init_gl_for_console(gl: &glow::Context) -> (u32, u32, u32) {
-        let mut texture = 0;
-        let (mut vbo, mut vao, mut ebo) = (0, 0, 0);
+        let texture : u32;
+        let (vbo, vao, ebo);
 
         unsafe {
             // Generate buffers and arrays, as well as attributes.
@@ -123,7 +121,7 @@ impl SimpleConsole {
             );
             gl.enable_vertex_attrib_array(3);
 
-            let texture = gl.create_texture().unwrap();
+            texture = gl.create_texture().unwrap();
             gl.bind_texture(glow::TEXTURE_2D, Some(texture)); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
                                                      // set the texture wrapping parameters
             gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_S, glow::REPEAT as i32); // set texture wrapping to glow::REPEAT (default wrapping method)
