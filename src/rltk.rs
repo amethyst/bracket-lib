@@ -23,7 +23,7 @@ pub struct Rltk {
     pub fps: f32,
     pub frame_time_ms: f32,
     pub active_console: usize,
-    pub key: Option<glutin::event::VirtualKeyCode>,
+    pub key: Option<super::VirtualKeyCode>,
     pub mouse_pos: (i32, i32),
     pub left_click: bool,
     pub context_wrapper: Option<platform_specific::WrappedContext>,
@@ -268,7 +268,7 @@ impl Console for Rltk {
 }
 
 /// Runs the RLTK application, calling into the provided gamestate handler every tick.
-pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
+pub fn main_loop<GS: GameState>(rltk: Rltk, gamestate: GS) {
     platform_specific::main_loop(rltk, gamestate);
 }
 
