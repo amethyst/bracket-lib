@@ -1,7 +1,5 @@
 use super::{color, gui_helpers, rex::XpLayer, Console, Font, Shader, Tile, RGB};
-//use gl::types::*;
-use super::gl;
-use gl::types::*;
+//use glow::types::*;
 use std::mem;
 use std::os::raw::c_void;
 use std::ptr;
@@ -90,7 +88,7 @@ impl SimpleConsole {
 
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(vbo));
 
-            let stride = 11 * mem::size_of::<GLfloat>() as GLsizei;
+            let stride = 11 * mem::size_of::<f32>() as i32;
             // position attribute
             gl.vertex_attrib_pointer_f32(0, 3, glow::FLOAT, false, stride, 0);
             gl.enable_vertex_attrib_array(0);
@@ -101,7 +99,7 @@ impl SimpleConsole {
                 glow::FLOAT,
                 false,
                 stride,
-                (3 * mem::size_of::<GLfloat>()) as i32,
+                (3 * mem::size_of::<f32>()) as i32,
             );
             gl.enable_vertex_attrib_array(1);
             // bgcolor attribute
@@ -111,7 +109,7 @@ impl SimpleConsole {
                 glow::FLOAT,
                 false,
                 stride,
-                (6 * mem::size_of::<GLfloat>()) as i32,
+                (6 * mem::size_of::<f32>()) as i32,
             );
             gl.enable_vertex_attrib_array(2);
             // texture coord attribute
@@ -121,14 +119,14 @@ impl SimpleConsole {
                 glow::FLOAT,
                 false,
                 stride,
-                (9 * mem::size_of::<GLfloat>()) as i32,
+                (9 * mem::size_of::<f32>()) as i32,
             );
             gl.enable_vertex_attrib_array(3);
 
             let texture = gl.create_texture().unwrap();
-            gl.bind_texture(gl::TEXTURE_2D, Some(texture)); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
+            gl.bind_texture(glow::TEXTURE_2D, Some(texture)); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
                                                      // set the texture wrapping parameters
-            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_S, glow::REPEAT as i32); // set texture wrapping to gl::REPEAT (default wrapping method)
+            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_S, glow::REPEAT as i32); // set texture wrapping to glow::REPEAT (default wrapping method)
             gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_T, glow::REPEAT as i32);
             // set texture filtering parameters
             gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_MIN_FILTER, glow::LINEAR as i32);
@@ -214,10 +212,10 @@ impl SimpleConsole {
         }
 
         unsafe {
-            gl.bind_buffer(gl::ARRAY_BUFFER, Some(self.vbo));
+            gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
             gl.buffer_data_u8_slice(glow::ARRAY_BUFFER, &self.vertex_buffer.align_to::<u8>().1, glow::STATIC_DRAW);
 
-            gl.bind_buffer(gl::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
+            gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
             gl.buffer_data_u8_slice(glow::ELEMENT_ARRAY_BUFFER, &self.index_buffer.align_to::<u8>().1, glow::STATIC_DRAW);
         }
     }

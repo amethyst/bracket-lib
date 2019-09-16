@@ -1,4 +1,3 @@
-use super::gl;
 use std::ptr;
 use glow::HasContext;
 
@@ -19,19 +18,19 @@ impl Framebuffer {
 
             gl.bind_texture(glow::TEXTURE_2D, Some(buffer));
             gl.tex_image_2d(
-                gl::TEXTURE_2D,
+                glow::TEXTURE_2D,
                 0,
-                gl::RGB16F as i32,
+                glow::RGB16F as i32,
                 width,
                 height,
                 0,
-                gl::RGB,
-                gl::FLOAT,
+                glow::RGB,
+                glow::FLOAT,
                 None,
             );
-            gl.tex_parameter_i32(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as i32);
-            gl.tex_parameter_i32(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32);
-            gl.tex_parameter_i32(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as i32);
+            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_MIN_FILTER, glow::LINEAR as i32);
+            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_MAG_FILTER, glow::LINEAR as i32);
+            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_S, glow::CLAMP_TO_EDGE as i32);
             gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_T, glow::CLAMP_TO_EDGE as i32);
             // attach texture to framebuffer
             gl.framebuffer_texture_2d(

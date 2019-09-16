@@ -1,4 +1,3 @@
-use super::gl;
 use super::{rex::XpLayer, Font, Shader, RGB};
 
 /// The internal storage type for tiles in a simple console.

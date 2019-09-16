@@ -1,8 +1,5 @@
-use super::gl;
-use cgmath::prelude::*;
-use cgmath::{Matrix, Matrix4, Vector3};
-use gl::types::*;
-use std::ffi::{CStr, CString};
+use cgmath::{Vector3};
+use std::ffi::{CString};
 use std::fs::File;
 use std::io::Read;
 use std::ptr;

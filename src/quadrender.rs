@@ -1,8 +1,4 @@
-use super::gl;
-use gl::types::*;
 use std::mem;
-use std::os::raw::c_void;
-use std::ptr;
 use glow::HasContext;
 
 /// Sets up a simple VAO/VBO to render a single quad
@@ -23,16 +19,16 @@ pub fn setup_quad(gl: &glow::Context) -> u32 {
         let transmuted = std::mem::transmute::<&[f32; 24], &[u8; 96]>(&quad_vertices);
         gl.buffer_data_u8_slice(glow::ARRAY_BUFFER, transmuted, glow::STATIC_DRAW);
         gl.enable_vertex_attrib_array(0);
-        let stride = 4 * mem::size_of::<GLfloat>() as GLsizei;
+        let stride = 4 * mem::size_of::<f32>() as i32;
         gl.vertex_attrib_pointer_f32(0, 2, glow::FLOAT, false, stride, 0);
         gl.enable_vertex_attrib_array(1);
         gl.vertex_attrib_pointer_f32(
             1,
             2,
-            gl::FLOAT,
+            glow::FLOAT,
             false,
             stride,
-            2 * mem::size_of::<GLfloat>() as i32
+            2 * mem::size_of::<f32>() as i32
         );
     }
 

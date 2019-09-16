@@ -1,7 +1,5 @@
 use super::{gui_helpers, rex::XpColor, rex::XpLayer, Console, Font, Shader, RGB};
-//use gl::types::*;
-use super::gl;
-use gl::types::*;
+//use glow::types::*;
 use std::mem;
 use std::os::raw::c_void;
 use std::ptr;
@@ -75,7 +73,7 @@ impl SparseConsole {
 
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(vbo));
 
-            let stride = 11 * mem::size_of::<GLfloat>() as GLsizei;
+            let stride = 11 * mem::size_of::<f32>() as i32;
             // position attribute
             gl.vertex_attrib_pointer_f32(0, 3, glow::FLOAT, false, stride, 0);
             gl.enable_vertex_attrib_array(0);
@@ -86,7 +84,7 @@ impl SparseConsole {
                 glow::FLOAT,
                 false,
                 stride,
-                (3 * mem::size_of::<GLfloat>()) as i32,
+                (3 * mem::size_of::<f32>()) as i32,
             );
             gl.enable_vertex_attrib_array(1);
             // bgcolor attribute
@@ -96,7 +94,7 @@ impl SparseConsole {
                 glow::FLOAT,
                 false,
                 stride,
-                (6 * mem::size_of::<GLfloat>()) as i32,
+                (6 * mem::size_of::<f32>()) as i32,
             );
             gl.enable_vertex_attrib_array(2);
             // texture coord attribute
@@ -106,7 +104,7 @@ impl SparseConsole {
                 glow::FLOAT,
                 false,
                 stride,
-                (9 * mem::size_of::<GLfloat>()) as i32,
+                (9 * mem::size_of::<f32>()) as i32,
             );
             gl.enable_vertex_attrib_array(3);
         };
@@ -208,10 +206,10 @@ impl SparseConsole {
         }
 
         unsafe {
-            gl.bind_buffer(gl::ARRAY_BUFFER, Some(self.vbo));
+            gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
             gl.buffer_data_u8_slice(glow::ARRAY_BUFFER, &self.vertex_buffer.align_to::<u8>().1, glow::STATIC_DRAW);
 
-            gl.bind_buffer(gl::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
+            gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
             gl.buffer_data_u8_slice(glow::ELEMENT_ARRAY_BUFFER, &self.index_buffer.align_to::<u8>().1, glow::STATIC_DRAW);
         }
     }

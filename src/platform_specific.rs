@@ -1,4 +1,4 @@
-use super::{Rltk, Shader, gl, framebuffer::Framebuffer, quadrender, GameState};
+use super::{Rltk, Shader, framebuffer::Framebuffer, quadrender, GameState};
 
 #[cfg(not(target_arch = "wasm32"))]
 use glutin::{ ContextBuilder, dpi::LogicalSize, event::Event, event::WindowEvent, 
@@ -33,7 +33,7 @@ pub fn init_raw<S: ToString>(
     let windowed_context = ContextBuilder::new().with_vsync(true).build_windowed(wb, &el).unwrap();
     let windowed_context = unsafe { windowed_context.make_current().unwrap() };
 
-    //let gl = gl::Gl::load_with(|ptr| windowed_context.get_proc_address(ptr) as *const _);
+    //let gl = glow::glow::load_with(|ptr| windowed_context.get_proc_address(ptr) as *const _);
     let gl = glow::Context::from_loader_function(|ptr| windowed_context.get_proc_address(ptr) as *const _);
 
     // Load our basic shaders

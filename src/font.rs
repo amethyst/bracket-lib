@@ -1,4 +1,3 @@
-use super::gl;
 use image::GenericImageView;
 use std::os::raw::c_void;
 use glow::HasContext;
@@ -67,7 +66,7 @@ impl Font {
                 glow::UNSIGNED_BYTE,
                 Some(&data)
             );
-            //gl.GenerateMipmap(gl::TEXTURE_2D);
+            //gl.GenerateMipmap(glow::TEXTURE_2D);
         }
 
         self.gl_id = Some(texture);
