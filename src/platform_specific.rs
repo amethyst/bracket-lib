@@ -6,6 +6,7 @@ use glutin::{ ContextBuilder, dpi::LogicalSize, event::Event, event::WindowEvent
 
 use std::time::Instant;
 use std::ffi::CString;
+use glow::HasContext;
 
 // Glutin version:
 
@@ -32,7 +33,8 @@ pub fn init_raw<S: ToString>(
     let windowed_context = ContextBuilder::new().with_vsync(true).build_windowed(wb, &el).unwrap();
     let windowed_context = unsafe { windowed_context.make_current().unwrap() };
 
-    let gl = gl::Gl::load_with(|ptr| windowed_context.get_proc_address(ptr) as *const _);
+    //let gl = gl::Gl::load_with(|ptr| windowed_context.get_proc_address(ptr) as *const _);
+    let gl = glow::Context::from_loader_function(|ptr| windowed_context.get_proc_address(ptr) as *const _);
 
     // Load our basic shaders
     let mut shaders: Vec<Shader> = Vec::new();
@@ -206,8 +208,8 @@ fn tock<GS: GameState>(
 
     // Clear the screen
     unsafe {
-        rltk.gl.ClearColor(0.2, 0.3, 0.3, 1.0);
-        rltk.gl.Clear(gl::COLOR_BUFFER_BIT);
+        rltk.gl.clear_color(0.2, 0.3, 0.3, 1.0);
+        rltk.gl.clear(glow::COLOR_BUFFER_BIT);
     }
 
     // Tell each console to draw itself
@@ -225,23 +227,23 @@ fn tock<GS: GameState>(
                 rltk.shaders[3].useProgram(&rltk.gl);
                 rltk.shaders[3].setVec3(
                     &rltk.gl,
-                    &CString::new("screenSize").unwrap(),
+                    "screenSize",
                     rltk.width_pixels as f32,
                     rltk.height_pixels as f32,
                     0.0,
                 );
                 rltk.shaders[3].setBool(
                     &rltk.gl,
-                    &CString::new("screenBurn").unwrap(),
+                    "screenBurn",
                     rltk.post_screenburn,
                 );
             } else {
                 rltk.shaders[2].useProgram(&rltk.gl);
             }
-            rltk.gl.BindVertexArray(rltk.quad_vao);
+            rltk.gl.bind_vertex_array(Some(rltk.quad_vao));
             rltk.gl
-                .BindTexture(gl::TEXTURE_2D, rltk.backing_buffer.texture);
-            rltk.gl.DrawArrays(gl::TRIANGLES, 0, 6);
+                .bind_texture(glow::TEXTURE_2D, Some(rltk.backing_buffer.texture));
+            rltk.gl.draw_arrays(glow::TRIANGLES, 0, 6);
         }
     }
 }

@@ -14,7 +14,7 @@ pub struct DisplayConsole {
 
 /// An RLTK context.
 pub struct Rltk {
-    pub gl: gl::Gles2,
+    pub gl: glow::Context,
     pub width_pixels: u32,
     pub height_pixels: u32,
     pub fonts: Vec<font::Font>,
@@ -177,8 +177,8 @@ impl Rltk {
 
 impl Console for Rltk {
     // A couple of ones we'll never use
-    fn rebuild_if_dirty(&mut self, _gl: &gl::Gles2) {}
-    fn gl_draw(&mut self, _font: &font::Font, _shader: &Shader, _gl: &gl::Gles2) {}
+    fn rebuild_if_dirty(&mut self, _gl: &glow::Context) {}
+    fn gl_draw(&mut self, _font: &font::Font, _shader: &Shader, _gl: &glow::Context) {}
 
     // Implement pass-through to active console
 
