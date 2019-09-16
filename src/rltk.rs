@@ -383,8 +383,9 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
             Event::LoopDestroyed => return,
             Event::WindowEvent { ref event, .. } => match event {
                 WindowEvent::Resized(logical_size) => {
-                    let dpi_factor = wc.window().hidpi_factor();
-                    wc.resize(logical_size.to_physical(dpi_factor));
+                    // Commenting out to see if it helps the Linux world
+                    //let dpi_factor = wc.window().hidpi_factor();
+                    //wc.resize(logical_size.to_physical(dpi_factor));
                 }
                 WindowEvent::RedrawRequested => {
                     //tock(&mut rltk, &mut gamestate, &mut frames, &mut prev_seconds, &mut prev_ms, &now);
