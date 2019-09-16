@@ -60,7 +60,7 @@ impl Rltk {
         let wb = WindowBuilder::new()
             .with_title(window_title.to_string())
             .with_inner_size(LogicalSize::new(f64::from(width_pixels), f64::from(height_pixels)));
-        let windowed_context = ContextBuilder::new().build_windowed(wb, &el).unwrap();
+        let windowed_context = ContextBuilder::new().with_vsync(true).build_windowed(wb, &el).unwrap();
         let windowed_context = unsafe { windowed_context.make_current().unwrap() };
 
         let gl = gl::Gl::load_with(|ptr| windowed_context.get_proc_address(ptr) as *const _);
