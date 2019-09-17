@@ -6,7 +6,11 @@ use std::str;
 
 #[allow(non_snake_case)]
 pub struct Shader {
+    #[cfg(not(target_arch = "wasm32"))]
     pub ID: u32,
+
+    #[cfg(target_arch = "wasm32")]
+    pub ID: glow::WebProgramKey,
 }
 
 /// NOTE: mixture of `shader_s.h` and `shader_m.h` (the latter just contains
@@ -22,7 +26,6 @@ impl Shader {
         let vertex_path = format!("{}/{}", &shader_path, vertex_path.to_string());
         let fragment_path = format!("{}/{}", &shader_path, fragment_path.to_string());
 
-        let mut shader = Shader { ID: 0 };
         // 1. retrieve the vertex/fragment source code from filesystem
         let mut v_shader_file =
             File::open(&vertex_path).unwrap_or_else(|_| panic!("Failed to open {}", vertex_path));
@@ -38,6 +41,7 @@ impl Shader {
             .expect("Failed to read fragment shader");
 
         // 2. compile shaders
+        let shader;
         unsafe {
             // vertex shader
             let vertex = gl.create_shader(glow::VERTEX_SHADER).unwrap();
@@ -56,7 +60,9 @@ impl Shader {
             gl.link_program(id);
 
             // delete the shaders as they're linked into our program now and no longer necessary
-            shader.ID = id;
+            shader = Shader{
+                ID : id
+            }
         }
 
         shader
