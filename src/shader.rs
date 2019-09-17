@@ -32,7 +32,7 @@ impl Shader {
             if !gl.get_shader_compile_status(vertex) {
                 log(&vertex_code);
                 log(&gl.get_shader_info_log(vertex));
-                //panic!();
+                panic!();
             }
 
             // fragment Shader
@@ -42,7 +42,7 @@ impl Shader {
             if !gl.get_shader_compile_status(fragment) {
                 log(&fragment_code);
                 log(&gl.get_shader_info_log(fragment));
-                //panic!();
+                panic!();
             }
 
             // shader Program
@@ -52,7 +52,7 @@ impl Shader {
             gl.link_program(id);
             if !gl.get_program_link_status(id) {
                 log(&gl.get_program_info_log(id));
-                //panic!();
+                panic!();
             }
 
             // delete the shaders as they're linked into our program now and no longer necessary

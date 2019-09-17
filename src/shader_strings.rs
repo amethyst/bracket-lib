@@ -149,6 +149,8 @@ void main()
 
 #[cfg(target_arch = "wasm32")]
 pub static BACKING_FS : &str = r#"#version 300 es
+// Backing FS
+precision highp float;
 out vec4 FragColor;
 
 in vec2 TexCoords;
@@ -163,6 +165,7 @@ void main()
 
 #[cfg(target_arch = "wasm32")]
 pub static BACKING_VS : &str = r#"#version 300 es
+// Backing VS
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec2 aTexCoords;
 
@@ -177,6 +180,8 @@ void main()
 
 #[cfg(target_arch = "wasm32")]
 pub static CONSOLE_NO_BG_FS : &str = r#"#version 300 es
+// Console No Background Fragment
+precision highp float;
 out vec4 FragColor;
 
 in vec3 ourColor;
@@ -189,8 +194,8 @@ uniform sampler2D texture1;
 void main()
 {
     vec4 original = texture(texture1, TexCoord);
-    if (original.r < 0.1f || original.g < 0.1f || original.b < 0.1f) discard;
-    vec4 fg = original * vec4(ourColor, 1.f);
+    if (original.r < 0.1 || original.g < 0.1 || original.b < 0.1) discard;
+    vec4 fg = original * vec4(ourColor, 1.0);
 	FragColor = fg;
 }
 "#;
@@ -255,6 +260,8 @@ void main()
 
 #[cfg(target_arch = "wasm32")]
 pub static SCANLINES_FS : &str = r#"#version 300 es
+// Scanlines FS
+precision highp float;
 out vec4 FragColor;
 
 in vec2 TexCoords;
@@ -269,7 +276,7 @@ void main()
     float scanLine = mod(gl_FragCoord.y, 2.0) * 0.25;
     vec3 scanColor = col.rgb - scanLine;
 
-    if (col.r < 0.1f && col.g < 0.1f && col.b < 0.1f) {
+    if (col.r < 0.1 && col.g < 0.1 && col.b < 0.1) {
         if (screenBurn) {
             float dist = (1.0 - distance(vec2(gl_FragCoord.x / screenSize.x, gl_FragCoord.y / screenSize.y), vec2(0.5,0.5))) * 0.2;
             FragColor = vec4(0.0, dist, dist, 1.0);
@@ -283,6 +290,7 @@ void main()
 
 #[cfg(target_arch = "wasm32")]
 pub static SCANLINES_VS : &str = r#"#version 300 es
+// Scanlines VS
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec2 aTexCoords;
 
