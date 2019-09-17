@@ -362,61 +362,6 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     });
 }
 
-// Generic/macro version of setup_gl_texture for platform binding
-
-macro_rules! setup_gl_texture {
-    ($type:ty) => {
-        pub fn setup_gl_texture(gl: &glow::Context, bitmap_file: &str) -> $type {
-            let texture;
-
-            unsafe {
-                texture = gl.create_texture().unwrap();
-                gl.bind_texture(glow::TEXTURE_2D, Some(texture));
-                gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_S, glow::REPEAT as i32);
-                gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_T, glow::REPEAT as i32);
-                // set texture filtering parameters
-                gl.tex_parameter_i32(
-                    glow::TEXTURE_2D,
-                    glow::TEXTURE_MIN_FILTER,
-                    glow::LINEAR as i32,
-                );
-                gl.tex_parameter_i32(
-                    glow::TEXTURE_2D,
-                    glow::TEXTURE_MAG_FILTER,
-                    glow::LINEAR as i32,
-                );
-
-                let img_orig = image::open(std::path::Path::new(&bitmap_file))
-                    .expect("Failed to load texture");
-                let img = img_orig.flipv();
-                let data = img.raw_pixels();
-                gl.tex_image_2d(
-                    glow::TEXTURE_2D,
-                    0,
-                    glow::RGB as i32,
-                    img.width() as i32,
-                    img.height() as i32,
-                    0,
-                    glow::RGB,
-                    glow::UNSIGNED_BYTE,
-                    Some(&data),
-                );
-                //gl.GenerateMipmap(glow::TEXTURE_2D);
-            }
-
-            texture
-        }
-    };
-}
-
-// Font support: glutin
-#[cfg(not(target_arch = "wasm32"))]
-setup_gl_texture!(u32);
-
-// Font support: wasm (glow::WebTextureKey)
-#[cfg(target_arch = "wasm32")]
-setup_gl_texture!(glow::WebTextureKey);
-
 // For web assembly only, export a copy of the VirtualKeyCode type
 
 #[cfg(target_arch = "wasm32")]

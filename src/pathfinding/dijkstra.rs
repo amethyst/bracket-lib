@@ -1,4 +1,5 @@
 use super::BaseMap;
+#[cfg(not(target_arch = "wasm32"))]
 use rayon::prelude::*;
 use std::f32::MAX;
 use std::mem;
@@ -15,6 +16,7 @@ pub struct DijkstraMap {
 }
 
 /// Used internally when constructing maps in parallel
+#[cfg(not(target_arch = "wasm32"))]
 struct ParallelDm {
     map: Vec<f32>,
     max_depth: f32,
@@ -75,8 +77,26 @@ impl DijkstraMap {
     }
 
     /// Clears the Dijkstra map. Uses a parallel for each for performance.
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn clear(dm: &mut DijkstraMap) {
         dm.map.par_iter_mut().for_each(|x| *x = MAX);
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    pub fn clear(dm: &mut DijkstraMap) {
+        dm.map.iter_mut().for_each(|x| *x = MAX);
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    fn build_helper(dm: &mut DijkstraMap, starts: &[i32], map: &dyn BaseMap) {
+        if starts.len() > rayon::current_num_threads() {
+            DijkstraMap::build_parallel(dm, starts, map);
+            return;
+        }
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    fn build_helper(dm: &mut DijkstraMap, starts: &[i32], map: &dyn BaseMap) {
     }
 
     /// Builds the Dijkstra map: iterate from each starting point, to each exit provided by BaseMap's
@@ -85,10 +105,7 @@ impl DijkstraMap {
     /// If you provide more starting points than you have CPUs, automatically branches to a parallel
     /// version.
     pub fn build(dm: &mut DijkstraMap, starts: &[i32], map: &dyn BaseMap) {
-        if starts.len() > rayon::current_num_threads() {
-            DijkstraMap::build_parallel(dm, starts, map);
-            return;
-        }
+        DijkstraMap::build_helper(dm, starts, map);
         let mapsize: usize = (dm.size_x * dm.size_y) as usize;
         let mut open_list: Vec<(i32, f32)> = Vec::with_capacity(mapsize * 2);
         let mut closed_list: Vec<bool> = vec![false; mapsize];
@@ -136,6 +153,7 @@ impl DijkstraMap {
     }
 
     /// Implementation of Parallel Dijkstra.
+    #[cfg(not(target_arch = "wasm32"))]
     fn build_parallel(dm: &mut DijkstraMap, starts: &[i32], map: &dyn BaseMap) {
         let mapsize: usize = (dm.size_x * dm.size_y) as usize;
         let mut layers: Vec<ParallelDm> = Vec::with_capacity(starts.len());
@@ -201,6 +219,7 @@ impl DijkstraMap {
     /// Helper for traversing maps as path-finding. Provides the index of the lowest available
     /// exit from the specified position index, or None if there isn't one.
     /// You would use this for pathing TOWARDS a starting node.
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn find_lowest_exit(dm: &DijkstraMap, position: i32, map: &dyn BaseMap) -> Option<i32> {
         let mut exits = map.get_available_exits(position);
 
@@ -217,10 +236,28 @@ impl DijkstraMap {
         Some(exits[0].0)
     }
 
+    #[cfg(target_arch = "wasm32")]
+    pub fn find_lowest_exit(dm: &DijkstraMap, position: i32, map: &dyn BaseMap) -> Option<i32> {
+        let mut exits = map.get_available_exits(position);
+
+        if exits.is_empty() {
+            return None;
+        }
+
+        exits.sort_by(|a, b| {
+            dm.map[a.0 as usize]
+                .partial_cmp(&dm.map[b.0 as usize])
+                .unwrap()
+        });
+
+        Some(exits[0].0)
+    }
+
     /// Helper for traversing maps as path-finding. Provides the index of the highest available
     /// exit from the specified position index, or None if there isn't one.
     /// You would use this for pathing AWAY from a starting node, for example if you are running
     /// away.
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn find_highest_exit(dm: &DijkstraMap, position: i32, map: &dyn BaseMap) -> Option<i32> {
         let mut exits = map.get_available_exits(position);
 
@@ -229,6 +266,23 @@ impl DijkstraMap {
         }
 
         exits.par_sort_by(|a, b| {
+            dm.map[a.0 as usize]
+                .partial_cmp(&dm.map[b.0 as usize])
+                .unwrap()
+        });
+
+        Some(exits[0].0)
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    pub fn find_highest_exit(dm: &DijkstraMap, position: i32, map: &dyn BaseMap) -> Option<i32> {
+        let mut exits = map.get_available_exits(position);
+
+        if exits.is_empty() {
+            return None;
+        }
+
+        exits.sort_by(|a, b| {
             dm.map[a.0 as usize]
                 .partial_cmp(&dm.map[b.0 as usize])
                 .unwrap()

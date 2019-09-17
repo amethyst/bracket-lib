@@ -1,6 +1,5 @@
 use glow::HasContext;
 use image::GenericImageView;
-use super::platform_specific;
 
 #[derive(PartialEq, Clone)]
 /// RLTK's representation of a font or tileset file.
@@ -31,10 +30,27 @@ impl Font {
         }
     }
 
+    #[cfg(not(target_arch = "wasm32"))]
+    fn load_image(filename : &str) -> image::DynamicImage {
+        image::open(std::path::Path::new(&filename.to_string())).expect("Failed to load texture")
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    const TERMINAL_8_8_BYTES : &'static [u8] = include_bytes!("../resources/terminal8x8.jpg");
+
+    #[cfg(target_arch = "wasm32")]
+    fn load_image(filename : &str) -> image::DynamicImage {
+        
+
+        image::load_from_memory(&Font::TERMINAL_8_8_BYTES).expect("This is silly")
+
+        //image::open(std::path::Path::new(&filename.to_string())).expect("Failed to load texture")
+    }
+
     /// Loads a font file (texture) to obtain the width and height for you
     pub fn load<S: ToString>(filename: S, tile_size: (u32, u32)) -> Font {
-        let img = image::open(std::path::Path::new(&filename.to_string()))
-            .expect("Failed to load texture");
+
+        let img = Font::load_image(&filename.to_string());
         Font {
             bitmap_file: filename.to_string(),
             width: img.width(),
@@ -47,16 +63,70 @@ impl Font {
     /// Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
     #[cfg(not(target_arch = "wasm32"))]
     pub fn setup_gl_texture(&mut self, gl: &glow::Context) -> u32 {
-        let texture = platform_specific::setup_gl_texture(gl, &self.bitmap_file);
+        let texture;
+
+        unsafe {
+            texture = gl.create_texture().unwrap();
+            gl.bind_texture(glow::TEXTURE_2D, Some(texture));
+            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_S, glow::REPEAT as i32); // set texture wrapping to gl::REPEAT (default wrapping method)
+            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_T, glow::REPEAT as i32);
+            // set texture filtering parameters
+            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_MIN_FILTER, glow::LINEAR as i32);
+            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_MAG_FILTER, glow::LINEAR as i32);
+
+            let img_orig = Font::load_image(&self.bitmap_file);
+            let img = img_orig.flipv();
+            let data = img.raw_pixels();
+            gl.tex_image_2d(
+                glow::TEXTURE_2D,
+                0,
+                glow::RGB as i32,
+                img.width() as i32,
+                img.height() as i32,
+                0,
+                glow::RGB,
+                glow::UNSIGNED_BYTE,
+                Some(&data)
+            );
+        }
+
         self.gl_id = Some(texture);
+
         texture
     }
 
     /// Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
     #[cfg(target_arch = "wasm32")]
     pub fn setup_gl_texture(&mut self, gl: &glow::Context) -> glow::WebTextureKey {
-        let texture = platform_specific::setup_gl_texture(gl, &self.bitmap_file);
+        let texture;
+
+        unsafe {
+            texture = gl.create_texture().unwrap();
+            gl.bind_texture(glow::TEXTURE_2D, Some(texture));
+            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_S, glow::REPEAT as i32); // set texture wrapping to gl::REPEAT (default wrapping method)
+            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_T, glow::REPEAT as i32);
+            // set texture filtering parameters
+            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_MIN_FILTER, glow::LINEAR as i32);
+            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_MAG_FILTER, glow::LINEAR as i32);
+
+            let img_orig = Font::load_image(&self.bitmap_file);
+            let img = img_orig.flipv();
+            let data = img.raw_pixels();
+            gl.tex_image_2d(
+                glow::TEXTURE_2D,
+                0,
+                glow::RGB as i32,
+                img.width() as i32,
+                img.height() as i32,
+                0,
+                glow::RGB,
+                glow::UNSIGNED_BYTE,
+                Some(&data)
+            );
+        }
+
         self.gl_id = Some(texture);
+
         texture
     }
 
