@@ -1,14 +1,21 @@
 use glow::HasContext;
 
+#[cfg(not(target_arch = "wasm32"))]
 pub struct Framebuffer {
     fbo: u32,
     pub texture: u32,
 }
 
+#[cfg(target_arch = "wasm32")]
+pub struct Framebuffer {
+    fbo: glow::WebFramebufferKey,
+    pub texture: glow::WebTextureKey,
+}
+
 impl Framebuffer {
     pub fn build_fbo(gl: &glow::Context, width: i32, height: i32) -> Framebuffer {
-        let fbo: u32;
-        let buffer: u32;
+        let fbo;
+        let buffer;
 
         unsafe {
             fbo = gl.create_framebuffer().unwrap();
