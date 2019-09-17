@@ -3,3 +3,5 @@
 Cargo.lock
 **/target
 webglbuild.bat
+**/out/*
+**/stage/*

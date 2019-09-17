@@ -11,6 +11,14 @@ extern crate rltk;
 // looks like), so we need to use that, too.`
 use rltk::{Console, GameState, Rltk, RGB};
 
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::*;
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen(start))]
+pub fn wasm_main() {
+    main();
+}
+
 // This is the structure that will store our game state, typically a state machine pointing to
 // other structures. This demo is realy simple, so we'll just put the minimum to make it work
 // in here.
