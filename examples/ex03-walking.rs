@@ -4,11 +4,7 @@
 // Comments that duplicate previous examples have been removed for brevity.
 //////////////////////////////////////////////////////////////
 
-extern crate rltk;
 use rltk::{Console, GameState, Rltk, VirtualKeyCode, RGB};
-
-extern crate rand;
-use crate::rand::Rng;
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
@@ -66,12 +62,12 @@ impl State {
 
         // Now we'll randomly splat a bunch of walls. It won't be pretty, but it's a decent illustration.
         // First, obtain the thread-local RNG:
-        let mut rng = rand::thread_rng();
+        let mut rng = rltk::RandomNumberGenerator::new();
 
         for _ in 0..400 {
             // rand provides a gen_range function to get numbers in a range.
-            let x = rng.gen_range(1, 79);
-            let y = rng.gen_range(1, 49);
+            let x = rng.roll_dice(1, 80) - 1;
+            let y = rng.roll_dice(1, 50) - 1;
             let idx = xy_idx(x, y);
             // We don't want to add a wall on top of the player
             if state.player_position != idx {

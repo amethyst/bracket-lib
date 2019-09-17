@@ -18,7 +18,6 @@ glow = "0.3.0-alpha2"
 image = { version = "0.22.2", default-features = false, features = ["jpeg"] }
 cgmath = "0.17.0"
 bresenham = "0.1.1"
-rand = "0.7.0"
 rand_xorshift = "0.2.0"
 serde= { version = "1.0.98", features = ["derive"], optional = true }
 serde_json =  { version = "1.0.40", optional = true }
@@ -28,11 +27,13 @@ byteorder = "1.3.2"
 [target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
 glutin = "0.22.0-alpha3"
 rayon = "1.1.0"
+rand = "0.7.2"
 
 [target.wasm32-unknown-unknown.dependencies]
 web-sys = { version = "0.3", features=["console", "Window", "Element", "HtmlImageElement"] }
 wasm-bindgen = "0.2"
 wasm-timer = "0.1.0"
+rand = { version = "0.7.2", features = ["wasm-bindgen"] }
 
 [dev-dependencies]
 specs = "0.15.0"
