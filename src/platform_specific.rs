@@ -339,6 +339,8 @@ pub fn init_raw<S: ToString>(
 // WASM version of main loop
 #[cfg(target_arch = "wasm32")]
 pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
+    use glow::HasRenderLoop;
+
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
     let mut prev_ms = now.elapsed().as_millis();
@@ -349,6 +351,17 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     let wrap = std::mem::replace(&mut rltk.context_wrapper, None);
     let unwrap = wrap.unwrap();
 
+    let render_loop = glow::RenderLoop::from_request_animation_frame();
+    render_loop.run(move |running: &mut bool| {
+        tock(
+            &mut rltk,
+            &mut gamestate,
+            &mut frames,
+            &mut prev_seconds,
+            &mut prev_ms,
+            &now,
+        );
+    });
 }
 
 // Generic/macro version of setup_gl_texture for platform binding
