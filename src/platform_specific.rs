@@ -1,5 +1,4 @@
 use super::{framebuffer::Framebuffer, quadrender, GameState, Rltk, Shader, shader_strings};
-use image::GenericImageView;
 
 #[cfg(not(target_arch = "wasm32"))]
 use glutin::{
