@@ -39,10 +39,16 @@ impl Font {
     const TERMINAL_8_8_BYTES : &'static [u8] = include_bytes!("../resources/terminal8x8.jpg");
 
     #[cfg(target_arch = "wasm32")]
+    const TERMINAL_8_16_BYTES : &'static [u8] = include_bytes!("../resources/vga8x16.jpg");
+
+    #[cfg(target_arch = "wasm32")]
     fn load_image(filename : &str) -> image::DynamicImage {
         
-
-        image::load_from_memory(&Font::TERMINAL_8_8_BYTES).expect("This is silly")
+        if filename.ends_with("resources/vga8x16.jpg") {
+            image::load_from_memory(&Font::TERMINAL_8_16_BYTES).expect("This is silly")
+        } else {
+            image::load_from_memory(&Font::TERMINAL_8_8_BYTES).expect("This is silly")
+        }
 
         //image::open(std::path::Path::new(&filename.to_string())).expect("Failed to load texture")
     }
