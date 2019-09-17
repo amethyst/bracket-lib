@@ -2,6 +2,9 @@ use cgmath::Vector3;
 use glow::HasContext;
 use std::str;
 
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::*;
+
 #[allow(non_snake_case)]
 pub struct Shader {
     #[cfg(not(target_arch = "wasm32"))]
@@ -26,17 +29,31 @@ impl Shader {
             let vertex = gl.create_shader(glow::VERTEX_SHADER).unwrap();
             gl.shader_source(vertex, &vertex_code);
             gl.compile_shader(vertex);
+            if !gl.get_shader_compile_status(vertex) {
+                log(&vertex_code);
+                log(&gl.get_shader_info_log(vertex));
+                //panic!();
+            }
 
             // fragment Shader
             let fragment = gl.create_shader(glow::FRAGMENT_SHADER).unwrap();
             gl.shader_source(fragment, &fragment_code);
             gl.compile_shader(fragment);
+            if !gl.get_shader_compile_status(fragment) {
+                log(&fragment_code);
+                log(&gl.get_shader_info_log(fragment));
+                //panic!();
+            }
 
             // shader Program
             let id = gl.create_program().unwrap();
             gl.attach_shader(id, vertex);
             gl.attach_shader(id, fragment);
             gl.link_program(id);
+            if !gl.get_program_link_status(id) {
+                log(&gl.get_program_info_log(id));
+                //panic!();
+            }
 
             // delete the shaders as they're linked into our program now and no longer necessary
             shader = Shader{
@@ -95,4 +112,16 @@ impl Shader {
     pub unsafe fn setMat4(&self, gl: &glow::Context, name: &str, mat: &[f32; 16]) {
         gl.uniform_matrix_4_f32_slice(gl.get_uniform_location(self.ID, name), false, mat);
     }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn log(message : &str) {
+    println!("{}", message);
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
 }
