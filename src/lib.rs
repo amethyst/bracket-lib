@@ -33,6 +33,7 @@ pub use self::simple_console::SimpleConsole;
 pub use self::sparse_console::SparseConsole;
 pub use self::textblock::{TextBlock, TextBuilder};
 pub mod platform_specific;
+pub mod shader_strings;
 
 #[cfg(not(target_arch = "wasm32"))]
 pub use glutin::event::VirtualKeyCode;

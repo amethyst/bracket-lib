@@ -1,4 +1,4 @@
-use super::{framebuffer::Framebuffer, quadrender, GameState, Rltk, Shader};
+use super::{framebuffer::Framebuffer, quadrender, GameState, Rltk, Shader, shader_strings};
 use image::GenericImageView;
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -29,8 +29,7 @@ pub struct WrappedContext {
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
-    window_title: S,
-    path_to_shaders: S,
+    window_title: S
 ) -> Rltk {
     let el = EventLoop::new();
     let wb = WindowBuilder::new()
@@ -53,25 +52,25 @@ pub fn init_raw<S: ToString>(
     // Load our basic shaders
     let mut shaders: Vec<Shader> = Vec::new();
 
-    let shader_path = path_to_shaders.to_string();
     shaders.push(Shader::new(
         &gl,
-        "console_with_bg.vs",
-        "console_with_bg.fs",
-        &shader_path,
+        shader_strings::CONSOLE_WITH_BG_VS,
+        shader_strings::CONSOLE_WITH_BG_FS
     ));
     shaders.push(Shader::new(
         &gl,
-        "console_no_bg.vs",
-        "console_no_bg.fs",
-        &shader_path,
+        shader_strings::CONSOLE_NO_BG_VS,
+        shader_strings::CONSOLE_NO_BG_FS
     ));
-    shaders.push(Shader::new(&gl, "backing.vs", "backing.fs", &shader_path));
+    shaders.push(Shader::new(
+        &gl, 
+        shader_strings::BACKING_VS,
+        shader_strings::BACKING_FS
+    ));
     shaders.push(Shader::new(
         &gl,
-        "scanlines.vs",
-        "scanlines.fs",
-        &shader_path,
+        shader_strings::SCANLINES_VS,
+        shader_strings::SCANLINES_FS
     ));
 
     // Build the backing frame-buffer
@@ -263,8 +262,7 @@ fn tock<GS: GameState>(
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
-    window_title: S,
-    path_to_shaders: S,
+    window_title: S
 ) -> Rltk {
     use wasm_bindgen::JsCast;
     let canvas = web_sys::window()
@@ -287,25 +285,25 @@ pub fn init_raw<S: ToString>(
     // Load our basic shaders
     let mut shaders: Vec<Shader> = Vec::new();
 
-    let shader_path = path_to_shaders.to_string();
     shaders.push(Shader::new(
         &gl,
-        "console_with_bg.vs",
-        "console_with_bg.fs",
-        &shader_path,
+        shader_strings::CONSOLE_WITH_BG_VS,
+        shader_strings::CONSOLE_WITH_BG_FS
     ));
     shaders.push(Shader::new(
         &gl,
-        "console_no_bg.vs",
-        "console_no_bg.fs",
-        &shader_path,
+        shader_strings::CONSOLE_NO_BG_VS,
+        shader_strings::CONSOLE_NO_BG_FS
     ));
-    shaders.push(Shader::new(&gl, "backing.vs", "backing.fs", &shader_path));
+    shaders.push(Shader::new(
+        &gl, 
+        shader_strings::BACKING_VS,
+        shader_strings::BACKING_FS
+    ));
     shaders.push(Shader::new(
         &gl,
-        "scanlines.vs",
-        "scanlines.fs",
-        &shader_path,
+        shader_strings::SCANLINES_VS,
+        shader_strings::SCANLINES_FS
     ));
 
     // Build the backing frame-buffer

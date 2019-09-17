@@ -45,10 +45,9 @@ impl Rltk {
     pub fn init_raw<S: ToString>(
         width_pixels: u32,
         height_pixels: u32,
-        window_title: S,
-        path_to_shaders: S,
+        window_title: S
     ) -> Rltk {
-        platform_specific::init_raw(width_pixels, height_pixels, window_title, path_to_shaders)
+        platform_specific::init_raw(width_pixels, height_pixels, window_title)
     }
 
     /// Quick initialization for when you just want an 8x8 font terminal
@@ -62,8 +61,7 @@ impl Rltk {
         let mut context = Rltk::init_raw(
             width_chars * 8,
             height_chars * 8,
-            window_title,
-            path_to_shaders,
+            window_title
         );
         let font = context.register_font(font::Font::load(&font_path.to_string(), (8, 8)));
         context.register_console(
@@ -84,8 +82,7 @@ impl Rltk {
         let mut context = Rltk::init_raw(
             width_chars * 8,
             height_chars * 16,
-            window_title,
-            path_to_shaders,
+            window_title
         );
         let font = context.register_font(font::Font::load(&font_path.to_string(), (8, 16)));
         context.register_console(

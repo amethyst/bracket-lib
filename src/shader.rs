@@ -1,7 +1,5 @@
 use cgmath::Vector3;
 use glow::HasContext;
-use std::fs::File;
-use std::io::Read;
 use std::str;
 
 #[allow(non_snake_case)]
@@ -16,31 +14,12 @@ pub struct Shader {
 /// NOTE: mixture of `shader_s.h` and `shader_m.h` (the latter just contains
 /// a few more setters for uniforms)
 impl Shader {
-    pub fn new<S: ToString>(
+    pub fn new(
         gl: &glow::Context,
-        vertex_path: S,
-        fragment_path: S,
-        path_to_shaders: S,
+        vertex_code: &str,
+        fragment_code: &str
     ) -> Shader {
-        let shader_path = path_to_shaders.to_string();
-        let vertex_path = format!("{}/{}", &shader_path, vertex_path.to_string());
-        let fragment_path = format!("{}/{}", &shader_path, fragment_path.to_string());
-
-        // 1. retrieve the vertex/fragment source code from filesystem
-        let mut v_shader_file =
-            File::open(&vertex_path).unwrap_or_else(|_| panic!("Failed to open {}", vertex_path));
-        let mut f_shader_file = File::open(&fragment_path)
-            .unwrap_or_else(|_| panic!("Failed to open {}", fragment_path));
-        let mut vertex_code = String::new();
-        let mut fragment_code = String::new();
-        v_shader_file
-            .read_to_string(&mut vertex_code)
-            .expect("Failed to read vertex shader");
-        f_shader_file
-            .read_to_string(&mut fragment_code)
-            .expect("Failed to read fragment shader");
-
-        // 2. compile shaders
+        // 1. compile shaders from strings
         let shader;
         unsafe {
             // vertex shader
