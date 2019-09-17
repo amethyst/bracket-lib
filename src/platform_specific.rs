@@ -8,6 +8,7 @@ use glutin::{
 };
 
 use glow::HasContext;
+
 use std::time::Instant;
 
 // Glutin version:
@@ -184,6 +185,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
 }
 
 /// Internal handling of the main loop.
+#[cfg(not(target_arch = "wasm32"))]
 fn tock<GS: GameState>(
     rltk: &mut Rltk,
     gamestate: &mut GS,
@@ -256,6 +258,81 @@ fn tock<GS: GameState>(
         }
     }
 }
+
+#[cfg(target_arch = "wasm32")]
+fn tock<GS: GameState>(
+    rltk: &mut Rltk,
+    gamestate: &mut GS,
+    frames: &mut i32,
+    prev_seconds: &mut u64,
+    prev_ms: &mut u128,
+    now: &wasm_timer::Instant,
+) {
+    let now_seconds = now.elapsed().as_secs();
+    *frames += 1;
+
+    if now_seconds > *prev_seconds {
+        rltk.fps = *frames as f32 / (now_seconds - *prev_seconds) as f32;
+        *frames = 0;
+        *prev_seconds = now_seconds;
+    }
+
+    let now_ms = now.elapsed().as_millis();
+    if now_ms > *prev_ms {
+        rltk.frame_time_ms = (now_ms - *prev_ms) as f32;
+        *prev_ms = now_ms;
+    }
+
+    gamestate.tick(rltk);
+
+    // Console structure - doesn't really have to be every frame...
+    for cons in &mut rltk.consoles {
+        cons.console.rebuild_if_dirty(&rltk.gl);
+    }
+
+    // Bind to the backing buffer
+    if rltk.post_scanlines {
+        rltk.backing_buffer.bind(&rltk.gl);
+    }
+
+    // Clear the screen
+    unsafe {
+        rltk.gl.clear_color(0.2, 0.3, 0.3, 1.0);
+        rltk.gl.clear(glow::COLOR_BUFFER_BIT);
+    }
+
+    // Tell each console to draw itself
+    for cons in &mut rltk.consoles {
+        let font = &rltk.fonts[cons.font_index];
+        let shader = &rltk.shaders[cons.shader_index];
+        cons.console.gl_draw(font, shader, &rltk.gl);
+    }
+
+    if rltk.post_scanlines {
+        // Now we return to the primary screen
+        rltk.backing_buffer.default(&rltk.gl);
+        unsafe {
+            if rltk.post_scanlines {
+                rltk.shaders[3].useProgram(&rltk.gl);
+                rltk.shaders[3].setVec3(
+                    &rltk.gl,
+                    "screenSize",
+                    rltk.width_pixels as f32,
+                    rltk.height_pixels as f32,
+                    0.0,
+                );
+                rltk.shaders[3].setBool(&rltk.gl, "screenBurn", rltk.post_screenburn);
+            } else {
+                rltk.shaders[2].useProgram(&rltk.gl);
+            }
+            rltk.gl.bind_vertex_array(Some(rltk.quad_vao));
+            rltk.gl
+                .bind_texture(glow::TEXTURE_2D, Some(rltk.backing_buffer.texture));
+            rltk.gl.draw_arrays(glow::TRIANGLES, 0, 6);
+        }
+    }
+}
+
 
 // wasm version of initialization
 #[cfg(target_arch = "wasm32")]
@@ -339,7 +416,7 @@ pub fn init_raw<S: ToString>(
 pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     use glow::HasRenderLoop;
 
-    let now = Instant::now();
+    let now = wasm_timer::Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
     let mut prev_ms = now.elapsed().as_millis();
     let mut frames = 0;
