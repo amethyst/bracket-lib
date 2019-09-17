@@ -1,4 +1,5 @@
 use super::{framebuffer::Framebuffer, quadrender, GameState, Rltk, Shader};
+use image::GenericImageView;
 
 #[cfg(not(target_arch = "wasm32"))]
 use glutin::{
@@ -17,6 +18,10 @@ use std::time::Instant;
 pub struct WrappedContext {
     pub el: glutin::event_loop::EventLoop<()>,
     pub wc: glutin::WindowedContext<glutin::PossiblyCurrent>,
+}
+
+#[cfg(target_arch = "wasm32")]
+pub struct WrappedContext {
 }
 
 // Glutin version of initialization
@@ -252,6 +257,154 @@ fn tock<GS: GameState>(
         }
     }
 }
+
+// wasm version of initialization
+#[cfg(target_arch = "wasm32")]
+pub fn init_raw<S: ToString>(
+    width_pixels: u32,
+    height_pixels: u32,
+    window_title: S,
+    path_to_shaders: S,
+) -> Rltk {
+    use wasm_bindgen::JsCast;
+    let canvas = web_sys::window()
+        .unwrap()
+        .document()
+        .unwrap()
+        .get_element_by_id("canvas")
+        .unwrap()
+        .dyn_into::<web_sys::HtmlCanvasElement>()
+        .unwrap();
+    let webgl2_context = canvas
+        .get_context("webgl2")
+        .unwrap()
+        .unwrap()
+        .dyn_into::<web_sys::WebGl2RenderingContext>()
+        .unwrap();
+
+    let gl = glow::Context::from_webgl2_context(webgl2_context);
+
+    // Load our basic shaders
+    let mut shaders: Vec<Shader> = Vec::new();
+
+    let shader_path = path_to_shaders.to_string();
+    shaders.push(Shader::new(
+        &gl,
+        "console_with_bg.vs",
+        "console_with_bg.fs",
+        &shader_path,
+    ));
+    shaders.push(Shader::new(
+        &gl,
+        "console_no_bg.vs",
+        "console_no_bg.fs",
+        &shader_path,
+    ));
+    shaders.push(Shader::new(&gl, "backing.vs", "backing.fs", &shader_path));
+    shaders.push(Shader::new(
+        &gl,
+        "scanlines.vs",
+        "scanlines.fs",
+        &shader_path,
+    ));
+
+    // Build the backing frame-buffer
+    let backing_fbo = Framebuffer::build_fbo(&gl, width_pixels as i32, height_pixels as i32);
+
+    // Build a simple quad rendering vao
+    let quad_vao = quadrender::setup_quad(&gl);
+
+    Rltk {
+        gl,
+        width_pixels,
+        height_pixels,
+        fonts: Vec::new(),
+        consoles: Vec::new(),
+        shaders,
+        fps: 0.0,
+        frame_time_ms: 0.0,
+        active_console: 0,
+        key: None,
+        mouse_pos: (0, 0),
+        left_click: false,
+        context_wrapper: Some(WrappedContext {}),
+        quitting: false,
+        backing_buffer: backing_fbo,
+        quad_vao,
+        post_scanlines: false,
+        post_screenburn: false,
+    }
+}
+
+// WASM version of main loop
+#[cfg(target_arch = "wasm32")]
+pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
+    let now = Instant::now();
+    let mut prev_seconds = now.elapsed().as_secs();
+    let mut prev_ms = now.elapsed().as_millis();
+    let mut frames = 0;
+
+    // We're doing a little dance here to get around lifetime/borrow checking.
+    // Removing the context data from RLTK in an atomic swap, so it isn't borrowed after move.
+    let wrap = std::mem::replace(&mut rltk.context_wrapper, None);
+    let unwrap = wrap.unwrap();
+
+}
+
+// Generic/macro version of setup_gl_texture for platform binding
+
+macro_rules! setup_gl_texture {
+    ($type:ty) => {
+        pub fn setup_gl_texture(gl: &glow::Context, bitmap_file: &str) -> $type {
+            let texture;
+
+            unsafe {
+                texture = gl.create_texture().unwrap();
+                gl.bind_texture(glow::TEXTURE_2D, Some(texture));
+                gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_S, glow::REPEAT as i32);
+                gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_T, glow::REPEAT as i32);
+                // set texture filtering parameters
+                gl.tex_parameter_i32(
+                    glow::TEXTURE_2D,
+                    glow::TEXTURE_MIN_FILTER,
+                    glow::LINEAR as i32,
+                );
+                gl.tex_parameter_i32(
+                    glow::TEXTURE_2D,
+                    glow::TEXTURE_MAG_FILTER,
+                    glow::LINEAR as i32,
+                );
+
+                let img_orig = image::open(std::path::Path::new(&bitmap_file))
+                    .expect("Failed to load texture");
+                let img = img_orig.flipv();
+                let data = img.raw_pixels();
+                gl.tex_image_2d(
+                    glow::TEXTURE_2D,
+                    0,
+                    glow::RGB as i32,
+                    img.width() as i32,
+                    img.height() as i32,
+                    0,
+                    glow::RGB,
+                    glow::UNSIGNED_BYTE,
+                    Some(&data),
+                );
+                //gl.GenerateMipmap(glow::TEXTURE_2D);
+            }
+
+            texture
+        }
+    };
+}
+
+// Font support: glutin
+#[cfg(not(target_arch = "wasm32"))]
+setup_gl_texture!(u32);
+
+// Font support: wasm (glow::WebTextureKey)
+#[cfg(target_arch = "wasm32")]
+setup_gl_texture!(glow::WebTextureKey);
 
 // For web assembly only, export a copy of the VirtualKeyCode type
 

@@ -1,5 +1,6 @@
 use glow::HasContext;
 use image::GenericImageView;
+use super::platform_specific;
 
 #[derive(PartialEq, Clone)]
 /// RLTK's representation of a font or tileset file.
@@ -7,7 +8,13 @@ pub struct Font {
     pub bitmap_file: String,
     pub width: u32,
     pub height: u32,
+
+    #[cfg(not(target_arch = "wasm32"))]
     pub gl_id: Option<u32>,
+
+    #[cfg(target_arch = "wasm32")]
+    pub gl_id: Option<glow::WebTextureKey>,
+
     pub tile_size: (u32, u32),
 }
 
@@ -38,46 +45,18 @@ impl Font {
     }
 
     /// Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn setup_gl_texture(&mut self, gl: &glow::Context) -> u32 {
-        let texture;
-
-        unsafe {
-            texture = gl.create_texture().unwrap();
-            gl.bind_texture(glow::TEXTURE_2D, Some(texture));
-            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_S, glow::REPEAT as i32);
-            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_T, glow::REPEAT as i32);
-            // set texture filtering parameters
-            gl.tex_parameter_i32(
-                glow::TEXTURE_2D,
-                glow::TEXTURE_MIN_FILTER,
-                glow::LINEAR as i32,
-            );
-            gl.tex_parameter_i32(
-                glow::TEXTURE_2D,
-                glow::TEXTURE_MAG_FILTER,
-                glow::LINEAR as i32,
-            );
-
-            let img_orig = image::open(std::path::Path::new(&self.bitmap_file))
-                .expect("Failed to load texture");
-            let img = img_orig.flipv();
-            let data = img.raw_pixels();
-            gl.tex_image_2d(
-                glow::TEXTURE_2D,
-                0,
-                glow::RGB as i32,
-                img.width() as i32,
-                img.height() as i32,
-                0,
-                glow::RGB,
-                glow::UNSIGNED_BYTE,
-                Some(&data),
-            );
-            //gl.GenerateMipmap(glow::TEXTURE_2D);
-        }
-
+        let texture = platform_specific::setup_gl_texture(gl, &self.bitmap_file);
         self.gl_id = Some(texture);
+        texture
+    }
 
+    /// Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
+    #[cfg(target_arch = "wasm32")]
+    pub fn setup_gl_texture(&mut self, gl: &glow::Context) -> glow::WebTextureKey {
+        let texture = platform_specific::setup_gl_texture(gl, &self.bitmap_file);
+        self.gl_id = Some(texture);
         texture
     }
 
