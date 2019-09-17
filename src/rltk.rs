@@ -29,7 +29,13 @@ pub struct Rltk {
     pub context_wrapper: Option<platform_specific::WrappedContext>,
     pub quitting: bool,
     pub backing_buffer: Framebuffer,
+
+    #[cfg(not(target_arch = "wasm32"))]
     pub quad_vao: u32,
+
+    #[cfg(target_arch = "wasm32")]
+    pub quad_vao: glow::WebVertexArrayKey,
+
     pub post_scanlines: bool,
     pub post_screenburn: bool,
 }
