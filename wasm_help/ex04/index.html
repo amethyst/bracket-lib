@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+  </head>
+  <body>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <script src="./ex04-fov.js"></script>
+    <script>
+      window.addEventListener("load", async () => {
+        await wasm_bindgen("./ex04-fov_bg.wasm");
+      });
+    </script>
+  </body>
+</html>

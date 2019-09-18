@@ -14,6 +14,14 @@ use crate::rand::Rng;
 
 use std::f32::MAX;
 
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::*;
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen(start))]
+pub fn wasm_main() {
+    main();
+}
+
 #[derive(PartialEq, Copy, Clone)]
 enum TileType {
     Wall,

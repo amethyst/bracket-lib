@@ -9,6 +9,14 @@ use rltk::{Algorithm2D, BaseMap, Console, GameState, Point, Rltk, VirtualKeyCode
 extern crate rand;
 use crate::rand::Rng;
 
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::*;
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen(start))]
+pub fn wasm_main() {
+    main();
+}
+
 #[derive(PartialEq, Copy, Clone)]
 enum TileType {
     Wall,
