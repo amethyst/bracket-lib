@@ -1,12 +1,5 @@
-pub mod gl {
-    pub use self::Gles2 as Gl;
-    include!(concat!(env!("OUT_DIR"), "/gl_bindings.rs"));
-}
-
-pub struct Gl {
-    pub gl: gl::Gl,
-}
-
+#[macro_use]
+extern crate lazy_static;
 mod codepage437;
 mod color;
 mod console;
@@ -41,7 +34,46 @@ pub use self::shader::Shader;
 pub use self::simple_console::SimpleConsole;
 pub use self::sparse_console::SparseConsole;
 pub use self::textblock::{TextBlock, TextBuilder};
+pub mod embedding;
+pub mod platform_specific;
+pub mod shader_strings;
+
+#[macro_export]
+macro_rules! add_wasm_support {
+    () => {
+        #[cfg(target_arch = "wasm32")]
+        use wasm_bindgen::prelude::*;
+
+        #[cfg(target_arch = "wasm32")]
+        #[cfg_attr(target_arch = "wasm32", wasm_bindgen(start))]
+        pub fn wasm_main() {
+            main();
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! embedded_resource {
+    ($resource_name : ident, $filename : expr) => {
+        const $resource_name: &'static [u8] = include_bytes!($filename);
+    };
+}
+
+#[macro_export]
+macro_rules! link_resource {
+    ($resource_name : ident, $filename : expr) => {
+        rltk::embedding::EMBED
+            .lock()
+            .unwrap()
+            .add_resource($filename.to_string(), $resource_name);
+    };
+}
+
+#[cfg(not(target_arch = "wasm32"))]
 pub use glutin::event::VirtualKeyCode;
+
+#[cfg(target_arch = "wasm32")]
+pub use platform_specific::VirtualKeyCode;
 
 /// Implement this trait on your state struct, so the engine knows what to call on each tick.
 pub trait GameState: 'static {

@@ -11,6 +11,7 @@
 use std::io;
 use std::io::prelude::*;
 
+use super::embedding;
 use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use flate2::read::GzDecoder;
 use flate2::write::GzEncoder;
@@ -146,6 +147,22 @@ impl XpFile {
         XpFile {
             version: -1,
             layers: vec![XpLayer::new(width, height)],
+        }
+    }
+
+    /// Helper to read from an RLTK resource
+    pub fn from_resource(path: &str) -> io::Result<XpFile> {
+        let res = embedding::EMBED
+            .lock()
+            .unwrap()
+            .get_resource(path.to_string());
+        match res {
+            None => panic!("Unable to open resource"),
+            Some(r) => {
+                let buffer: Vec<u8> = Vec::from(r);
+                let mut bufslice = &*buffer;
+                XpFile::read(&mut bufslice)
+            }
         }
     }
 

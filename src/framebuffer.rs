@@ -1,46 +1,68 @@
-use super::gl;
-use std::ptr;
+use glow::HasContext;
 
+#[cfg(not(target_arch = "wasm32"))]
 pub struct Framebuffer {
     fbo: u32,
     pub texture: u32,
 }
 
+#[cfg(target_arch = "wasm32")]
+pub struct Framebuffer {
+    fbo: glow::WebFramebufferKey,
+    pub texture: glow::WebTextureKey,
+}
+
 impl Framebuffer {
-    pub fn build_fbo(gl: &gl::Gles2, width: i32, height: i32) -> Framebuffer {
-        let mut fbo: u32 = 0;
-        let mut buffer: u32 = 0;
+    pub fn build_fbo(gl: &glow::Context, width: i32, height: i32) -> Framebuffer {
+        let fbo;
+        let buffer;
 
         unsafe {
-            gl.GenFramebuffers(1, &mut fbo);
-            gl.BindFramebuffer(gl::FRAMEBUFFER, fbo);
-            gl.GenTextures(1, &mut buffer);
+            fbo = gl.create_framebuffer().unwrap();
+            gl.bind_framebuffer(glow::FRAMEBUFFER, Some(fbo));
+            buffer = gl.create_texture().unwrap();
 
-            gl.BindTexture(gl::TEXTURE_2D, buffer);
-            gl.TexImage2D(
-                gl::TEXTURE_2D,
+            gl.bind_texture(glow::TEXTURE_2D, Some(buffer));
+            gl.tex_image_2d(
+                glow::TEXTURE_2D,
                 0,
-                gl::RGB16F as i32,
+                glow::RGBA as i32,
                 width,
                 height,
                 0,
-                gl::RGB,
-                gl::FLOAT,
-                ptr::null(),
+                glow::RGBA,
+                glow::UNSIGNED_BYTE,
+                None,
             );
-            gl.TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as i32);
-            gl.TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32);
-            gl.TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE as i32);
-            gl.TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE as i32);
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_MIN_FILTER,
+                glow::LINEAR as i32,
+            );
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_MAG_FILTER,
+                glow::LINEAR as i32,
+            );
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_WRAP_S,
+                glow::CLAMP_TO_EDGE as i32,
+            );
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_WRAP_T,
+                glow::CLAMP_TO_EDGE as i32,
+            );
             // attach texture to framebuffer
-            gl.FramebufferTexture2D(
-                gl::FRAMEBUFFER,
-                gl::COLOR_ATTACHMENT0,
-                gl::TEXTURE_2D,
-                buffer,
+            gl.framebuffer_texture_2d(
+                glow::FRAMEBUFFER,
+                glow::COLOR_ATTACHMENT0,
+                glow::TEXTURE_2D,
+                Some(buffer),
                 0,
             );
-            gl.BindFramebuffer(gl::FRAMEBUFFER, 0);
+            gl.bind_framebuffer(glow::FRAMEBUFFER, None);
         }
 
         Framebuffer {
@@ -49,15 +71,15 @@ impl Framebuffer {
         }
     }
 
-    pub fn bind(&self, gl: &gl::Gles2) {
+    pub fn bind(&self, gl: &glow::Context) {
         unsafe {
-            gl.BindFramebuffer(gl::FRAMEBUFFER, self.fbo);
+            gl.bind_framebuffer(glow::FRAMEBUFFER, Some(self.fbo));
         }
     }
 
-    pub fn default(&self, gl: &gl::Gles2) {
+    pub fn default(&self, gl: &glow::Context) {
         unsafe {
-            gl.BindFramebuffer(gl::FRAMEBUFFER, 0);
+            gl.bind_framebuffer(glow::FRAMEBUFFER, None);
         }
     }
 }

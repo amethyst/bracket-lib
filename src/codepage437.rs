@@ -277,7 +277,7 @@ pub fn to_cp437(c: char) -> u8 {
 
 /// Converts a string into a vector of u8, CP437 representations of the string
 pub fn string_to_cp437<S: AsRef<str>>(input: S) -> Vec<u8> {
-    input.as_ref().chars().map(|c| to_cp437(c)).collect()
+    input.as_ref().chars().map(to_cp437).collect()
 }
 
 #[cfg(test)]

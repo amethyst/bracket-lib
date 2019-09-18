@@ -1,5 +1,4 @@
-extern crate rltk;
-
+rltk::add_wasm_support!();
 use rltk::{Console, GameState, RandomNumberGenerator, Rltk, RGB};
 
 struct State {

@@ -1,72 +1,61 @@
-use super::gl;
-use cgmath::prelude::*;
-use cgmath::{Matrix, Matrix4, Vector3};
-use gl::types::*;
-use std::ffi::{CStr, CString};
-use std::fs::File;
-use std::io::Read;
-use std::ptr;
+use cgmath::Vector3;
+use glow::HasContext;
 use std::str;
+
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::*;
 
 #[allow(non_snake_case)]
 pub struct Shader {
+    #[cfg(not(target_arch = "wasm32"))]
     pub ID: u32,
+
+    #[cfg(target_arch = "wasm32")]
+    pub ID: glow::WebProgramKey,
 }
 
 /// NOTE: mixture of `shader_s.h` and `shader_m.h` (the latter just contains
 /// a few more setters for uniforms)
 impl Shader {
-    pub fn new<S: ToString>(
-        gl: &gl::Gles2,
-        vertex_path: S,
-        fragment_path: S,
-        path_to_shaders: S,
-    ) -> Shader {
-        let shader_path = path_to_shaders.to_string();
-        let vertex_path = format!("{}/{}", &shader_path, vertex_path.to_string());
-        let fragment_path = format!("{}/{}", &shader_path, fragment_path.to_string());
-
-        let mut shader = Shader { ID: 0 };
-        // 1. retrieve the vertex/fragment source code from filesystem
-        let mut v_shader_file =
-            File::open(&vertex_path).unwrap_or_else(|_| panic!("Failed to open {}", vertex_path));
-        let mut f_shader_file = File::open(&fragment_path)
-            .unwrap_or_else(|_| panic!("Failed to open {}", fragment_path));
-        let mut vertex_code = String::new();
-        let mut fragment_code = String::new();
-        v_shader_file
-            .read_to_string(&mut vertex_code)
-            .expect("Failed to read vertex shader");
-        f_shader_file
-            .read_to_string(&mut fragment_code)
-            .expect("Failed to read fragment shader");
-
-        let v_shader_code = CString::new(vertex_code.as_bytes()).unwrap();
-        let f_shader_code = CString::new(fragment_code.as_bytes()).unwrap();
-
-        // 2. compile shaders
+    pub fn new(gl: &glow::Context, vertex_code: &str, fragment_code: &str) -> Shader {
+        // 1. compile shaders from strings
+        let shader;
         unsafe {
             // vertex shader
-            let vertex = gl.CreateShader(gl::VERTEX_SHADER);
-            gl.ShaderSource(vertex, 1, &v_shader_code.as_ptr(), ptr::null());
-            gl.CompileShader(vertex);
-            shader.checkCompileErrors(gl, vertex, "VERTEX");
+            let vertex = gl.create_shader(glow::VERTEX_SHADER).unwrap();
+            gl.shader_source(vertex, &vertex_code);
+            gl.compile_shader(vertex);
+            if !gl.get_shader_compile_status(vertex) {
+                log(&vertex_code);
+                log(&gl.get_shader_info_log(vertex));
+                panic!();
+            }
+
             // fragment Shader
-            let fragment = gl.CreateShader(gl::FRAGMENT_SHADER);
-            gl.ShaderSource(fragment, 1, &f_shader_code.as_ptr(), ptr::null());
-            gl.CompileShader(fragment);
-            shader.checkCompileErrors(gl, fragment, "FRAGMENT");
+            let fragment = gl.create_shader(glow::FRAGMENT_SHADER).unwrap();
+            gl.shader_source(fragment, &fragment_code);
+            gl.compile_shader(fragment);
+            if !gl.get_shader_compile_status(fragment) {
+                log(&fragment_code);
+                log(&gl.get_shader_info_log(fragment));
+                panic!();
+            }
+
             // shader Program
-            let id = gl.CreateProgram();
-            gl.AttachShader(id, vertex);
-            gl.AttachShader(id, fragment);
-            gl.LinkProgram(id);
-            shader.checkCompileErrors(gl, id, "PROGRAM");
+            let id = gl.create_program().unwrap();
+            gl.attach_shader(id, vertex);
+            gl.attach_shader(id, fragment);
+            gl.link_program(id);
+            if !gl.get_program_link_status(id) {
+                log(&gl.get_program_info_log(id));
+                panic!();
+            }
+
             // delete the shaders as they're linked into our program now and no longer necessary
-            gl.DeleteShader(vertex);
-            gl.DeleteShader(fragment);
-            shader.ID = id;
+            shader = Shader { ID: id }
         }
+
+        //log("Shaders Compiled");
 
         shader
     }
@@ -74,90 +63,61 @@ impl Shader {
     #[allow(non_snake_case)]
     /// activate the shader
     /// ------------------------------------------------------------------------
-    pub unsafe fn useProgram(&self, gl: &gl::Gles2) {
-        gl.UseProgram(self.ID)
+    pub unsafe fn useProgram(&self, gl: &glow::Context) {
+        gl.use_program(Some(self.ID))
     }
 
     #[allow(non_snake_case)]
     /// utility uniform functions
     /// ------------------------------------------------------------------------
-    pub unsafe fn setBool(&self, gl: &gl::Gles2, name: &CStr, value: bool) {
-        gl.Uniform1i(gl.GetUniformLocation(self.ID, name.as_ptr()), value as i32);
+    pub unsafe fn setBool(&self, gl: &glow::Context, name: &str, value: bool) {
+        gl.uniform_1_i32(gl.get_uniform_location(self.ID, name), value as i32);
     }
+
     #[allow(non_snake_case)]
     /// ------------------------------------------------------------------------
-    pub unsafe fn setInt(&self, gl: &gl::Gles2, name: &CStr, value: i32) {
-        gl.Uniform1i(gl.GetUniformLocation(self.ID, name.as_ptr()), value);
+    pub unsafe fn setInt(&self, gl: &glow::Context, name: &str, value: i32) {
+        gl.uniform_1_i32(gl.get_uniform_location(self.ID, name), value);
     }
+
     #[allow(non_snake_case)]
     /// ------------------------------------------------------------------------
-    pub unsafe fn setFloat(&self, gl: &gl::Gles2, name: &CStr, value: f32) {
-        gl.Uniform1f(gl.GetUniformLocation(self.ID, name.as_ptr()), value);
+    pub unsafe fn setFloat(&self, gl: &glow::Context, name: &str, value: f32) {
+        gl.uniform_1_f32(gl.get_uniform_location(self.ID, name), value);
     }
+
     #[allow(non_snake_case)]
     /// ------------------------------------------------------------------------
-    pub unsafe fn setVector3(&self, gl: &gl::Gles2, name: &CStr, value: &Vector3<f32>) {
-        gl.Uniform3fv(
-            gl.GetUniformLocation(self.ID, name.as_ptr()),
-            1,
-            value.as_ptr(),
-        );
-    }
-    #[allow(non_snake_case)]
-    /// ------------------------------------------------------------------------
-    pub unsafe fn setVec3(&self, gl: &gl::Gles2, name: &CStr, x: f32, y: f32, z: f32) {
-        gl.Uniform3f(gl.GetUniformLocation(self.ID, name.as_ptr()), x, y, z);
-    }
-    #[allow(non_snake_case)]
-    /// ------------------------------------------------------------------------
-    pub unsafe fn setMat4(&self, gl: &gl::Gles2, name: &CStr, mat: &Matrix4<f32>) {
-        gl.UniformMatrix4fv(
-            gl.GetUniformLocation(self.ID, name.as_ptr()),
-            1,
-            gl::FALSE,
-            mat.as_ptr(),
+    pub unsafe fn setVector3(&self, gl: &glow::Context, name: &str, value: &Vector3<f32>) {
+        gl.uniform_3_f32(
+            gl.get_uniform_location(self.ID, name),
+            value.x,
+            value.y,
+            value.z,
         );
     }
 
     #[allow(non_snake_case)]
-    /// utility function for checking shader compilation/linking errors.
     /// ------------------------------------------------------------------------
-    unsafe fn checkCompileErrors(&self, gl: &gl::Gles2, shader: u32, type_: &str) {
-        let mut success = i32::from(gl::FALSE);
-        let mut infoLog = Vec::with_capacity(1024);
-        infoLog.set_len(1024 - 1); // subtract 1 to skip the trailing null character
-        if type_ != "PROGRAM" {
-            gl.GetShaderiv(shader, gl::COMPILE_STATUS, &mut success);
-            if success != i32::from(gl::TRUE) {
-                gl.GetShaderInfoLog(
-                    shader,
-                    1024,
-                    ptr::null_mut(),
-                    infoLog.as_mut_ptr() as *mut GLchar,
-                );
-                println!(
-                    "ERROR::SHADER_COMPILATION_ERROR of type: {}\n{}\n \
-                     -- --------------------------------------------------- -- ",
-                    type_,
-                    str::from_utf8(&infoLog).unwrap()
-                );
-            }
-        } else {
-            gl.GetProgramiv(shader, gl::LINK_STATUS, &mut success);
-            if success != i32::from(gl::TRUE) {
-                gl.GetProgramInfoLog(
-                    shader,
-                    1024,
-                    ptr::null_mut(),
-                    infoLog.as_mut_ptr() as *mut GLchar,
-                );
-                println!(
-                    "ERROR::PROGRAM_LINKING_ERROR of type: {}\n{}\n \
-                     -- --------------------------------------------------- -- ",
-                    type_,
-                    str::from_utf8(&infoLog).unwrap()
-                );
-            }
-        }
+    pub unsafe fn setVec3(&self, gl: &glow::Context, name: &str, x: f32, y: f32, z: f32) {
+        gl.uniform_3_f32(gl.get_uniform_location(self.ID, name), x, y, z);
     }
+
+    #[allow(non_snake_case)]
+    /// ------------------------------------------------------------------------
+    pub unsafe fn setMat4(&self, gl: &glow::Context, name: &str, mat: &[f32; 16]) {
+        gl.uniform_matrix_4_f32_slice(gl.get_uniform_location(self.ID, name), false, mat);
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+pub fn log(message: &str) {
+    println!("{}", message);
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = console)]
+    pub fn log(s: &str);
 }

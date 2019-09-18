@@ -1,10 +1,7 @@
 use super::{color, gui_helpers, rex::XpLayer, Console, Font, Shader, Tile, RGB};
-//use gl::types::*;
-use super::gl;
-use gl::types::*;
+//use glow::types::*;
+use glow::HasContext;
 use std::mem;
-use std::os::raw::c_void;
-use std::ptr;
 
 /// A simple console with background color.
 pub struct SimpleConsole {
@@ -24,14 +21,29 @@ pub struct SimpleConsole {
     // GL Stuff
     vertex_buffer: Vec<f32>,
     index_buffer: Vec<i32>,
+
+    #[cfg(not(target_arch = "wasm32"))]
     vbo: u32,
+
+    #[cfg(not(target_arch = "wasm32"))]
     vao: u32,
+
+    #[cfg(not(target_arch = "wasm32"))]
     ebo: u32,
+
+    #[cfg(target_arch = "wasm32")]
+    vbo: glow::WebBufferKey,
+
+    #[cfg(target_arch = "wasm32")]
+    vao: glow::WebVertexArrayKey,
+
+    #[cfg(target_arch = "wasm32")]
+    ebo: glow::WebBufferKey,
 }
 
 impl SimpleConsole {
     /// Initializes a console, ready to add to RLTK's console list.
-    pub fn init(width: u32, height: u32, gl: &gl::Gles2) -> Box<SimpleConsole> {
+    pub fn init(width: u32, height: u32, gl: &glow::Context) -> Box<SimpleConsole> {
         // Console backing init
         let num_tiles: usize = (width * height) as usize;
         let mut tiles: Vec<Tile> = Vec::with_capacity(num_tiles);
@@ -75,63 +87,147 @@ impl SimpleConsole {
     }
 
     /// Sets up the OpenGL backing.
-    fn init_gl_for_console(gl: &gl::Gles2) -> (u32, u32, u32) {
-        let mut texture = 0;
-        let (mut vbo, mut vao, mut ebo) = (0, 0, 0);
+    #[cfg(not(target_arch = "wasm32"))]
+    fn init_gl_for_console(gl: &glow::Context) -> (u32, u32, u32) {
+        let (texture, vbo, vao, ebo);
 
         unsafe {
             // Generate buffers and arrays, as well as attributes.
-            gl.GenVertexArrays(1, &mut vao);
-            gl.GenBuffers(1, &mut vbo);
-            gl.GenBuffers(1, &mut ebo);
+            vao = gl.create_vertex_array().unwrap();
+            vbo = gl.create_buffer().unwrap();
+            ebo = gl.create_buffer().unwrap();
 
-            gl.BindVertexArray(vao);
+            gl.bind_vertex_array(Some(vao));
 
-            gl.BindBuffer(gl::ARRAY_BUFFER, vbo);
+            gl.bind_buffer(glow::ARRAY_BUFFER, Some(vbo));
 
-            let stride = 11 * mem::size_of::<GLfloat>() as GLsizei;
+            let stride = 11 * mem::size_of::<f32>() as i32;
             // position attribute
-            gl.VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE, stride, ptr::null());
-            gl.EnableVertexAttribArray(0);
+            gl.vertex_attrib_pointer_f32(0, 3, glow::FLOAT, false, stride, 0);
+            gl.enable_vertex_attrib_array(0);
             // color attribute
-            gl.VertexAttribPointer(
+            gl.vertex_attrib_pointer_f32(
                 1,
                 3,
-                gl::FLOAT,
-                gl::FALSE,
+                glow::FLOAT,
+                false,
                 stride,
-                (3 * mem::size_of::<GLfloat>()) as *const c_void,
+                (3 * mem::size_of::<f32>()) as i32,
             );
-            gl.EnableVertexAttribArray(1);
+            gl.enable_vertex_attrib_array(1);
             // bgcolor attribute
-            gl.VertexAttribPointer(
+            gl.vertex_attrib_pointer_f32(
                 2,
                 3,
-                gl::FLOAT,
-                gl::FALSE,
+                glow::FLOAT,
+                false,
                 stride,
-                (6 * mem::size_of::<GLfloat>()) as *const c_void,
+                (6 * mem::size_of::<f32>()) as i32,
             );
-            gl.EnableVertexAttribArray(2);
+            gl.enable_vertex_attrib_array(2);
             // texture coord attribute
-            gl.VertexAttribPointer(
+            gl.vertex_attrib_pointer_f32(
                 3,
                 2,
-                gl::FLOAT,
-                gl::FALSE,
+                glow::FLOAT,
+                false,
                 stride,
-                (9 * mem::size_of::<GLfloat>()) as *const c_void,
+                (9 * mem::size_of::<f32>()) as i32,
             );
-            gl.EnableVertexAttribArray(3);
+            gl.enable_vertex_attrib_array(3);
 
-            gl.GenTextures(1, &mut texture);
-            gl.BindTexture(gl::TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
-                                                     // set the texture wrapping parameters
-            gl.TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT as i32); // set texture wrapping to gl::REPEAT (default wrapping method)
-            gl.TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::REPEAT as i32);
+            texture = gl.create_texture().unwrap();
+            gl.bind_texture(glow::TEXTURE_2D, Some(texture)); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
+                                                              // set the texture wrapping parameters
+            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_S, glow::REPEAT as i32); // set texture wrapping to glow::REPEAT (default wrapping method)
+            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_T, glow::REPEAT as i32);
             // set texture filtering parameters
-            gl.TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR as i32);
-            gl.TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR as i32);
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_MIN_FILTER,
+                glow::LINEAR as i32,
+            );
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_MAG_FILTER,
+                glow::LINEAR as i32,
+            );
+        };
+
+        (vbo, vao, ebo)
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    fn init_gl_for_console(
+        gl: &glow::Context,
+    ) -> (
+        glow::WebBufferKey,
+        glow::WebVertexArrayKey,
+        glow::WebBufferKey,
+    ) {
+        let (texture, vbo, vao, ebo);
+
+        unsafe {
+            // Generate buffers and arrays, as well as attributes.
+            vao = gl.create_vertex_array().unwrap();
+            vbo = gl.create_buffer().unwrap();
+            ebo = gl.create_buffer().unwrap();
+
+            gl.bind_vertex_array(Some(vao));
+
+            gl.bind_buffer(glow::ARRAY_BUFFER, Some(vbo));
+
+            let stride = 11 * mem::size_of::<f32>() as i32;
+            // position attribute
+            gl.vertex_attrib_pointer_f32(0, 3, glow::FLOAT, false, stride, 0);
+            gl.enable_vertex_attrib_array(0);
+            // color attribute
+            gl.vertex_attrib_pointer_f32(
+                1,
+                3,
+                glow::FLOAT,
+                false,
+                stride,
+                (3 * mem::size_of::<f32>()) as i32,
+            );
+            gl.enable_vertex_attrib_array(1);
+            // bgcolor attribute
+            gl.vertex_attrib_pointer_f32(
+                2,
+                3,
+                glow::FLOAT,
+                false,
+                stride,
+                (6 * mem::size_of::<f32>()) as i32,
+            );
+            gl.enable_vertex_attrib_array(2);
+            // texture coord attribute
+            gl.vertex_attrib_pointer_f32(
+                3,
+                2,
+                glow::FLOAT,
+                false,
+                stride,
+                (9 * mem::size_of::<f32>()) as i32,
+            );
+            gl.enable_vertex_attrib_array(3);
+
+            texture = gl.create_texture().unwrap();
+            gl.bind_texture(glow::TEXTURE_2D, Some(texture)); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
+                                                              // set the texture wrapping parameters
+            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_S, glow::REPEAT as i32); // set texture wrapping to glow::REPEAT (default wrapping method)
+            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_T, glow::REPEAT as i32);
+            // set texture filtering parameters
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_MIN_FILTER,
+                glow::LINEAR as i32,
+            );
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_MAG_FILTER,
+                glow::LINEAR as i32,
+            );
         };
 
         (vbo, vao, ebo)
@@ -154,7 +250,7 @@ impl SimpleConsole {
     }
 
     /// Rebuilds the OpenGL backing buffer.
-    fn rebuild_vertices(&mut self, gl: &gl::Gles2) {
+    fn rebuild_vertices(&mut self, gl: &glow::Context) {
         self.vertex_counter = 0;
         self.index_counter = 0;
         let glyph_size_x: f32 = 1.0 / 16.0;
@@ -213,20 +309,18 @@ impl SimpleConsole {
         }
 
         unsafe {
-            gl.BindBuffer(gl::ARRAY_BUFFER, self.vbo);
-            gl.BufferData(
-                gl::ARRAY_BUFFER,
-                (self.vertex_buffer.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-                &self.vertex_buffer[0] as *const f32 as *const c_void,
-                gl::STATIC_DRAW,
+            gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
+            gl.buffer_data_u8_slice(
+                glow::ARRAY_BUFFER,
+                &self.vertex_buffer.align_to::<u8>().1,
+                glow::STATIC_DRAW,
             );
 
-            gl.BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.ebo);
-            gl.BufferData(
-                gl::ELEMENT_ARRAY_BUFFER,
-                (self.index_buffer.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-                &self.index_buffer[0] as *const i32 as *const c_void,
-                gl::STATIC_DRAW,
+            gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
+            gl.buffer_data_u8_slice(
+                glow::ELEMENT_ARRAY_BUFFER,
+                &self.index_buffer.align_to::<u8>().1,
+                glow::STATIC_DRAW,
             );
         }
     }
@@ -234,7 +328,7 @@ impl SimpleConsole {
 
 impl Console for SimpleConsole {
     /// Check if the console has changed, and if it has rebuild the backing buffer.
-    fn rebuild_if_dirty(&mut self, gl: &gl::Gles2) {
+    fn rebuild_if_dirty(&mut self, gl: &glow::Context) {
         if self.is_dirty {
             self.rebuild_vertices(gl);
             self.is_dirty = false;
@@ -242,21 +336,21 @@ impl Console for SimpleConsole {
     }
 
     /// Sends the console to OpenGL.
-    fn gl_draw(&mut self, font: &Font, shader: &Shader, gl: &gl::Gles2) {
+    fn gl_draw(&mut self, font: &Font, shader: &Shader, gl: &glow::Context) {
         unsafe {
             // bind Texture
             font.bind_texture(gl);
 
             // render container
             shader.useProgram(gl);
-            gl.BindVertexArray(self.vao);
-            gl.BindBuffer(gl::ELEMENT_ARRAY_BUFFER, self.ebo);
-            gl.BindBuffer(gl::ARRAY_BUFFER, self.vbo);
-            gl.DrawElements(
-                gl::TRIANGLES,
+            gl.bind_vertex_array(Some(self.vao));
+            gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
+            gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
+            gl.draw_elements(
+                glow::TRIANGLES,
                 (self.width * self.height * 6) as i32,
-                gl::UNSIGNED_INT,
-                ptr::null(),
+                glow::UNSIGNED_INT,
+                0,
             );
         }
         self.is_dirty = false;

@@ -6,8 +6,8 @@
 // Comments that duplicate previous examples have been removed for brevity.
 //////////////////////////////////////////////////////////////
 
-extern crate rltk;
 use rltk::{Algorithm2D, BaseMap, Console, DijkstraMap, DistanceAlg, GameState, Point, Rltk, RGB};
+rltk::add_wasm_support!();
 
 extern crate rand;
 use crate::rand::Rng;
@@ -146,7 +146,7 @@ impl GameState for State {
         // Iterate the map array, incrementing coordinates as we go.
         let mut y = 0;
         let mut x = 0;
-        for (i,tile) in self.map.tiles.iter().enumerate() {
+        for (i, tile) in self.map.tiles.iter().enumerate() {
             // New test: only render if its revealed
             let bg;
             let distance = self.flow_map.map[i];

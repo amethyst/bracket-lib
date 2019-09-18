@@ -1,4 +1,3 @@
-use super::gl;
 use super::{rex::XpLayer, Font, Shader, RGB};
 
 /// The internal storage type for tiles in a simple console.
@@ -12,10 +11,10 @@ pub struct Tile {
 /// Trait that must be implemented by console types.
 pub trait Console {
     /// Check to see if the internal OpenGL representation needs to be rebuilt, and do so if required.
-    fn rebuild_if_dirty(&mut self, gl: &gl::Gles2);
+    fn rebuild_if_dirty(&mut self, gl: &glow::Context);
 
     /// Tells the console to draw itself via OpenGL.
-    fn gl_draw(&mut self, font: &Font, shader: &Shader, gl: &gl::Gles2);
+    fn gl_draw(&mut self, font: &Font, shader: &Shader, gl: &glow::Context);
 
     /// Converts an x/y coordinate to a console index number.
     fn at(&self, x: i32, y: i32) -> usize;

@@ -1,5 +1,4 @@
-extern crate rltk;
-
+rltk::add_wasm_support!();
 use rltk::{to_cp437, Console, GameState, Rltk, RGB};
 
 struct State {}

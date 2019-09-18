@@ -3,7 +3,7 @@
 // Comments that duplicate previous examples have been removed for brevity.
 //////////////////////////////////////////////////////////////
 
-extern crate rltk;
+rltk::add_wasm_support!();
 use rltk::{
     Algorithm2D, BaseMap, Console, DistanceAlg, GameState, Point, Rltk, VirtualKeyCode, RGB,
 };
@@ -130,7 +130,7 @@ impl GameState for State {
         // Iterate the map array, incrementing coordinates as we go.
         let mut y = 0;
         let mut x = 0;
-        for (i,tile) in self.map.iter().enumerate() {
+        for (i, tile) in self.map.iter().enumerate() {
             // Render a tile depending upon the tile type; now we check visibility as well!
             let mut fg = RGB::from_f32(1.0, 1.0, 1.0);
             let glyph: u8;
@@ -202,12 +202,14 @@ impl Algorithm2D for State {
     }
 }
 
+rltk::embedded_resource!(TILE_FONT, "../resources/example_tiles.jpg");
+
 fn main() {
+    rltk::link_resource!(TILE_FONT, "resources/example_tiles.jpg");
     let mut context = Rltk::init_raw(
         WIDTH as u32 * 16,
         HEIGHT as u32 * 16,
         "RLTK Example 07 - Tiles",
-        "resources",
     );
     let font = context.register_font(rltk::Font::load("resources/example_tiles.jpg", (16, 16)));
     context.register_console(

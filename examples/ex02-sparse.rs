@@ -5,6 +5,7 @@
 //////////////////////////////////////////////////////////////
 
 // We're utilizing functionality from RLTK, so we need to tell it to use the crate.
+rltk::add_wasm_support!();
 extern crate rltk;
 
 // We're using Rltk (the main context) and GameState (a trait defining what our callback

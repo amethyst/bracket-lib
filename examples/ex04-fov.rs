@@ -3,7 +3,7 @@
 // Comments that duplicate previous examples have been removed for brevity.
 //////////////////////////////////////////////////////////////
 
-extern crate rltk;
+rltk::add_wasm_support!();
 use rltk::{Algorithm2D, BaseMap, Console, GameState, Point, Rltk, VirtualKeyCode, RGB};
 
 extern crate rand;

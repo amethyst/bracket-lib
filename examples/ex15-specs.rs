@@ -1,6 +1,5 @@
-extern crate rltk;
+rltk::add_wasm_support!();
 use rltk::{Console, GameState, Rltk, VirtualKeyCode, RGB};
-extern crate specs;
 use specs::prelude::*;
 
 // Define a bunch of components

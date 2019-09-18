@@ -1,5 +1,4 @@
-extern crate rltk;
-
+rltk::add_wasm_support!();
 use rltk::{Console, FastNoise, FractalType, GameState, NoiseType, Rltk, RGB};
 
 struct State {
