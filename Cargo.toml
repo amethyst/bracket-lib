@@ -31,7 +31,7 @@ rand = "0.7.2"
 
 [target.wasm32-unknown-unknown.dependencies]
 web-sys = { version = "0.3", features=["console", "Attr", "CanvasRenderingContext2d", "Document", "Element", "Event",
-    "EventTarget", "HtmlCanvasElement", "HtmlElement", "HtmlInputElement", "Node", "Text", "Window"] }
+    "EventTarget", "HtmlCanvasElement", "HtmlElement", "HtmlInputElement", "Node", "Text", "Window", "KeyboardEvent"] }
 wasm-bindgen = "0.2"
 wasm-timer = "0.1.0"
 rand = { version = "0.7.2", features = ["wasm-bindgen"] }

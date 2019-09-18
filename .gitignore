@@ -3,5 +3,4 @@
 Cargo.lock
 **/target
 webglbuild.bat
-**/out/*
-**/stage/*
+wasm_help/staging

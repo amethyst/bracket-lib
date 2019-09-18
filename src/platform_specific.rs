@@ -1,5 +1,8 @@
 use super::{framebuffer::Framebuffer, quadrender, GameState, Rltk, Shader, shader_strings};
 
+#[cfg(target_arch = "wasm32")]
+use std::sync::{Arc, Mutex};
+
 #[cfg(not(target_arch = "wasm32"))]
 use glutin::{
     dpi::LogicalSize, event::Event, event::WindowEvent, event_loop::ControlFlow,
@@ -340,7 +343,10 @@ pub fn init_raw<S: ToString>(
     height_pixels: u32,
     window_title: S
 ) -> Rltk {
+    use wasm_bindgen::prelude::*;
     use wasm_bindgen::JsCast;
+    use glow::HasRenderLoop;
+
     let canvas = web_sys::window()
         .unwrap()
         .document()
@@ -351,6 +357,17 @@ pub fn init_raw<S: ToString>(
         .unwrap();
     canvas.set_width(width_pixels);
     canvas.set_height(height_pixels);
+
+    //super::shader::log("Starting callbacks");
+    let callback = Closure::wrap(Box::new(|e: web_sys::KeyboardEvent| {
+        on_key(e.clone());
+    }) as Box<dyn FnMut(_)>);
+
+    let document = web_sys::window()
+        .unwrap();
+    document.set_onkeydown(Some(callback.as_ref().unchecked_ref()));;
+
+    callback.forget();
 
     let webgl2_context = canvas
         .get_context("webgl2")
@@ -409,13 +426,36 @@ pub fn init_raw<S: ToString>(
         backing_buffer: backing_fbo,
         quad_vao,
         post_scanlines: false,
-        post_screenburn: false,
+        post_screenburn: false
     }
 }
 
 // WASM version of main loop
 #[cfg(target_arch = "wasm32")]
-pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
+static mut GLOBAL_KEY : Option<VirtualKeyCode> = None;
+
+#[cfg(target_arch = "wasm32")]
+fn on_key(key : web_sys::KeyboardEvent) {
+    //super::shader::log("Key Event");
+    unsafe {
+        let code = key.key_code();
+        match (code) {
+            37 => GLOBAL_KEY = Some(VirtualKeyCode::Left),
+            38 => GLOBAL_KEY = Some(VirtualKeyCode::Up),
+            39 => GLOBAL_KEY = Some(VirtualKeyCode::Right),
+            40 => GLOBAL_KEY = Some(VirtualKeyCode::Down),
+            _ => {
+                GLOBAL_KEY = None;
+                super::shader::log(&format!("Keycode: {}", code));
+            }
+        }
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) { 
+    use wasm_bindgen::prelude::*;
+    use wasm_bindgen::JsCast;
     use glow::HasRenderLoop;
 
     let now = wasm_timer::Instant::now();
@@ -423,13 +463,14 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     let mut prev_ms = now.elapsed().as_millis();
     let mut frames = 0;
 
-    // We're doing a little dance here to get around lifetime/borrow checking.
-    // Removing the context data from RLTK in an atomic swap, so it isn't borrowed after move.
-    let wrap = std::mem::replace(&mut rltk.context_wrapper, None);
-    let unwrap = wrap.unwrap();
-
     let render_loop = glow::RenderLoop::from_request_animation_frame();
-    render_loop.run(move |running: &mut bool| {
+    render_loop.run(move |running: &mut bool| {        
+        // Read in event results
+        unsafe {
+            rltk.key = GLOBAL_KEY;
+        }
+
+        // Call the tock function
         tock(
             &mut rltk,
             &mut gamestate,
@@ -438,6 +479,14 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
             &mut prev_ms,
             &now,
         );
+
+        // Clear any input
+        rltk.left_click = false;
+        rltk.key = None;
+        unsafe {
+            GLOBAL_KEY = None;
+        }
+
     });
 }
 

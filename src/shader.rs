@@ -61,6 +61,8 @@ impl Shader {
             }
         }
 
+        //log("Shaders Compiled");
+
         shader
     }
 
@@ -115,7 +117,7 @@ impl Shader {
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-fn log(message : &str) {
+pub fn log(message : &str) {
     println!("{}", message);
 }
 
@@ -123,5 +125,5 @@ fn log(message : &str) {
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
+    pub fn log(s: &str);
 }
