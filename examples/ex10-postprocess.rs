@@ -1,5 +1,4 @@
-extern crate rltk;
-
+rltk::add_wasm_support!();
 use rltk::{rex::XpFile, Console, GameState, Rltk, VirtualKeyCode, RGB};
 use std::fs::File;
 

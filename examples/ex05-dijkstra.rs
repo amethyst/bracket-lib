@@ -6,21 +6,14 @@
 // Comments that duplicate previous examples have been removed for brevity.
 //////////////////////////////////////////////////////////////
 
-extern crate rltk;
 use rltk::{Algorithm2D, BaseMap, Console, DijkstraMap, DistanceAlg, GameState, Point, Rltk, RGB};
+rltk::add_wasm_support!();
 
 extern crate rand;
 use crate::rand::Rng;
 
 use std::f32::MAX;
 
-#[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::*;
-
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen(start))]
-pub fn wasm_main() {
-    main();
-}
 
 #[derive(PartialEq, Copy, Clone)]
 enum TileType {

@@ -4,7 +4,7 @@
 // Comments that duplicate previous examples have been removed for brevity.
 //////////////////////////////////////////////////////////////
 
-extern crate rltk;
+rltk::add_wasm_support!();
 use rltk::{
     Algorithm3D, BaseMap, Console, DistanceAlg, FastNoise, FractalType, GameState, NoiseType,
     Point3, Rltk, RGB,

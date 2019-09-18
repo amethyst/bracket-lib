@@ -4,15 +4,8 @@
 // Comments that duplicate previous examples have been removed for brevity.
 //////////////////////////////////////////////////////////////
 
+rltk::add_wasm_support!();
 use rltk::{Console, GameState, Rltk, VirtualKeyCode, RGB};
-
-#[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::*;
-
-#[cfg_attr(target_arch = "wasm32", wasm_bindgen(start))]
-pub fn wasm_main() {
-    main();
-}
 
 // We'll allow map tiles to be either a wall or a floor. We're deriving PartialEq so we don't
 // have to match on it every time. We'll make it a copy type because it's really just an int.

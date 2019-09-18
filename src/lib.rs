@@ -35,6 +35,20 @@ pub use self::textblock::{TextBlock, TextBuilder};
 pub mod platform_specific;
 pub mod shader_strings;
 
+#[macro_export]
+macro_rules! add_wasm_support {
+    () => {
+        #[cfg(target_arch = "wasm32")]
+        use wasm_bindgen::prelude::*;
+
+        #[cfg(target_arch = "wasm32")]
+        #[cfg_attr(target_arch = "wasm32", wasm_bindgen(start))]
+        pub fn wasm_main() {
+            main();
+        }
+    };
+}
+
 #[cfg(not(target_arch = "wasm32"))]
 pub use glutin::event::VirtualKeyCode;
 
