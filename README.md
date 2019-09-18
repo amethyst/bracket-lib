@@ -56,6 +56,8 @@ fn main() {
 
 Run this example with `cargo run --example ex01-helloworld` from the root of the cloned repository.
 
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex01/)
+
 ### Example 2: Multiple console layers
 
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE02.gif)
@@ -63,6 +65,8 @@ Run this example with `cargo run --example ex01-helloworld` from the root of the
 [Example 2 - Sparse Layers](examples/ex02-sparse.rs) is very similar to example 1, but it adds an additional layer - in a VGA 8x16 font, and renders the FPS and frame rate to it. This illustrates how easy it is to work with layers in RLTK.
 
 Run this example with `cargo run --example ex02-sparse` from the root of the cloned repository.
+
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex02/)
 
 ### Example 3: Walking around
 
@@ -72,6 +76,8 @@ Run this example with `cargo run --example ex02-sparse` from the root of the clo
 
 Run this example with `cargo run --example ex03-walking` from the root of the cloned repository.
 
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex03/)
+
 ### Example 4: Field of view
 
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE04.gif)
@@ -79,6 +85,8 @@ Run this example with `cargo run --example ex03-walking` from the root of the cl
 [Example 4 - Field of View/FOV](examples/ex04-fov.rs) takes example 3, and adds field-of-view. To do this, it implements some traits from the RLTK library that allow it to provide helpers such as this.
 
 Run this example with `cargo run --example ex04-fov` from the root of the cloned repository.
+
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex04/)
 
 ### Example 5: Auto-explore with Dijkstra Flow Maps
 
@@ -88,6 +96,8 @@ Run this example with `cargo run --example ex04-fov` from the root of the cloned
 
 Run this example with `cargo run --example ex05-dijkstra --release` from the root of the cloned repository. (The `--release` tells it to optimize the build; it's pretty slow without optimizations)
 
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex05/)
+
 ### Example 6: A-Star pathing and mouse control
 
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE06.gif)
@@ -96,6 +106,8 @@ Run this example with `cargo run --example ex05-dijkstra --release` from the roo
 
 Run this example with `cargo run --example ex06-astar-mouse` from the root of the cloned repository.
 
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex06/)
+
 ### Example 7: Layered Tiles
 
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE07.gif)
@@ -103,6 +115,8 @@ Run this example with `cargo run --example ex06-astar-mouse` from the root of th
 [Example 7 - Tiles](examples/ex07-tiles.rs) shows how you can use the font system for tiles. It creates two layers with the same font; the base layer is used for the map, and the second layer is drawn in "no background" mode to seamlessly overlay sprites atop the map without ugly borders. It uses the FOV code from example 4 to show how to recolor sprites, and uses a distance function to give a lighting effect.
 
 Run this example with `cargo run --example ex07-tiles` from the root of the cloned repository.
+
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex07/)
 
 ### Example 8: REX Paint Support
 
@@ -113,6 +127,8 @@ GridSageGames' excellent [REX Paint](https://www.gridsagegames.com/rexpaint/)), 
 
 Run this example with `cargo run --example ex08-rex` from the root of the cloned repository.
 
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex08/)
+
 ### Example 9: Layer Offsets
 
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE09.jpg)
@@ -120,6 +136,8 @@ Run this example with `cargo run --example ex08-rex` from the root of the cloned
 [Example 9 - Offsets](examples/ex09-offsets.rs) demonstrates the ability to call `set_offset` on a console layer, to nudge it in a direction. In this case, it is used to render thin walls *between* the major tiles.
 
 Run this example with `cargo run --example ex09-offsets` from the root of the cloned repository.
+
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex09/)
 
 ### Example 10: Post Process Effects
 
@@ -129,6 +147,8 @@ Run this example with `cargo run --example ex09-offsets` from the root of the cl
 
 Run this example with `cargo run --example ex10-postprocess` from the root of the cloned repository.
 
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex10/)
+
 ### Example 11: Dice Rolling
 
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE11.gif)
@@ -137,6 +157,8 @@ Run this example with `cargo run --example ex10-postprocess` from the root of th
 
 Run this example with `cargo run --example ex11-random` from the root of the cloned repository.
 
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex11/)
+
 ### Example 12: Simplex Noise
 
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE12.gif)
@@ -144,6 +166,8 @@ Run this example with `cargo run --example ex11-random` from the root of the clo
 [Example 12 - Simplex Noise](examples/ex12-simplex.rs) demonstrates the port of [Auburn's FastNoise library](https://github.com/Auburns/FastNoise) to Rust (included in RLTK, because every Roguelike tooklit should have noise). It cycles through seeds and regenerates the terrain periodically.
 
 Run this example with `cargo run --example ex12-simplex` from the root of the cloned repository.
+
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex12/)
 
 ### Example 13: Formatting blocks
 
@@ -154,6 +178,8 @@ and then rendering them together. This is useful for large amounts of text.
 
 Run this example with `cargo run --example ex13-textblock` from the root of the cloned repository.
 
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex13/)
+
 ### Example 14: Dwarf Fortress-Style 3D
 
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE14.gif)
@@ -162,8 +188,12 @@ Run this example with `cargo run --example ex13-textblock` from the root of the 
 
 Run this example with `cargo run --example ex14-dwarfmap` from the root of the cloned repository.
 
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex14/)
+
 ### Example 15: SPECS
 
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE15.gif)
 
 [Example 15 - SPECS](examples/ex15-specs.rs) uses the Entity Component System SPECS, alongside RLTK, to implement the old DOS game *Bouncing Babies*. It illustrates how to setup SPECS and do very simple integration to render a simple console-based game.
+
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex15/)
