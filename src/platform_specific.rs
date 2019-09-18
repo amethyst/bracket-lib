@@ -358,16 +358,32 @@ pub fn init_raw<S: ToString>(
     canvas.set_width(width_pixels);
     canvas.set_height(height_pixels);
 
-    //super::shader::log("Starting callbacks");
-    let callback = Closure::wrap(Box::new(|e: web_sys::KeyboardEvent| {
+    // Handle keyboard input
+    let key_callback = Closure::wrap(Box::new(|e: web_sys::KeyboardEvent| {
         on_key(e.clone());
     }) as Box<dyn FnMut(_)>);
 
     let document = web_sys::window()
         .unwrap();
-    document.set_onkeydown(Some(callback.as_ref().unchecked_ref()));;
+    document.set_onkeydown(Some(key_callback.as_ref().unchecked_ref()));;
+    key_callback.forget();
 
-    callback.forget();
+    // Handle mouse moving
+    let mousemove_callback = Closure::wrap(Box::new(|e: web_sys::MouseEvent| {
+        on_mouse_move(e.clone());
+    }) as Box<dyn FnMut(_)>);
+
+    canvas.set_onmousemove(Some(mousemove_callback.as_ref().unchecked_ref()));;
+    mousemove_callback.forget();
+
+    // Handle mouse clicking
+    let mouseclick_callback = Closure::wrap(Box::new(|e: web_sys::MouseEvent| {
+        on_mouse_down(e.clone());
+    }) as Box<dyn FnMut(_)>);
+
+    canvas.set_onmousedown(Some(mouseclick_callback.as_ref().unchecked_ref()));;
+    mouseclick_callback.forget();
+
 
     let webgl2_context = canvas
         .get_context("webgl2")
@@ -453,6 +469,26 @@ fn on_key(key : web_sys::KeyboardEvent) {
 }
 
 #[cfg(target_arch = "wasm32")]
+static mut GLOBAL_MOUSE_POS : (i32, i32) = (0,0);
+
+#[cfg(target_arch = "wasm32")]
+fn on_mouse_move(mouse : web_sys::MouseEvent) {
+    unsafe {
+        GLOBAL_MOUSE_POS = ( mouse.offset_x(), mouse.offset_y() );
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+static mut GLOBAL_LEFT_CLICK : bool = false;
+
+#[cfg(target_arch = "wasm32")]
+fn on_mouse_down(mouse : web_sys::MouseEvent) {
+    unsafe {
+        GLOBAL_LEFT_CLICK = true;
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
 pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) { 
     use wasm_bindgen::prelude::*;
     use wasm_bindgen::JsCast;
@@ -468,6 +504,8 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
         // Read in event results
         unsafe {
             rltk.key = GLOBAL_KEY;
+            rltk.mouse_pos = ( GLOBAL_MOUSE_POS.0, GLOBAL_MOUSE_POS.1 );
+            rltk.left_click = GLOBAL_LEFT_CLICK;
         }
 
         // Call the tock function
@@ -485,6 +523,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
         rltk.key = None;
         unsafe {
             GLOBAL_KEY = None;
+            GLOBAL_LEFT_CLICK = false;
         }
 
     });
