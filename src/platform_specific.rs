@@ -1,8 +1,5 @@
 use super::{framebuffer::Framebuffer, quadrender, shader_strings, GameState, Rltk, Shader};
 
-#[cfg(target_arch = "wasm32")]
-use std::sync::{Arc, Mutex};
-
 #[cfg(not(target_arch = "wasm32"))]
 use glutin::{
     dpi::LogicalSize, event::Event, event::WindowEvent, event_loop::ControlFlow,
@@ -11,6 +8,7 @@ use glutin::{
 
 use glow::HasContext;
 
+#[cfg(not(target_arch = "wasm32"))]
 use std::time::Instant;
 
 // Glutin version:
@@ -332,8 +330,7 @@ fn tock<GS: GameState>(
 
 // wasm version of initialization
 #[cfg(target_arch = "wasm32")]
-pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, window_title: S) -> Rltk {
-    use glow::HasRenderLoop;
+pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, _window_title: S) -> Rltk {
     use wasm_bindgen::prelude::*;
     use wasm_bindgen::JsCast;
 
@@ -446,7 +443,7 @@ fn on_key(key: web_sys::KeyboardEvent) {
     //super::shader::log("Key Event");
     unsafe {
         let code = key.key_code();
-        match (code) {
+        match code {
             8 => GLOBAL_KEY = Some(VirtualKeyCode::Back),
             9 => GLOBAL_KEY = Some(VirtualKeyCode::Tab),
             13 => GLOBAL_KEY = Some(VirtualKeyCode::Return),
@@ -543,7 +540,7 @@ fn on_mouse_move(mouse: web_sys::MouseEvent) {
 static mut GLOBAL_LEFT_CLICK: bool = false;
 
 #[cfg(target_arch = "wasm32")]
-fn on_mouse_down(mouse: web_sys::MouseEvent) {
+fn on_mouse_down(_mouse: web_sys::MouseEvent) {
     unsafe {
         GLOBAL_LEFT_CLICK = true;
     }
@@ -552,8 +549,6 @@ fn on_mouse_down(mouse: web_sys::MouseEvent) {
 #[cfg(target_arch = "wasm32")]
 pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     use glow::HasRenderLoop;
-    use wasm_bindgen::prelude::*;
-    use wasm_bindgen::JsCast;
 
     let now = wasm_timer::Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
@@ -561,7 +556,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     let mut frames = 0;
 
     let render_loop = glow::RenderLoop::from_request_animation_frame();
-    render_loop.run(move |running: &mut bool| {
+    render_loop.run(move |_running: &mut bool| {
         // Read in event results
         unsafe {
             rltk.key = GLOBAL_KEY;
