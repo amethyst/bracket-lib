@@ -26,12 +26,12 @@ impl Framebuffer {
             gl.tex_image_2d(
                 glow::TEXTURE_2D,
                 0,
-                glow::RGB16F as i32,
+                glow::RGBA as i32,
                 width,
                 height,
                 0,
-                glow::RGB,
-                glow::FLOAT,
+                glow::RGBA,
+                glow::UNSIGNED_BYTE,
                 None,
             );
             gl.tex_parameter_i32(

@@ -391,6 +391,7 @@ pub fn init_raw<S: ToString>(
         .unwrap()
         .dyn_into::<web_sys::WebGl2RenderingContext>()
         .unwrap();
+    webgl2_context.get_extension("EXT_color_buffer_float").expect("Unable to add extensions");
 
     let gl = glow::Context::from_webgl2_context(webgl2_context);
 
