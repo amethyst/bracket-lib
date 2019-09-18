@@ -28,7 +28,7 @@ pub struct SparseConsole {
     // GL Stuff
     vertex_buffer: Vec<f32>,
     index_buffer: Vec<i32>,
-    
+
     #[cfg(not(target_arch = "wasm32"))]
     vbo: u32,
 
@@ -127,7 +127,13 @@ impl SparseConsole {
     }
 
     #[cfg(target_arch = "wasm32")]
-    fn init_gl_for_console(gl: &glow::Context) -> (glow::WebBufferKey, glow::WebVertexArrayKey, glow::WebBufferKey) {
+    fn init_gl_for_console(
+        gl: &glow::Context,
+    ) -> (
+        glow::WebBufferKey,
+        glow::WebVertexArrayKey,
+        glow::WebBufferKey,
+    ) {
         let (vbo, vao, ebo);
 
         unsafe {

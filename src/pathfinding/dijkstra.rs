@@ -96,8 +96,7 @@ impl DijkstraMap {
     }
 
     #[cfg(target_arch = "wasm32")]
-    fn build_helper(dm: &mut DijkstraMap, starts: &[i32], map: &dyn BaseMap) {
-    }
+    fn build_helper(dm: &mut DijkstraMap, starts: &[i32], map: &dyn BaseMap) {}
 
     /// Builds the Dijkstra map: iterate from each starting point, to each exit provided by BaseMap's
     /// exits implementation. Each step adds cost to the current depth, and is discarded if the new

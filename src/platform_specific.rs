@@ -1,4 +1,4 @@
-use super::{framebuffer::Framebuffer, quadrender, GameState, Rltk, Shader, shader_strings};
+use super::{framebuffer::Framebuffer, quadrender, shader_strings, GameState, Rltk, Shader};
 
 #[cfg(target_arch = "wasm32")]
 use std::sync::{Arc, Mutex};
@@ -24,16 +24,11 @@ pub struct WrappedContext {
 }
 
 #[cfg(target_arch = "wasm32")]
-pub struct WrappedContext {
-}
+pub struct WrappedContext {}
 
 // Glutin version of initialization
 #[cfg(not(target_arch = "wasm32"))]
-pub fn init_raw<S: ToString>(
-    width_pixels: u32,
-    height_pixels: u32,
-    window_title: S
-) -> Rltk {
+pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, window_title: S) -> Rltk {
     let el = EventLoop::new();
     let wb = WindowBuilder::new()
         .with_title(window_title.to_string())
@@ -58,22 +53,22 @@ pub fn init_raw<S: ToString>(
     shaders.push(Shader::new(
         &gl,
         shader_strings::CONSOLE_WITH_BG_VS,
-        shader_strings::CONSOLE_WITH_BG_FS
+        shader_strings::CONSOLE_WITH_BG_FS,
     ));
     shaders.push(Shader::new(
         &gl,
         shader_strings::CONSOLE_NO_BG_VS,
-        shader_strings::CONSOLE_NO_BG_FS
+        shader_strings::CONSOLE_NO_BG_FS,
     ));
     shaders.push(Shader::new(
-        &gl, 
+        &gl,
         shader_strings::BACKING_VS,
-        shader_strings::BACKING_FS
+        shader_strings::BACKING_FS,
     ));
     shaders.push(Shader::new(
         &gl,
         shader_strings::SCANLINES_VS,
-        shader_strings::SCANLINES_FS
+        shader_strings::SCANLINES_FS,
     ));
 
     // Build the backing frame-buffer
@@ -103,7 +98,7 @@ pub fn init_raw<S: ToString>(
         backing_buffer: backing_fbo,
         quad_vao,
         post_scanlines: false,
-        post_screenburn: false
+        post_screenburn: false,
     }
 }
 
@@ -335,17 +330,12 @@ fn tock<GS: GameState>(
     }
 }
 
-
 // wasm version of initialization
 #[cfg(target_arch = "wasm32")]
-pub fn init_raw<S: ToString>(
-    width_pixels: u32,
-    height_pixels: u32,
-    window_title: S
-) -> Rltk {
+pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, window_title: S) -> Rltk {
+    use glow::HasRenderLoop;
     use wasm_bindgen::prelude::*;
     use wasm_bindgen::JsCast;
-    use glow::HasRenderLoop;
 
     let canvas = web_sys::window()
         .unwrap()
@@ -363,8 +353,7 @@ pub fn init_raw<S: ToString>(
         on_key(e.clone());
     }) as Box<dyn FnMut(_)>);
 
-    let document = web_sys::window()
-        .unwrap();
+    let document = web_sys::window().unwrap();
     document.set_onkeydown(Some(key_callback.as_ref().unchecked_ref()));;
     key_callback.forget();
 
@@ -384,14 +373,15 @@ pub fn init_raw<S: ToString>(
     canvas.set_onmousedown(Some(mouseclick_callback.as_ref().unchecked_ref()));;
     mouseclick_callback.forget();
 
-
     let webgl2_context = canvas
         .get_context("webgl2")
         .unwrap()
         .unwrap()
         .dyn_into::<web_sys::WebGl2RenderingContext>()
         .unwrap();
-    webgl2_context.get_extension("EXT_color_buffer_float").expect("Unable to add extensions");
+    webgl2_context
+        .get_extension("EXT_color_buffer_float")
+        .expect("Unable to add extensions");
 
     let gl = glow::Context::from_webgl2_context(webgl2_context);
 
@@ -401,22 +391,22 @@ pub fn init_raw<S: ToString>(
     shaders.push(Shader::new(
         &gl,
         shader_strings::CONSOLE_WITH_BG_VS,
-        shader_strings::CONSOLE_WITH_BG_FS
+        shader_strings::CONSOLE_WITH_BG_FS,
     ));
     shaders.push(Shader::new(
         &gl,
         shader_strings::CONSOLE_NO_BG_VS,
-        shader_strings::CONSOLE_NO_BG_FS
+        shader_strings::CONSOLE_NO_BG_FS,
     ));
     shaders.push(Shader::new(
-        &gl, 
+        &gl,
         shader_strings::BACKING_VS,
-        shader_strings::BACKING_FS
+        shader_strings::BACKING_FS,
     ));
     shaders.push(Shader::new(
         &gl,
         shader_strings::SCANLINES_VS,
-        shader_strings::SCANLINES_FS
+        shader_strings::SCANLINES_FS,
     ));
 
     // Build the backing frame-buffer
@@ -443,16 +433,16 @@ pub fn init_raw<S: ToString>(
         backing_buffer: backing_fbo,
         quad_vao,
         post_scanlines: false,
-        post_screenburn: false
+        post_screenburn: false,
     }
 }
 
 // WASM version of main loop
 #[cfg(target_arch = "wasm32")]
-static mut GLOBAL_KEY : Option<VirtualKeyCode> = None;
+static mut GLOBAL_KEY: Option<VirtualKeyCode> = None;
 
 #[cfg(target_arch = "wasm32")]
-fn on_key(key : web_sys::KeyboardEvent) {
+fn on_key(key: web_sys::KeyboardEvent) {
     //super::shader::log("Key Event");
     unsafe {
         let code = key.key_code();
@@ -470,30 +460,30 @@ fn on_key(key : web_sys::KeyboardEvent) {
 }
 
 #[cfg(target_arch = "wasm32")]
-static mut GLOBAL_MOUSE_POS : (i32, i32) = (0,0);
+static mut GLOBAL_MOUSE_POS: (i32, i32) = (0, 0);
 
 #[cfg(target_arch = "wasm32")]
-fn on_mouse_move(mouse : web_sys::MouseEvent) {
+fn on_mouse_move(mouse: web_sys::MouseEvent) {
     unsafe {
-        GLOBAL_MOUSE_POS = ( mouse.offset_x(), mouse.offset_y() );
+        GLOBAL_MOUSE_POS = (mouse.offset_x(), mouse.offset_y());
     }
 }
 
 #[cfg(target_arch = "wasm32")]
-static mut GLOBAL_LEFT_CLICK : bool = false;
+static mut GLOBAL_LEFT_CLICK: bool = false;
 
 #[cfg(target_arch = "wasm32")]
-fn on_mouse_down(mouse : web_sys::MouseEvent) {
+fn on_mouse_down(mouse: web_sys::MouseEvent) {
     unsafe {
         GLOBAL_LEFT_CLICK = true;
     }
 }
 
 #[cfg(target_arch = "wasm32")]
-pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) { 
+pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
+    use glow::HasRenderLoop;
     use wasm_bindgen::prelude::*;
     use wasm_bindgen::JsCast;
-    use glow::HasRenderLoop;
 
     let now = wasm_timer::Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
@@ -501,11 +491,11 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     let mut frames = 0;
 
     let render_loop = glow::RenderLoop::from_request_animation_frame();
-    render_loop.run(move |running: &mut bool| {        
+    render_loop.run(move |running: &mut bool| {
         // Read in event results
         unsafe {
             rltk.key = GLOBAL_KEY;
-            rltk.mouse_pos = ( GLOBAL_MOUSE_POS.0, GLOBAL_MOUSE_POS.1 );
+            rltk.mouse_pos = (GLOBAL_MOUSE_POS.0, GLOBAL_MOUSE_POS.1);
             rltk.left_click = GLOBAL_LEFT_CLICK;
         }
 
@@ -526,7 +516,6 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
             GLOBAL_KEY = None;
             GLOBAL_LEFT_CLICK = false;
         }
-
     });
 }
 

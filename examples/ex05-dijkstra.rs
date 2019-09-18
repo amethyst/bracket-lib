@@ -14,7 +14,6 @@ use crate::rand::Rng;
 
 use std::f32::MAX;
 
-
 #[derive(PartialEq, Copy, Clone)]
 enum TileType {
     Wall,

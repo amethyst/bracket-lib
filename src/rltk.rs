@@ -1,7 +1,7 @@
 use super::GameState;
 use super::{
     font, framebuffer::Framebuffer, platform_specific, rex::XpFile, rex::XpLayer, Console, Shader,
-    SimpleConsole, VirtualKeyCode, RGB
+    SimpleConsole, VirtualKeyCode, RGB,
 };
 
 /// A display console, used internally to provide console render support.
@@ -37,16 +37,12 @@ pub struct Rltk {
     pub quad_vao: glow::WebVertexArrayKey,
 
     pub post_scanlines: bool,
-    pub post_screenburn: bool
+    pub post_screenburn: bool,
 }
 
 impl Rltk {
     /// Initializes an OpenGL context and a window, stores the info in the Rltk structure.
-    pub fn init_raw<S: ToString>(
-        width_pixels: u32,
-        height_pixels: u32,
-        window_title: S
-    ) -> Rltk {
+    pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, window_title: S) -> Rltk {
         platform_specific::init_raw(width_pixels, height_pixels, window_title)
     }
 
@@ -58,11 +54,7 @@ impl Rltk {
         path_to_shaders: S,
     ) -> Rltk {
         let font_path = format!("{}/terminal8x8.jpg", &path_to_shaders.to_string());
-        let mut context = Rltk::init_raw(
-            width_chars * 8,
-            height_chars * 8,
-            window_title
-        );
+        let mut context = Rltk::init_raw(width_chars * 8, height_chars * 8, window_title);
         let font = context.register_font(font::Font::load(&font_path.to_string(), (8, 8)));
         context.register_console(
             SimpleConsole::init(width_chars, height_chars, &context.gl),
@@ -79,11 +71,7 @@ impl Rltk {
         path_to_shaders: S,
     ) -> Rltk {
         let font_path = format!("{}/vga8x16.jpg", &path_to_shaders.to_string());
-        let mut context = Rltk::init_raw(
-            width_chars * 8,
-            height_chars * 16,
-            window_title
-        );
+        let mut context = Rltk::init_raw(width_chars * 8, height_chars * 16, window_title);
         let font = context.register_font(font::Font::load(&font_path.to_string(), (8, 16)));
         context.register_console(
             SimpleConsole::init(width_chars, height_chars, &context.gl),

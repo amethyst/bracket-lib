@@ -1,5 +1,5 @@
 #[cfg(not(target_arch = "wasm32"))]
-pub static BACKING_FS : &str = r#"#version 330 core
+pub static BACKING_FS: &str = r#"#version 330 core
 out vec4 FragColor;
 
 in vec2 TexCoords;
@@ -13,7 +13,7 @@ void main()
 }"#;
 
 #[cfg(not(target_arch = "wasm32"))]
-pub static BACKING_VS : &str = r#"#version 330 core
+pub static BACKING_VS: &str = r#"#version 330 core
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec2 aTexCoords;
 
@@ -27,7 +27,7 @@ void main()
 "#;
 
 #[cfg(not(target_arch = "wasm32"))]
-pub static CONSOLE_NO_BG_FS : &str = r#"#version 330 core
+pub static CONSOLE_NO_BG_FS: &str = r#"#version 330 core
 out vec4 FragColor;
 
 in vec3 ourColor;
@@ -47,7 +47,7 @@ void main()
 "#;
 
 #[cfg(not(target_arch = "wasm32"))]
-pub static CONSOLE_NO_BG_VS : &str = r#"#version 330 core
+pub static CONSOLE_NO_BG_VS: &str = r#"#version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
 layout (location = 2) in vec3 bColor;
@@ -85,7 +85,7 @@ void main()
 "#;
 
 #[cfg(not(target_arch = "wasm32"))]
-pub static CONSOLE_WITH_BG_VS : &str = r#"#version 330 core
+pub static CONSOLE_WITH_BG_VS: &str = r#"#version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
 layout (location = 2) in vec3 bColor;
@@ -132,7 +132,7 @@ void main()
 }"#;
 
 #[cfg(not(target_arch = "wasm32"))]
-pub static SCANLINES_VS : &str = r#"#version 330 core
+pub static SCANLINES_VS: &str = r#"#version 330 core
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec2 aTexCoords;
 
@@ -148,7 +148,7 @@ void main()
 /////////////////////////// WASM WebGL2 Versions
 
 #[cfg(target_arch = "wasm32")]
-pub static BACKING_FS : &str = r#"#version 300 es
+pub static BACKING_FS: &str = r#"#version 300 es
 // Backing FS
 precision highp float;
 out vec4 FragColor;
@@ -164,7 +164,7 @@ void main()
 }"#;
 
 #[cfg(target_arch = "wasm32")]
-pub static BACKING_VS : &str = r#"#version 300 es
+pub static BACKING_VS: &str = r#"#version 300 es
 // Backing VS
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec2 aTexCoords;
@@ -179,7 +179,7 @@ void main()
 "#;
 
 #[cfg(target_arch = "wasm32")]
-pub static CONSOLE_NO_BG_FS : &str = r#"#version 300 es
+pub static CONSOLE_NO_BG_FS: &str = r#"#version 300 es
 // Console No Background Fragment
 precision highp float;
 out vec4 FragColor;
@@ -201,7 +201,7 @@ void main()
 "#;
 
 #[cfg(target_arch = "wasm32")]
-pub static CONSOLE_NO_BG_VS : &str = r#"#version 300 es
+pub static CONSOLE_NO_BG_VS: &str = r#"#version 300 es
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
 layout (location = 2) in vec3 bColor;
@@ -240,7 +240,7 @@ void main()
 "#;
 
 #[cfg(target_arch = "wasm32")]
-pub static CONSOLE_WITH_BG_VS : &str = r#"#version 300 es
+pub static CONSOLE_WITH_BG_VS: &str = r#"#version 300 es
 in vec3 aPos;
 in vec3 aColor;
 in vec3 bColor;
@@ -289,7 +289,7 @@ void main()
 }"#;
 
 #[cfg(target_arch = "wasm32")]
-pub static SCANLINES_VS : &str = r#"#version 300 es
+pub static SCANLINES_VS: &str = r#"#version 300 es
 // Scanlines VS
 layout (location = 0) in vec2 aPos;
 layout (location = 1) in vec2 aTexCoords;

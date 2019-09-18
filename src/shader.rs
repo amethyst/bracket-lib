@@ -17,11 +17,7 @@ pub struct Shader {
 /// NOTE: mixture of `shader_s.h` and `shader_m.h` (the latter just contains
 /// a few more setters for uniforms)
 impl Shader {
-    pub fn new(
-        gl: &glow::Context,
-        vertex_code: &str,
-        fragment_code: &str
-    ) -> Shader {
+    pub fn new(gl: &glow::Context, vertex_code: &str, fragment_code: &str) -> Shader {
         // 1. compile shaders from strings
         let shader;
         unsafe {
@@ -56,9 +52,7 @@ impl Shader {
             }
 
             // delete the shaders as they're linked into our program now and no longer necessary
-            shader = Shader{
-                ID : id
-            }
+            shader = Shader { ID: id }
         }
 
         //log("Shaders Compiled");
@@ -117,7 +111,7 @@ impl Shader {
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-pub fn log(message : &str) {
+pub fn log(message: &str) {
     println!("{}", message);
 }
 
