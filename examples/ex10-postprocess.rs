@@ -1,6 +1,5 @@
 rltk::add_wasm_support!();
 use rltk::{rex::XpFile, Console, GameState, Rltk, VirtualKeyCode, RGB};
-use std::fs::File;
 
 struct State {
     nyan: XpFile,
