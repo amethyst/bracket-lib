@@ -46,9 +46,11 @@ impl GameState for State {
     }
 }
 
+rltk::embedded_resource!(NYAN_CAT, "../resources/nyan.xp");
+
 fn main() {
-    let mut f = File::open("resources/nyan.xp").unwrap();
-    let xp = XpFile::read(&mut f).unwrap();
+    rltk::link_resource!(NYAN_CAT, "../resources/nyan.xp");
+    let xp = XpFile::from_resource("../resources/nyan.xp").unwrap();
 
     let mut context =
         Rltk::init_simple8x8(80, 50, "Example 10 - Post Process Effects", "resources");
