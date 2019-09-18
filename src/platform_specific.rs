@@ -103,7 +103,7 @@ pub fn init_raw<S: ToString>(
         backing_buffer: backing_fbo,
         quad_vao,
         post_scanlines: false,
-        post_screenburn: false,
+        post_screenburn: false
     }
 }
 

@@ -1,7 +1,7 @@
 use super::GameState;
 use super::{
     font, framebuffer::Framebuffer, platform_specific, rex::XpFile, rex::XpLayer, Console, Shader,
-    SimpleConsole, VirtualKeyCode, RGB,
+    SimpleConsole, VirtualKeyCode, RGB
 };
 
 /// A display console, used internally to provide console render support.
@@ -37,7 +37,7 @@ pub struct Rltk {
     pub quad_vao: glow::WebVertexArrayKey,
 
     pub post_scanlines: bool,
-    pub post_screenburn: bool,
+    pub post_screenburn: bool
 }
 
 impl Rltk {

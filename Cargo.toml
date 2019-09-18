@@ -23,6 +23,7 @@ serde= { version = "1.0.98", features = ["derive"], optional = true }
 serde_json =  { version = "1.0.40", optional = true }
 flate2 = "1.0.9"
 byteorder = "1.3.2"
+lazy_static = "1.4.0"
 
 [target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
 glutin = "0.22.0-alpha3"

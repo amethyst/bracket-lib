@@ -1,5 +1,6 @@
 use glow::HasContext;
 use image::GenericImageView;
+use super::embedding;
 
 #[derive(PartialEq, Clone)]
 /// RLTK's representation of a font or tileset file.
@@ -30,27 +31,12 @@ impl Font {
         }
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
     fn load_image(filename : &str) -> image::DynamicImage {
-        image::open(std::path::Path::new(&filename.to_string())).expect("Failed to load texture")
-    }
-
-    #[cfg(target_arch = "wasm32")]
-    const TERMINAL_8_8_BYTES : &'static [u8] = include_bytes!("../resources/terminal8x8.jpg");
-
-    #[cfg(target_arch = "wasm32")]
-    const TERMINAL_8_16_BYTES : &'static [u8] = include_bytes!("../resources/vga8x16.jpg");
-
-    #[cfg(target_arch = "wasm32")]
-    fn load_image(filename : &str) -> image::DynamicImage {
-        
-        if filename.ends_with("resources/vga8x16.jpg") {
-            image::load_from_memory(&Font::TERMINAL_8_16_BYTES).expect("This is silly")
-        } else {
-            image::load_from_memory(&Font::TERMINAL_8_8_BYTES).expect("This is silly")
+        let resource = embedding::EMBED.lock().unwrap().get_resource(filename.to_string());
+        match resource {
+            None => image::open(std::path::Path::new(&filename.to_string())).expect("Failed to load texture"),
+            Some(res) => image::load_from_memory(res).expect("Failed to load texture from memory")
         }
-
-        //image::open(std::path::Path::new(&filename.to_string())).expect("Failed to load texture")
     }
 
     /// Loads a font file (texture) to obtain the width and height for you

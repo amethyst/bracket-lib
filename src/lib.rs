@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate lazy_static;
 mod codepage437;
 mod color;
 mod console;
@@ -34,6 +36,7 @@ pub use self::sparse_console::SparseConsole;
 pub use self::textblock::{TextBlock, TextBuilder};
 pub mod platform_specific;
 pub mod shader_strings;
+pub mod embedding;
 
 #[macro_export]
 macro_rules! add_wasm_support {
@@ -46,6 +49,20 @@ macro_rules! add_wasm_support {
         pub fn wasm_main() {
             main();
         }
+    };
+}
+
+#[macro_export]
+macro_rules! embedded_resource {
+    ($resource_name : ident, $filename : expr) => {
+        const $resource_name : &'static [u8] = include_bytes!($filename);
+    };
+}
+
+#[macro_export]
+macro_rules! link_resource {
+    ($resource_name : ident, $filename : expr) => {
+        rltk::embedding::EMBED.lock().unwrap().add_resource($filename.to_string(), $resource_name);
     };
 }
 
