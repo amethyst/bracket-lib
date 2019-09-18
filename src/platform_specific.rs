@@ -349,6 +349,9 @@ pub fn init_raw<S: ToString>(
         .unwrap()
         .dyn_into::<web_sys::HtmlCanvasElement>()
         .unwrap();
+    canvas.set_width(width_pixels);
+    canvas.set_height(height_pixels);
+
     let webgl2_context = canvas
         .get_context("webgl2")
         .unwrap()
