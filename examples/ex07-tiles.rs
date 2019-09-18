@@ -202,7 +202,10 @@ impl Algorithm2D for State {
     }
 }
 
+rltk::embedded_resource!(TILE_FONT, "../resources/example_tiles.jpg");
+
 fn main() {
+    rltk::link_resource!(TILE_FONT, "resources/example_tiles.jpg");
     let mut context = Rltk::init_raw(
         WIDTH as u32 * 16,
         HEIGHT as u32 * 16,
