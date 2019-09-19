@@ -1,5 +1,10 @@
 use super::{framebuffer::Framebuffer, quadrender, shader_strings, GameState, Rltk, Shader};
 
+#[cfg_attr(
+    feature = "serialization",
+    derive(serde::Serialize, serde::Deserialize)
+)]
+
 #[cfg(not(target_arch = "wasm32"))]
 use glutin::{
     dpi::LogicalSize, event::Event, event::WindowEvent, event_loop::ControlFlow,
