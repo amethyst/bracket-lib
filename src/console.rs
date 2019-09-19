@@ -1,5 +1,8 @@
 use super::{rex::XpLayer, Font, Shader, RGB};
 
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::*;
+
 /// The internal storage type for tiles in a simple console.
 #[derive(PartialEq, Copy, Clone)]
 pub struct Tile {

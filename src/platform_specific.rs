@@ -440,7 +440,7 @@ static mut GLOBAL_KEY: Option<VirtualKeyCode> = None;
 
 #[cfg(target_arch = "wasm32")]
 fn on_key(key: web_sys::KeyboardEvent) {
-    //super::shader::log("Key Event");
+    //super::console::log("Key Event");
     unsafe {
         let code = key.key_code();
         match code {
@@ -520,7 +520,7 @@ fn on_key(key: web_sys::KeyboardEvent) {
             222 => GLOBAL_KEY = Some(VirtualKeyCode::Apostrophe),
             _ => {
                 GLOBAL_KEY = None;
-                super::shader::log(&format!("Keycode: {}", code));
+                super::console::log(&format!("Keycode: {}", code));
             }
         }
     }
