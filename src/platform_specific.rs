@@ -450,6 +450,7 @@ fn on_key(key: web_sys::KeyboardEvent) {
             9 => GLOBAL_KEY = Some(VirtualKeyCode::Tab),
             13 => GLOBAL_KEY = Some(VirtualKeyCode::Return),
             20 => GLOBAL_KEY = Some(VirtualKeyCode::Capital),
+            27 => GLOBAL_KEY = Some(VirtualKeyCode::Escape),
             32 => GLOBAL_KEY = Some(VirtualKeyCode::Space),
             33 => GLOBAL_KEY = Some(VirtualKeyCode::PageUp),
             34 => GLOBAL_KEY = Some(VirtualKeyCode::PageDown),
