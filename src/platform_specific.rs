@@ -1,9 +1,6 @@
 use super::{framebuffer::Framebuffer, quadrender, shader_strings, GameState, Rltk, Shader};
 
-#[cfg_attr(
-    feature = "serialization",
-    derive(serde::Serialize, serde::Deserialize)
-)]
+
 
 #[cfg(not(target_arch = "wasm32"))]
 use glutin::{
@@ -594,7 +591,6 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
 #[cfg(target_arch = "wasm32")]
 #[derive(Debug, Hash, Ord, PartialOrd, PartialEq, Eq, Clone, Copy)]
 #[repr(u32)]
-#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum VirtualKeyCode {
     /// The '1' key over the letters.
     Key1,
