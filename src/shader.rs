@@ -1,6 +1,7 @@
 use cgmath::Vector3;
 use glow::HasContext;
 use std::str;
+use super::console::log;
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
@@ -108,16 +109,4 @@ impl Shader {
     pub unsafe fn setMat4(&self, gl: &glow::Context, name: &str, mat: &[f32; 16]) {
         gl.uniform_matrix_4_f32_slice(gl.get_uniform_location(self.ID, name), false, mat);
     }
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-pub fn log(message: &str) {
-    println!("{}", message);
-}
-
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = console)]
-    pub fn log(s: &str);
 }
