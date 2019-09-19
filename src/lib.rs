@@ -2,7 +2,7 @@
 extern crate lazy_static;
 mod codepage437;
 mod color;
-mod console;
+pub mod console;
 mod fastnoise;
 mod fieldofview;
 mod font;
