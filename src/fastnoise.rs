@@ -1945,31 +1945,37 @@ impl FastNoise {
     }
 
     fn val_coord_2d(&self, seed: i32, x: i32, y: i32) -> f32 {
-        let mut n = seed;
-        n ^= X_PRIME * x;
-        n ^= Y_PRIME * y;
-        (n * n * n * 60493) as f32 / 2147483648.0
+        use std::num::Wrapping;
+
+        let mut n = Wrapping(seed);
+        n ^= Wrapping(X_PRIME) * Wrapping(x);
+        n ^= Wrapping(Y_PRIME) * Wrapping(y);
+        (n * n * n * Wrapping(60493i32)).0 as f32 / 2147483648.0
     }
 
     fn val_coord_3d(&self, seed: i32, x: i32, y: i32, z: i32) -> f32 {
-        let mut n = seed;
-        n ^= X_PRIME * x;
-        n ^= Y_PRIME * y;
-        n ^= Z_PRIME * z;
+        use std::num::Wrapping;
 
-        (n * n * n * 60493) as f32 / 2147483648.0
+        let mut n = Wrapping(seed);
+        n ^= Wrapping(X_PRIME) * Wrapping(x);
+        n ^= Wrapping(Y_PRIME) * Wrapping(y);
+        n ^= Wrapping(Z_PRIME) * Wrapping(z);
+
+        (n * n * n * Wrapping(60493i32)).0 as f32 / 2147483648.0
     }
 
     #[allow(dead_code)]
     #[allow(clippy::many_single_char_names)]
     fn val_coord_4d(&self, seed: i32, x: i32, y: i32, z: i32, w: i32) -> f32 {
-        let mut n = seed;
-        n ^= X_PRIME * x;
-        n ^= Y_PRIME * y;
-        n ^= Z_PRIME * z;
-        n ^= W_PRIME * w;
+        use std::num::Wrapping;
 
-        (n * n * n * 60493) as f32 / 2147483648.0
+        let mut n = Wrapping(seed);
+        n ^= Wrapping(X_PRIME) * Wrapping(x);
+        n ^= Wrapping(Y_PRIME) * Wrapping(y);
+        n ^= Wrapping(Z_PRIME) * Wrapping(z);
+        n ^= Wrapping(W_PRIME) * Wrapping(w);
+
+        (n * n * n * Wrapping(60493i32)).0 as f32 / 2147483648.0
     }
 
     fn val_coord_2d_fast(&self, offset: u8, x: i32, y: i32) -> f32 {
@@ -4194,5 +4200,28 @@ impl FastNoise {
 
         *x += lerp(lx0x, lx1x, ys) * warp_amp;
         *y += lerp(ly0x, ly1x, ys) * warp_amp;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{FastNoise, NoiseType, CellularDistanceFunction};
+
+    #[test]
+    // Tests that we make an RGB triplet at defaults and it is black.
+    fn test_cellular_noise_overflow() {
+        let mut noise = FastNoise::seeded(6000);
+        noise.set_noise_type(NoiseType::Cellular);
+        noise.set_frequency(0.08);
+        noise.set_cellular_distance_function(CellularDistanceFunction::Manhattan);
+        for y in 0..1024 {
+            for x in 0..1024 {
+                let frac_x = x as f32 / 1024.0;
+                let frac_y = y as f32 / 1024.0;
+
+                let cell_value_f = noise.get_noise(frac_x, frac_y);
+                assert!(cell_value_f != 0.0);
+            }
+        }        
     }
 }
