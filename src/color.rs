@@ -5,7 +5,7 @@ use std::ops;
     feature = "serialization",
     derive(serde::Serialize, serde::Deserialize)
 )]
-#[derive(PartialEq, Copy, Clone, Default)]
+#[derive(PartialEq, Copy, Clone, Default, Debug)]
 /// Represents an R/G/B triplet, in the range 0..1 (32-bit float)
 pub struct RGB {
     pub r: f32,
@@ -13,7 +13,7 @@ pub struct RGB {
     pub b: f32,
 }
 
-#[derive(PartialEq, Copy, Clone, Default)]
+#[derive(PartialEq, Copy, Clone, Default, Debug)]
 /// Represents an H/S/V triplet, in the range 0..1 (32-bit float)
 pub struct HSV {
     pub h: f32,
