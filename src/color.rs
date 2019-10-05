@@ -7,7 +7,7 @@ use std::ops;
 )]
 #[derive(PartialEq, Copy, Clone, Default, Debug)]
 /// Represents an R/G/B triplet, in the range 0..1 (32-bit float)
-pub struct RGB {No reason not to
+pub struct RGB {
     pub r: f32,
     pub g: f32,
     pub b: f32,
