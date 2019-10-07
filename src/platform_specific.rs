@@ -448,6 +448,9 @@ pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, _window_titl
         key: None,
         mouse_pos: (0, 0),
         left_click: false,
+        shift: false,
+        alt: false,
+        control: false,
         context_wrapper: Some(WrappedContext {}),
         quitting: false,
         backing_buffer: backing_fbo,
@@ -462,9 +465,16 @@ pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, _window_titl
 static mut GLOBAL_KEY: Option<VirtualKeyCode> = None;
 
 #[cfg(target_arch = "wasm32")]
+static mut GLOBAL_MODIFIERS: (bool, bool, bool) = (false, false, false);
+
+#[cfg(target_arch = "wasm32")]
 fn on_key(key: web_sys::KeyboardEvent) {
     //super::console::log("Key Event");
     unsafe {
+        if key.get_modifier_state("Shift") { GLOBAL_MODIFIERS.0 = true; }
+        if key.get_modifier_state("Control") { GLOBAL_MODIFIERS.1 = true; }
+        if key.get_modifier_state("Alt") { GLOBAL_MODIFIERS.2 = true; }
+
         let code = key.key_code();
         match code {
             8 => GLOBAL_KEY = Some(VirtualKeyCode::Back),
@@ -586,6 +596,9 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
             rltk.key = GLOBAL_KEY;
             rltk.mouse_pos = (GLOBAL_MOUSE_POS.0, GLOBAL_MOUSE_POS.1);
             rltk.left_click = GLOBAL_LEFT_CLICK;
+            rltk.shift = GLOBAL_MODIFIERS.0;
+            rltk.control = GLOBAL_MODIFIERS.1;
+            rltk.alt = GLOBAL_MODIFIERS.2;
         }
 
         // Call the tock function
@@ -603,6 +616,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
         rltk.key = None;
         unsafe {
             GLOBAL_KEY = None;
+            GLOBAL_MODIFIERS = (false, false, false);
             GLOBAL_LEFT_CLICK = false;
         }
     });
