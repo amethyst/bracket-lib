@@ -96,7 +96,7 @@ fn main() {
     // RLTK can have layers.
     //
     // We start by loading the font.
-    let font = context.register_font(rltk::Font::load("resources/vga8x16.jpg", (8, 16)));
+    let font = context.register_font(rltk::Font::load("resources/vga8x16.png", (8, 16)));
 
     // Then we initialize it; notice 80x25 (half the height, since 8x16 is twice as tall).
     // This actually returns the console number, but it's always going to be 1.

@@ -1,6 +1,6 @@
 [package]
 name = "rltk"
-version = "0.4.3"
+version = "0.4.4"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = false
@@ -15,7 +15,7 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 glow = "0.3.0-alpha2"
-image = { version = "0.22.2", default-features = false, features = ["jpeg"] }
+image = { version = "0.22.2", default-features = false, features = ["jpeg", "png_codec"] }
 cgmath = "0.17.0"
 bresenham = "0.1.1"
 rand_xorshift = "0.2.0"

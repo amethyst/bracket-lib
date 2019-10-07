@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use std::sync::Mutex;
 
-const TERMINAL_8_8_BYTES: &[u8] = include_bytes!("../resources/terminal8x8.jpg");
-const TERMINAL_8_16_BYTES: &[u8] = include_bytes!("../resources/vga8x16.jpg");
+const TERMINAL_8_8_BYTES: &[u8] = include_bytes!("../resources/terminal8x8.png");
+const TERMINAL_8_16_BYTES: &[u8] = include_bytes!("../resources/vga8x16.png");
 
 lazy_static! {
     pub static ref EMBED: Mutex<Dictionary> = Mutex::new(Dictionary::new());
@@ -19,8 +19,8 @@ impl Dictionary {
         let mut dict = Dictionary {
             entries: HashMap::new(),
         };
-        dict.add_resource("resources/terminal8x8.jpg".to_string(), TERMINAL_8_8_BYTES);
-        dict.add_resource("resources/vga8x16.jpg".to_string(), TERMINAL_8_16_BYTES);
+        dict.add_resource("resources/terminal8x8.png".to_string(), TERMINAL_8_8_BYTES);
+        dict.add_resource("resources/vga8x16.png".to_string(), TERMINAL_8_16_BYTES);
         dict
     }
 

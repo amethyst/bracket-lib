@@ -53,7 +53,7 @@ impl Rltk {
         window_title: S,
         path_to_shaders: S,
     ) -> Rltk {
-        let font_path = format!("{}/terminal8x8.jpg", &path_to_shaders.to_string());
+        let font_path = format!("{}/terminal8x8.png", &path_to_shaders.to_string());
         let mut context = Rltk::init_raw(width_chars * 8, height_chars * 8, window_title);
         let font = context.register_font(font::Font::load(&font_path.to_string(), (8, 8)));
         context.register_console(
@@ -70,7 +70,7 @@ impl Rltk {
         window_title: S,
         path_to_shaders: S,
     ) -> Rltk {
-        let font_path = format!("{}/vga8x16.jpg", &path_to_shaders.to_string());
+        let font_path = format!("{}/vga8x16.png", &path_to_shaders.to_string());
         let mut context = Rltk::init_raw(width_chars * 8, height_chars * 16, window_title);
         let font = context.register_font(font::Font::load(&font_path.to_string(), (8, 16)));
         context.register_console(

@@ -202,16 +202,16 @@ impl Algorithm2D for State {
     }
 }
 
-rltk::embedded_resource!(TILE_FONT, "../resources/example_tiles.jpg");
+rltk::embedded_resource!(TILE_FONT, "../resources/example_tiles.png");
 
 fn main() {
-    rltk::link_resource!(TILE_FONT, "resources/example_tiles.jpg");
+    rltk::link_resource!(TILE_FONT, "resources/example_tiles.png");
     let mut context = Rltk::init_raw(
         WIDTH as u32 * 16,
         HEIGHT as u32 * 16,
         "RLTK Example 07 - Tiles",
     );
-    let font = context.register_font(rltk::Font::load("resources/example_tiles.jpg", (16, 16)));
+    let font = context.register_font(rltk::Font::load("resources/example_tiles.png", (16, 16)));
     context.register_console(
         rltk::SimpleConsole::init(WIDTH as u32, HEIGHT as u32, &context.gl),
         font,

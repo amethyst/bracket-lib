@@ -167,7 +167,7 @@ mod tests {
     #[test]
     // Tests that we make an RGB triplet at defaults and it is black.
     fn make_font_from_file() {
-        let f = Font::load("resources/terminal8x8.jpg", (8, 8));
+        let f = Font::load("resources/terminal8x8.png", (8, 8));
         assert_eq!(f.width, 128);
         assert_eq!(f.height, 128);
     }
