@@ -32,6 +32,14 @@ pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, window_title
     let el = EventLoop::new();
     let wb = WindowBuilder::new()
         .with_title(window_title.to_string())
+        .with_max_inner_size(LogicalSize::new(
+            f64::from(width_pixels),
+            f64::from(height_pixels),
+        ))
+        .with_min_inner_size(LogicalSize::new(
+            f64::from(width_pixels),
+            f64::from(height_pixels),
+        ))
         .with_inner_size(LogicalSize::new(
             f64::from(width_pixels),
             f64::from(height_pixels),
