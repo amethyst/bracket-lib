@@ -16,6 +16,9 @@ pub trait Console {
     /// Check to see if the internal OpenGL representation needs to be rebuilt, and do so if required.
     fn rebuild_if_dirty(&mut self, gl: &glow::Context);
 
+    /// Gets the dimensions of the console in characters
+    fn get_char_size(&self) -> (u32, u32);
+
     /// Tells the console to draw itself via OpenGL.
     fn gl_draw(&mut self, font: &Font, shader: &Shader, gl: &glow::Context);
 

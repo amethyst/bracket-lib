@@ -305,6 +305,10 @@ impl Console for SparseConsole {
         }
     }
 
+    fn get_char_size(&self) -> (u32, u32) {
+        (self.width, self.height)
+    }
+
     /// Draws the console to OpenGL.
     fn gl_draw(&mut self, font: &Font, shader: &Shader, gl: &glow::Context) {
         unsafe {

@@ -116,16 +116,17 @@ impl Rltk {
     /// Sets the currently active console number.
     pub fn set_active_console(&mut self, id: usize) {
         self.active_console = id;
-    }
+    }    
 
     /// Applies the current physical mouse position to the active console, and translates
     /// the coordinates into that console's coordinate space.
     pub fn mouse_pos(&self) -> (i32, i32) {
         let font_size = self.fonts[self.consoles[self.active_console].font_index].tile_size;
+        let max_sizes = self.consoles[self.active_console].console.get_char_size();
 
         (
-            (self.mouse_pos.0 as f32 / font_size.0 as f32) as i32,
-            (self.mouse_pos.1 as f32 / font_size.1 as f32) as i32,
+            iclamp((self.mouse_pos.0 as f32 / font_size.0 as f32) as i32, 0, max_sizes.0 as i32),
+            iclamp((self.mouse_pos.1 as f32 / font_size.1 as f32) as i32, 0, max_sizes.1 as i32)
         )
     }
 
@@ -170,6 +171,10 @@ impl Console for Rltk {
     // A couple of ones we'll never use
     fn rebuild_if_dirty(&mut self, _gl: &glow::Context) {}
     fn gl_draw(&mut self, _font: &font::Font, _shader: &Shader, _gl: &glow::Context) {}
+
+    fn get_char_size(&self) -> (u32, u32) {
+        self.consoles[self.active_console].console.get_char_size()
+    }
 
     // Implement pass-through to active console
 
@@ -293,5 +298,23 @@ pub fn letter_to_option(key: VirtualKeyCode) -> i32 {
         VirtualKeyCode::Y => 24,
         VirtualKeyCode::Z => 25,
         _ => -1,
+    }
+}
+
+// Since num::clamp is still experimental, this is a simple integer clamper.
+fn iclamp(val: i32, min: i32, max: i32) -> i32 {
+    i32::max(min, i32::min(val, max))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::iclamp;
+
+    #[test]
+    // Tests that we make an RGB triplet at defaults and it is black.
+    fn test_iclamp() {
+        assert!(iclamp(1, 0, 2) == 1);
+        assert!(iclamp(5, 0, 2) == 2);
+        assert!(iclamp(-5, 0, 2) == 0);
     }
 }
