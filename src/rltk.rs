@@ -125,8 +125,8 @@ impl Rltk {
         let max_sizes = self.consoles[self.active_console].console.get_char_size();
 
         (
-            iclamp((self.mouse_pos.0 as f32 / font_size.0 as f32) as i32, 0, max_sizes.0 as i32),
-            iclamp((self.mouse_pos.1 as f32 / font_size.1 as f32) as i32, 0, max_sizes.1 as i32)
+            iclamp((self.mouse_pos.0 as f32 / font_size.0 as f32) as i32, 0, max_sizes.0 as i32 - 1),
+            iclamp((self.mouse_pos.1 as f32 / font_size.1 as f32) as i32, 0, max_sizes.1 as i32 - 1)
         )
     }
 
