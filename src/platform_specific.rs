@@ -98,6 +98,9 @@ pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, window_title
         key: None,
         mouse_pos: (0, 0),
         left_click: false,
+        shift: false,
+        control: false,
+        alt: false,
         context_wrapper: Some(WrappedContext {
             el,
             wc: windowed_context,
@@ -140,6 +143,9 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
             Event::NewEvents(_) => {
                 rltk.left_click = false;
                 rltk.key = None;
+                rltk.shift = false;
+                rltk.control = false;
+                rltk.alt = false;
             }
             Event::EventsCleared => {
                 tock(
@@ -178,11 +184,15 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                         glutin::event::KeyboardInput {
                             virtual_keycode: Some(virtual_keycode),
                             state: glutin::event::ElementState::Pressed,
+                            modifiers,
                             ..
                         },
                     ..
                 } => {
                     rltk.key = Some(*virtual_keycode);
+                    if modifiers.shift { rltk.shift = true; }
+                    if modifiers.alt { rltk.alt = true; }
+                    if modifiers.ctrl { rltk.control = true; }
                 }
 
                 _ => (),

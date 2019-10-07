@@ -198,6 +198,11 @@ Run this example with `cargo run --example ex14-dwarfmap` from the root of the c
 
 [Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex15/)
 
+### Example 16: Obtaining key codes
+
+[Example 16 - Keyboard](examples/ex16-keyboard.rs) provides a handy tool to grab keyboard codes and see how to use the `shift`, `control` and `alt` keys as modifiers or keyboard inputs.
+
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex16/)
 
 ## Building with WASM
 
