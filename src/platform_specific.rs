@@ -102,6 +102,12 @@ pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, window_title
     }
 }
 
+#[cfg(target_os = "linux")]
+const TICK_TYPE : ControlFlow = ControlFlow::Wait;
+
+#[cfg(not(target_os = "linux"))]
+const TICK_TYPE : ControlFlow = ControlFlow::Poll;
+
 // Glutin version of main loop
 #[cfg(not(target_arch = "wasm32"))]
 pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
@@ -119,7 +125,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     let wc = unwrap.wc;
 
     el.run(move |event, _, control_flow| {
-        *control_flow = ControlFlow::Wait;
+        *control_flow = TICK_TYPE;
 
         if rltk.quitting {
             *control_flow = ControlFlow::Exit;
