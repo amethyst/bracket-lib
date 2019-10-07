@@ -110,10 +110,7 @@ pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, window_title
     }
 }
 
-#[cfg(unix)]
-const TICK_TYPE : ControlFlow = ControlFlow::Wait;
-
-#[cfg(all(not(unix), not(target_arch = "wasm32")))]
+#[cfg(not(target_arch = "wasm32"))]
 const TICK_TYPE : ControlFlow = ControlFlow::Poll;
 
 // Glutin version of main loop
