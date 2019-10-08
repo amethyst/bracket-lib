@@ -1,6 +1,4 @@
-use super::{framebuffer::Framebuffer, quadrender, shader_strings, GameState, Rltk, Shader};
-
-
+use super::{framebuffer::Framebuffer, quadrender, shader_strings, GameState, Rltk, Shader, Console};
 
 #[cfg(not(target_arch = "wasm32"))]
 use glutin::{
@@ -32,14 +30,6 @@ pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, window_title
     let el = EventLoop::new();
     let wb = WindowBuilder::new()
         .with_title(window_title.to_string())
-        .with_max_inner_size(LogicalSize::new(
-            f64::from(width_pixels),
-            f64::from(height_pixels),
-        ))
-        .with_min_inner_size(LogicalSize::new(
-            f64::from(width_pixels),
-            f64::from(height_pixels),
-        ))
         .with_inner_size(LogicalSize::new(
             f64::from(width_pixels),
             f64::from(height_pixels),
@@ -119,6 +109,9 @@ const TICK_TYPE : ControlFlow = ControlFlow::Poll;
 // Glutin version of main loop
 #[cfg(not(target_arch = "wasm32"))]
 pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
+    unsafe {
+        rltk.gl.viewport(0, 0, rltk.width_pixels as i32, rltk.height_pixels as i32);
+    }
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
     let mut prev_ms = now.elapsed().as_millis();
@@ -160,10 +153,16 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
             }
             Event::LoopDestroyed => (),
             Event::WindowEvent { ref event, .. } => match event {
-                WindowEvent::Resized(_logical_size) => {
+                WindowEvent::Resized(logical_size) => {
                     // Commenting out to see if it helps the Linux world
-                    //let dpi_factor = wc.window().hidpi_factor();
-                    //wc.resize(logical_size.to_physical(dpi_factor));
+                    let dpi_factor = wc.window().hidpi_factor();
+                    let physical = logical_size.to_physical(dpi_factor);
+                    wc.resize(physical);
+                    rltk.resize_pixels(physical.width as u32, physical.height as u32);
+                    unsafe {
+                        rltk.gl.viewport(0, 0, physical.width as i32, physical.height as i32);
+                    }
+                    rltk.backing_buffer = Framebuffer::build_fbo(&rltk.gl, physical.width as i32, physical.height as i32);
                 }
                 WindowEvent::RedrawRequested => {
                     //tock(&mut rltk, &mut gamestate, &mut frames, &mut prev_seconds, &mut prev_ms, &now);
@@ -241,7 +240,7 @@ fn tock<GS: GameState>(
 
     // Clear the screen
     unsafe {
-        rltk.gl.clear_color(0.2, 0.3, 0.3, 1.0);
+        rltk.gl.clear_color(0.0, 0.0, 0.0, 1.0);
         rltk.gl.clear(glow::COLOR_BUFFER_BIT);
     }
 
@@ -315,6 +314,7 @@ fn tock<GS: GameState>(
 
     // Clear the screen
     unsafe {
+        rltk.gl.viewport(0, 0, rltk.width_pixels, rltk.height_pixels);
         rltk.gl.clear_color(0.2, 0.3, 0.3, 1.0);
         rltk.gl.clear(glow::COLOR_BUFFER_BIT);
     }

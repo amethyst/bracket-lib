@@ -309,6 +309,10 @@ impl Console for SparseConsole {
         (self.width, self.height)
     }
 
+    fn resize_pixels(&mut self, _width: u32, _height: u32) {
+        self.is_dirty = true;
+    }
+
     /// Draws the console to OpenGL.
     fn gl_draw(&mut self, font: &Font, shader: &Shader, gl: &glow::Context) {
         unsafe {

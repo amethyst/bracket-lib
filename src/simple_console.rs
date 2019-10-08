@@ -237,7 +237,7 @@ impl SimpleConsole {
     fn push_point(&mut self, x: f32, y: f32, fg: RGB, bg: RGB, ux: f32, uy: f32) {
         self.vertex_buffer[self.vertex_counter] = x + self.offset_x;
         self.vertex_buffer[self.vertex_counter + 1] = y + self.offset_y;
-        self.vertex_buffer[self.vertex_counter + 2] = 0.0;
+        self.vertex_buffer[self.vertex_counter + 2] = 0.0f32;
         self.vertex_buffer[self.vertex_counter + 3] = fg.r;
         self.vertex_buffer[self.vertex_counter + 4] = fg.g;
         self.vertex_buffer[self.vertex_counter + 5] = fg.b;
@@ -253,16 +253,16 @@ impl SimpleConsole {
     fn rebuild_vertices(&mut self, gl: &glow::Context) {
         self.vertex_counter = 0;
         self.index_counter = 0;
-        let glyph_size_x: f32 = 1.0 / 16.0;
-        let glyph_size_y: f32 = 1.0 / 16.0;
+        let glyph_size_x: f32 = 1.0f32 / 16.0f32;
+        let glyph_size_y: f32 = 1.0f32 / 16.0f32;
 
-        let step_x: f32 = 2.0 / self.width as f32;
-        let step_y: f32 = 2.0 / self.height as f32;
+        let step_x: f32 = 2.0f32 / self.width as f32;
+        let step_y: f32 = 2.0f32 / self.height as f32;
 
         let mut index_count: i32 = 0;
-        let mut screen_y: f32 = -1.0;
+        let mut screen_y: f32 = -1.0f32;
         for y in 0..self.height {
-            let mut screen_x: f32 = -1.0;
+            let mut screen_x: f32 = -1.0f32;
             for x in 0..self.width {
                 let fg = self.tiles[((y * self.width) + x) as usize].fg;
                 let bg = self.tiles[((y * self.width) + x) as usize].bg;
@@ -337,6 +337,10 @@ impl Console for SimpleConsole {
 
     fn get_char_size(&self) -> (u32, u32) {
         (self.width, self.height)
+    }
+
+    fn resize_pixels(&mut self, _width: u32, _height: u32) {
+        self.is_dirty = true;
     }
 
     /// Sends the console to OpenGL.
