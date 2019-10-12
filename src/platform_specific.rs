@@ -91,6 +91,7 @@ pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, window_title
         shift: false,
         control: false,
         alt: false,
+        command: None,
         context_wrapper: Some(WrappedContext {
             el,
             wc: windowed_context,
@@ -393,6 +394,72 @@ pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, _window_titl
     canvas.set_onmousedown(Some(mouseclick_callback.as_ref().unchecked_ref()));;
     mouseclick_callback.forget();
 
+    // handle html keys
+    //TODO: macro this repetitive bit
+    let mut button = web_sys::window()
+        .unwrap()
+        .document()
+        .unwrap()
+        .get_element_by_id("key_arrow4")
+        .unwrap()
+        .dyn_into::<web_sys::HtmlElement>()
+        .unwrap();
+
+    let html_callback = Closure::wrap(Box::new(|e: web_sys::Event| {
+        on_html_click(e.clone());
+    }) as Box<dyn FnMut(_)>);
+
+    button.set_onclick(Some(html_callback.as_ref().unchecked_ref()));
+    html_callback.forget();
+
+    button = web_sys::window()
+        .unwrap()
+        .document()
+        .unwrap()
+        .get_element_by_id("key_arrow2")
+        .unwrap()
+        .dyn_into::<web_sys::HtmlElement>()
+        .unwrap();
+
+    let html_callback = Closure::wrap(Box::new(|e: web_sys::Event| {
+        on_html_click2(e.clone());
+    }) as Box<dyn FnMut(_)>);
+
+    button.set_onclick(Some(html_callback.as_ref().unchecked_ref()));
+    html_callback.forget();
+
+    button = web_sys::window()
+        .unwrap()
+        .document()
+        .unwrap()
+        .get_element_by_id("key_arrow6")
+        .unwrap()
+        .dyn_into::<web_sys::HtmlElement>()
+        .unwrap();
+
+    let html_callback = Closure::wrap(Box::new(|e: web_sys::Event| {
+        on_html_click6(e.clone());
+    }) as Box<dyn FnMut(_)>);
+
+    button.set_onclick(Some(html_callback.as_ref().unchecked_ref()));
+    html_callback.forget();
+
+    button = web_sys::window()
+        .unwrap()
+        .document()
+        .unwrap()
+        .get_element_by_id("key_arrow8")
+        .unwrap()
+        .dyn_into::<web_sys::HtmlElement>()
+        .unwrap();
+
+    let html_callback = Closure::wrap(Box::new(|e: web_sys::Event| {
+        on_html_click8(e.clone());
+    }) as Box<dyn FnMut(_)>);
+
+    button.set_onclick(Some(html_callback.as_ref().unchecked_ref()));
+    html_callback.forget();
+
     let webgl2_context = canvas
         .get_context("webgl2")
         .unwrap()
@@ -451,6 +518,7 @@ pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, _window_titl
         shift: false,
         alt: false,
         control: false,
+        command: None,
         context_wrapper: Some(WrappedContext {}),
         quitting: false,
         backing_buffer: backing_fbo,
@@ -458,6 +526,28 @@ pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, _window_titl
         post_scanlines: false,
         post_screenburn: false,
     }
+}
+
+//TODO: those ought to be done via a macro from the game's side, not in the library itself
+//HTML key callbacks
+#[cfg(target_arch = "wasm32")]
+pub fn on_html_click(_event: web_sys::Event){
+    set_command(Command::MoveLeft);
+}
+
+#[cfg(target_arch = "wasm32")]
+pub fn on_html_click2(_event: web_sys::Event){
+    set_command(Command::MoveUp);
+}
+
+#[cfg(target_arch = "wasm32")]
+pub fn on_html_click6(_event: web_sys::Event){
+    set_command(Command::MoveRight);
+}
+
+#[cfg(target_arch = "wasm32")]
+pub fn on_html_click8(_event: web_sys::Event){
+    set_command(Command::MoveDown);
 }
 
 // WASM version of main loop
@@ -581,6 +671,18 @@ fn on_mouse_down(_mouse: web_sys::MouseEvent) {
 }
 
 #[cfg(target_arch = "wasm32")]
+static mut GLOBAL_COMMAND: Option<Command> = None;
+
+#[cfg(target_arch = "wasm32")]
+pub fn set_command(command: Command){
+    //debugging
+    log!("{:?}", command);
+    unsafe {
+        GLOBAL_COMMAND = Some(command);
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
 pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     use glow::HasRenderLoop;
 
@@ -599,6 +701,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
             rltk.shift = GLOBAL_MODIFIERS.0;
             rltk.control = GLOBAL_MODIFIERS.1;
             rltk.alt = GLOBAL_MODIFIERS.2;
+            rltk.command = GLOBAL_COMMAND;
         }
 
         // Call the tock function
@@ -614,10 +717,12 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
         // Clear any input
         rltk.left_click = false;
         rltk.key = None;
+        rltk.command = None;
         unsafe {
             GLOBAL_KEY = None;
             GLOBAL_MODIFIERS = (false, false, false);
             GLOBAL_LEFT_CLICK = false;
+            GLOBAL_COMMAND = None;
         }
     });
 }
@@ -820,4 +925,15 @@ pub enum VirtualKeyCode {
     Copy,
     Paste,
     Cut,
+}
+
+//TODO: this ought to be macro'ed too, possibly named after the HTML button's ID for ease of use
+#[cfg(target_arch = "wasm32")]
+#[repr(u8)] //single byte representation - enough for our needs since a byte can carry 256 things
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Command {
+    MoveLeft = 0,
+    MoveRight = 1,
+    MoveDown = 2,
+    MoveUp = 3,
 }
