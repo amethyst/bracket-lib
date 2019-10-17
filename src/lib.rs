@@ -18,6 +18,7 @@ mod shader;
 mod simple_console;
 mod sparse_console;
 pub mod textblock;
+mod hal;
 
 pub use self::codepage437::{string_to_cp437, to_cp437};
 pub use self::color::*;
