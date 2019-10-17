@@ -1,4 +1,4 @@
-use super::{framebuffer::Framebuffer, hal::setup_quad, shader_strings, GameState, Rltk, Shader, Console,
+use super::{hal::Framebuffer, hal::setup_quad, shader_strings, GameState, Rltk, Shader, Console,
 RltkPlatform, PlatformGL, hal::WrappedContext};
 
 #[cfg(target_arch = "wasm32")]

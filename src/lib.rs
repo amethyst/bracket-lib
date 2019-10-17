@@ -6,7 +6,6 @@ pub mod console;
 mod fastnoise;
 mod fieldofview;
 mod font;
-mod framebuffer;
 mod geometry;
 mod gui_helpers;
 mod pathfinding;

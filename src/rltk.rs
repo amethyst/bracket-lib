@@ -1,6 +1,6 @@
 use super::GameState;
 use super::{
-    font, framebuffer::Framebuffer, platform_specific, rex::XpFile, rex::XpLayer, Console, Shader,
+    font, hal::Framebuffer, platform_specific, rex::XpFile, rex::XpLayer, Console, Shader,
     SimpleConsole, VirtualKeyCode, RGB, RltkPlatform
 };
 
