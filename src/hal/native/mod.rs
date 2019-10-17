@@ -5,6 +5,8 @@ mod init;
 pub use init::*;
 mod mainloop;
 pub use mainloop::*;
+mod simple_console_backing;
+pub use simple_console_backing::*;
 
 use glutin::{
     dpi::LogicalSize, event::Event, event::WindowEvent, event_loop::ControlFlow,

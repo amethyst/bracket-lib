@@ -9,6 +9,8 @@ mod events;
 pub use events::*;
 mod mainloop;
 pub use mainloop::*;
+mod simple_console_backing;
+pub use simple_console_backing::*;
 
 pub struct PlatformGL {
     pub quad_vao: glow::WebVertexArrayKey,
