@@ -1,4 +1,4 @@
-use super::{framebuffer::Framebuffer, quadrender, shader_strings, GameState, Rltk, Shader, Console,
+use super::{framebuffer::Framebuffer, hal::setup_quad, shader_strings, GameState, Rltk, Shader, Console,
 RltkPlatform, PlatformGL, hal::WrappedContext};
 
 #[cfg(target_arch = "wasm32")]
@@ -64,7 +64,7 @@ pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, window_title
     let backing_fbo = Framebuffer::build_fbo(&gl, width_pixels as i32, height_pixels as i32);
 
     // Build a simple quad rendering vao
-    let quad_vao = quadrender::setup_quad(&gl);
+    let quad_vao = setup_quad(&gl);
 
     Rltk {
         backend: RltkPlatform{gl, 
@@ -426,7 +426,7 @@ pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, _window_titl
     let backing_fbo = Framebuffer::build_fbo(&gl, width_pixels as i32, height_pixels as i32);
 
     // Build a simple quad rendering vao
-    let quad_vao = quadrender::setup_quad(&gl);
+    let quad_vao = setup_quad(&gl);
 
     Rltk {
         backend: RltkPlatform{ gl, 

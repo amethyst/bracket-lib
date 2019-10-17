@@ -1,3 +1,6 @@
+mod quadrender;
+pub use quadrender::*;
+
 use glutin::{
     dpi::LogicalSize, event::Event, event::WindowEvent, event_loop::ControlFlow,
     event_loop::EventLoop, window::WindowBuilder, ContextBuilder,

@@ -10,7 +10,6 @@ mod framebuffer;
 mod geometry;
 mod gui_helpers;
 mod pathfinding;
-mod quadrender;
 mod random;
 pub mod rex;
 mod rltk;
