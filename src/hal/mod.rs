@@ -14,6 +14,9 @@ pub use wasm::*;
 mod framebuffer;
 pub use framebuffer::Framebuffer;
 
+mod shader;
+pub use shader::Shader;
+
 /// Provides a base abstract platform for RLTK to run on, with specialized content.
 pub struct RltkPlatform {
     pub gl: glow::Context,
