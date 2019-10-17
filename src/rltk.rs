@@ -1,6 +1,6 @@
 use super::GameState;
 use super::{
-    font, hal::Framebuffer, platform_specific, rex::XpFile, rex::XpLayer, Console, Shader,
+    font, hal::Framebuffer, rex::XpFile, rex::XpLayer, Console, Shader,
     SimpleConsole, VirtualKeyCode, RGB, RltkPlatform, hal::init_raw
 };
 
@@ -268,7 +268,7 @@ impl Console for Rltk {
 
 /// Runs the RLTK application, calling into the provided gamestate handler every tick.
 pub fn main_loop<GS: GameState>(rltk: Rltk, gamestate: GS) {
-    platform_specific::main_loop(rltk, gamestate);
+    super::hal::main_loop(rltk, gamestate);
 }
 
 /// For A-Z menus, translates the keys A through Z into 0..25

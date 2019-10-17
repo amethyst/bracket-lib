@@ -3,6 +3,8 @@ pub use quadrender::*;
 pub mod shader_strings;
 mod init;
 pub use init::*;
+mod mainloop;
+pub use mainloop::*;
 
 use glutin::{
     dpi::LogicalSize, event::Event, event::WindowEvent, event_loop::ControlFlow,

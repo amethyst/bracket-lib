@@ -32,7 +32,6 @@ pub use self::simple_console::SimpleConsole;
 pub use self::sparse_console::SparseConsole;
 pub use self::textblock::{TextBlock, TextBuilder};
 pub mod embedding;
-pub mod platform_specific;
 
 #[macro_export]
 macro_rules! add_wasm_support {

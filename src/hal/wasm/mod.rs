@@ -7,6 +7,8 @@ mod init;
 pub use init::*;
 mod events;
 pub use events::*;
+mod mainloop;
+pub use mainloop::*;
 
 pub struct PlatformGL {
     pub quad_vao: glow::WebVertexArrayKey,
