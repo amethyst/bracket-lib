@@ -1,7 +1,7 @@
+use super::super::console::log;
 use cgmath::Vector3;
 use glow::HasContext;
 use std::str;
-use super::super::console::log;
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;

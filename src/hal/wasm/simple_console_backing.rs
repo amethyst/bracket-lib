@@ -1,7 +1,7 @@
+use super::super::super::{Tile, RGB};
+use super::super::{font::Font, shader::Shader};
 use glow::HasContext;
 use std::mem;
-use super::super::super::{RGB, Tile};
-use super::super::{font::Font, shader::Shader};
 
 pub struct SimpleConsoleBackend {
     vertex_buffer: Vec<f32>,
@@ -36,7 +36,9 @@ impl SimpleConsoleBackend {
         result
     }
 
-    fn init_gl_for_console(gl: &glow::Context) -> (
+    fn init_gl_for_console(
+        gl: &glow::Context,
+    ) -> (
         glow::WebBufferKey,
         glow::WebVertexArrayKey,
         glow::WebBufferKey,
@@ -110,7 +112,17 @@ impl SimpleConsoleBackend {
     }
 
     /// Helper function to add all the elements required by the shader for a given point.
-    fn push_point(&mut self, x: f32, y: f32, fg: RGB, bg: RGB, ux: f32, uy: f32, offset_x : f32, offset_y: f32) {
+    fn push_point(
+        &mut self,
+        x: f32,
+        y: f32,
+        fg: RGB,
+        bg: RGB,
+        ux: f32,
+        uy: f32,
+        offset_x: f32,
+        offset_y: f32,
+    ) {
         self.vertex_buffer[self.vertex_counter] = x + offset_x;
         self.vertex_buffer[self.vertex_counter + 1] = y + offset_y;
         self.vertex_buffer[self.vertex_counter + 2] = 0.0f32;
@@ -125,8 +137,16 @@ impl SimpleConsoleBackend {
         self.vertex_counter += 11;
     }
 
-        /// Rebuilds the OpenGL backing buffer.
-    pub fn rebuild_vertices(&mut self, gl: &glow::Context, height:u32, width:u32, tiles: &Vec<Tile>, offset_x : f32, offset_y: f32) {
+    /// Rebuilds the OpenGL backing buffer.
+    pub fn rebuild_vertices(
+        &mut self,
+        gl: &glow::Context,
+        height: u32,
+        width: u32,
+        tiles: &Vec<Tile>,
+        offset_x: f32,
+        offset_y: f32,
+    ) {
         self.vertex_counter = 0;
         self.index_counter = 0;
         let glyph_size_x: f32 = 1.0f32 / 16.0f32;
@@ -159,7 +179,7 @@ impl SimpleConsoleBackend {
                     glyph_right,
                     glyph_top,
                     offset_x,
-                    offset_y
+                    offset_y,
                 );
                 self.push_point(
                     screen_x + step_x,
@@ -169,10 +189,28 @@ impl SimpleConsoleBackend {
                     glyph_right,
                     glyph_bottom,
                     offset_x,
-                    offset_y
+                    offset_y,
                 );
-                self.push_point(screen_x, screen_y, fg, bg, glyph_left, glyph_bottom, offset_x, offset_y);
-                self.push_point(screen_x, screen_y + step_y, fg, bg, glyph_left, glyph_top, offset_x, offset_y);
+                self.push_point(
+                    screen_x,
+                    screen_y,
+                    fg,
+                    bg,
+                    glyph_left,
+                    glyph_bottom,
+                    offset_x,
+                    offset_y,
+                );
+                self.push_point(
+                    screen_x,
+                    screen_y + step_y,
+                    fg,
+                    bg,
+                    glyph_left,
+                    glyph_top,
+                    offset_x,
+                    offset_y,
+                );
 
                 self.index_buffer[self.index_counter] = index_count;
                 self.index_buffer[self.index_counter + 1] = 1 + index_count;
@@ -205,7 +243,14 @@ impl SimpleConsoleBackend {
         }
     }
 
-    pub fn gl_draw(&mut self, font: &Font, shader: &Shader, gl: &glow::Context, width: u32, height:u32) {
+    pub fn gl_draw(
+        &mut self,
+        font: &Font,
+        shader: &Shader,
+        gl: &glow::Context,
+        width: u32,
+        height: u32,
+    ) {
         unsafe {
             // bind Texture
             font.bind_texture(gl);
@@ -221,6 +266,6 @@ impl SimpleConsoleBackend {
                 glow::UNSIGNED_INT,
                 0,
             );
-        }        
+        }
     }
 }

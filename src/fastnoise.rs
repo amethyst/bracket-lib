@@ -4205,7 +4205,7 @@ impl FastNoise {
 
 #[cfg(test)]
 mod tests {
-    use super::{FastNoise, NoiseType, CellularDistanceFunction};
+    use super::{CellularDistanceFunction, FastNoise, NoiseType};
 
     #[test]
     // Tests that we make an RGB triplet at defaults and it is black.
@@ -4222,6 +4222,6 @@ mod tests {
                 let cell_value_f = noise.get_noise(frac_x, frac_y);
                 assert!(cell_value_f != 0.0);
             }
-        }        
+        }
     }
 }

@@ -1,13 +1,16 @@
 use glutin::{
     dpi::LogicalSize, event::Event, event::WindowEvent, event_loop::ControlFlow,
-    event_loop::EventLoop, window::WindowBuilder, ContextBuilder
+    event_loop::EventLoop, window::WindowBuilder, ContextBuilder,
 };
 
 #[cfg(not(target_arch = "wasm32"))]
-pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, window_title: S) -> super::super::super::Rltk {
-
-    use super::super::*;
+pub fn init_raw<S: ToString>(
+    width_pixels: u32,
+    height_pixels: u32,
+    window_title: S,
+) -> super::super::super::Rltk {
     use super::super::super::Rltk;
+    use super::super::*;
 
     let el = EventLoop::new();
     let wb = WindowBuilder::new()
@@ -58,8 +61,10 @@ pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, window_title
     let quad_vao = setup_quad(&gl);
 
     Rltk {
-        backend: RltkPlatform{gl, 
-            platform: PlatformGL{ quad_vao: quad_vao,
+        backend: RltkPlatform {
+            gl,
+            platform: PlatformGL {
+                quad_vao: quad_vao,
                 context_wrapper: Some(WrappedContext {
                     el,
                     wc: windowed_context,

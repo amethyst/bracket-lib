@@ -1,8 +1,8 @@
+use super::super::super::{GameState, Rltk};
+use super::super::*;
+use super::events::*;
 use super::VirtualKeyCode;
 use glow::HasContext;
-use super::super::*;
-use super::super::super::{Rltk, GameState};
-use super::events::*;
 
 pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     use glow::HasRenderLoop;
@@ -82,7 +82,9 @@ fn tock<GS: GameState>(
 
     // Clear the screen
     unsafe {
-        rltk.backend.gl.viewport(0, 0, rltk.width_pixels as i32, rltk.height_pixels as i32);
+        rltk.backend
+            .gl
+            .viewport(0, 0, rltk.width_pixels as i32, rltk.height_pixels as i32);
         rltk.backend.gl.clear_color(0.2, 0.3, 0.3, 1.0);
         rltk.backend.gl.clear(glow::COLOR_BUFFER_BIT);
     }
@@ -96,7 +98,10 @@ fn tock<GS: GameState>(
 
     if rltk.post_scanlines {
         // Now we return to the primary screen
-        rltk.backend.platform.backing_buffer.default(&rltk.backend.gl);
+        rltk.backend
+            .platform
+            .backing_buffer
+            .default(&rltk.backend.gl);
         unsafe {
             if rltk.post_scanlines {
                 rltk.shaders[3].useProgram(&rltk.backend.gl);
@@ -111,9 +116,13 @@ fn tock<GS: GameState>(
             } else {
                 rltk.shaders[2].useProgram(&rltk.backend.gl);
             }
-            rltk.backend.gl.bind_vertex_array(Some(rltk.backend.platform.quad_vao));
-            rltk.backend.gl
-                .bind_texture(glow::TEXTURE_2D, Some(rltk.backend.platform.backing_buffer.texture));
+            rltk.backend
+                .gl
+                .bind_vertex_array(Some(rltk.backend.platform.quad_vao));
+            rltk.backend.gl.bind_texture(
+                glow::TEXTURE_2D,
+                Some(rltk.backend.platform.backing_buffer.texture),
+            );
             rltk.backend.gl.draw_arrays(glow::TRIANGLES, 0, 6);
         }
     }

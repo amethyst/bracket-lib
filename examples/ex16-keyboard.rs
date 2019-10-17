@@ -13,7 +13,7 @@ use rltk::{Console, GameState, Rltk};
 // other structures. This demo is realy simple, so we'll just put the minimum to make it work
 // in here.
 struct State {
-    display_lines : Vec<String>
+    display_lines: Vec<String>,
 }
 
 // We have to implement the "trait" GameState for our state object. This gives it a callback
@@ -26,22 +26,17 @@ impl GameState for State {
     fn tick(&mut self, ctx: &mut Rltk) {
         ctx.cls();
 
-        for (y,line) in self.display_lines.iter().enumerate() {
+        for (y, line) in self.display_lines.iter().enumerate() {
             ctx.print(0, y as i32, &line);
         }
 
         match ctx.key {
             None => {}
             Some(key) => {
-                self.display_lines.push(
-                    format!(
-                        "{} pressed, shift: {}, control: {}, alt: {}",
-                        key as i32,
-                        ctx.shift,
-                        ctx.control,
-                        ctx.alt
-                    )
-                );
+                self.display_lines.push(format!(
+                    "{} pressed, shift: {}, control: {}, alt: {}",
+                    key as i32, ctx.shift, ctx.control, ctx.alt
+                ));
                 while self.display_lines.len() > 49 {
                     self.display_lines.remove(0);
                 }
@@ -62,7 +57,7 @@ fn main() {
 
     // Now we create an empty state object.
     let gs: State = State {
-        display_lines : vec!["Press keys and modifiers to see code combinations.".to_string()]
+        display_lines: vec!["Press keys and modifiers to see code combinations.".to_string()],
     };
 
     // Call into RLTK to run the main loop. This handles rendering, and calls back into State's tick

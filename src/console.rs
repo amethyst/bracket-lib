@@ -1,4 +1,4 @@
-use super::{rex::XpLayer, Font, Shader, RGB, hal};
+use super::{hal, rex::XpLayer, Font, Shader, RGB};
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
@@ -92,6 +92,6 @@ pub trait Console {
     fn set_offset(&mut self, x: f32, y: f32);
 }
 
-pub fn log<S:ToString>(message: S) {
+pub fn log<S: ToString>(message: S) {
     hal::log(&message.to_string());
 }

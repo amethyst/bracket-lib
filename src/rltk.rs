@@ -1,7 +1,7 @@
 use super::GameState;
 use super::{
-    font, hal::Framebuffer, rex::XpFile, rex::XpLayer, Console, Shader,
-    SimpleConsole, VirtualKeyCode, RGB, RltkPlatform, hal::init_raw
+    font, hal::init_raw, hal::Framebuffer, rex::XpFile, rex::XpLayer, Console, RltkPlatform,
+    Shader, SimpleConsole, VirtualKeyCode, RGB,
 };
 
 /// A display console, used internally to provide console render support.
@@ -14,7 +14,7 @@ pub struct DisplayConsole {
 
 /// An RLTK context.
 pub struct Rltk {
-    pub backend : RltkPlatform,
+    pub backend: RltkPlatform,
     pub width_pixels: u32,
     pub height_pixels: u32,
     pub fonts: Vec<font::Font>,
@@ -28,7 +28,7 @@ pub struct Rltk {
     pub left_click: bool,
     pub shift: bool,
     pub control: bool,
-    pub alt: bool,    
+    pub alt: bool,
     pub quitting: bool,
     pub post_scanlines: bool,
     pub post_screenburn: bool,
@@ -110,7 +110,7 @@ impl Rltk {
     /// Sets the currently active console number.
     pub fn set_active_console(&mut self, id: usize) {
         self.active_console = id;
-    }    
+    }
 
     /// Applies the current physical mouse position to the active console, and translates
     /// the coordinates into that console's coordinate space.
@@ -119,8 +119,16 @@ impl Rltk {
         let max_sizes = self.consoles[self.active_console].console.get_char_size();
 
         (
-            iclamp((self.mouse_pos.0 as f32 / font_size.0 as f32) as i32, 0, max_sizes.0 as i32 - 1),
-            iclamp((self.mouse_pos.1 as f32 / font_size.1 as f32) as i32, 0, max_sizes.1 as i32 - 1)
+            iclamp(
+                (self.mouse_pos.0 as f32 / font_size.0 as f32) as i32,
+                0,
+                max_sizes.0 as i32 - 1,
+            ),
+            iclamp(
+                (self.mouse_pos.1 as f32 / font_size.1 as f32) as i32,
+                0,
+                max_sizes.1 as i32 - 1,
+            ),
         )
     }
 

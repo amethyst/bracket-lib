@@ -100,7 +100,7 @@ fn main() {
 
     // Then we initialize it; notice 80x25 (half the height, since 8x16 is twice as tall).
     // This actually returns the console number, but it's always going to be 1.
-    context.register_console(rltk::SparseConsole::init(80, 25, &context.gl), font);
+    context.register_console(rltk::SparseConsole::init(80, 25, &context.backend.gl), font);
 
     // Now we create an empty state object.
     let gs = State {

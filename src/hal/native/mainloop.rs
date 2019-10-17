@@ -1,17 +1,19 @@
+use super::super::super::{Console, GameState, Rltk};
 use super::super::*;
-use super::super::super::{Rltk, GameState, Console};
+use glow::HasContext;
 use glutin::{
     dpi::LogicalSize, event::Event, event::WindowEvent, event_loop::ControlFlow,
     event_loop::EventLoop, window::WindowBuilder, ContextBuilder,
 };
 use std::time::Instant;
-use glow::HasContext;
 
-const TICK_TYPE : ControlFlow = ControlFlow::Poll;
+const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
 pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     unsafe {
-        rltk.backend.gl.viewport(0, 0, rltk.width_pixels as i32, rltk.height_pixels as i32);
+        rltk.backend
+            .gl
+            .viewport(0, 0, rltk.width_pixels as i32, rltk.height_pixels as i32);
     }
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
@@ -61,9 +63,18 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                     wc.resize(physical);
                     rltk.resize_pixels(physical.width as u32, physical.height as u32);
                     unsafe {
-                        rltk.backend.gl.viewport(0, 0, physical.width as i32, physical.height as i32);
+                        rltk.backend.gl.viewport(
+                            0,
+                            0,
+                            physical.width as i32,
+                            physical.height as i32,
+                        );
                     }
-                    rltk.backend.platform.backing_buffer = Framebuffer::build_fbo(&rltk.backend.gl, physical.width as i32, physical.height as i32);
+                    rltk.backend.platform.backing_buffer = Framebuffer::build_fbo(
+                        &rltk.backend.gl,
+                        physical.width as i32,
+                        physical.height as i32,
+                    );
                 }
                 WindowEvent::RedrawRequested => {
                     //tock(&mut rltk, &mut gamestate, &mut frames, &mut prev_seconds, &mut prev_ms, &now);
@@ -90,9 +101,15 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                     ..
                 } => {
                     rltk.key = Some(*virtual_keycode);
-                    if modifiers.shift { rltk.shift = true; }
-                    if modifiers.alt { rltk.alt = true; }
-                    if modifiers.ctrl { rltk.control = true; }
+                    if modifiers.shift {
+                        rltk.shift = true;
+                    }
+                    if modifiers.alt {
+                        rltk.alt = true;
+                    }
+                    if modifiers.ctrl {
+                        rltk.control = true;
+                    }
                 }
 
                 _ => (),
@@ -153,7 +170,10 @@ fn tock<GS: GameState>(
 
     if rltk.post_scanlines {
         // Now we return to the primary screen
-        rltk.backend.platform.backing_buffer.default(&rltk.backend.gl);
+        rltk.backend
+            .platform
+            .backing_buffer
+            .default(&rltk.backend.gl);
         unsafe {
             if rltk.post_scanlines {
                 rltk.shaders[3].useProgram(&rltk.backend.gl);
@@ -168,9 +188,13 @@ fn tock<GS: GameState>(
             } else {
                 rltk.shaders[2].useProgram(&rltk.backend.gl);
             }
-            rltk.backend.gl.bind_vertex_array(Some(rltk.backend.platform.quad_vao));
-            rltk.backend.gl
-                .bind_texture(glow::TEXTURE_2D, Some(rltk.backend.platform.backing_buffer.texture));
+            rltk.backend
+                .gl
+                .bind_vertex_array(Some(rltk.backend.platform.quad_vao));
+            rltk.backend.gl.bind_texture(
+                glow::TEXTURE_2D,
+                Some(rltk.backend.platform.backing_buffer.texture),
+            );
             rltk.backend.gl.draw_arrays(glow::TRIANGLES, 0, 6);
         }
     }

@@ -1,4 +1,4 @@
-use super::{color, gui_helpers, rex::XpLayer, Console, Font, Shader, Tile, RGB, hal};
+use super::{color, gui_helpers, hal, rex::XpLayer, Console, Font, Shader, Tile, RGB};
 use glow::HasContext;
 use std::mem;
 
@@ -15,7 +15,7 @@ pub struct SimpleConsole {
     offset_x: f32,
     offset_y: f32,
 
-    backend : hal::SimpleConsoleBackend
+    backend: hal::SimpleConsoleBackend,
 }
 
 impl SimpleConsole {
@@ -36,17 +36,24 @@ impl SimpleConsole {
             width,
             height,
             tiles,
-            is_dirty: true,            
+            is_dirty: true,
             offset_x: 0.0,
             offset_y: 0.0,
-            backend : hal::SimpleConsoleBackend::new(gl, width as usize, height as usize)
-        };        
+            backend: hal::SimpleConsoleBackend::new(gl, width as usize, height as usize),
+        };
 
         Box::new(new_console)
     }
 
     fn rebuild_vertices(&mut self, gl: &glow::Context) {
-        self.backend.rebuild_vertices(gl, self.height, self.width, &self.tiles, self.offset_x, self.offset_y);
+        self.backend.rebuild_vertices(
+            gl,
+            self.height,
+            self.width,
+            &self.tiles,
+            self.offset_x,
+            self.offset_y,
+        );
     }
 }
 
@@ -69,7 +76,8 @@ impl Console for SimpleConsole {
 
     /// Sends the console to OpenGL.
     fn gl_draw(&mut self, font: &Font, shader: &Shader, gl: &glow::Context) {
-        self.backend.gl_draw(font, shader, gl, self.width, self.height);
+        self.backend
+            .gl_draw(font, shader, gl, self.width, self.height);
         self.is_dirty = false;
     }
 

@@ -1,12 +1,14 @@
 mod quadrender;
 pub use quadrender::*;
-pub mod shader_strings;
 mod init;
+pub mod shader_strings;
 pub use init::*;
 mod mainloop;
 pub use mainloop::*;
 mod simple_console_backing;
 pub use simple_console_backing::*;
+mod sparse_console_backing;
+pub use sparse_console_backing::*;
 
 use glutin::{
     dpi::LogicalSize, event::Event, event::WindowEvent, event_loop::ControlFlow,

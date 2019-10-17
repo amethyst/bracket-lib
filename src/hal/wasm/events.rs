@@ -10,9 +10,15 @@ pub static mut GLOBAL_MODIFIERS: (bool, bool, bool) = (false, false, false);
 pub fn on_key(key: web_sys::KeyboardEvent) {
     //super::console::log("Key Event");
     unsafe {
-        if key.get_modifier_state("Shift") { GLOBAL_MODIFIERS.0 = true; }
-        if key.get_modifier_state("Control") { GLOBAL_MODIFIERS.1 = true; }
-        if key.get_modifier_state("Alt") { GLOBAL_MODIFIERS.2 = true; }
+        if key.get_modifier_state("Shift") {
+            GLOBAL_MODIFIERS.0 = true;
+        }
+        if key.get_modifier_state("Control") {
+            GLOBAL_MODIFIERS.1 = true;
+        }
+        if key.get_modifier_state("Alt") {
+            GLOBAL_MODIFIERS.2 = true;
+        }
 
         let code = key.key_code();
         match code {
@@ -118,4 +124,3 @@ pub fn on_mouse_down(_mouse: web_sys::MouseEvent) {
         GLOBAL_LEFT_CLICK = true;
     }
 }
-

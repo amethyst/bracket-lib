@@ -7,6 +7,7 @@ mod fastnoise;
 mod fieldofview;
 mod geometry;
 mod gui_helpers;
+mod hal;
 mod pathfinding;
 mod random;
 pub mod rex;
@@ -14,7 +15,6 @@ mod rltk;
 mod simple_console;
 mod sparse_console;
 pub mod textblock;
-mod hal;
 pub use hal::*;
 
 pub use self::codepage437::{string_to_cp437, to_cp437};

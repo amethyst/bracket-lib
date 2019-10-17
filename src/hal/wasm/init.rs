@@ -1,9 +1,13 @@
-pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, _window_title: S) -> super::super::super::Rltk {
+pub fn init_raw<S: ToString>(
+    width_pixels: u32,
+    height_pixels: u32,
+    _window_title: S,
+) -> super::super::super::Rltk {
+    use super::super::super::Rltk;
+    use super::super::*;
+    use super::*;
     use wasm_bindgen::prelude::*;
     use wasm_bindgen::JsCast;
-    use super::super::*;
-    use super::super::super::Rltk;
-    use super::*;
 
     let canvas = web_sys::window()
         .unwrap()
@@ -84,12 +88,13 @@ pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, _window_titl
     let quad_vao = setup_quad(&gl);
 
     Rltk {
-        backend: RltkPlatform{ gl, 
-            platform: PlatformGL{ 
-                quad_vao, 
-                context_wrapper: Some(WrappedContext {}), 
+        backend: RltkPlatform {
+            gl,
+            platform: PlatformGL {
+                quad_vao,
+                context_wrapper: Some(WrappedContext {}),
                 backing_buffer: backing_fbo,
-            },        
+            },
         },
         width_pixels,
         height_pixels,
@@ -105,7 +110,7 @@ pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, _window_titl
         shift: false,
         alt: false,
         control: false,
-        quitting: false,        
+        quitting: false,
         post_scanlines: false,
         post_screenburn: false,
     }
