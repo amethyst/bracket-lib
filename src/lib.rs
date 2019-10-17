@@ -5,7 +5,6 @@ mod color;
 pub mod console;
 mod fastnoise;
 mod fieldofview;
-mod font;
 mod geometry;
 mod gui_helpers;
 mod pathfinding;

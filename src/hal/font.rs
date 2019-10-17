@@ -1,4 +1,4 @@
-use super::embedding;
+use super::super::embedding;
 use glow::HasContext;
 use image::GenericImageView;
 

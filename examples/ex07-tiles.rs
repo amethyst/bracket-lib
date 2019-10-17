@@ -213,11 +213,11 @@ fn main() {
     );
     let font = context.register_font(rltk::Font::load("resources/example_tiles.png", (16, 16)));
     context.register_console(
-        rltk::SimpleConsole::init(WIDTH as u32, HEIGHT as u32, &context.gl),
+        rltk::SimpleConsole::init(WIDTH as u32, HEIGHT as u32, &context.backend.gl),
         font,
     );
     context.register_console_no_bg(
-        rltk::SparseConsole::init(WIDTH as u32, HEIGHT as u32, &context.gl),
+        rltk::SparseConsole::init(WIDTH as u32, HEIGHT as u32, &context.backend.gl),
         font,
     );
     let gs = State::new();
