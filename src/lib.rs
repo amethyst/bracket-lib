@@ -75,7 +75,7 @@ macro_rules! link_resource {
 pub use glutin::event::VirtualKeyCode;
 
 #[cfg(target_arch = "wasm32")]
-pub use platform_specific::VirtualKeyCode;
+pub use hal::VirtualKeyCode;
 
 /// Implement this trait on your state struct, so the engine knows what to call on each tick.
 pub trait GameState: 'static {

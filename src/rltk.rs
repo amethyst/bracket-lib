@@ -28,10 +28,8 @@ pub struct Rltk {
     pub left_click: bool,
     pub shift: bool,
     pub control: bool,
-    pub alt: bool,
-    pub context_wrapper: Option<platform_specific::WrappedContext>,
+    pub alt: bool,    
     pub quitting: bool,
-    pub backing_buffer: Framebuffer,
     pub post_scanlines: bool,
     pub post_screenburn: bool,
 }
