@@ -1,5 +1,6 @@
 mod quadrender;
 pub use quadrender::*;
+pub mod shader_strings;
 
 use glutin::{
     dpi::LogicalSize, event::Event, event::WindowEvent, event_loop::ControlFlow,
