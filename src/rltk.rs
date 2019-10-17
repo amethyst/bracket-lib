@@ -1,7 +1,7 @@
 use super::GameState;
 use super::{
     font, framebuffer::Framebuffer, platform_specific, rex::XpFile, rex::XpLayer, Console, Shader,
-    SimpleConsole, VirtualKeyCode, RGB,
+    SimpleConsole, VirtualKeyCode, RGB, RltkPlatform
 };
 
 /// A display console, used internally to provide console render support.
@@ -14,7 +14,7 @@ pub struct DisplayConsole {
 
 /// An RLTK context.
 pub struct Rltk {
-    pub gl: glow::Context,
+    pub backend : RltkPlatform,
     pub width_pixels: u32,
     pub height_pixels: u32,
     pub fonts: Vec<font::Font>,
@@ -32,13 +32,6 @@ pub struct Rltk {
     pub context_wrapper: Option<platform_specific::WrappedContext>,
     pub quitting: bool,
     pub backing_buffer: Framebuffer,
-
-    #[cfg(not(target_arch = "wasm32"))]
-    pub quad_vao: u32,
-
-    #[cfg(target_arch = "wasm32")]
-    pub quad_vao: glow::WebVertexArrayKey,
-
     pub post_scanlines: bool,
     pub post_screenburn: bool,
 }
@@ -60,7 +53,7 @@ impl Rltk {
         let mut context = Rltk::init_raw(width_chars * 8, height_chars * 8, window_title);
         let font = context.register_font(font::Font::load(&font_path.to_string(), (8, 8)));
         context.register_console(
-            SimpleConsole::init(width_chars, height_chars, &context.gl),
+            SimpleConsole::init(width_chars, height_chars, &context.backend.gl),
             font,
         );
         context
@@ -77,7 +70,7 @@ impl Rltk {
         let mut context = Rltk::init_raw(width_chars * 8, height_chars * 16, window_title);
         let font = context.register_font(font::Font::load(&font_path.to_string(), (8, 16)));
         context.register_console(
-            SimpleConsole::init(width_chars, height_chars, &context.gl),
+            SimpleConsole::init(width_chars, height_chars, &context.backend.gl),
             font,
         );
         context
@@ -85,8 +78,8 @@ impl Rltk {
 
     /// Registers a font, and returns its handle number. Also loads it into OpenGL.
     pub fn register_font(&mut self, mut font: font::Font) -> usize {
-        font.setup_gl_texture(&self.gl);
-        font.bind_texture(&self.gl);
+        font.setup_gl_texture(&self.backend.gl);
+        font.bind_texture(&self.backend.gl);
         self.fonts.push(font);
         self.fonts.len() - 1
     }

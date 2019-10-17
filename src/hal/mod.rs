@@ -10,3 +10,9 @@ mod wasm;
 
 #[cfg(target_arch = "wasm32")]
 pub use wasm::*;
+
+/// Provides a base abstract platform for RLTK to run on, with specialized content.
+pub struct RltkPlatform {
+    pub gl: glow::Context,
+    pub platform : PlatformGL
+}
