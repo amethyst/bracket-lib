@@ -1,7 +1,7 @@
 use super::GameState;
 use super::{
     font, hal::Framebuffer, platform_specific, rex::XpFile, rex::XpLayer, Console, Shader,
-    SimpleConsole, VirtualKeyCode, RGB, RltkPlatform
+    SimpleConsole, VirtualKeyCode, RGB, RltkPlatform, hal::init_raw
 };
 
 /// A display console, used internally to provide console render support.
@@ -37,7 +37,7 @@ pub struct Rltk {
 impl Rltk {
     /// Initializes an OpenGL context and a window, stores the info in the Rltk structure.
     pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, window_title: S) -> Rltk {
-        platform_specific::init_raw(width_pixels, height_pixels, window_title)
+        init_raw(width_pixels, height_pixels, window_title)
     }
 
     /// Quick initialization for when you just want an 8x8 font terminal

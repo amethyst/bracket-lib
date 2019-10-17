@@ -93,5 +93,5 @@ pub trait Console {
 }
 
 pub fn log<S:ToString>(message: S) {
-    hal::log(message);
+    hal::log(&message.to_string());
 }

@@ -3,6 +3,10 @@ pub use keycodes::*;
 mod quadrender;
 pub use quadrender::*;
 pub mod shader_strings;
+mod init;
+pub use init::*;
+mod events;
+pub use events::*;
 
 pub struct PlatformGL {
     pub quad_vao: glow::WebVertexArrayKey,
