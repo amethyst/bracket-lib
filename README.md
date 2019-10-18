@@ -204,6 +204,12 @@ Run this example with `cargo run --example ex14-dwarfmap` from the root of the c
 
 [Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex16/)
 
+### Example 17 (Web Assembly Only): Binding HTML Buttons
+
+[Example 17 - External HTML Buttons](examples/ex17-wasm-external.rs) demonstrates the new (as of 0.5.0) ability to add bindings to buttons on the HTML hosting the web assembly, and have them fire events in the new `web_button` context field.
+
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex17/)
+
 ## Building with WASM
 
 RLTK newly supports web assembly (`WASM`). It's still rough around the edges, but it works. The build process ends up being a bit involved:
