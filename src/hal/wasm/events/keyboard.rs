@@ -1,12 +1,15 @@
-use super::VirtualKeyCode;
+use super::super::VirtualKeyCode;
 
-#[cfg(target_arch = "wasm32")]
+/// Provides a global variable for keyboard events to be written to. I'm not really
+/// a fan of using globals, but it was hard to find an alternative given the separation
+/// between the web-side and the wasm side.
 pub static mut GLOBAL_KEY: Option<VirtualKeyCode> = None;
 
-#[cfg(target_arch = "wasm32")]
+/// Global for handling modifier key-state.
 pub static mut GLOBAL_MODIFIERS: (bool, bool, bool) = (false, false, false);
 
-#[cfg(target_arch = "wasm32")]
+/// Handler for on_key events from the browser. Sets the global variables, which are then
+/// referenced by the main loop.
 pub fn on_key(key: web_sys::KeyboardEvent) {
     //super::console::log("Key Event");
     unsafe {
@@ -99,28 +102,8 @@ pub fn on_key(key: web_sys::KeyboardEvent) {
             222 => GLOBAL_KEY = Some(VirtualKeyCode::Apostrophe),
             _ => {
                 GLOBAL_KEY = None;
-                super::super::super::console::log(&format!("Keycode: {}", code));
+                crate::console::log(&format!("Keycode: {}", code));
             }
         }
-    }
-}
-
-#[cfg(target_arch = "wasm32")]
-pub static mut GLOBAL_MOUSE_POS: (i32, i32) = (0, 0);
-
-#[cfg(target_arch = "wasm32")]
-pub fn on_mouse_move(mouse: web_sys::MouseEvent) {
-    unsafe {
-        GLOBAL_MOUSE_POS = (mouse.offset_x(), mouse.offset_y());
-    }
-}
-
-#[cfg(target_arch = "wasm32")]
-pub static mut GLOBAL_LEFT_CLICK: bool = false;
-
-#[cfg(target_arch = "wasm32")]
-pub fn on_mouse_down(_mouse: web_sys::MouseEvent) {
-    unsafe {
-        GLOBAL_LEFT_CLICK = true;
     }
 }
