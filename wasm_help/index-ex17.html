@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+  </head>
+  <body>
+    <canvas id="canvas" width="640" height="480"></canvas>
+
+    <table>
+      <tbody>
+      <tr>
+        <!-- button tag can be buggy so we use input type=button -->
+        <!-- using hex values for Unicode characters -->
+        <td><input id="go_nw" type="button" value="&#9700" > </td>
+        <!-- for consistency -->
+        <td><input id="go_n" type="button" value="&#9650"> </td>
+        <td><input id="go_ne" type="button" value="&#9701" > </td>
+        </tr>
+        <tr>
+        <td><input id="go_w" type="button" value= "&#9664"> </td>
+        <!-- midline ellipsis -->
+        <td><input id="go_wait" type="button" value= "&#8943"> </td>
+        <td><input id="go_e" type="button" value= "&#9654"> </td>
+        </tr>
+        <tr>
+        <td><input id="go_sw" type="button" value= "&#9699"> </td>
+        <!-- for consistency -->
+        <td><input id="go_s" type="button" value= "&#9660"> </td>
+        <td><input id="go_se" type="button" value="&#9698"> </td>
+      </tr>
+      </tbody>
+      </table>
+
+    <script src="./myblob.js"></script>
+    <script>
+      window.addEventListener("load", async () => {
+        await wasm_bindgen("./myblob_bg.wasm");
+      });
+    </script>
+  </body>
+</html>

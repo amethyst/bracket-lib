@@ -29,6 +29,7 @@ pub struct Rltk {
     pub shift: bool,
     pub control: bool,
     pub alt: bool,
+    pub web_button: Option<String>,
     pub quitting: bool,
     pub post_scanlines: bool,
     pub post_screenburn: bool,

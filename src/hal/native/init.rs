@@ -86,6 +86,7 @@ pub fn init_raw<S: ToString>(
         shift: false,
         control: false,
         alt: false,
+        web_button: None,
         quitting: false,
         post_scanlines: false,
         post_screenburn: false,

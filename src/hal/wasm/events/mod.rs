@@ -2,6 +2,8 @@ mod keyboard;
 pub use keyboard::*;
 mod mouse;
 pub use mouse::*;
+mod external;
+pub use external::*;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 

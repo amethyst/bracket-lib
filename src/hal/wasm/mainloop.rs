@@ -22,6 +22,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
             rltk.shift = GLOBAL_MODIFIERS.0;
             rltk.control = GLOBAL_MODIFIERS.1;
             rltk.alt = GLOBAL_MODIFIERS.2;
+            rltk.web_button = GLOBAL_BUTTON.clone();
         }
 
         // Call the tock function
@@ -41,6 +42,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
             GLOBAL_KEY = None;
             GLOBAL_MODIFIERS = (false, false, false);
             GLOBAL_LEFT_CLICK = false;
+            GLOBAL_BUTTON = None;
         }
     });
 }
