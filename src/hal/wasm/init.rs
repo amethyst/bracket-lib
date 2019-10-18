@@ -20,30 +20,7 @@ pub fn init_raw<S: ToString>(
     canvas.set_width(width_pixels);
     canvas.set_height(height_pixels);
 
-    // Handle keyboard input
-    let key_callback = Closure::wrap(Box::new(|e: web_sys::KeyboardEvent| {
-        on_key(e.clone());
-    }) as Box<dyn FnMut(_)>);
-
-    let document = web_sys::window().unwrap();
-    document.set_onkeydown(Some(key_callback.as_ref().unchecked_ref()));;
-    key_callback.forget();
-
-    // Handle mouse moving
-    let mousemove_callback = Closure::wrap(Box::new(|e: web_sys::MouseEvent| {
-        on_mouse_move(e.clone());
-    }) as Box<dyn FnMut(_)>);
-
-    canvas.set_onmousemove(Some(mousemove_callback.as_ref().unchecked_ref()));;
-    mousemove_callback.forget();
-
-    // Handle mouse clicking
-    let mouseclick_callback = Closure::wrap(Box::new(|e: web_sys::MouseEvent| {
-        on_mouse_down(e.clone());
-    }) as Box<dyn FnMut(_)>);
-
-    canvas.set_onmousedown(Some(mouseclick_callback.as_ref().unchecked_ref()));;
-    mouseclick_callback.forget();
+    super::bind_wasm_events(&canvas);
 
     let webgl2_context = canvas
         .get_context("webgl2")
