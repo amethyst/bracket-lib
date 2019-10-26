@@ -184,7 +184,7 @@ Run this example with `cargo run --example ex13-textblock` from the root of the 
 
 ![Animated GIF](/screenshots/RLTK_RS_EXAMPLE14.gif)
 
-[Example 14 - Text Blocks](examples/ex14-dwarfmap.rs) uses the `Algorithm3D` trait to provide A* pathing in three dimensions, and implements a simple Dwarf Fortress (with DFHack "layer diving") renderer to display a noise-generated 3D map and traverse it. This also uses the noise system.
+[Example 14 - Dwarf Fortress-Style 3D](examples/ex14-dwarfmap.rs) uses the `Algorithm3D` trait to provide A* pathing in three dimensions, and implements a simple Dwarf Fortress (with DFHack "layer diving") renderer to display a noise-generated 3D map and traverse it. This also uses the noise system.
 
 Run this example with `cargo run --example ex14-dwarfmap` from the root of the cloned repository.
 
