@@ -3,7 +3,7 @@ use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
 
 /// Bail out if the A* search exceeds this many steps.
-const MAX_ASTAR_STEPS: i32 = 2048;
+const MAX_ASTAR_STEPS: i32 = 65536;
 
 /// Request an A-Star search. The start and end are specified as index numbers (compatible with your
 /// BaseMap implementation), and it requires access to your map so as to call distance and exit
