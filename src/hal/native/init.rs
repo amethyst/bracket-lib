@@ -21,6 +21,7 @@ pub fn init_raw<S: ToString>(
         ));
     let windowed_context = ContextBuilder::new()
         .with_vsync(true)
+        .with_srgb(true)
         .build_windowed(wb, &el)
         .unwrap();
     let windowed_context = unsafe { windowed_context.make_current().unwrap() };
