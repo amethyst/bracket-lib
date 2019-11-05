@@ -31,7 +31,7 @@ impl Framebuffer {
                 height,
                 0,
                 glow::RGBA,
-                glow::UNSIGNED_BYTE,
+                glow::FLOAT,
                 None,
             );
             gl.tex_parameter_i32(
