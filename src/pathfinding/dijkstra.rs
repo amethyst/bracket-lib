@@ -143,7 +143,7 @@ impl DijkstraMap {
                             exit.0,
                             &mut open_list,
                             &mut closed_list,
-                            depth + exit.1,
+                            depth + 1.0,
                         );
                     }
                 }
