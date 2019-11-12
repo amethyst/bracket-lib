@@ -98,6 +98,7 @@ pub fn on_key(key: web_sys::KeyboardEvent) {
             191 => GLOBAL_KEY = Some(VirtualKeyCode::Slash),
             192 => GLOBAL_KEY = Some(VirtualKeyCode::Grave),
             219 => GLOBAL_KEY = Some(VirtualKeyCode::LBracket),
+            220 => GLOBAL_KEY = Some(VirtualKeyCode::Backslash),
             221 => GLOBAL_KEY = Some(VirtualKeyCode::RBracket),
             222 => GLOBAL_KEY = Some(VirtualKeyCode::Apostrophe),
             _ => {
