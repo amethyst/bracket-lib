@@ -37,11 +37,18 @@ pub mod embedding;
 macro_rules! add_wasm_support {
     () => {
         #[cfg(target_arch = "wasm32")]
+        extern crate console_error_panic_hook;
+
+        #[cfg(target_arch = "wasm32")]
+        use std::panic;
+
+        #[cfg(target_arch = "wasm32")]
         use wasm_bindgen::prelude::*;
 
         #[cfg(target_arch = "wasm32")]
         #[cfg_attr(target_arch = "wasm32", wasm_bindgen(start))]
         pub fn wasm_main() {
+            panic::set_hook(Box::new(console_error_panic_hook::hook));
             main();
         }
     };
