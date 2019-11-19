@@ -5,7 +5,7 @@ use std::mem;
 
 pub struct SimpleConsoleBackend {
     vertex_buffer: Vec<f32>,
-    index_buffer: Vec<i32>,
+    index_buffer: Vec<u16>,
     vbo: glow::WebBufferKey,
     vao: glow::WebVertexArrayKey,
     ebo: glow::WebBufferKey,
@@ -155,7 +155,7 @@ impl SimpleConsoleBackend {
         let step_x: f32 = 2.0f32 / width as f32;
         let step_y: f32 = 2.0f32 / height as f32;
 
-        let mut index_count: i32 = 0;
+        let mut index_count: u16 = 0;
         let mut screen_y: f32 = -1.0f32;
         for y in 0..height {
             let mut screen_x: f32 = -1.0f32;
@@ -253,17 +253,19 @@ impl SimpleConsoleBackend {
     ) {
         unsafe {
             // bind Texture
+            gl.active_texture(glow::TEXTURE0);
             font.bind_texture(gl);
 
             // render container
             shader.useProgram(gl);
+            shader.setInt(gl, "texture1", 0);
             gl.bind_vertex_array(Some(self.vao));
             gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
             gl.draw_elements(
                 glow::TRIANGLES,
                 (width * height * 6) as i32,
-                glow::UNSIGNED_INT,
+                glow::UNSIGNED_SHORT,
                 0,
             );
         }
