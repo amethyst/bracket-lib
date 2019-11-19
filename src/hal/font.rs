@@ -88,7 +88,7 @@ impl Font {
             let img_orig = Font::load_image(&self.bitmap_file);
             let img = img_orig.flipv();
             let data = img.raw_pixels();
-            let format = match (img.color()){
+            let format = match img.color() {
                 ColorType::RGB(_) => glow::RGB,
                 ColorType::RGBA(_) => glow::RGBA,
                 _ => { panic!("unexpected image format {:?} for {}", img.color(), self.bitmap_file); }
@@ -144,7 +144,7 @@ impl Font {
             let img_orig = Font::load_image(&self.bitmap_file);
             let img = img_orig.flipv();
             let data = img.raw_pixels();
-            let format = match (img.color()){
+            let format = match img.color() {
                 ColorType::RGB(_) => glow::RGB,
                 ColorType::RGBA(_) => glow::RGBA,
                 _ => { panic!("unexpected image format {:?} for {}", img.color(), self.bitmap_file); }
