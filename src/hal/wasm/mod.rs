@@ -15,9 +15,7 @@ mod sparse_console_backing;
 pub use sparse_console_backing::*;
 
 pub struct PlatformGL {
-    pub quad_vao: glow::WebVertexArrayKey,
     pub context_wrapper: Option<WrappedContext>,
-    pub backing_buffer: super::Framebuffer,
 }
 
 pub struct WrappedContext {}

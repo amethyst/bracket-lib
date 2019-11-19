@@ -47,6 +47,7 @@ pub fn init_raw<S: ToString>(
         shader_strings::CONSOLE_NO_BG_VS,
         shader_strings::CONSOLE_NO_BG_FS,
     ));
+    /*
     shaders.push(Shader::new(
         &gl,
         shader_strings::BACKING_VS,
@@ -56,21 +57,13 @@ pub fn init_raw<S: ToString>(
         &gl,
         shader_strings::SCANLINES_VS,
         shader_strings::SCANLINES_FS,
-    ));
-
-    // Build the backing frame-buffer
-    let backing_fbo = Framebuffer::build_fbo(&gl, width_pixels as i32, height_pixels as i32);
-
-    // Build a simple quad rendering vao
-    let quad_vao = setup_quad(&gl);
+    ));*/
 
     Rltk {
         backend: RltkPlatform {
             gl,
             platform: PlatformGL {
-                quad_vao,
                 context_wrapper: Some(WrappedContext {}),
-                backing_buffer: backing_fbo,
             },
         },
         width_pixels,
