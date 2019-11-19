@@ -209,10 +209,12 @@ impl SparseConsoleBackend {
     ) {
         unsafe {
             // bind Texture
+            gl.active_texture(glow::TEXTURE0);
             font.bind_texture(gl);
 
             // render container
             shader.useProgram(gl);
+            shader.setInt(gl, "texture1", 0);
             gl.bind_vertex_array(Some(self.vao));
             gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));

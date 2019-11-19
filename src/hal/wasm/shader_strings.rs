@@ -1,15 +1,15 @@
 pub static BACKING_FS: &str = r#"#version 300 es
 // Backing FS
-precision highp float;
+precision mediump float;
 out vec4 FragColor;
 
 in vec2 TexCoords;
 
-uniform sampler2D screenTexture;
+uniform sampler2D texture1;
 
 void main()
 {
-    vec3 col = texture(screenTexture, TexCoords).rgb;
+    vec3 col = texture(texture1, TexCoords).rgb;
     FragColor = vec4(col, 1.0);
 }"#;
 
@@ -29,7 +29,7 @@ void main()
 
 pub static CONSOLE_NO_BG_FS: &str = r#"#version 300 es
 // Console No Background Fragment
-precision highp float;
+precision mediump float;
 out vec4 FragColor;
 
 in vec3 ourColor;
@@ -67,7 +67,7 @@ void main()
 }"#;
 
 pub static CONSOLE_WITH_BG_FS : &str = r#"#version 300 es
-precision highp float;
+precision mediump float;
 in vec3 ourColor;
 in vec3 ourBackground;
 in vec2 TexCoord;
@@ -105,18 +105,18 @@ void main()
 
 pub static SCANLINES_FS : &str = r#"#version 300 es
 // Scanlines FS
-precision highp float;
+precision mediump float;
 out vec4 FragColor;
 
 in vec2 TexCoords;
 
-uniform sampler2D screenTexture;
+uniform sampler2D texture1;
 uniform vec3 screenSize;
 uniform bool screenBurn;
 
 void main()
 {
-    vec3 col = texture(screenTexture, TexCoords).rgb;
+    vec3 col = texture(texture1, TexCoords).rgb;
     float scanLine = mod(gl_FragCoord.y, 2.0) * 0.25;
     vec3 scanColor = col.rgb - scanLine;
 

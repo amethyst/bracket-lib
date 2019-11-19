@@ -84,9 +84,7 @@ fn tock<GS: GameState>(
 
     // Clear the screen
     unsafe {
-        rltk.backend
-            .gl
-            .viewport(0, 0, rltk.width_pixels as i32, rltk.height_pixels as i32);
+        rltk.backend.gl.viewport(0, 0, rltk.width_pixels as i32, rltk.height_pixels as i32);
         rltk.backend.gl.clear_color(0.2, 0.3, 0.3, 1.0);
         rltk.backend.gl.clear(glow::COLOR_BUFFER_BIT);
     }
@@ -115,12 +113,13 @@ fn tock<GS: GameState>(
                     0.0,
                 );
                 rltk.shaders[3].setBool(&rltk.backend.gl, "screenBurn", rltk.post_screenburn);
+                rltk.shaders[3].setInt(&rltk.backend.gl, "texture1", 0);
             } else {
                 rltk.shaders[2].useProgram(&rltk.backend.gl);
+                rltk.shaders[2].setInt(&rltk.backend.gl, "texture1", 0);
             }
-            rltk.backend
-                .gl
-                .bind_vertex_array(Some(rltk.backend.platform.quad_vao));
+            rltk.backend.gl.bind_vertex_array(Some(rltk.backend.platform.quad_vao));
+            &rltk.backend.gl.active_texture(glow::TEXTURE0);
             rltk.backend.gl.bind_texture(
                 glow::TEXTURE_2D,
                 Some(rltk.backend.platform.backing_buffer.texture),
