@@ -1,6 +1,6 @@
 use super::super::embedding;
 use glow::HasContext;
-use image::GenericImageView;
+use image::{GenericImageView, ColorType};
 
 #[derive(PartialEq, Clone)]
 /// RLTK's representation of a font or tileset file.
@@ -88,14 +88,19 @@ impl Font {
             let img_orig = Font::load_image(&self.bitmap_file);
             let img = img_orig.flipv();
             let data = img.raw_pixels();
+            let format = match img.color() {
+                ColorType::RGB(_) => glow::RGB,
+                ColorType::RGBA(_) => glow::RGBA,
+                _ => { panic!("unexpected image format {:?} for {}", img.color(), self.bitmap_file); }
+            };
             gl.tex_image_2d(
                 glow::TEXTURE_2D,
                 0,
-                glow::RGB as i32,
+                format as i32,
                 img.width() as i32,
                 img.height() as i32,
                 0,
-                glow::RGB,
+                format,
                 glow::UNSIGNED_BYTE,
                 Some(&data),
             );
@@ -139,14 +144,19 @@ impl Font {
             let img_orig = Font::load_image(&self.bitmap_file);
             let img = img_orig.flipv();
             let data = img.raw_pixels();
+            let format = match img.color() {
+                ColorType::RGB(_) => glow::RGB,
+                ColorType::RGBA(_) => glow::RGBA,
+                _ => { panic!("unexpected image format {:?} for {}", img.color(), self.bitmap_file); }
+            };
             gl.tex_image_2d(
                 glow::TEXTURE_2D,
                 0,
-                glow::RGB as i32,
+                format as i32,
                 img.width() as i32,
                 img.height() as i32,
                 0,
-                glow::RGB,
+                format,
                 glow::UNSIGNED_BYTE,
                 Some(&data),
             );
