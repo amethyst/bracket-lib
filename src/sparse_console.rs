@@ -39,7 +39,7 @@ impl SparseConsole {
             is_dirty: true,
             offset_x: 0.0,
             offset_y: 0.0,
-            backend: hal::SparseConsoleBackend::new(gl),
+            backend: hal::SparseConsoleBackend::new(gl, width as usize, height as usize),
         };
 
         Box::new(new_console)

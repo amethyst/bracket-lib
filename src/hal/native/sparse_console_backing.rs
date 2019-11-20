@@ -13,7 +13,7 @@ pub struct SparseConsoleBackend {
 }
 
 impl SparseConsoleBackend {
-    pub fn new(gl: &glow::Context) -> SparseConsoleBackend {
+    pub fn new(gl: &glow::Context, _width: usize, _height: usize) -> SparseConsoleBackend {
         let (vbo, vao, ebo) = SparseConsoleBackend::init_gl_for_console(gl);
         SparseConsoleBackend {
             vertex_buffer: Vec::new(),
