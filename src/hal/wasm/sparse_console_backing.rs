@@ -5,95 +5,99 @@ use glow::HasContext;
 use std::mem;
 
 pub struct SparseConsoleBackend {
-    vertex_buffer: Vec<f32>,
-    index_buffer: Vec<i32>,
-    vbo: glow::WebBufferKey,
-    vao: glow::WebVertexArrayKey,
-    ebo: glow::WebBufferKey,
+    charbuffer : glow::WebTextureKey,
+    background : glow::WebTextureKey
 }
 
 impl SparseConsoleBackend {
     pub fn new(gl: &glow::Context) -> SparseConsoleBackend {
-        let (vbo, vao, ebo) = SparseConsoleBackend::init_gl_for_console(gl);
-        SparseConsoleBackend {
-            vertex_buffer: Vec::new(),
-            index_buffer: Vec::new(),
-            vbo,
-            vao,
-            ebo,
-        }
-    }
-
-    fn init_gl_for_console(
-        gl: &glow::Context,
-    ) -> (
-        glow::WebBufferKey,
-        glow::WebVertexArrayKey,
-        glow::WebBufferKey,
-    ) {
-        let (vbo, vao, ebo);
-
+        let texture;
         unsafe {
-            // Generate buffers and arrays, as well as attributes.
-            vao = gl.create_vertex_array().unwrap();
-            vbo = gl.create_buffer().unwrap();
-            ebo = gl.create_buffer().unwrap();
-
-            gl.bind_vertex_array(Some(vao));
-
-            gl.bind_buffer(glow::ARRAY_BUFFER, Some(vbo));
-
-            let stride = 11 * mem::size_of::<f32>() as i32;
-            // position attribute
-            gl.vertex_attrib_pointer_f32(0, 3, glow::FLOAT, false, stride, 0);
-            gl.enable_vertex_attrib_array(0);
-            // color attribute
-            gl.vertex_attrib_pointer_f32(
-                1,
-                3,
-                glow::FLOAT,
-                false,
-                stride,
-                (3 * mem::size_of::<f32>()) as i32,
+            texture = gl.create_texture().unwrap();
+            gl.bind_texture(glow::TEXTURE_2D, Some(texture));
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_WRAP_S,
+                glow::CLAMP_TO_EDGE as i32,
+            ); // set texture wrapping to gl::REPEAT (default wrapping method)
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_WRAP_T,
+                glow::CLAMP_TO_EDGE as i32,
             );
-            gl.enable_vertex_attrib_array(1);
-            // bgcolor attribute
-            gl.vertex_attrib_pointer_f32(
-                2,
-                3,
-                glow::FLOAT,
-                false,
-                stride,
-                (6 * mem::size_of::<f32>()) as i32,
+            // set texture filtering parameters
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_MIN_FILTER,
+                glow::NEAREST as i32,
             );
-            gl.enable_vertex_attrib_array(2);
-            // texture coord attribute
-            gl.vertex_attrib_pointer_f32(
-                3,
-                2,
-                glow::FLOAT,
-                false,
-                stride,
-                (9 * mem::size_of::<f32>()) as i32,
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_MAG_FILTER,
+                glow::NEAREST as i32,
             );
-            gl.enable_vertex_attrib_array(3);
+
+            let data = vec![200u8; width * height * 4];
+            gl.tex_image_2d(
+                glow::TEXTURE_2D,
+                0,
+                glow::RGBA as i32,
+                width as i32,
+                height as i32,
+                0,
+                glow::RGBA,
+                glow::UNSIGNED_BYTE,
+                Some(&data.align_to::<u8>().1),
+            );
+        }
+
+        let texture2;
+        unsafe {
+            texture2 = gl.create_texture().unwrap();
+            gl.bind_texture(glow::TEXTURE_2D, Some(texture));
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_WRAP_S,
+                glow::CLAMP_TO_EDGE as i32,
+            ); // set texture wrapping to gl::REPEAT (default wrapping method)
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_WRAP_T,
+                glow::CLAMP_TO_EDGE as i32,
+            );
+            // set texture filtering parameters
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_MIN_FILTER,
+                glow::NEAREST as i32,
+            );
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_MAG_FILTER,
+                glow::NEAREST as i32,
+            );
+
+            let data = vec![200u8; width * height * 4];
+            gl.tex_image_2d(
+                glow::TEXTURE_2D,
+                0,
+                glow::RGBA as i32,
+                width as i32,
+                height as i32,
+                0,
+                glow::RGBA,
+                glow::UNSIGNED_BYTE,
+                Some(&data.align_to::<u8>().1),
+            );
+        }
+
+        let result = SparseConsoleBackend {
+            charbuffer : texture,
+            background : texture2
         };
-
-        (vbo, vao, ebo)
+        result
     }
 
-    /// Helper to push a point to the shader.
-    fn push_point(
-        vertex_buffer: &mut Vec<f32>,
-        x: f32,
-        y: f32,
-        fg: RGB,
-        bg: RGB,
-        ux: f32,
-        uy: f32,
-    ) {
-        vertex_buffer.extend_from_slice(&[x, y, 0.0, fg.r, fg.g, fg.b, bg.r, bg.g, bg.b, ux, uy]);
-    }
 
     /// Helper to build vertices for the sparse grid.
     pub fn rebuild_vertices(
@@ -105,97 +109,42 @@ impl SparseConsoleBackend {
         offset_y: f32,
         tiles: &Vec<SparseTile>,
     ) {
-        if tiles.is_empty() {
-            return;
-        }
-
-        self.vertex_buffer.clear();
-        self.index_buffer.clear();
-
-        let glyph_size_x: f32 = 1.0 / 16.0;
-        let glyph_size_y: f32 = 1.0 / 16.0;
-
-        let step_x: f32 = 2.0 / width as f32;
-        let step_y: f32 = 2.0 / height as f32;
-
-        let mut index_count: i32 = 0;
-        for t in tiles.iter() {
-            let x = t.idx % width as usize;
-            let y = t.idx / width as usize;
-
-            let screen_x = ((step_x * x as f32) - 1.0) + offset_x;
-            let screen_y = ((step_y * y as f32) - 1.0) + offset_y;
-            let fg = t.fg;
-            let bg = t.bg;
-            let glyph = t.glyph;
-            let glyph_x = glyph % 16;
-            let glyph_y = 16 - (glyph / 16);
-
-            let glyph_left = f32::from(glyph_x) * glyph_size_x;
-            let glyph_right = f32::from(glyph_x + 1) * glyph_size_x;
-            let glyph_top = f32::from(glyph_y) * glyph_size_y;
-            let glyph_bottom = f32::from(glyph_y - 1) * glyph_size_y;
-
-            SparseConsoleBackend::push_point(
-                &mut self.vertex_buffer,
-                screen_x + step_x,
-                screen_y + step_y,
-                fg,
-                bg,
-                glyph_right,
-                glyph_top,
-            );
-            SparseConsoleBackend::push_point(
-                &mut self.vertex_buffer,
-                screen_x + step_x,
-                screen_y,
-                fg,
-                bg,
-                glyph_right,
-                glyph_bottom,
-            );
-            SparseConsoleBackend::push_point(
-                &mut self.vertex_buffer,
-                screen_x,
-                screen_y,
-                fg,
-                bg,
-                glyph_left,
-                glyph_bottom,
-            );
-            SparseConsoleBackend::push_point(
-                &mut self.vertex_buffer,
-                screen_x,
-                screen_y + step_y,
-                fg,
-                bg,
-                glyph_left,
-                glyph_top,
-            );
-
-            self.index_buffer.push(index_count);
-            self.index_buffer.push(1 + index_count);
-            self.index_buffer.push(3 + index_count);
-            self.index_buffer.push(1 + index_count);
-            self.index_buffer.push(2 + index_count);
-            self.index_buffer.push(3 + index_count);
-
-            index_count += 4;
-        }
-
         unsafe {
-            gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
-            gl.buffer_data_u8_slice(
-                glow::ARRAY_BUFFER,
-                &self.vertex_buffer.align_to::<u8>().1,
-                glow::STATIC_DRAW,
+            let mut data = vec![0u8; width as usize * height as usize * 4];
+            let mut data2 = vec![0u8; width as usize * height as usize * 4];
+
+            for t in tiles.iter() {
+                let i = t.idx;
+                data[i*4] = t.glyph;
+                data[(i*4)+1] = (t.fg.r * 255.0) as u8;
+                data[(i*4)+2] = (t.fg.g * 255.0) as u8;
+                data[(i*4)+3] = (t.fg.b * 255.0) as u8;
+            }
+
+            gl.bind_texture(glow::TEXTURE_2D, Some(self.charbuffer));
+            gl.tex_image_2d(
+                glow::TEXTURE_2D,
+                0,
+                glow::RGBA as i32,
+                width as i32,
+                height as i32,
+                0,
+                glow::RGBA,
+                glow::UNSIGNED_BYTE,
+                Some(&data.align_to::<u8>().1),
             );
 
-            gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
-            gl.buffer_data_u8_slice(
-                glow::ELEMENT_ARRAY_BUFFER,
-                &self.index_buffer.align_to::<u8>().1,
-                glow::STATIC_DRAW,
+            gl.bind_texture(glow::TEXTURE_2D, Some(self.background));
+            gl.tex_image_2d(
+                glow::TEXTURE_2D,
+                0,
+                glow::RGBA as i32,
+                width as i32,
+                height as i32,
+                0,
+                glow::RGBA,
+                glow::UNSIGNED_BYTE,
+                Some(&data2.align_to::<u8>().1),
             );
         }
     }
@@ -208,22 +157,17 @@ impl SparseConsoleBackend {
         tiles: &Vec<SparseTile>,
     ) {
         unsafe {
-            // bind Texture
-            gl.active_texture(glow::TEXTURE0);
-            font.bind_texture(gl);
+            gl.active_texture(glow::TEXTURE1);
+            gl.bind_texture(glow::TEXTURE_2D, Some(self.charbuffer));
+            shader.setInt(gl, "glyphBuffer", 1);
 
-            // render container
-            shader.useProgram(gl);
-            shader.setInt(gl, "texture1", 0);
-            gl.bind_vertex_array(Some(self.vao));
-            gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
-            gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
-            gl.draw_elements(
-                glow::TRIANGLES,
-                (tiles.len() * 6) as i32,
-                glow::UNSIGNED_INT,
-                0,
-            );
+            gl.active_texture(glow::TEXTURE2);
+            gl.bind_texture(glow::TEXTURE_2D, Some(self.background));
+            shader.setInt(gl, "bgBuffer", 2);
+
+            shader.setVec3(gl, "font", font.width as f32 / 16.0, font.height as f32 / 16.0, 0.0);
+            shader.setBool(gl, "hasBackground", false);
+            gl.draw_arrays(glow::TRIANGLES, 0, 6);
         }
     }
 }
