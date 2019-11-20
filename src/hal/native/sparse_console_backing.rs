@@ -1,4 +1,4 @@
-use super::super::super::{Tile, RGB};
+use super::super::super::{RGB};
 use super::super::{font::Font, shader::Shader};
 use crate::sparse_console::SparseTile;
 use glow::HasContext;
@@ -97,7 +97,7 @@ impl SparseConsoleBackend {
         width: u32,
         offset_x: f32,
         offset_y: f32,
-        tiles: &Vec<SparseTile>,
+        tiles: &[SparseTile],
     ) {
         if tiles.is_empty() {
             return;
@@ -199,7 +199,7 @@ impl SparseConsoleBackend {
         font: &Font,
         shader: &Shader,
         gl: &glow::Context,
-        tiles: &Vec<SparseTile>,
+        tiles: &[SparseTile],
     ) {
         unsafe {
             // bind Texture

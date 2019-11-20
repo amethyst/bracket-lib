@@ -162,8 +162,8 @@ impl SimpleConsoleBackend {
         font: &Font,
         shader: &Shader,
         gl: &glow::Context,
-        width: u32,
-        height: u32,
+        _width: u32,
+        _height: u32,
     ) {
         unsafe {
             gl.active_texture(glow::TEXTURE1);

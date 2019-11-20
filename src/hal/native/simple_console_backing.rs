@@ -106,6 +106,7 @@ impl SimpleConsoleBackend {
     }
 
     /// Helper function to add all the elements required by the shader for a given point.
+    #[allow(clippy::too_many_arguments)]
     fn push_point(
         &mut self,
         x: f32,
@@ -137,7 +138,7 @@ impl SimpleConsoleBackend {
         gl: &glow::Context,
         height: u32,
         width: u32,
-        tiles: &Vec<Tile>,
+        tiles: &[Tile],
         offset_x: f32,
         offset_y: f32,
     ) {

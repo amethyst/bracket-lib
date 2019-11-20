@@ -93,8 +93,8 @@ fn tock<GS: GameState>(
 
         gl.active_texture(glow::TEXTURE0);
         &rltk.fonts[0].bind_texture(gl);
-        &rltk.shaders[2].setInt(gl, "texture1", 0);
-        &rltk.shaders[2].setVec3(gl, "font", 8.0, 8.0, 0.0);
+        &rltk.shaders[0].setInt(gl, "texture1", 0);
+        &rltk.shaders[0].setVec3(gl, "font", 8.0, 8.0, 0.0);
 
         gl.bind_vertex_array(Some(rltk.backend.platform.quad_vao));
         //gl.draw_arrays(glow::TRIANGLES, 0, 6);
@@ -103,7 +103,7 @@ fn tock<GS: GameState>(
     // Tell each console to draw itself
     for cons in &mut rltk.consoles {
         let font = &rltk.fonts[cons.font_index];
-        let shader = &rltk.shaders[2];
+        let shader = &rltk.shaders[0];
         unsafe {
             shader.setBool(&rltk.backend.gl, "showScanLines", rltk.post_scanlines);
             shader.setBool(&rltk.backend.gl, "screenBurn", rltk.post_screenburn);

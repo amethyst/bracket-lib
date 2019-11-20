@@ -2,8 +2,7 @@ use super::super::super::{Console, GameState, Rltk};
 use super::super::*;
 use glow::HasContext;
 use glutin::{
-    dpi::LogicalSize, event::Event, event::WindowEvent, event_loop::ControlFlow,
-    event_loop::EventLoop, window::WindowBuilder, ContextBuilder,
+    event::Event, event::WindowEvent, event_loop::ControlFlow
 };
 use std::time::Instant;
 

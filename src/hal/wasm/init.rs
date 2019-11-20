@@ -39,30 +39,9 @@ pub fn init_raw<S: ToString>(
 
     shaders.push(Shader::new(
         &gl,
-        shader_strings::CONSOLE_WITH_BG_VS,
-        shader_strings::CONSOLE_WITH_BG_FS,
-    ));
-    shaders.push(Shader::new(
-        &gl,
-        shader_strings::CONSOLE_NO_BG_VS,
-        shader_strings::CONSOLE_NO_BG_FS,
-    ));
-    shaders.push(Shader::new(
-        &gl,
         shader_strings::TEST_VS,
         shader_strings::TEST_FS,
     ));
-    /*
-    shaders.push(Shader::new(
-        &gl,
-        shader_strings::BACKING_VS,
-        shader_strings::BACKING_FS,
-    ));
-    shaders.push(Shader::new(
-        &gl,
-        shader_strings::SCANLINES_VS,
-        shader_strings::SCANLINES_FS,
-    ));*/
 
     let quad_vao = quadrender::setup_quad(&gl);
 

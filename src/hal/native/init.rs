@@ -1,6 +1,5 @@
 use glutin::{
-    dpi::LogicalSize, event::Event, event::WindowEvent, event_loop::ControlFlow,
-    event_loop::EventLoop, window::WindowBuilder, ContextBuilder,
+    dpi::LogicalSize, event_loop::EventLoop, window::WindowBuilder, ContextBuilder,
 };
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -65,7 +64,7 @@ pub fn init_raw<S: ToString>(
         backend: RltkPlatform {
             gl,
             platform: PlatformGL {
-                quad_vao: quad_vao,
+                quad_vao,
                 context_wrapper: Some(WrappedContext {
                     el,
                     wc: windowed_context,

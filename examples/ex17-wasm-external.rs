@@ -10,6 +10,7 @@ use rltk::{Console, GameState, Rltk, VirtualKeyCode, RGB};
 // We'll allow map tiles to be either a wall or a floor. We're deriving PartialEq so we don't
 // have to match on it every time. We'll make it a copy type because it's really just an int.
 #[derive(PartialEq, Copy, Clone)]
+#[allow(dead_code)]
 enum TileType {
     Wall,
     Floor,
@@ -37,6 +38,7 @@ pub fn idx_xy(idx: usize) -> (i32, i32) {
 // Since we have some content, we should also include a map builder. A 'new'
 // function is a common Rust way to do this.
 impl State {
+    #[allow(dead_code)]
     pub fn new() -> State {
         let mut state = State {
             map: vec![TileType::Floor; 80 * 50],

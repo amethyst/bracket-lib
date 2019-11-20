@@ -161,7 +161,7 @@ impl SparseConsoleBackend {
         font: &Font,
         shader: &Shader,
         gl: &glow::Context,
-        tiles: &Vec<SparseTile>,
+        _tiles: &Vec<SparseTile>,
     ) {
         unsafe {
             gl.active_texture(glow::TEXTURE1);

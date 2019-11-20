@@ -1,6 +1,6 @@
 use super::{color, gui_helpers, hal, rex::XpLayer, Console, Font, Shader, Tile, RGB};
-use glow::HasContext;
-use std::mem;
+//use glow::HasContext;
+//use std::mem;
 
 /// A simple console with background color.
 pub struct SimpleConsole {

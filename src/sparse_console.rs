@@ -1,7 +1,7 @@
 use super::{gui_helpers, hal, rex::XpColor, rex::XpLayer, Console, Font, Shader, RGB};
 //use glow::types::*;
-use glow::HasContext;
-use std::mem;
+//use glow::HasContext;
+//use std::mem;
 
 /// Internal storage structure for sparse tiles.
 pub struct SparseTile {
