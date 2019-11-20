@@ -95,13 +95,16 @@ void main()
 }"#;
 
 pub static TEST_VS : &str = r#"#version 300 es
+precision mediump float;
 layout(location = 0) in vec2 vertexPosition_modelspace;
 layout(location = 1) in vec2 aTex;
 
 out vec2 TexCoords;
+uniform vec3 offset;
+uniform vec3 font;
 
 void main(){
-    gl_Position = vec4(vertexPosition_modelspace, 0.0, 1.0);
+    gl_Position = vec4(vertexPosition_modelspace + floor(offset.rg * font.rg), 0.0, 1.0);
     TexCoords = aTex;
 }
 "#;

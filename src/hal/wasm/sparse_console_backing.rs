@@ -6,7 +6,9 @@ use std::mem;
 
 pub struct SparseConsoleBackend {
     charbuffer : glow::WebTextureKey,
-    background : glow::WebTextureKey
+    background : glow::WebTextureKey,
+    offset_x : f32,
+    offset_y : f32
 }
 
 impl SparseConsoleBackend {
@@ -93,7 +95,9 @@ impl SparseConsoleBackend {
 
         let result = SparseConsoleBackend {
             charbuffer : texture,
-            background : texture2
+            background : texture2,
+            offset_x : 0.0,
+            offset_y : 0.0
         };
         result
     }
@@ -111,7 +115,7 @@ impl SparseConsoleBackend {
     ) {
         unsafe {
             let mut data = vec![0u8; width as usize * height as usize * 4];
-            let mut data2 = vec![0u8; width as usize * height as usize * 4];
+            let data2 = vec![0u8; width as usize * height as usize * 4];
 
             for t in tiles.iter() {
                 let i = t.idx;
@@ -147,6 +151,9 @@ impl SparseConsoleBackend {
                 Some(&data2.align_to::<u8>().1),
             );
         }
+
+        self.offset_x = offset_x / width as f32;
+        self.offset_y = offset_y / height as f32;
     }
 
     pub fn gl_draw(
@@ -167,6 +174,7 @@ impl SparseConsoleBackend {
 
             shader.setVec3(gl, "font", font.width as f32 / 16.0, font.height as f32 / 16.0, 0.0);
             shader.setBool(gl, "hasBackground", false);
+            shader.setVec3(gl, "offset", self.offset_x, self.offset_y, 0.0);
             gl.draw_arrays(glow::TRIANGLES, 0, 6);
         }
     }

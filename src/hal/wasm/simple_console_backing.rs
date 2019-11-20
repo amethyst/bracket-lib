@@ -5,7 +5,9 @@ use std::mem;
 
 pub struct SimpleConsoleBackend {
     charbuffer : glow::WebTextureKey,
-    background : glow::WebTextureKey
+    background : glow::WebTextureKey,
+    offset_x : f32,
+    offset_y : f32
 }
 
 impl SimpleConsoleBackend {
@@ -92,7 +94,9 @@ impl SimpleConsoleBackend {
 
         let result = SimpleConsoleBackend {
             charbuffer : texture,
-            background : texture2
+            background : texture2,
+            offset_x : 0.0,
+            offset_y : 0.0
         };
         result
     }
@@ -148,6 +152,9 @@ impl SimpleConsoleBackend {
                 Some(&data2.align_to::<u8>().1),
             );
         }
+
+        self.offset_x = offset_x / width as f32;
+        self.offset_y = offset_y / height as f32;
     }
 
     pub fn gl_draw(
@@ -169,6 +176,7 @@ impl SimpleConsoleBackend {
 
             shader.setVec3(gl, "font", font.width as f32 / 16.0, font.height as f32 / 16.0, 0.0);
             shader.setBool(gl, "hasBackground", true);
+            shader.setVec3(gl, "offset", self.offset_x, self.offset_y, 0.0);
             gl.draw_arrays(glow::TRIANGLES, 0, 6);
         }
     }
