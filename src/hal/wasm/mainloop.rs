@@ -84,10 +84,26 @@ fn tock<GS: GameState>(
         rltk.backend.gl.clear(glow::COLOR_BUFFER_BIT);
     }
 
+    // First principles debugging - can we draw a triangle?
+
+    let gl = &rltk.backend.gl;
+
+    unsafe {
+        &rltk.shaders[2].useProgram(gl);
+
+        gl.active_texture(glow::TEXTURE0);
+        &rltk.fonts[0].bind_texture(gl);
+        &rltk.shaders[2].setInt(gl, "texture1", 0);
+        &rltk.shaders[2].setVec3(gl, "font", 8.0, 8.0, 0.0);
+
+        gl.bind_vertex_array(Some(rltk.backend.platform.quad_vao));
+        //gl.draw_arrays(glow::TRIANGLES, 0, 6);
+    }
+
     // Tell each console to draw itself
     for cons in &mut rltk.consoles {
         let font = &rltk.fonts[cons.font_index];
-        let shader = &rltk.shaders[cons.shader_index];
+        let shader = &rltk.shaders[2];
         unsafe {
             shader.setBool(&rltk.backend.gl, "showScanLines", rltk.post_scanlines);
             shader.setBool(&rltk.backend.gl, "screenBurn", rltk.post_screenburn);

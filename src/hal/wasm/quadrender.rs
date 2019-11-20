@@ -10,30 +10,28 @@ pub fn setup_quad(gl: &glow::Context) -> glow::WebVertexArrayKey {
         -1.0, 1.0, 0.0, 1.0, -1.0, -1.0, 0.0, 0.0, 1.0, -1.0, 1.0, 0.0, -1.0, 1.0, 0.0, 1.0, 1.0,
         -1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0,
     ];
-    let (quad_vao, quad_vbo);
+    let (vertex_array, vertex_buffer);
     unsafe {
-        quad_vao = gl.create_vertex_array().unwrap();
-        quad_vbo = gl.create_buffer().unwrap();
-        gl.bind_vertex_array(Some(quad_vao));
-        gl.bind_buffer(glow::ARRAY_BUFFER, Some(quad_vbo));
+        vertex_array = gl.create_vertex_array().unwrap();
+        gl.bind_vertex_array(Some(vertex_array));
+
+        vertex_buffer = gl.create_buffer().unwrap();
+        gl.bind_buffer(glow::ARRAY_BUFFER, Some(vertex_buffer));
         gl.buffer_data_u8_slice(
             glow::ARRAY_BUFFER,
             &quad_vertices.align_to::<u8>().1,
             glow::STATIC_DRAW,
         );
+
         gl.enable_vertex_attrib_array(0);
-        let stride = 4 * mem::size_of::<f32>() as i32;
+        gl.bind_buffer(glow::ARRAY_BUFFER, Some(vertex_buffer));
+        let stride = 4 * std::mem::size_of::<f32>() as i32;
         gl.vertex_attrib_pointer_f32(0, 2, glow::FLOAT, false, stride, 0);
         gl.enable_vertex_attrib_array(1);
-        gl.vertex_attrib_pointer_f32(
-            1,
-            2,
-            glow::FLOAT,
-            false,
-            stride,
-            2 * mem::size_of::<f32>() as i32,
-        );
+        gl.vertex_attrib_pointer_f32(1, 2, glow::FLOAT, false, stride, 2 * std::mem::size_of::<f32>() as i32);
+
+        gl.bind_vertex_array(None);
     }
 
-    quad_vao
+    vertex_array
 }
