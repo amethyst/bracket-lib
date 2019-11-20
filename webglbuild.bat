@@ -23,7 +23,7 @@ copy .\wasm_help\staging\ex01\* .\wasm_help\staging
 
 REM Submit to server
 cd wasm_help\staging
-pscp -r * herbert@172.16.10.193:/var/www/bfnightly/wasmtest-old2
+pscp -r * herbert@172.16.10.193:/var/www/bfnightly/wasmtest
 cd ..\..
 
 REM Finish
