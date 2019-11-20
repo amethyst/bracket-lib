@@ -89,7 +89,7 @@ fn tock<GS: GameState>(
     let gl = &rltk.backend.gl;
 
     unsafe {
-        &rltk.shaders[2].useProgram(gl);
+        &rltk.shaders[0].useProgram(gl);
 
         gl.active_texture(glow::TEXTURE0);
         &rltk.fonts[0].bind_texture(gl);
