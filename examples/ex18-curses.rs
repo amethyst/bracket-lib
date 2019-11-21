@@ -1,176 +1,102 @@
-// This the first roguelike-ish example - a walking @. We build a very simple map,
-// and you can use the cursor keys to move around a world.
-//
-// Comments that duplicate previous examples have been removed for brevity.
+// This is the canonical "Hello World" example for RLTK.
+// It is crammed into one file, and kept as short as possible
 //////////////////////////////////////////////////////////////
 
+// We're utilizing functionality from RLTK, so we need to tell it to use the crate.
 rltk::add_wasm_support!();
-use rltk::{Console, GameState, Rltk, VirtualKeyCode, RGB};
 
-// We'll allow map tiles to be either a wall or a floor. We're deriving PartialEq so we don't
-// have to match on it every time. We'll make it a copy type because it's really just an int.
-#[derive(PartialEq, Copy, Clone)]
-enum TileType {
-    Wall,
-    Floor,
-}
+// We're using Rltk (the main context) and GameState (a trait defining what our callback
+// looks like), so we need to use that, too.`
+use rltk::{Console, GameState, Rltk, RGB};
 
-// We're extending State to include a minimal map and player coordinates.
+// This is the structure that will store our game state, typically a state machine pointing to
+// other structures. This demo is realy simple, so we'll just put the minimum to make it work
+// in here.
 struct State {
-    map: Vec<TileType>,
-    player_position: usize,
+    y: i32,
+    going_down: bool,
 }
 
-// We're storing all the tiles in one big array, so we need a way to map an X,Y coordinate to
-// a tile. Each row is stored sequentially (so 0..80, 81..160, etc.). This takes an x/y and returns
-// the array index.
-pub fn xy_idx(x: i32, y: i32) -> usize {
-    (y as usize * 80) + x as usize
-}
-
-// It's a great idea to have a reverse mapping for these coordinates. This is as simple as
-// index % 80 (mod 80), and index / 80
-pub fn idx_xy(idx: usize) -> (i32, i32) {
-    (idx as i32 % 80, idx as i32 / 80)
-}
-
-// Since we have some content, we should also include a map builder. A 'new'
-// function is a common Rust way to do this.
-impl State {
-    pub fn new() -> State {
-        let mut state = State {
-            map: vec![TileType::Floor; 80 * 50],
-            player_position: xy_idx(40, 25),
-        };
-
-        // Make the boundaries walls
-        for x in 0..80 {
-            state.map[xy_idx(x, 0)] = TileType::Wall;
-            state.map[xy_idx(x, 49)] = TileType::Wall;
-        }
-        for y in 0..50 {
-            state.map[xy_idx(0, y)] = TileType::Wall;
-            state.map[xy_idx(79, y)] = TileType::Wall;
-        }
-
-        // Now we'll randomly splat a bunch of walls. It won't be pretty, but it's a decent illustration.
-        // First, obtain the thread-local RNG:
-        let mut rng = rltk::RandomNumberGenerator::new();
-
-        for _ in 0..400 {
-            // rand provides a gen_range function to get numbers in a range.
-            let x = rng.roll_dice(1, 80) - 1;
-            let y = rng.roll_dice(1, 50) - 1;
-            let idx = xy_idx(x, y);
-            // We don't want to add a wall on top of the player
-            if state.player_position != idx {
-                state.map[idx] = TileType::Wall;
-            }
-        }
-
-        // We'll return the state with the short-hand
-        state
-    }
-
-    // Handle player movement. Delta X and Y are the relative move
-    // requested by the player. We calculate the new coordinates,
-    // and if it is a floor - move the player there.
-    pub fn move_player(&mut self, delta_x: i32, delta_y: i32) {
-        let current_position = idx_xy(self.player_position);
-        let new_position = (current_position.0 + delta_x, current_position.1 + delta_y);
-        let new_idx = xy_idx(new_position.0, new_position.1);
-        if self.map[new_idx] == TileType::Floor {
-            self.player_position = new_idx;
-        }
-    }
-}
-
-// Implement the game loop
+// We have to implement the "trait" GameState for our state object. This gives it a callback
+// point for the main loop.
 impl GameState for State {
+    // This is called every time the screen refreshes (a "tick") by RLTK's main loop. Since GUIs
+    // require that you process events every turn - rather than just sequentially like a good old text
+    // console, you have to run your game as something of a state machine. This will be fleshed out in
+    // later tutorials. For now, it just shows you the frame rate and says "Hello World".
     fn tick(&mut self, ctx: &mut Rltk) {
-        // New: handle keyboard inputs.
-        match ctx.key {
-            None => {} // Nothing happened
-            Some(key) => {
-                // A key is pressed or held
-                match key {
-                    // We're matching a key code from GLFW (the GL library underlying RLTK),
-                    // and applying movement via the move_player function.
+        let col1 = RGB::named(rltk::CYAN);
+        let col2 = RGB::named(rltk::YELLOW);
+        let percent: f32 = self.y as f32 / 50.0;
+        let fg = col1.lerp(col2, percent);
 
-                    // Numpad
-                    VirtualKeyCode::Numpad8 => self.move_player(0, -1),
-                    VirtualKeyCode::Numpad4 => self.move_player(-1, 0),
-                    VirtualKeyCode::Numpad6 => self.move_player(1, 0),
-                    VirtualKeyCode::Numpad2 => self.move_player(0, 1),
-
-                    // Numpad diagonals
-                    VirtualKeyCode::Numpad7 => self.move_player(-1, -1),
-                    VirtualKeyCode::Numpad9 => self.move_player(1, -1),
-                    VirtualKeyCode::Numpad1 => self.move_player(-1, 1),
-                    VirtualKeyCode::Numpad3 => self.move_player(1, 1),
-
-                    // Cursors
-                    VirtualKeyCode::Up => self.move_player(0, -1),
-                    VirtualKeyCode::Down => self.move_player(0, 1),
-                    VirtualKeyCode::Left => self.move_player(-1, 0),
-                    VirtualKeyCode::Right => self.move_player(1, 0),
-
-                    _ => {} // Ignore all the other possibilities
-                }
-            }
-        }
-
-        // Clear the screen
         ctx.cls();
+        // Notice that unicode conversion is active, so we can cut/paste characters from
+        // a CP437 reference such as http://dwarffortresswiki.org/index.php/Character_table
+        ctx.print_color(
+            1,
+            self.y,
+            fg,
+            RGB::named(rltk::BLACK),
+            "♫ ♪ Hello RLTK World ☺",
+        );
 
-        // Iterate the map array, incrementing coordinates as we go.
-        let mut y = 0;
-        let mut x = 0;
-        for tile in &self.map {
-            // Render a tile depending upon the tile type
-            match tile {
-                TileType::Floor => {
-                    ctx.print_color(
-                        x,
-                        y,
-                        RGB::from_f32(0.5, 0.5, 0.5),
-                        RGB::from_f32(0., 0., 0.),
-                        ".",
-                    );
-                }
-                TileType::Wall => {
-                    ctx.print_color(
-                        x,
-                        y,
-                        RGB::from_f32(0.0, 1.0, 0.0),
-                        RGB::from_f32(0., 0., 0.),
-                        "#",
-                    );
-                }
+        // Lets make the hello bounce up and down
+        if self.going_down {
+            self.y += 1;
+            if self.y > 48 {
+                self.going_down = false;
             }
-
-            // Move the coordinates
-            x += 1;
-            if x > 79 {
-                x = 0;
-                y += 1;
+        } else {
+            self.y -= 1;
+            if self.y < 2 {
+                self.going_down = true;
             }
         }
 
-        // Render the player @ symbol
-        let ppos = idx_xy(self.player_position);
+        // We'll also show the frame rate, since we generally care about keeping that high.
+        ctx.draw_box(
+            39,
+            0,
+            20,
+            3,
+            RGB::named(rltk::WHITE),
+            RGB::named(rltk::BLACK),
+        );
         ctx.print_color(
-            ppos.0,
-            ppos.1,
-            RGB::from_f32(1.0, 1.0, 0.0),
-            RGB::from_f32(0., 0., 0.),
-            "@",
+            40,
+            1,
+            RGB::named(rltk::YELLOW),
+            RGB::named(rltk::BLACK),
+            &format!("FPS: {}", ctx.fps),
+        );
+        ctx.print_color(
+            40,
+            2,
+            RGB::named(rltk::CYAN),
+            RGB::named(rltk::BLACK),
+            &format!("Frame Time: {} ms", ctx.frame_time_ms),
         );
     }
 }
 
+// Every program needs a main() function!
 fn main() {
-    let context = Rltk::init_simple8x8(80, 50, "RLTK Example 03 - Walking Around", "resources");
-    let gs = State::new();
+    // RLTK provides a simple initializer for a simple 8x8 font window of a given number of
+    // characters. Since that's all we need here, we'll use it!
+    // We're specifying that we want an 80x50 console, with a title, and a relative path
+    // to where it can find the font files and shader files.
+    // These would normally be "resources" rather than "../../resources" - but to make it
+    // work in the repo without duplicating, they are a relative path.
+    let context = Rltk::init_simple8x8(80, 50, "Hello RLTK World", "resources");
+
+    // Now we create an empty state object.
+    let gs: State = State {
+        y: 1,
+        going_down: true,
+    };
+
+    // Call into RLTK to run the main loop. This handles rendering, and calls back into State's tick
+    // function every cycle. The box is needed to work around lifetime handling.
     rltk::main_loop(context, gs);
 }
