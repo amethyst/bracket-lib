@@ -101,7 +101,7 @@ required-features = ["opengl"]
 
 [[example]]
 name = "ex11-random"
-path = "examples/ex11-ranom.rs"
+path = "examples/ex11-random.rs"
 required-features = ["opengl"]
 
 [[example]]
