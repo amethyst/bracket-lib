@@ -11,7 +11,7 @@ pub struct Tile {
 /// Trait that must be implemented by console types.
 pub trait Console {
     /// Check to see if the internal OpenGL representation needs to be rebuilt, and do so if required.
-    fn rebuild_if_dirty(&mut self, gl: &glow::Context);
+    fn rebuild_if_dirty(&mut self, platform: &hal::RltkPlatform);
 
     /// Gets the dimensions of the console in characters
     fn get_char_size(&mut self) -> (u32, u32);
@@ -20,7 +20,7 @@ pub trait Console {
     fn resize_pixels(&mut self, width: u32, height: u32);
 
     /// Tells the console to draw itself via OpenGL.
-    fn gl_draw(&mut self, font: &Font, shader: &Shader, gl: &glow::Context);
+    fn gl_draw(&mut self, font: &Font, shader: &Shader, platform: &hal::RltkPlatform);
 
     /// Converts an x/y coordinate to a console index number.
     fn at(&self, x: i32, y: i32) -> usize;

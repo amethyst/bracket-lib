@@ -30,7 +30,7 @@ pub struct SparseConsole {
 
 impl SparseConsole {
     /// Initializes the console.
-    pub fn init(width: u32, height: u32, gl: &glow::Context) -> Box<SparseConsole> {
+    pub fn init(width: u32, height: u32, platform: &hal::RltkPlatform) -> Box<SparseConsole> {
         // Console backing init
         let new_console = SparseConsole {
             width,
@@ -39,15 +39,15 @@ impl SparseConsole {
             is_dirty: true,
             offset_x: 0.0,
             offset_y: 0.0,
-            backend: hal::SparseConsoleBackend::new(gl, width as usize, height as usize),
+            backend: hal::SparseConsoleBackend::new(platform, width as usize, height as usize),
         };
 
         Box::new(new_console)
     }
 
-    fn rebuild_vertices(&mut self, gl: &glow::Context) {
+    fn rebuild_vertices(&mut self, platform: &hal::RltkPlatform) {
         self.backend.rebuild_vertices(
-            gl,
+            platform,
             self.height,
             self.width,
             self.offset_x,
@@ -59,9 +59,9 @@ impl SparseConsole {
 
 impl Console for SparseConsole {
     /// If the console has changed, rebuild the vertex buffer.
-    fn rebuild_if_dirty(&mut self, gl: &glow::Context) {
+    fn rebuild_if_dirty(&mut self, platform: &hal::RltkPlatform) {
         if self.is_dirty {
-            self.rebuild_vertices(gl);
+            self.rebuild_vertices(platform);
             self.is_dirty = false;
         }
     }
@@ -75,8 +75,8 @@ impl Console for SparseConsole {
     }
 
     /// Draws the console to OpenGL.
-    fn gl_draw(&mut self, font: &Font, shader: &Shader, gl: &glow::Context) {
-        self.backend.gl_draw(font, shader, gl, &self.tiles);
+    fn gl_draw(&mut self, font: &Font, shader: &Shader, platform: &hal::RltkPlatform) {
+        self.backend.gl_draw(font, shader, platform, &self.tiles);
         self.is_dirty = false;
     }
 

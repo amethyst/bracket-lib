@@ -92,7 +92,7 @@ impl SparseConsoleBackend {
     /// Helper to build vertices for the sparse grid.
     pub fn rebuild_vertices(
         &mut self,
-        gl: &glow::Context,
+        platform: &super::super::RltkPlatform,
         height: u32,
         width: u32,
         offset_x: f32,
@@ -201,6 +201,7 @@ impl SparseConsoleBackend {
         gl: &glow::Context,
         tiles: &[SparseTile],
     ) {
+        let gl = &platform.platform.gl;
         unsafe {
             // bind Texture
             font.bind_texture(gl);

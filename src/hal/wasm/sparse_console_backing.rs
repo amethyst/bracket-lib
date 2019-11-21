@@ -10,7 +10,8 @@ pub struct SparseConsoleBackend {
 }
 
 impl SparseConsoleBackend {
-    pub fn new(gl: &glow::Context, width: usize, height: usize) -> SparseConsoleBackend {
+    pub fn new(platform: &super::super::RltkPlatform, width: usize, height: usize) -> SparseConsoleBackend {
+        let gl = &platform.platform.gl;
         let texture;
         unsafe {
             texture = gl.create_texture().unwrap();
@@ -103,13 +104,14 @@ impl SparseConsoleBackend {
     /// Helper to build vertices for the sparse grid.
     pub fn rebuild_vertices(
         &mut self,
-        gl: &glow::Context,
+        platform: &super::super::RltkPlatform,
         height: u32,
         width: u32,
         offset_x: f32,
         offset_y: f32,
         tiles: &Vec<SparseTile>,
     ) {
+        let gl = &platform.platform.gl;
         unsafe {
             let mut data = vec![0u8; width as usize * height as usize * 4];
             let data2 = vec![0u8; width as usize * height as usize * 4];
@@ -157,9 +159,10 @@ impl SparseConsoleBackend {
         &mut self,
         font: &Font,
         shader: &Shader,
-        gl: &glow::Context,
+        platform: &super::super::RltkPlatform,
         _tiles: &Vec<SparseTile>,
     ) {
+        let gl = &platform.platform.gl;
         unsafe {
             gl.active_texture(glow::TEXTURE1);
             gl.bind_texture(glow::TEXTURE_2D, Some(self.charbuffer));

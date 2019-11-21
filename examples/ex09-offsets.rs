@@ -82,7 +82,7 @@ impl GameState for State {
 
 fn main() {
     let mut context = Rltk::init_simple8x8(80, 50, "Example 9 - Offset Tiles", "resources");
-    context.register_console_no_bg(rltk::SparseConsole::init(80, 50, &context.backend.gl), 0);
+    context.register_console_no_bg(rltk::SparseConsole::init(80, 50, &context.backend), 0);
 
     // We're going to set the second layer's offset to -0.5 to render between tiles
     context.set_active_console(1);

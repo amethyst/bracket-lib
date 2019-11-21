@@ -13,6 +13,7 @@ pub mod font;
 pub mod shader;
 
 pub struct PlatformGL {
+    pub gl: glow::Context,
     pub quad_vao: u32,
     pub context_wrapper: Option<WrappedContext>,
     pub backing_buffer: super::Framebuffer,

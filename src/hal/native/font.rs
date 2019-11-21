@@ -52,7 +52,8 @@ impl Font {
     }
 
     /// Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
-    pub fn setup_gl_texture(&mut self, gl: &glow::Context) -> u32 {
+    pub fn setup_gl_texture(&mut self, platform : &super::super::RltkPlatform) -> u32 {
+        let gl = &platform.platform.gl;
         let texture;
 
         unsafe {
@@ -107,7 +108,8 @@ impl Font {
     }
 
     /// Sets this font file as the active texture
-    pub fn bind_texture(&self, gl: &glow::Context) {
+    pub fn bind_texture(&self, platform: &super::super::RltkPlatform) {
+        let gl = &platform.platform.gl;
         unsafe {
             gl.bind_texture(glow::TEXTURE_2D, self.gl_id);
         }

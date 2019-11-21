@@ -32,7 +32,7 @@ EXIT /B 0
 REM Usage: StageExample EXAMPLE
 :StageExample
 echo Building example %~1
-cargo build --example %~1 --target wasm32-unknown-unknown --release
+cargo build --example %~1 --target wasm32-unknown-unknown --release --features=opengl
 echo wasm-gc .\target\wasm32-unknown-unknown\release\examples\%~1.wasm
 mkdir .\wasm_help\staging\%~2
 wasm-bindgen .\target\wasm32-unknown-unknown\release\examples\%~1.wasm --out-dir .\wasm_help\staging\%~2 --no-modules --no-typescript
