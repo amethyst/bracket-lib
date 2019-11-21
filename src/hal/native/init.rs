@@ -56,6 +56,11 @@ pub fn init_raw<S: ToString>(
         shader_strings::SCANLINES_VS,
         shader_strings::SCANLINES_FS,
     ));
+    shaders.push(Shader::new(
+        &gl,
+        shader_strings::TEST_VS,
+        shader_strings::TEST_FS,
+    ));
 
     // Build the backing frame-buffer
     let backing_fbo = Framebuffer::build_fbo(&gl, width_pixels as i32, height_pixels as i32);
