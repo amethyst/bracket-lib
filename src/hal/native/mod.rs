@@ -9,11 +9,8 @@ mod simple_console_backing;
 pub use simple_console_backing::*;
 mod sparse_console_backing;
 pub use sparse_console_backing::*;
-
-/*use glutin::{
-    dpi::LogicalSize, event::Event, event::WindowEvent, event_loop::ControlFlow,
-    event_loop::EventLoop, window::WindowBuilder, ContextBuilder,
-};*/
+pub mod font;
+pub mod shader;
 
 pub struct PlatformGL {
     pub quad_vao: u32,

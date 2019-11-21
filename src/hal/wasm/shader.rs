@@ -1,14 +1,10 @@
-use super::super::console::log;
+use crate::console::log;
 use cgmath::Vector3;
 use glow::HasContext;
 use std::str;
 
 #[allow(non_snake_case)]
 pub struct Shader {
-    #[cfg(not(target_arch = "wasm32"))]
-    pub ID: u32,
-
-    #[cfg(target_arch = "wasm32")]
     pub ID: glow::WebProgramKey,
 }
 
