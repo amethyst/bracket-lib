@@ -52,7 +52,6 @@ impl Font {
     }
 
     /// Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
-    #[cfg(not(target_arch = "wasm32"))]
     pub fn setup_gl_texture(&mut self, gl: &glow::Context) -> u32 {
         let texture;
 
