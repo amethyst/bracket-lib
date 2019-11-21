@@ -17,13 +17,14 @@ maintenance = { status = "actively-developed" }
 default = [ "opengl" ]
 serialization = [ "serde/derive", "serde_json" ]
 threaded = ["rayon"]
-opengl = [ "glow", "image", "glutin" ]
+opengl = [ "glow", "image", "glutin", "cgmath" ]
 ecs = [ "specs" ]
+curses = [ "pancurses" ]
 
 [dependencies]
 glow = { version = "0.3.0-alpha2", optional = true }
 image = { version = "0.22.3", default-features = false, features = ["jpeg", "png_codec"], optional = true }
-cgmath = "0.17.0"
+cgmath = { version = "0.17.0", optional = true }
 bresenham = "0.1.1"
 rand_xorshift = "0.2.0"
 serde= { version = "1.0.101", features = ["derive"], optional = true }
@@ -33,6 +34,7 @@ byteorder = "1.3.2"
 lazy_static = "1.4.0"
 rayon = { version = "1.1.0", optional = true }
 specs = { version = "0.15.1", optional = true }
+pancurses = { version = "0.16.1", optional = true }
 
 [target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
 glutin = {version = "0.22.0-alpha3", optional = true }
@@ -133,3 +135,8 @@ required-features = ["opengl"]
 name = "ex17-wasm-external"
 path = "examples/ex17-wasm-external.rs"
 required-features = ["opengl"]
+
+[[example]]
+name = "ex18-curses"
+path = "examples/ex18-curses.rs"
+required-features = ["curses"]
