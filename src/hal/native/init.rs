@@ -2,7 +2,6 @@ use glutin::{
     dpi::LogicalSize, event_loop::EventLoop, window::WindowBuilder, ContextBuilder,
 };
 
-#[cfg(not(target_arch = "wasm32"))]
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,

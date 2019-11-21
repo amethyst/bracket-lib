@@ -13,6 +13,8 @@ mod simple_console_backing;
 pub use simple_console_backing::*;
 mod sparse_console_backing;
 pub use sparse_console_backing::*;
+pub mod font;
+pub mod shader;
 
 pub struct PlatformGL {
     pub context_wrapper: Option<WrappedContext>,
