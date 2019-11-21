@@ -11,9 +11,6 @@ mod wasm;
 #[cfg(target_arch = "wasm32")]
 pub use wasm::*;
 
-mod framebuffer;
-pub use framebuffer::Framebuffer;
-
 mod shader;
 pub use shader::Shader;
 

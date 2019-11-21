@@ -69,11 +69,6 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                             physical.height as i32,
                         );
                     }
-                    rltk.backend.platform.backing_buffer = Framebuffer::build_fbo(
-                        &rltk.backend.gl,
-                        physical.width as i32,
-                        physical.height as i32,
-                    );
                 }
                 WindowEvent::RedrawRequested => {
                     //tock(&mut rltk, &mut gamestate, &mut frames, &mut prev_seconds, &mut prev_ms, &now);
@@ -147,11 +142,6 @@ fn tock<GS: GameState>(
     // Console structure - doesn't really have to be every frame...
     for cons in &mut rltk.consoles {
         cons.console.rebuild_if_dirty(&rltk.backend.gl);
-    }
-
-    // Bind to the backing buffer
-    if rltk.post_scanlines {
-        rltk.backend.platform.backing_buffer.bind(&rltk.backend.gl);
     }
 
     // Clear the screen

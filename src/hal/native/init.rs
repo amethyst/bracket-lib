@@ -62,9 +62,6 @@ pub fn init_raw<S: ToString>(
         shader_strings::TEST_FS,
     ));
 
-    // Build the backing frame-buffer
-    let backing_fbo = Framebuffer::build_fbo(&gl, width_pixels as i32, height_pixels as i32);
-
     // Build a simple quad rendering vao
     let quad_vao = setup_quad(&gl);
 
@@ -76,8 +73,7 @@ pub fn init_raw<S: ToString>(
                 context_wrapper: Some(WrappedContext {
                     el,
                     wc: windowed_context,
-                }),
-                backing_buffer: backing_fbo,
+                })
             },
         },
         width_pixels,
