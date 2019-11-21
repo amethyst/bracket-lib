@@ -1,4 +1,4 @@
-pub static TEST_VS : &str = r#"#version 300 es
+pub static UBERSHADER_VS : &str = r#"#version 300 es
 precision mediump float;
 layout(location = 0) in vec2 vertexPosition_modelspace;
 layout(location = 1) in vec2 aTex;
@@ -13,7 +13,7 @@ void main(){
 }
 "#;
 
-pub static TEST_FS : &str = r#"#version 300 es
+pub static UBERSHADER_FS : &str = r#"#version 300 es
 precision mediump float;
 
 in vec2 TexCoords;

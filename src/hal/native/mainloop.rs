@@ -1,5 +1,4 @@
 use super::super::super::{Console, GameState, Rltk};
-use super::super::*;
 use glow::HasContext;
 use glutin::{
     event::Event, event::WindowEvent, event_loop::ControlFlow
@@ -154,12 +153,12 @@ fn tock<GS: GameState>(
     let gl = &rltk.backend.gl;
 
     unsafe {
-        rltk.shaders[4].useProgram(gl);
+        rltk.shaders[0].useProgram(gl);
 
         gl.active_texture(glow::TEXTURE0);
         rltk.fonts[0].bind_texture(gl);
-        rltk.shaders[4].setInt(gl, "texture1", 0);
-        rltk.shaders[4].setVec3(gl, "font", 8.0, 8.0, 0.0);
+        rltk.shaders[0].setInt(gl, "texture1", 0);
+        rltk.shaders[0].setVec3(gl, "font", 8.0, 8.0, 0.0);
 
         gl.bind_vertex_array(Some(rltk.backend.platform.quad_vao));
     }
@@ -167,7 +166,7 @@ fn tock<GS: GameState>(
     // Tell each console to draw itself
     for cons in &mut rltk.consoles {
         let font = &rltk.fonts[cons.font_index];
-        let shader = &rltk.shaders[4];
+        let shader = &rltk.shaders[0];
         unsafe {
             gl.active_texture(glow::TEXTURE0);
             font.bind_texture(gl);

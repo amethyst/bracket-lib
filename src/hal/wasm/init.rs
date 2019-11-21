@@ -39,8 +39,8 @@ pub fn init_raw<S: ToString>(
 
     shaders.push(Shader::new(
         &gl,
-        shader_strings::TEST_VS,
-        shader_strings::TEST_FS,
+        shader_strings::UBERSHADER_VS,
+        shader_strings::UBERSHADER_FS,
     ));
 
     let quad_vao = quadrender::setup_quad(&gl);
