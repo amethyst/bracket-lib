@@ -93,13 +93,12 @@ impl SparseConsoleBackend {
             );
         }
 
-        let result = SparseConsoleBackend {
+        SparseConsoleBackend {
             charbuffer : texture,
             background : texture2,
             offset_x : 0.0,
             offset_y : 0.0
-        };
-        result
+        }
     }
 
 

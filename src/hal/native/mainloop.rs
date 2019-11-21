@@ -156,45 +156,35 @@ fn tock<GS: GameState>(
 
     // Clear the screen
     unsafe {
-        rltk.backend.gl.clear_color(0.0, 0.0, 0.0, 1.0);
+        rltk.backend.gl.clear_color(0.2, 0.3, 0.3, 1.0);
         rltk.backend.gl.clear(glow::COLOR_BUFFER_BIT);
+    }
+
+    // Setup render pass
+    let gl = &rltk.backend.gl;
+
+    unsafe {
+        rltk.shaders[4].useProgram(gl);
+
+        gl.active_texture(glow::TEXTURE0);
+        rltk.fonts[0].bind_texture(gl);
+        rltk.shaders[4].setInt(gl, "texture1", 0);
+        rltk.shaders[4].setVec3(gl, "font", 8.0, 8.0, 0.0);
+
+        gl.bind_vertex_array(Some(rltk.backend.platform.quad_vao));
     }
 
     // Tell each console to draw itself
     for cons in &mut rltk.consoles {
         let font = &rltk.fonts[cons.font_index];
-        let shader = &rltk.shaders[cons.shader_index];
-        cons.console.gl_draw(font, shader, &rltk.backend.gl);
-    }
-
-    if rltk.post_scanlines {
-        // Now we return to the primary screen
-        rltk.backend
-            .platform
-            .backing_buffer
-            .default(&rltk.backend.gl);
+        let shader = &rltk.shaders[4];
         unsafe {
-            if rltk.post_scanlines {
-                rltk.shaders[3].useProgram(&rltk.backend.gl);
-                rltk.shaders[3].setVec3(
-                    &rltk.backend.gl,
-                    "screenSize",
-                    rltk.width_pixels as f32,
-                    rltk.height_pixels as f32,
-                    0.0,
-                );
-                rltk.shaders[3].setBool(&rltk.backend.gl, "screenBurn", rltk.post_screenburn);
-            } else {
-                rltk.shaders[2].useProgram(&rltk.backend.gl);
-            }
-            rltk.backend
-                .gl
-                .bind_vertex_array(Some(rltk.backend.platform.quad_vao));
-            rltk.backend.gl.bind_texture(
-                glow::TEXTURE_2D,
-                Some(rltk.backend.platform.backing_buffer.texture),
-            );
-            rltk.backend.gl.draw_arrays(glow::TRIANGLES, 0, 6);
+            gl.active_texture(glow::TEXTURE0);
+            font.bind_texture(gl);
+            shader.setBool(&rltk.backend.gl, "showScanLines", rltk.post_scanlines);
+            shader.setBool(&rltk.backend.gl, "screenBurn", rltk.post_screenburn);
+            shader.setVec3(&rltk.backend.gl, "screenSize", rltk.width_pixels as f32, rltk.height_pixels as f32, 0.0);
         }
+        cons.console.gl_draw(font, shader, &rltk.backend.gl);
     }
 }

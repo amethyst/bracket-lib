@@ -84,15 +84,16 @@ fn tock<GS: GameState>(
         rltk.backend.gl.clear(glow::COLOR_BUFFER_BIT);
     }
 
+    // Setup render pass
     let gl = &rltk.backend.gl;
 
     unsafe {
-        &rltk.shaders[0].useProgram(gl);
+        rltk.shaders[0].useProgram(gl);
 
         gl.active_texture(glow::TEXTURE0);
-        &rltk.fonts[0].bind_texture(gl);
-        &rltk.shaders[0].setInt(gl, "texture1", 0);
-        &rltk.shaders[0].setVec3(gl, "font", 8.0, 8.0, 0.0);
+        rltk.fonts[0].bind_texture(gl);
+        rltk.shaders[0].setInt(gl, "texture1", 0);
+        rltk.shaders[0].setVec3(gl, "font", 8.0, 8.0, 0.0);
 
         gl.bind_vertex_array(Some(rltk.backend.platform.quad_vao));
     }
@@ -102,6 +103,8 @@ fn tock<GS: GameState>(
         let font = &rltk.fonts[cons.font_index];
         let shader = &rltk.shaders[0];
         unsafe {
+            gl.active_texture(glow::TEXTURE0);
+            font.bind_texture(gl);
             shader.setBool(&rltk.backend.gl, "showScanLines", rltk.post_scanlines);
             shader.setBool(&rltk.backend.gl, "screenBurn", rltk.post_screenburn);
             shader.setVec3(&rltk.backend.gl, "screenSize", rltk.width_pixels as f32, rltk.height_pixels as f32, 0.0);
