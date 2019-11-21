@@ -71,7 +71,7 @@ macro_rules! link_resource {
     };
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
 pub use glutin::event::VirtualKeyCode;
 
 #[cfg(target_arch = "wasm32")]

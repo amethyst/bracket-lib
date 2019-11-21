@@ -20,7 +20,7 @@ pub struct SimpleConsole {
 
 impl SimpleConsole {
     /// Initializes a console, ready to add to RLTK's console list.
-    pub fn init(width: u32, height: u32, gl: &glow::Context) -> Box<SimpleConsole> {
+    pub fn init(width: u32, height: u32, platform: &hal::RltkPlatform) -> Box<SimpleConsole> {
         // Console backing init
         let num_tiles: usize = (width * height) as usize;
         let mut tiles: Vec<Tile> = Vec::with_capacity(num_tiles);
@@ -39,15 +39,15 @@ impl SimpleConsole {
             is_dirty: true,
             offset_x: 0.0,
             offset_y: 0.0,
-            backend: hal::SimpleConsoleBackend::new(gl, width as usize, height as usize),
+            backend: hal::SimpleConsoleBackend::new(platform, width as usize, height as usize),
         };
 
         Box::new(new_console)
     }
 
-    fn rebuild_vertices(&mut self, gl: &glow::Context) {
+    fn rebuild_vertices(&mut self, platform: &hal::RltkPlatform) {
         self.backend.rebuild_vertices(
-            gl,
+            platform,
             self.height,
             self.width,
             &self.tiles,
@@ -59,9 +59,9 @@ impl SimpleConsole {
 
 impl Console for SimpleConsole {
     /// Check if the console has changed, and if it has rebuild the backing buffer.
-    fn rebuild_if_dirty(&mut self, gl: &glow::Context) {
+    fn rebuild_if_dirty(&mut self, platform: &hal::RltkPlatform) {
         if self.is_dirty {
-            self.rebuild_vertices(gl);
+            self.rebuild_vertices(platform);
             self.is_dirty = false;
         }
     }
@@ -75,9 +75,9 @@ impl Console for SimpleConsole {
     }
 
     /// Sends the console to OpenGL.
-    fn gl_draw(&mut self, font: &Font, shader: &Shader, gl: &glow::Context) {
+    fn gl_draw(&mut self, font: &Font, shader: &Shader, platform: &hal::RltkPlatform) {
         self.backend
-            .gl_draw(font, shader, gl, self.width, self.height);
+            .gl_draw(font, shader, platform, self.width, self.height);
         self.is_dirty = false;
     }
 

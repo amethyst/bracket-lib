@@ -135,7 +135,7 @@ impl SimpleConsoleBackend {
     /// Rebuilds the OpenGL backing buffer.
     pub fn rebuild_vertices(
         &mut self,
-        gl: &glow::Context,
+        platform: &super::super::RltkPlatform,
         height: u32,
         width: u32,
         tiles: &[Tile],
@@ -246,6 +246,7 @@ impl SimpleConsoleBackend {
         width: u32,
         height: u32,
     ) {
+        let gl = &platform.platform.gl;
         unsafe {
             // bind Texture
             font.bind_texture(gl);

@@ -64,7 +64,6 @@ pub fn init_raw<S: ToString>(
 
     Rltk {
         backend: RltkPlatform {
-            gl,
             platform: PlatformGL {
                 quad_vao,
                 context_wrapper: Some(WrappedContext {

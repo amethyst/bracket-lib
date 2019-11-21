@@ -10,7 +10,7 @@ const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
 pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     unsafe {
-        rltk.backend
+        rltk.backend.platform
             .gl
             .viewport(0, 0, rltk.width_pixels as i32, rltk.height_pixels as i32);
     }
@@ -62,7 +62,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                     wc.resize(physical);
                     rltk.resize_pixels(physical.width as u32, physical.height as u32);
                     unsafe {
-                        rltk.backend.gl.viewport(
+                        rltk.backend.platform.gl.viewport(
                             0,
                             0,
                             physical.width as i32,
@@ -146,7 +146,7 @@ fn tock<GS: GameState>(
 
     // Console structure - doesn't really have to be every frame...
     for cons in &mut rltk.consoles {
-        cons.console.rebuild_if_dirty(&rltk.backend.gl);
+        cons.console.rebuild_if_dirty(&rltk.backend);
     }
 
     // Bind to the backing buffer

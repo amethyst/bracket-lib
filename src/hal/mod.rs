@@ -1,42 +1,54 @@
 // Enable modules based on target architecture
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
 mod native;
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
 pub use native::*;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(feature = "opengl", target_arch = "wasm32"))]
 mod wasm;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(feature = "opengl", target_arch = "wasm32"))]
 pub use wasm::*;
 
-<<<<<<< HEAD
+#[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
 mod framebuffer;
+
+#[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
 pub use framebuffer::Framebuffer;
 
+#[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
 mod shader;
-=======
->>>>>>> Clean up dependency linking via HAL.
+
+#[cfg(not(feature = "opengl"))]
+mod dummy;
+
+#[cfg(not(feature = "opengl"))]
+pub use dummy::*;
+
 pub use shader::Shader;
 
 /// Provides a base abstract platform for RLTK to run on, with specialized content.
 pub struct RltkPlatform {
-    pub gl: glow::Context,
     pub platform: PlatformGL,
 }
 
-#[cfg(not(target_arch = "wasm32"))]
+#[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
 pub fn log<S: ToString>(message: S) {
     println!("{}", message.to_string());
 }
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(feature = "opengl", target_arch = "wasm32"))]
 use wasm_bindgen::prelude::*;
 
-#[cfg(target_arch = "wasm32")]
+#[cfg(all(feature = "opengl", target_arch = "wasm32"))]
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = console)]
     pub fn log(s: &str);
+}
+
+#[cfg(not(feature = "opengl"))]
+pub fn log<S: ToString>(message: S) {
+    println!("{}", message.to_string());
 }

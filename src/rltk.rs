@@ -52,7 +52,7 @@ impl Rltk {
         let mut context = Rltk::init_raw(width_chars * 8, height_chars * 8, window_title);
         let font = context.register_font(font::Font::load(&font_path.to_string(), (8, 8)));
         context.register_console(
-            SimpleConsole::init(width_chars, height_chars, &context.backend.gl),
+            SimpleConsole::init(width_chars, height_chars, &context.backend),
             font,
         );
         context
@@ -69,7 +69,7 @@ impl Rltk {
         let mut context = Rltk::init_raw(width_chars * 8, height_chars * 16, window_title);
         let font = context.register_font(font::Font::load(&font_path.to_string(), (8, 16)));
         context.register_console(
-            SimpleConsole::init(width_chars, height_chars, &context.backend.gl),
+            SimpleConsole::init(width_chars, height_chars, &context.backend),
             font,
         );
         context
@@ -77,8 +77,8 @@ impl Rltk {
 
     /// Registers a font, and returns its handle number. Also loads it into OpenGL.
     pub fn register_font(&mut self, mut font: font::Font) -> usize {
-        font.setup_gl_texture(&self.backend.gl);
-        font.bind_texture(&self.backend.gl);
+        font.setup_gl_texture(&self.backend);
+        font.bind_texture(&self.backend);
         self.fonts.push(font);
         self.fonts.len() - 1
     }
@@ -172,8 +172,8 @@ impl Rltk {
 
 impl Console for Rltk {
     // A couple of ones we'll never use
-    fn rebuild_if_dirty(&mut self, _gl: &glow::Context) {}
-    fn gl_draw(&mut self, _font: &font::Font, _shader: &Shader, _gl: &glow::Context) {}
+    fn rebuild_if_dirty(&mut self, _platform: &super::hal::RltkPlatform) {}
+    fn gl_draw(&mut self, _font: &font::Font, _shader: &Shader, _platform: &super::hal::RltkPlatform) {}
 
     fn get_char_size(&mut self) -> (u32, u32) {
         self.consoles[self.active_console].console.get_char_size()

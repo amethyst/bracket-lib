@@ -17,6 +17,7 @@ pub mod font;
 pub mod shader;
 
 pub struct PlatformGL {
+    pub gl: glow::Context,
     pub context_wrapper: Option<WrappedContext>,
     pub quad_vao : glow::WebVertexArrayKey
 }
