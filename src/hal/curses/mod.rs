@@ -4,7 +4,14 @@ use crate::{GameState, Rltk};
 mod keycodes;
 pub use keycodes::VirtualKeyCode;
 
-pub struct PlatformGL {}
+use pancurses::{initscr, Window, noecho, resize_term};
+
+mod main_loop;
+pub use main_loop::main_loop;
+
+pub struct PlatformGL {
+    window : Window
+}
 
 pub mod shader {
     pub struct Shader{}
@@ -36,9 +43,21 @@ pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
     _window_title: S,
-) -> crate::Rltk {
+) -> crate::Rltk 
+{
+    let window = initscr();
+    //println!("{}, {}", width_pixels, height_pixels);
+    resize_term(height_pixels as i32/8, width_pixels as i32/8);
+    noecho();
+    //timeout(0);
+    window.nodelay(true);
+
     crate::Rltk {
-        backend: super::RltkPlatform { platform: PlatformGL{} },
+        backend: super::RltkPlatform { 
+            platform: PlatformGL{
+                window
+            } 
+        },
         width_pixels,
         height_pixels,
         fonts: Vec::new(),
@@ -60,15 +79,15 @@ pub fn init_raw<S: ToString>(
     }
 }
 
-pub fn main_loop<GS: GameState>(mut _rltk: Rltk, mut _gamestate: GS) {
-}
-
 pub struct SimpleConsoleBackend {
+    tiles : Vec<crate::Tile>
 }
 
 impl SimpleConsoleBackend {
     pub fn new(_gl: &super::RltkPlatform, _width: usize, _height: usize) -> SimpleConsoleBackend {
-        SimpleConsoleBackend{}
+        SimpleConsoleBackend{
+            tiles : Vec::new()
+        }
     }
 
     pub fn rebuild_vertices(
@@ -76,20 +95,32 @@ impl SimpleConsoleBackend {
         _platform: &super::RltkPlatform,
         _height: u32,
         _width: u32,
-        _tiles: &[crate::Tile],
+        tiles: &[crate::Tile],
         _offset_x: f32,
         _offset_y: f32,
     ) {
+        self.tiles.clear();
+        for t in tiles.iter() {
+            self.tiles.push(*t);
+        }
     }
 
     pub fn gl_draw(
         &mut self,
         _font: &font::Font,
         _shader: &shader::Shader,
-        _platform: &super::RltkPlatform,
-        _width: u32,
-        _height: u32,
+        platform: &super::RltkPlatform,
+        width: u32,
+        height: u32,
     ) {
+        let window = &platform.platform.window;
+        let mut idx = 0;
+        for y in 0..height {
+            for x in 0..width {                
+                window.mvaddch(height as i32 - y as i32, x as i32, self.tiles[idx].glyph as char);
+                idx += 1;
+            }            
+        }
     }
 }
 
@@ -116,8 +147,12 @@ impl SparseConsoleBackend {
         &mut self,
         _font: &font::Font,
         _shader: &shader::Shader,
-        _platform: &super::RltkPlatform,
-        _tiles: &[crate::sparse_console::SparseTile],
+        platform: &super::RltkPlatform,
+        tiles: &[crate::sparse_console::SparseTile],
     ) {
+        let window = &platform.platform.window;
+        for t in tiles.iter() {
+            // Do something
+        }
     }
 }
