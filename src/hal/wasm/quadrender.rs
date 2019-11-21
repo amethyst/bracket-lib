@@ -1,5 +1,4 @@
 use glow::HasContext;
-use std::mem;
 
 /// Sets up a simple VAO/VBO to render a single quad
 /// Used for presenting the backing buffer and in post-process chains.

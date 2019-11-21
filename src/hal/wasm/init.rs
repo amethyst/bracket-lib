@@ -6,7 +6,6 @@ pub fn init_raw<S: ToString>(
     use super::super::super::Rltk;
     use super::super::*;
     use super::*;
-    use wasm_bindgen::prelude::*;
     use wasm_bindgen::JsCast;
 
     let canvas = web_sys::window()

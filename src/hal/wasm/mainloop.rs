@@ -1,7 +1,5 @@
 use super::super::super::{GameState, Rltk};
-use super::super::*;
 use super::events::*;
-use super::VirtualKeyCode;
 use glow::HasContext;
 
 pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {

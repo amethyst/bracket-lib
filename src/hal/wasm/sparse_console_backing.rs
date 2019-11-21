@@ -1,8 +1,6 @@
-use super::super::super::{Tile, RGB};
 use super::super::{font::Font, shader::Shader};
 use crate::sparse_console::SparseTile;
 use glow::HasContext;
-use std::mem;
 
 pub struct SparseConsoleBackend {
     charbuffer : glow::WebTextureKey,

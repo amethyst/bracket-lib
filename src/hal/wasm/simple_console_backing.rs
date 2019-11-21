@@ -1,7 +1,6 @@
-use super::super::super::{Tile, RGB};
+use super::super::super::{Tile};
 use super::super::{font::Font, shader::Shader};
 use glow::HasContext;
-use std::mem;
 
 pub struct SimpleConsoleBackend {
     charbuffer : glow::WebTextureKey,

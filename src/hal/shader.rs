@@ -3,9 +3,6 @@ use cgmath::Vector3;
 use glow::HasContext;
 use std::str;
 
-#[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::*;
-
 #[allow(non_snake_case)]
 pub struct Shader {
     #[cfg(not(target_arch = "wasm32"))]
