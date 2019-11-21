@@ -13,6 +13,11 @@ categories = ["game-engines", "graphics"]
 license = "MIT"
 maintenance = { status = "actively-developed" }
 
+[features]
+default = []
+serialization = [ "serde/derive", "serde_json" ]
+threaded = ["rayon"]
+
 [dependencies]
 glow = "0.3.0-alpha2"
 image = { version = "0.22.3", default-features = false, features = ["jpeg", "png_codec"] }
@@ -24,10 +29,10 @@ serde_json =  { version = "1.0.41", optional = true }
 flate2 = "1.0.12"
 byteorder = "1.3.2"
 lazy_static = "1.4.0"
+rayon = { version = "1.1.0", optional = true }
 
 [target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
 glutin = "0.22.0-alpha3"
-rayon = "1.1.0"
 rand = "0.7.2"
 
 [target.wasm32-unknown-unknown.dependencies]
@@ -43,8 +48,3 @@ specs = "0.15.1"
 
 [build-dependencies]
 gl_generator = "0.14.0"
-
-[features]
-default = []
-serialization = [ "serde/derive", "serde_json" ]
-
