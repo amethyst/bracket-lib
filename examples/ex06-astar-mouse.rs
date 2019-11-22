@@ -134,6 +134,7 @@ impl GameState for State {
         if self.mode == Mode::Waiting {
             // Render a mouse cursor
             let mouse_pos = ctx.mouse_pos();
+            //println!("Received mouse pos: {},{}", mouse_pos.0, mouse_pos.1);
             let mouse_idx = self.point2d_to_index(Point::new(mouse_pos.0, mouse_pos.1));
             ctx.print_color(
                 mouse_pos.0,

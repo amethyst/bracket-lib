@@ -30,7 +30,7 @@ pub mod font {
     impl Font {
         pub fn load<S: ToString>(_filename: S, _tile_size: (u32, u32)) -> Font {
             Font{
-                tile_size : (0, 0)
+                tile_size : (1, 1)
             }
         }
 
@@ -56,6 +56,7 @@ pub fn init_raw<S: ToString>(
     window.nodelay(true);
     window.keypad(true);
     pancurses::start_color();
+    pancurses::mousemask(pancurses::ALL_MOUSE_EVENTS | pancurses::REPORT_MOUSE_POSITION, std::ptr::null_mut());
 
     crate::Rltk {
         backend: super::RltkPlatform { 
