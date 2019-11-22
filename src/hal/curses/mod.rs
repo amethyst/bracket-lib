@@ -51,13 +51,11 @@ pub fn init_raw<S: ToString>(
 ) -> crate::Rltk 
 {
     let window = initscr();
-    println!("{}, {}, {}, {}, {}", width_pixels, height_pixels, pancurses::COLORS(), pancurses::COLOR_PAIRS(), pancurses::can_change_color());
     resize_term(height_pixels as i32/8, width_pixels as i32/8);
     noecho();
     window.nodelay(true);
+    window.keypad(true);
     pancurses::start_color();
-    pancurses::use_default_colors();
-    //pancurses::COLOR_GREEN
 
     crate::Rltk {
         backend: super::RltkPlatform { 

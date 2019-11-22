@@ -37,7 +37,7 @@ impl SparseConsoleBackend {
             let x = t.idx as u32 % self.width;
             let y = t.idx as u32 / self.width;
 
-            window.mvaddch(self.height as i32 - y as i32, x as i32, crate::to_char(t.glyph));
+            window.mvaddch(self.height as i32 - (y as i32 + 1), x as i32, crate::to_char(t.glyph));
         }
     }
 }
