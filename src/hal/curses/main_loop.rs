@@ -27,21 +27,6 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
             prev_ms = now_ms;
         }
 
-        gamestate.tick(&mut rltk);
-
-        for cons in &mut rltk.consoles {
-            cons.console.rebuild_if_dirty(&rltk.backend);
-        }
-
-        rltk.backend.platform.window.clear();
-
-        // Tell each console to draw itself
-        for cons in &mut rltk.consoles {
-            cons.console.gl_draw(&rltk.fonts[cons.font_index], &dummy_shader, &rltk.backend);
-        }
-
-        rltk.backend.platform.window.refresh();
-
         // Input
         rltk.left_click = false;
         rltk.key = None;
@@ -57,7 +42,18 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                 pancurses::Input::KeyRight => rltk.key = Some(VirtualKeyCode::Right),
                 pancurses::Input::KeyUp => rltk.key = Some(VirtualKeyCode::Up),
                 pancurses::Input::KeyDown => rltk.key = Some(VirtualKeyCode::Down),
-                pancurses::Input::KeyHome => rltk.key = Some(VirtualKeyCode::Home),                
+                pancurses::Input::KeyHome => rltk.key = Some(VirtualKeyCode::Home), 
+                pancurses::Input::KeyMouse => {
+                    if let Ok(mouse_event) = pancurses::getmouse() {
+                        if mouse_event.bstate & pancurses::BUTTON1_CLICKED > 0 {
+                            rltk.left_click = true;
+                        }
+                        println!("{}, {}", mouse_event.x, mouse_event.y);
+                        rltk.mouse_pos = ( mouse_event.x, mouse_event.y);
+                        println!("{:?}", rltk.mouse_pos);
+                        println!("{:?}", rltk.mouse_pos());
+                    }
+                }               
                 pancurses::Input::Character(c) => {
                     match c {
                         '`' => rltk.key = Some(VirtualKeyCode::Grave),
@@ -111,6 +107,23 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                 _ => {}
             }
         }
+        
+
+        gamestate.tick(&mut rltk);
+
+        for cons in &mut rltk.consoles {
+            cons.console.rebuild_if_dirty(&rltk.backend);
+        }
+
+        rltk.backend.platform.window.clear();
+
+        // Tell each console to draw itself
+        for cons in &mut rltk.consoles {
+            cons.console.gl_draw(&rltk.fonts[cons.font_index], &dummy_shader, &rltk.backend);
+        }
+
+        rltk.backend.platform.window.refresh();
+
     }
 
     endwin();
