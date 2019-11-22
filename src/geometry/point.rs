@@ -4,7 +4,7 @@ use std::ops;
     feature = "serialization",
     derive(serde::Serialize, serde::Deserialize)
 )]
-#[derive(Eq, PartialEq, Copy, Clone, Debug)]
+#[derive(Eq, PartialEq, Copy, Clone, Debug, Hash)]
 /// Helper struct defining a 2D point in space.
 pub struct Point {
     pub x: i32,

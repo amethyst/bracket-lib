@@ -1,6 +1,6 @@
 [package]
 name = "rltk"
-version = "0.5.6"
+version = "0.5.7"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = false
