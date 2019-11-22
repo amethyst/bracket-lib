@@ -54,6 +54,8 @@ RLTK supports a number of *feature flags* to let you use it the way you want.
 * By default, the `opengl` feature will use WebGL or native OpenGL to render your consoles with a psuedo-terminal.
 * You can disable `opengl` and enable `curses` to render to `ncurses` or `pdcurses` (depending upon your platform). All of the demos are available as console-only now, via `cargo run --example curses14-dwarfmap --features curses --no-default-features` (substitute `curses` for `ex` in the example names, and specify the feature set).
 
+Now working on supporting: `cargo run --example amethyst01-helloworld --features "amethyst_engine","vulkan" --no-default-features`
+
 ## Examples
 
 ### Example 1: Bouncing Hello World
