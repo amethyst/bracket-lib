@@ -46,6 +46,14 @@ fn main() {
 }
 ```
 
+### Advanced Usage
+
+RLTK supports a number of *feature flags* to let you use it the way you want.
+
+* If you remove default features, it goes into "dummy" mode. The game state and rendering functions are disabled, but all of the library functions are available (and the lib becomes *tiny* - dropping most of its dependencies).
+* By default, the `opengl` feature will use WebGL or native OpenGL to render your consoles with a psuedo-terminal.
+* You can disable `opengl` and enable `curses` to render to `ncurses` or `pdcurses` (depending upon your platform). All of the demos are available as console-only now, via `cargo run --example curses14-dwarfmap --features curses --no-default-features` (substitute `curses` for `ex` in the example names, and specify the feature set).
+
 ## Examples
 
 ### Example 1: Bouncing Hello World

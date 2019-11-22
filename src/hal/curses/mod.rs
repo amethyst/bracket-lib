@@ -15,7 +15,8 @@ pub use simple_console_backing::SimpleConsoleBackend;
 pub use sparse_console_backing::SparseConsoleBackend;
 
 pub struct PlatformGL {
-    window : Window
+    window : Window,
+    color_map : Vec<CursesColor>
 }
 
 pub mod shader {
@@ -44,6 +45,28 @@ pub mod font {
     }
 }
 
+struct CursesColor {
+    r: i16,
+    g: i16,
+    b: i16,
+    rf : f32,
+    gf: f32,
+    bf : f32
+}
+
+impl CursesColor {
+    fn new(red : i16, green : i16, blue : i16) -> CursesColor {
+        CursesColor{
+            r : red,
+            g : green,
+            b : blue,
+            rf : red as f32 / 1000.0,
+            gf : green as f32 / 1000.0,
+            bf : blue as f32 / 1000.0,
+        }
+    }
+}
+
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
@@ -58,10 +81,26 @@ pub fn init_raw<S: ToString>(
     pancurses::start_color();
     pancurses::mousemask(pancurses::ALL_MOUSE_EVENTS | pancurses::REPORT_MOUSE_POSITION, std::ptr::null_mut());
 
+    // Setup basic color mapping
+    let mut color_map = Vec::new();
+    for i in 0..16 {
+        let color = pancurses::color_content(i);
+        color_map.push(CursesColor::new(color.0, color.1, color.2));
+    }
+
+    let mut counter = 0;
+    for bg in 0..16i16 {
+        for fg in 0..16i16 {
+            pancurses::init_pair(counter as i16, fg, bg);
+            counter += 1;
+        }
+    }
+
     crate::Rltk {
         backend: super::RltkPlatform { 
             platform: PlatformGL{
-                window
+                window,
+                color_map
             } 
         },
         width_pixels,
@@ -85,6 +124,21 @@ pub fn init_raw<S: ToString>(
     }
 }
 
-fn find_nearest_color(color : crate::RGB) -> i16 {
-    0
+fn find_nearest_color(color : crate::RGB, map : &[CursesColor]) -> i16 {
+    let mut result = -1;
+    let mut best_diff = std::f32::MAX;
+
+    for (i,cc) in map.iter().enumerate() {
+        let diff_r = f32::abs(color.r - cc.rf);
+        let diff_g = f32::abs(color.g - cc.gf);
+        let diff_b = f32::abs(color.b - cc.bf);
+        let total_diff = diff_r + diff_g + diff_b;
+
+        if total_diff < best_diff {
+            result = i as i16;
+            best_diff = total_diff;
+        }
+    }
+
+    result
 }
