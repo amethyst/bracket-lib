@@ -38,9 +38,27 @@ pub fn init_raw<S: ToString>(
 
     shaders.push(Shader::new(
         &gl,
-        shader_strings::UBERSHADER_VS,
-        shader_strings::UBERSHADER_FS,
+        shader_strings::CONSOLE_WITH_BG_VS,
+        shader_strings::CONSOLE_WITH_BG_FS,
     ));
+    shaders.push(Shader::new(
+        &gl,
+        shader_strings::CONSOLE_NO_BG_VS,
+        shader_strings::CONSOLE_NO_BG_FS,
+    ));
+    shaders.push(Shader::new(
+        &gl,
+        shader_strings::BACKING_VS,
+        shader_strings::BACKING_FS,
+    ));
+    shaders.push(Shader::new(
+        &gl,
+        shader_strings::SCANLINES_VS,
+        shader_strings::SCANLINES_FS,
+    ));
+
+    // Build the backing frame-buffer
+    let backing_fbo = Framebuffer::build_fbo(&gl, width_pixels as i32, height_pixels as i32);
 
     // Build a simple quad rendering vao
     let quad_vao = setup_quad(&gl);
@@ -53,7 +71,8 @@ pub fn init_raw<S: ToString>(
                 context_wrapper: Some(WrappedContext {
                     el,
                     wc: windowed_context,
-                })
+                }),
+                backing_buffer: backing_fbo,
             },
         },
         width_pixels,

@@ -17,7 +17,8 @@ pub use sparse_console_backing::*;
 
 pub struct PlatformGL {
     pub quad_vao: u32,
-    pub context_wrapper: Option<WrappedContext>
+    pub context_wrapper: Option<WrappedContext>,
+    pub backing_buffer: super::Framebuffer,
 }
 
 pub struct WrappedContext {

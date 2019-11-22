@@ -1,4 +1,5 @@
 use super::super::super::{Console, GameState, Rltk};
+use super::super::*;
 use glow::HasContext;
 use glutin::{
     event::Event, event::WindowEvent, event_loop::ControlFlow
@@ -68,6 +69,11 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                             physical.height as i32,
                         );
                     }
+                    rltk.backend.platform.backing_buffer = Framebuffer::build_fbo(
+                        &rltk.backend.gl,
+                        physical.width as i32,
+                        physical.height as i32,
+                    );
                 }
                 WindowEvent::RedrawRequested => {
                     //tock(&mut rltk, &mut gamestate, &mut frames, &mut prev_seconds, &mut prev_ms, &now);
@@ -143,37 +149,52 @@ fn tock<GS: GameState>(
         cons.console.rebuild_if_dirty(&rltk.backend.gl);
     }
 
-    // Clear the screen
-    unsafe {
-        rltk.backend.gl.clear_color(0.2, 0.3, 0.3, 1.0);
-        rltk.backend.gl.clear(glow::COLOR_BUFFER_BIT);
+    // Bind to the backing buffer
+    if rltk.post_scanlines {
+        rltk.backend.platform.backing_buffer.bind(&rltk.backend.gl);
     }
 
-    // Setup render pass
-    let gl = &rltk.backend.gl;
-
+    // Clear the screen
     unsafe {
-        rltk.shaders[0].useProgram(gl);
-
-        gl.active_texture(glow::TEXTURE0);
-        rltk.fonts[0].bind_texture(gl);
-        rltk.shaders[0].setInt(gl, "texture1", 0);
-        rltk.shaders[0].setVec3(gl, "font", 8.0, 8.0, 0.0);
-
-        gl.bind_vertex_array(Some(rltk.backend.platform.quad_vao));
+        rltk.backend.gl.clear_color(0.0, 0.0, 0.0, 1.0);
+        rltk.backend.gl.clear(glow::COLOR_BUFFER_BIT);
     }
 
     // Tell each console to draw itself
     for cons in &mut rltk.consoles {
         let font = &rltk.fonts[cons.font_index];
-        let shader = &rltk.shaders[0];
-        unsafe {
-            gl.active_texture(glow::TEXTURE0);
-            font.bind_texture(gl);
-            shader.setBool(&rltk.backend.gl, "showScanLines", rltk.post_scanlines);
-            shader.setBool(&rltk.backend.gl, "screenBurn", rltk.post_screenburn);
-            shader.setVec3(&rltk.backend.gl, "screenSize", rltk.width_pixels as f32, rltk.height_pixels as f32, 0.0);
-        }
+        let shader = &rltk.shaders[cons.shader_index];
         cons.console.gl_draw(font, shader, &rltk.backend.gl);
+    }
+
+    if rltk.post_scanlines {
+        // Now we return to the primary screen
+        rltk.backend
+            .platform
+            .backing_buffer
+            .default(&rltk.backend.gl);
+        unsafe {
+            if rltk.post_scanlines {
+                rltk.shaders[3].useProgram(&rltk.backend.gl);
+                rltk.shaders[3].setVec3(
+                    &rltk.backend.gl,
+                    "screenSize",
+                    rltk.width_pixels as f32,
+                    rltk.height_pixels as f32,
+                    0.0,
+                );
+                rltk.shaders[3].setBool(&rltk.backend.gl, "screenBurn", rltk.post_screenburn);
+            } else {
+                rltk.shaders[2].useProgram(&rltk.backend.gl);
+            }
+            rltk.backend
+                .gl
+                .bind_vertex_array(Some(rltk.backend.platform.quad_vao));
+            rltk.backend.gl.bind_texture(
+                glow::TEXTURE_2D,
+                Some(rltk.backend.platform.backing_buffer.texture),
+            );
+            rltk.backend.gl.draw_arrays(glow::TRIANGLES, 0, 6);
+        }
     }
 }
