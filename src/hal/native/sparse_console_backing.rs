@@ -13,8 +13,8 @@ pub struct SparseConsoleBackend {
 }
 
 impl SparseConsoleBackend {
-    pub fn new(gl: &glow::Context, _width: usize, _height: usize) -> SparseConsoleBackend {
-        let (vbo, vao, ebo) = SparseConsoleBackend::init_gl_for_console(gl);
+    pub fn new(platform: &super::super::RltkPlatform, _width: usize, _height: usize) -> SparseConsoleBackend {
+        let (vbo, vao, ebo) = SparseConsoleBackend::init_gl_for_console(&platform.platform.gl);
         SparseConsoleBackend {
             vertex_buffer: Vec::new(),
             index_buffer: Vec::new(),
@@ -177,6 +177,7 @@ impl SparseConsoleBackend {
             index_count += 4;
         }
 
+        let gl = &platform.platform.gl;
         unsafe {
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
             gl.buffer_data_u8_slice(
@@ -198,13 +199,13 @@ impl SparseConsoleBackend {
         &mut self,
         font: &Font,
         shader: &Shader,
-        gl: &glow::Context,
+        platform: &super::super::RltkPlatform,
         tiles: &[SparseTile],
     ) {
         let gl = &platform.platform.gl;
         unsafe {
             // bind Texture
-            font.bind_texture(gl);
+            font.bind_texture(platform);
 
             // render container
             shader.useProgram(gl);

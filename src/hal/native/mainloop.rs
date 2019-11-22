@@ -70,7 +70,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                         );
                     }
                     rltk.backend.platform.backing_buffer = Framebuffer::build_fbo(
-                        &rltk.backend.gl,
+                        &rltk.backend.platform.gl,
                         physical.width as i32,
                         physical.height as i32,
                     );
@@ -151,20 +151,20 @@ fn tock<GS: GameState>(
 
     // Bind to the backing buffer
     if rltk.post_scanlines {
-        rltk.backend.platform.backing_buffer.bind(&rltk.backend.gl);
+        rltk.backend.platform.backing_buffer.bind(&rltk.backend.platform.gl);
     }
 
     // Clear the screen
     unsafe {
-        rltk.backend.gl.clear_color(0.0, 0.0, 0.0, 1.0);
-        rltk.backend.gl.clear(glow::COLOR_BUFFER_BIT);
+        rltk.backend.platform.gl.clear_color(0.0, 0.0, 0.0, 1.0);
+        rltk.backend.platform.gl.clear(glow::COLOR_BUFFER_BIT);
     }
 
     // Tell each console to draw itself
     for cons in &mut rltk.consoles {
         let font = &rltk.fonts[cons.font_index];
         let shader = &rltk.shaders[cons.shader_index];
-        cons.console.gl_draw(font, shader, &rltk.backend.gl);
+        cons.console.gl_draw(font, shader, &rltk.backend);
     }
 
     if rltk.post_scanlines {
@@ -172,29 +172,29 @@ fn tock<GS: GameState>(
         rltk.backend
             .platform
             .backing_buffer
-            .default(&rltk.backend.gl);
+            .default(&rltk.backend.platform.gl);
         unsafe {
             if rltk.post_scanlines {
-                rltk.shaders[3].useProgram(&rltk.backend.gl);
+                rltk.shaders[3].useProgram(&rltk.backend.platform.gl);
                 rltk.shaders[3].setVec3(
-                    &rltk.backend.gl,
+                    &rltk.backend.platform.gl,
                     "screenSize",
                     rltk.width_pixels as f32,
                     rltk.height_pixels as f32,
                     0.0,
                 );
-                rltk.shaders[3].setBool(&rltk.backend.gl, "screenBurn", rltk.post_screenburn);
+                rltk.shaders[3].setBool(&rltk.backend.platform.gl, "screenBurn", rltk.post_screenburn);
             } else {
-                rltk.shaders[2].useProgram(&rltk.backend.gl);
+                rltk.shaders[2].useProgram(&rltk.backend.platform.gl);
             }
-            rltk.backend
+            rltk.backend.platform
                 .gl
                 .bind_vertex_array(Some(rltk.backend.platform.quad_vao));
-            rltk.backend.gl.bind_texture(
+            rltk.backend.platform.gl.bind_texture(
                 glow::TEXTURE_2D,
                 Some(rltk.backend.platform.backing_buffer.texture),
             );
-            rltk.backend.gl.draw_arrays(glow::TRIANGLES, 0, 6);
+            rltk.backend.platform.gl.draw_arrays(glow::TRIANGLES, 0, 6);
         }
     }
 }

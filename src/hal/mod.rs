@@ -17,9 +17,6 @@ mod framebuffer;
 #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
 pub use framebuffer::Framebuffer;
 
-#[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
-mod shader;
-
 #[cfg(not(feature = "opengl"))]
 #[cfg(all(not(feature="opengl"), feature="curses"))]
 mod curses;
