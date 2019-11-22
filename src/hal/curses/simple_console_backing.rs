@@ -41,7 +41,7 @@ impl SimpleConsoleBackend {
         for y in 0..height {
             for x in 0..width {
                 let t = &self.tiles[idx];
-                window.mvaddch(height as i32 - y as i32, x as i32, crate::to_char(t.glyph));
+                window.mvaddch(height as i32 - (y as i32 +1), x as i32, crate::to_char(t.glyph));
                 idx += 1;
             }            
         }
