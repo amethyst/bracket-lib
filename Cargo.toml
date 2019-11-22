@@ -20,6 +20,9 @@ threaded = ["rayon"]
 opengl = [ "glow", "image", "glutin", "cgmath" ]
 ecs = [ "specs" ]
 curses = [ "pancurses" ]
+vulkan = []
+metal = []
+amethyst_engine = [ "amethyst" ]
 
 [dependencies]
 glow = { version = "0.3.0-alpha2", optional = true }
@@ -35,6 +38,7 @@ lazy_static = "1.4.0"
 rayon = { version = "1.1.0", optional = true }
 specs = { version = "0.15.1", optional = true }
 pancurses = { version = "0.16.1", optional = true }
+amethyst = { version = "0.13", optional = true, features = ["vulkan"] }
 
 [target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
 glutin = {version = "0.22.0-alpha3", optional = true }
@@ -217,3 +221,7 @@ name = "curses16-keyboard"
 path = "examples/ex16-keyboard.rs"
 required-features = ["curses"]
 
+[[example]]
+name = "amethyst01-helloworld"
+path = "examples/ex01-helloworld.rs"
+required-features = [ "amethyst_engine" ]

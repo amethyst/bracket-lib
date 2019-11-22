@@ -27,10 +27,16 @@ mod curses;
 #[cfg(all(not(feature="opengl"), feature="curses"))]
 pub use curses::*;
 
-#[cfg(all(not(feature = "opengl"), not(feature = "curses")))]
+#[cfg(all(not(feature="opengl"), feature="amethyst_engine"))]
+mod amethyst_be;
+
+#[cfg(all(not(feature="opengl"), feature="amethyst_engine"))]
+pub use amethyst_be::*;
+
+#[cfg(all(not(feature = "opengl"), not(feature = "curses"), not(feature = "amethyst_engine")))]
 mod dummy;
 
-#[cfg(all(not(feature = "opengl"), not(feature = "curses")))]
+#[cfg(all(not(feature = "opengl"), not(feature = "curses"), not(feature = "amethyst_engine")))]
 pub use dummy::*;
 
 pub use shader::Shader;
