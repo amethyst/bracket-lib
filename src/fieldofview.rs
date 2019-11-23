@@ -22,7 +22,7 @@ pub fn field_of_view(start: Point, range: i32, fov_check: &dyn Algorithm2D) -> V
         }
     }
 
-    for y in top..=bottom {
+    for y in top+1..bottom {
         for pt in scan_fov_line(start, Point::new(left, y), range_squared, fov_check) {
             result.push(pt);
         }
