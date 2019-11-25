@@ -269,7 +269,8 @@ pub fn main_loop<GS: GameState>(rltk: Rltk, gamestate: GS) {
             RenderingBundle::<DefaultBackend>::new()
             // The RenderToWindow plugin provides all the scaffolding for opening a window and drawing on it
             .with_plugin(
-                RenderToWindow::from_config_path("config/")
+                RenderToWindow::from_config_path("config/display.ron")
+                .with_clear([0.0,0.0,0.0,1.0])
                 //RenderToWindow::from_config(cfg)
                     //.with_clear([0.00196, 0.23726, 0.21765, 1.0]),
             )
