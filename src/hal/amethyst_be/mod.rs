@@ -6,11 +6,12 @@ use amethyst::{
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
         types::DefaultBackend,
-        RenderingBundle,
+        RenderingBundle
     },
     utils::application_root_dir,
     assets::{AssetStorage, Loader, Handle},
     core::transform::Transform,
+    core::TransformBundle,
     ecs::prelude::{Component, DenseVecStorage},
     prelude::*,
     renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
@@ -95,8 +96,8 @@ impl SimpleState for RltkGemBridge {
         let world = data.world;
         world.register::<SimpleConsoleComponent>();
         self.make_camera(world);
-        let ss = self.initialize_fonts(world);
-        self.initialize_console_objects(world, ss);
+        self.initialize_fonts(world);
+        self.initialize_console_objects(world);
     }
 
     /*fn update(&mut self, _data: &mut StateData<'_, GameData<'_, '_>>) -> amethyst::SimpleTrans {
@@ -116,47 +117,28 @@ impl SimpleState for RltkGemBridge {
     }*/
 }
 
-pub const ARENA_HEIGHT: f32 = 100.0;
-pub const ARENA_WIDTH: f32 = 100.0;
-pub const PADDLE_HEIGHT: f32 = 16.0;
-pub const PADDLE_WIDTH: f32 = 4.0;
-
 impl RltkGemBridge {
     fn make_camera(&self, world : &mut World) {
         let mut transform = Transform::default();
         let width = self.rltk.width_pixels as f32;
         let height = self.rltk.height_pixels as f32;
         println!("{} x {}", width, height);
-        transform.set_translation_xyz(ARENA_WIDTH * 0.5, ARENA_HEIGHT * 0.5, 1.0);
+        transform.set_translation_xyz(width * 0.5, height * 0.5, 1.0);
 
         world
             .create_entity()
-            .with(Camera::standard_2d(ARENA_WIDTH, ARENA_HEIGHT))
+            .with(Camera::standard_2d(width, height))
             .with(transform)
             .build();
     }
 
-    fn initialize_fonts(&mut self, world : &mut World) -> Handle<SpriteSheet> {
+    fn initialize_fonts(&mut self, world : &mut World) {
         use amethyst::renderer::Sprite;
 
         let loader = world.read_resource::<Loader>();
         let texture_storage = world.read_resource::<AssetStorage<Texture>>();
         let ss_storage = world.read_resource::<AssetStorage<SpriteSheet>>();
 
-        let handle = loader.load(
-            "resources/pong_spritesheet.png",
-            ImageFormat::default(),
-            (),
-            &texture_storage
-        );
-        loader.load(
-            "resources/test.ron",
-            SpriteSheetFormat(handle),
-            (),
-            &ss_storage
-        )
-
-        /*
         for font in self.rltk.fonts.iter_mut() {
             let handle = loader.load(
                 &font.filename,
@@ -165,9 +147,8 @@ impl RltkGemBridge {
                 &texture_storage
             );
             
-            // Make a font-specific sprite sheet
-            /*
-            let offsets = [0.5; 2];
+            // Make a font-specific sprite sheet            
+            let offsets = [0.0 - (font.tile_size.0 as f32 / 2.0), 0.0 - (font.tile_size.1 as f32 / 2.0)];
             let mut sprites = Vec::with_capacity(256);
 
             for y in 0..16 {
@@ -186,53 +167,26 @@ impl RltkGemBridge {
                     println!("{:?}", sprite);
                     sprites.push(sprite);
                 }
-            }*/
+            }
 
-            /*
-            sprites.push(Sprite::from_pixel_values(
-                128, 128, 128, 128, 0, 0, offsets, false, false
-            ));
             let ss_handle = loader.load_from_data(
                 SpriteSheet{ texture: handle.clone(), sprites },
                 (),
                 &ss_storage
             );
             font.ss = Some(ss_handle);
-            println!("{:?}", font.ss);*/
-
-            font.ss = Some(loader.load(
-                "resources/test.ron",
-                SpriteSheetFormat(handle),
-                (),
-                &ss_storage
-            ));
-            println!("Loaded font");
-        }*/
+            println!("{:?}", font.ss);
+        }
     }
 
-    fn initialize_console_objects(&self, world : &mut World, ss : Handle<SpriteSheet>) {
-        let mut transform = Transform::default();
-        let y = ARENA_HEIGHT / 2.0;
-        transform.set_translation_xyz(PADDLE_WIDTH * 0.5, y, 0.0);
+    fn initialize_console_objects(&self, world : &mut World) {
+        let transform = Transform::default();
 
-        let sprites = SpriteRender{
-            sprite_sheet: ss.clone(),
-            sprite_number: 0
-        };
-
-        world
-            .create_entity()
-            .with(transform.clone())
-            .with(sprites.clone())
-            .build();
-        
-        println!("Made console");
-
-        /*for (i,cons) in self.rltk.consoles.iter().enumerate() {
+        for (i,cons) in self.rltk.consoles.iter().enumerate() {
             if let Some(ss) = &self.rltk.fonts[cons.font_index].ss {
                 let sprites = SpriteRender{
                     sprite_sheet: ss.clone(),
-                    sprite_number: 0
+                    sprite_number: 1
                 };
 
                 world
@@ -244,7 +198,7 @@ impl RltkGemBridge {
                 
                     println!("Made console");
             }
-        }*/
+        }
     }
 }
 
@@ -260,26 +214,27 @@ pub fn main_loop<GS: GameState>(rltk: Rltk, gamestate: GS) {
     amethyst::start_logger(Default::default());
 
     let mut cfg = amethyst::window::DisplayConfig::default();
-    cfg.dimensions = Some((500, 500));
+    cfg.dimensions = Some((rltk.width_pixels, rltk.height_pixels));
     cfg.title = "Hello RLTK".to_string();
 
     let app_root = application_root_dir().unwrap();
     let game_data = GameDataBuilder::default()
+        .with_bundle(TransformBundle::new()).expect("Transform bundle fail")
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
-            // The RenderToWindow plugin provides all the scaffolding for opening a window and drawing on it
             .with_plugin(
-                RenderToWindow::from_config_path("config/display.ron")
-                .with_clear([0.0,0.0,0.0,1.0])
-                //RenderToWindow::from_config(cfg)
-                    //.with_clear([0.00196, 0.23726, 0.21765, 1.0]),
+                RenderToWindow::from_config(cfg)
+                    .with_clear([0.00196, 0.23726, 0.21765, 1.0]),
             )
-            // RenderFlat2D plugin is used to render entities with a `SpriteRender` component.
             .with_plugin(RenderFlat2D::default()),
-        ).unwrap();
+        ).expect("Game data fail");
     let assets_dir = app_root;
     //let mut world = World::new(); // Why is this even here?
-    let mut game = Application::new(assets_dir, RltkGemBridge{rltk, state: Box::new(gamestate)}, game_data).unwrap();
+    let mut game = Application::new(
+        assets_dir, 
+        RltkGemBridge{rltk, state: Box::new(gamestate)}, 
+        game_data)
+    .expect("Failed to make game data");
     game.run();
 }
 
