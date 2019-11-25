@@ -87,6 +87,10 @@ pub trait Console {
     /// Specify a global offset (by character count, so 0.5 is half a character). Useful for
     /// drawing walls between tiles.
     fn set_offset(&mut self, x: f32, y: f32);
+
+    // Platform specific for Amethyst integration
+    #[cfg(all(not(feature="opengl"), any(feature="amethyst_engine_vulkan", feature="amethyst_engine_metal")))]
+    fn tile_map(&self) -> Vec<(u8)> { Vec::new() }
 }
 
 pub fn log<S: ToString>(message: S) {

@@ -1,5 +1,5 @@
 // Platform to integrate into Amethyst
-use crate::{GameState, Rltk};
+use crate::{GameState, Rltk, rltk::DisplayConsole};
 
 use amethyst::{
     prelude::*,
@@ -12,9 +12,8 @@ use amethyst::{
     assets::{AssetStorage, Loader, Handle},
     core::transform::Transform,
     core::TransformBundle,
-    ecs::prelude::{Component, DenseVecStorage},
-    prelude::*,
-    renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, SpriteSheetFormat, Texture},
+    ecs::prelude::{Component, DenseVecStorage, Entity, ReadStorage, WriteStorage},
+    renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, Texture},
 };
 
 mod keycodes;
@@ -29,7 +28,6 @@ pub mod shader {
 pub mod font {
     use amethyst::{
         renderer::SpriteSheet,
-        renderer::Texture,
         assets::Handle
     };
 
@@ -100,7 +98,10 @@ impl SimpleState for RltkGemBridge {
         self.initialize_console_objects(world);
     }
 
-    /*fn update(&mut self, _data: &mut StateData<'_, GameData<'_, '_>>) -> amethyst::SimpleTrans {
+    fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> amethyst::SimpleTrans {
+        use amethyst::ecs::prelude::*;
+        use crate::console::Console;
+
         // Handle Input Somehow
 
         // Tick the game's state
@@ -112,9 +113,19 @@ impl SimpleState for RltkGemBridge {
         }
 
         // Update the console state objects
+        let consoles = data.world.write_storage::<SimpleConsoleComponent>();
+        let mut sprites = data.world.write_storage::<SpriteRender>();
+        for cons in (&consoles).join() {
+            let tiles = self.rltk.consoles[cons.idx].console.tile_map();
+            for (i,chr) in cons.glyphs.iter().enumerate() {
+                if let Some(sprite) = sprites.get_mut(*chr) {
+                    sprite.sprite_number = tiles[i] as usize;
+                }
+            }
+        }
 
         Trans::None
-    }*/
+    }
 }
 
 impl RltkGemBridge {
@@ -179,21 +190,16 @@ impl RltkGemBridge {
         }
     }
 
-    fn initialize_console_objects(&self, world : &mut World) {
-        let transform = Transform::default();
-
-        for (i,cons) in self.rltk.consoles.iter().enumerate() {
+    fn initialize_console_objects(&mut self, world : &mut World) {
+        for (i,cons) in self.rltk.consoles.iter_mut().enumerate() {
             if let Some(ss) = &self.rltk.fonts[cons.font_index].ss {
-                let sprites = SpriteRender{
-                    sprite_sheet: ss.clone(),
-                    sprite_number: 1
-                };
+                let cons = SimpleConsoleComponent::new(i, ss.clone(), cons, world);
 
                 world
                     .create_entity()
-                    .with(SimpleConsoleComponent{ idx : i})
-                    .with(transform.clone())
-                    .with(sprites.clone())
+                    .with(cons)
+                    //.with(transform.clone())
+                    //.with(sprites.clone())
                     .build();
                 
                     println!("Made console");
@@ -203,7 +209,34 @@ impl RltkGemBridge {
 }
 
 struct SimpleConsoleComponent {
-    idx : usize
+    idx : usize,
+    ss : Handle<SpriteSheet>,
+    glyphs : Vec<Entity>
+}
+
+impl SimpleConsoleComponent {
+    fn new(idx : usize, ss : Handle<SpriteSheet>, cons:&mut DisplayConsole, ecs : &mut World) -> SimpleConsoleComponent {
+        let mut component = SimpleConsoleComponent{
+            idx,
+            ss : ss.clone(),
+            glyphs : Vec::new()
+        };        
+
+        let size = cons.console.get_char_size();
+        for y in 0..size.1 {
+            for x in 0..size.0 {
+                let mut trans = Transform::default();
+                trans.set_translation_xyz(x as f32 * 8.0, y as f32 * 8.0, 0.0);
+                let e = ecs.create_entity()
+                    .with(SpriteRender{ sprite_sheet: ss.clone(), sprite_number: 1 })
+                    .with(trans)
+                    .build();
+                component.glyphs.push(e);
+            }
+        }
+
+        component
+    }
 }
 
 impl Component for SimpleConsoleComponent {

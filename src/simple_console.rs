@@ -234,4 +234,13 @@ impl Console for SimpleConsole {
         self.offset_x = x * (2.0 / self.width as f32);
         self.offset_y = y * (2.0 / self.height as f32);
     }
+
+    #[cfg(all(not(feature="opengl"), any(feature="amethyst_engine_vulkan", feature="amethyst_engine_metal")))]
+    fn tile_map(&self) -> Vec<(u8)> { 
+        let mut map = Vec::new();
+        for t in self.tiles.iter() {
+            map.push(t.glyph);
+        }
+        map
+    }
 }
