@@ -104,6 +104,9 @@ pub trait Algorithm2D: BaseMap {
 
     /// Convert an array index to a point.
     fn index_to_point2d(&self, idx: i32) -> Point;
+
+    // Optional - check that an x/y coordinate is within the map bounds
+    fn in_bounds(&self, _pos : Point) -> bool { true }
 }
 
 /// Implement these for handling conversion to/from 2D coordinates (they are separate, because you might
