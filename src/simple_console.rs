@@ -1,15 +1,13 @@
 use super::{color, gui_helpers, hal, rex::XpLayer, Console, Font, Shader, Tile, RGB};
-//use glow::HasContext;
-//use std::mem;
+use std::any::Any;
 
 /// A simple console with background color.
 pub struct SimpleConsole {
     pub width: u32,
     pub height: u32,
 
-    // Private
-    tiles: Vec<Tile>,
-    is_dirty: bool,
+    pub tiles: Vec<Tile>,
+    pub is_dirty: bool,
 
     // To handle offset tiles for people who want thin walls between tiles
     offset_x: f32,
@@ -235,12 +233,7 @@ impl Console for SimpleConsole {
         self.offset_y = y * (2.0 / self.height as f32);
     }
 
-    #[cfg(all(not(feature="opengl"), any(feature="amethyst_engine_vulkan", feature="amethyst_engine_metal")))]
-    fn tile_map(&self) -> Vec<(u8)> { 
-        let mut map = Vec::new();
-        for t in self.tiles.iter() {
-            map.push(t.glyph);
-        }
-        map
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }

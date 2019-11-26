@@ -3,6 +3,7 @@ use super::{
     font, hal::init_raw, rex::XpFile, rex::XpLayer, Console, RltkPlatform,
     Shader, SimpleConsole, VirtualKeyCode, RGB,
 };
+use std::any::Any;
 
 /// A display console, used internally to provide console render support.
 /// Public in case you want to play with it, or access it directly.
@@ -272,6 +273,9 @@ impl Console for Rltk {
     }
     fn set_offset(&mut self, x: f32, y: f32) {
         self.consoles[self.active_console].console.set_offset(x, y);
+    }
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
 

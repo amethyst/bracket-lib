@@ -37,7 +37,7 @@ lazy_static = "1.4.0"
 rayon = { version = "1.1.0", optional = true }
 specs = { version = "0.15.1", optional = true }
 pancurses = { version = "0.16.1", optional = true }
-amethyst = { version = "0.13", optional = true }
+amethyst = { version = "0.13", features = ["tiles"], optional = true }
 
 [target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
 glutin = {version = "0.22.0-alpha3", optional = true }
@@ -223,6 +223,11 @@ required-features = ["curses"]
 [[example]]
 name = "av01-helloworld"
 path = "examples/ex01-helloworld.rs"
+required-features = [ "amethyst_engine_vulkan" ]
+
+[[example]]
+name = "av02-sparse"
+path = "examples/ex02-sparse.rs"
 required-features = [ "amethyst_engine_vulkan" ]
 
 [[example]]

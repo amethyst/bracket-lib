@@ -1,4 +1,5 @@
 use super::{hal, rex::XpLayer, Font, Shader, RGB};
+use std::any::Any;
 
 /// The internal storage type for tiles in a simple console.
 #[derive(PartialEq, Copy, Clone)]
@@ -88,9 +89,9 @@ pub trait Console {
     /// drawing walls between tiles.
     fn set_offset(&mut self, x: f32, y: f32);
 
-    // Platform specific for Amethyst integration
-    #[cfg(all(not(feature="opengl"), any(feature="amethyst_engine_vulkan", feature="amethyst_engine_metal")))]
-    fn tile_map(&self) -> Vec<(u8)> { Vec::new() }
+    // Produces the implementor as an Any that can be matched to determine type and access
+    // natively.
+    fn as_any(&self) -> &dyn Any;
 }
 
 pub fn log<S: ToString>(message: S) {

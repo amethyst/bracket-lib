@@ -1,7 +1,5 @@
 use super::{gui_helpers, hal, rex::XpColor, rex::XpLayer, Console, Font, Shader, RGB};
-//use glow::types::*;
-//use glow::HasContext;
-//use std::mem;
+use std::any::Any;
 
 /// Internal storage structure for sparse tiles.
 pub struct SparseTile {
@@ -231,5 +229,9 @@ impl Console for SparseConsole {
     fn set_offset(&mut self, x: f32, y: f32) {
         self.offset_x = x * (2.0 / self.width as f32);
         self.offset_y = y * (2.0 / self.height as f32);
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
