@@ -153,20 +153,20 @@ impl SimpleState for RltkGemBridge {
         self.rltk.shift = false;
         self.rltk.control = false;
         self.rltk.alt = false;
+        let inputs = data.world.fetch::<InputHandler<StringBindings>>();
         if self.key_delay > 50.0 {
             self.key_delay = 0.0;
-            let inputs = data.world.fetch::<InputHandler<StringBindings>>();
             for key in inputs.keys_that_are_down() {
                 self.rltk.key = Some(key);
             }
-            if let Some(pos) = inputs.mouse_position() {
-                self.rltk.mouse_pos = (pos.0 as i32, pos.1 as i32);
-            }
-            if inputs.button_is_down(Button::Mouse(MouseButton::Left)) {
-                self.rltk.left_click = true;
-            }
-            std::mem::drop(inputs);
         }
+        if let Some(pos) = inputs.mouse_position() {
+            self.rltk.mouse_pos = (pos.0 as i32, pos.1 as i32);
+        }
+        if inputs.button_is_down(Button::Mouse(MouseButton::Left)) {
+            self.rltk.left_click = true;
+        }
+        std::mem::drop(inputs);
 
         // Tick the game's state
         self.state.tick(&mut self.rltk);
