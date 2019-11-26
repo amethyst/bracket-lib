@@ -74,6 +74,9 @@ macro_rules! link_resource {
 #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
 pub use glutin::event::VirtualKeyCode;
 
+#[cfg(all(not(feature="opengl"), any(feature="amethyst_engine_vulkan", feature="amethyst_engine_metal")))]
+pub use amethyst::input::VirtualKeyCode;
+
 #[cfg(target_arch = "wasm32")]
 pub use hal::VirtualKeyCode;
 

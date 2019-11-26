@@ -17,14 +17,13 @@ use amethyst::{
     renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, Texture},
     tiles::{MortonEncoder2D, RenderTiles2D, Tile, TileMap},
     core::math::{Point3, Vector2, Vector3},
-
-
+    input::{InputBundle, StringBindings, Bindings, InputHandler, Button},
+    winit::MouseButton
 };
 
-mod keycodes;
-pub use keycodes::VirtualKeyCode;
-
-pub struct PlatformGL {}
+pub struct PlatformGL {
+    window_title : String
+}
 
 pub mod shader {
     pub struct Shader{}
@@ -64,10 +63,10 @@ pub mod font {
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
-    _window_title: S,
+    window_title: S,
 ) -> crate::Rltk {
     crate::Rltk {
-        backend: super::RltkPlatform { platform: PlatformGL{} },
+        backend: super::RltkPlatform { platform: PlatformGL{ window_title : window_title.to_string() } },
         width_pixels,
         height_pixels,
         fonts: Vec::new(),
@@ -146,7 +145,23 @@ impl SimpleState for RltkGemBridge {
         self.rltk.fps = 1.0 / timer.delta_seconds();
         std::mem::drop(timer);
 
-        // Handle Input Somehow
+        // Handle Input
+        self.rltk.left_click = false;
+        self.rltk.key = None;
+        self.rltk.shift = false;
+        self.rltk.control = false;
+        self.rltk.alt = false;
+        let inputs = data.world.fetch::<InputHandler<StringBindings>>();
+        for key in inputs.keys_that_are_down() {
+            self.rltk.key = Some(key);
+        }
+        if let Some(pos) = inputs.mouse_position() {
+            self.rltk.mouse_pos = (pos.0 as i32, pos.1 as i32);
+        }
+        if inputs.button_is_down(Button::Mouse(MouseButton::Left)) {
+            self.rltk.left_click = true;
+        }
+        std::mem::drop(inputs);
 
         // Tick the game's state
         self.state.tick(&mut self.rltk);
@@ -292,10 +307,15 @@ pub fn main_loop<GS: GameState>(rltk: Rltk, gamestate: GS) {
 
     let mut cfg = amethyst::window::DisplayConfig::default();
     cfg.dimensions = Some((rltk.width_pixels, rltk.height_pixels));
-    cfg.title = "Hello RLTK".to_string();
+    cfg.title = rltk.backend.platform.window_title.clone();
 
     let app_root = application_root_dir().unwrap();
+
+    let input_bundle = InputBundle::<StringBindings>::new()
+        .with_bindings(Bindings::new());
+
     let game_data = GameDataBuilder::default()
+        .with_bundle(input_bundle).expect("Input bundle fail")
         .with_bundle(TransformBundle::new()).expect("Transform bundle fail")
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
