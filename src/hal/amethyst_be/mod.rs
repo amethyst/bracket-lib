@@ -127,7 +127,8 @@ impl Tile for SimpleConsoleBackgroundTile {
 
 pub struct RltkGemBridge {
     rltk : Rltk,
-    state : Box<dyn GameState>
+    state : Box<dyn GameState>,
+    key_delay : f32
 }
 
 impl SimpleState for RltkGemBridge {
@@ -143,6 +144,7 @@ impl SimpleState for RltkGemBridge {
         let timer = data.world.fetch::<amethyst::core::Time>();
         self.rltk.frame_time_ms = timer.delta_time().as_millis() as f32;
         self.rltk.fps = 1.0 / timer.delta_seconds();
+        self.key_delay += self.rltk.frame_time_ms;
         std::mem::drop(timer);
 
         // Handle Input
@@ -151,17 +153,20 @@ impl SimpleState for RltkGemBridge {
         self.rltk.shift = false;
         self.rltk.control = false;
         self.rltk.alt = false;
-        let inputs = data.world.fetch::<InputHandler<StringBindings>>();
-        for key in inputs.keys_that_are_down() {
-            self.rltk.key = Some(key);
+        if self.key_delay > 50.0 {
+            self.key_delay = 0.0;
+            let inputs = data.world.fetch::<InputHandler<StringBindings>>();
+            for key in inputs.keys_that_are_down() {
+                self.rltk.key = Some(key);
+            }
+            if let Some(pos) = inputs.mouse_position() {
+                self.rltk.mouse_pos = (pos.0 as i32, pos.1 as i32);
+            }
+            if inputs.button_is_down(Button::Mouse(MouseButton::Left)) {
+                self.rltk.left_click = true;
+            }
+            std::mem::drop(inputs);
         }
-        if let Some(pos) = inputs.mouse_position() {
-            self.rltk.mouse_pos = (pos.0 as i32, pos.1 as i32);
-        }
-        if inputs.button_is_down(Button::Mouse(MouseButton::Left)) {
-            self.rltk.left_click = true;
-        }
-        std::mem::drop(inputs);
 
         // Tick the game's state
         self.state.tick(&mut self.rltk);
@@ -330,7 +335,7 @@ pub fn main_loop<GS: GameState>(rltk: Rltk, gamestate: GS) {
     //let mut world = World::new(); // Why is this even here?
     let mut game = Application::new(
         assets_dir, 
-        RltkGemBridge{rltk, state: Box::new(gamestate)}, 
+        RltkGemBridge{rltk, state: Box::new(gamestate), key_delay : 0.0}, 
         game_data)
     .expect("Failed to make game data");
     game.run();
