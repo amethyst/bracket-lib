@@ -157,7 +157,18 @@ impl SimpleState for RltkGemBridge {
         if self.key_delay > 50.0 {
             self.key_delay = 0.0;
             for key in inputs.keys_that_are_down() {
-                self.rltk.key = Some(key);
+                use crate::VirtualKeyCode;
+                match key {
+                    VirtualKeyCode::LShift => self.rltk.shift = true,
+                    VirtualKeyCode::RShift => self.rltk.shift = true,
+                    VirtualKeyCode::LAlt => self.rltk.alt = true,
+                    VirtualKeyCode::RAlt => self.rltk.alt = true,
+                    VirtualKeyCode::LControl => self.rltk.control = true,
+                    VirtualKeyCode::RControl => self.rltk.control = true,
+                    _ => {
+                        self.rltk.key = Some(key);
+                    }
+                }
             }
         }
         if let Some(pos) = inputs.mouse_position() {
