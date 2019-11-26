@@ -139,98 +139,162 @@ name = "ex17-wasm-external"
 path = "examples/ex17-wasm-external.rs"
 required-features = ["opengl"]
 
-
-[[example]]
-name = "curses01-helloworld"
-path = "examples/ex01-helloworld.rs"
-required-features = [ "curses" ]
-
-[[example]]
-name = "curses02-sparse"
-path = "examples/ex02-sparse.rs"
-required-features = ["curses"]
-
-[[example]]
-name = "curses03-walking"
-path = "examples/ex03-walking.rs"
-required-features = ["curses"]
-
-[[example]]
-name = "curses04-fov"
-path = "examples/ex04-fov.rs"
-required-features = ["curses"]
-
-[[example]]
-name = "curses05-dijkstra"
-path = "examples/ex05-dijkstra.rs"
-required-features = ["curses"]
-
-[[example]]
-name = "curses06-astar-mouse"
-path = "examples/ex06-astar-mouse.rs"
-required-features = ["curses"]
-
-[[example]]
-name = "curses07-tiles"
-path = "examples/ex07-tiles.rs"
-required-features = ["curses"]
-
-[[example]]
-name = "curses08-rex"
-path = "examples/ex08-rex.rs"
-required-features = ["curses"]
-
-[[example]]
-name = "curses09-offsets"
-path = "examples/ex09-offsets.rs"
-required-features = ["curses"]
-
-[[example]]
-name = "curses10-postprocess"
-path = "examples/ex10-postprocess.rs"
-required-features = ["curses"]
-
-[[example]]
-name = "curses11-random"
-path = "examples/ex11-random.rs"
-required-features = ["curses"]
-
-[[example]]
-name = "curses12-simplex"
-path = "examples/ex12-simplex.rs"
-required-features = ["curses"]
-
-[[example]]
-name = "curses13-textblock"
-path = "examples/ex13-textblock.rs"
-required-features = ["curses"]
-
-[[example]]
-name = "curses14-dwarfmap"
-path = "examples/ex14-dwarfmap.rs"
-required-features = ["curses"]
-
-[[example]]
-name = "curses15-specs"
-path = "examples/ex15-specs.rs"
-required-features = ["curses", "ecs"]
-
-[[example]]
-name = "curses16-keyboard"
-path = "examples/ex16-keyboard.rs"
-required-features = ["curses"]
-
 [[example]]
 name = "av01-helloworld"
 path = "examples/ex01-helloworld.rs"
-required-features = [ "amethyst_engine_vulkan" ]
+required-features = [ "amethyst/vulkan" ]
 
 [[example]]
 name = "av02-sparse"
 path = "examples/ex02-sparse.rs"
-required-features = [ "amethyst_engine_vulkan" ]
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av03-walking"
+path = "examples/ex03-walking.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av04-fov"
+path = "examples/ex04-fov.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av05-dijkstra"
+path = "examples/ex05-dijkstra.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av06-astar-mouse"
+path = "examples/ex06-astar-mouse.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av07-tiles"
+path = "examples/ex07-tiles.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av08-rex"
+path = "examples/ex08-rex.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av09-offsets"
+path = "examples/ex09-offsets.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av10-postprocess"
+path = "examples/ex10-postprocess.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av11-random"
+path = "examples/ex11-random.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av12-simplex"
+path = "examples/ex12-simplex.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av13-textblock"
+path = "examples/ex13-textblock.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av14-dwarfmap"
+path = "examples/ex14-dwarfmap.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av15-specs"
+path = "examples/ex15-specs.rs"
+required-features = ["amethyst/vulkan", "ecs"]
+
+[[example]]
+name = "av16-keyboard"
+path = "examples/ex16-keyboard.rs"
+required-features = ["amethyst/vulkan"]
 
 [[example]]
 name = "am01-helloworld"
 path = "examples/ex01-helloworld.rs"
-required-features = [ "amethyst_engine_metal" ]
+required-features = [ "amethyst/metal" ]
+
+[[example]]
+name = "am02-sparse"
+path = "examples/ex02-sparse.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am03-walking"
+path = "examples/ex03-walking.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am04-fov"
+path = "examples/ex04-fov.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am05-dijkstra"
+path = "examples/ex05-dijkstra.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am06-astar-mouse"
+path = "examples/ex06-astar-mouse.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am07-tiles"
+path = "examples/ex07-tiles.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am08-rex"
+path = "examples/ex08-rex.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am09-offsets"
+path = "examples/ex09-offsets.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am10-postprocess"
+path = "examples/ex10-postprocess.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am11-random"
+path = "examples/ex11-random.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am12-simplex"
+path = "examples/ex12-simplex.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am13-textblock"
+path = "examples/ex13-textblock.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am14-dwarfmap"
+path = "examples/ex14-dwarfmap.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am15-specs"
+path = "examples/ex15-specs.rs"
+required-features = ["amethyst/metal", "ecs"]
+
+[[example]]
+name = "am16-keyboard"
+path = "examples/ex16-keyboard.rs"
+required-features = ["amethyst/metal"]

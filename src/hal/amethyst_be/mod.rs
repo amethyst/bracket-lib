@@ -140,10 +140,11 @@ impl SimpleState for RltkGemBridge {
     }
 
     fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> amethyst::SimpleTrans {
-        use amethyst::ecs::prelude::*;
-        use crate::console::Console;
-
         // Frame times
+        let timer = data.world.fetch::<amethyst::core::Time>();
+        self.rltk.frame_time_ms = timer.delta_time().as_millis() as f32;
+        self.rltk.fps = 1.0 / timer.delta_seconds();
+        std::mem::drop(timer);
 
         // Handle Input Somehow
 
