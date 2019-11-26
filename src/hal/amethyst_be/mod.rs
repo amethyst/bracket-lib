@@ -1,5 +1,5 @@
 // Platform to integrate into Amethyst
-use crate::{GameState, Rltk, rltk::DisplayConsole};
+use crate::{GameState, Rltk};
 
 use amethyst::{
     prelude::*,
@@ -10,13 +10,12 @@ use amethyst::{
         palette::Srgba
     },
     utils::application_root_dir,
-    assets::{AssetStorage, Loader, Handle},
+    assets::{AssetStorage, Loader},
     core::transform::Transform,
     core::TransformBundle,
-    ecs::prelude::{Component, DenseVecStorage, Entity, ReadStorage, WriteStorage},
-    renderer::{Camera, ImageFormat, SpriteRender, SpriteSheet, Texture},
+    renderer::{Camera, ImageFormat, SpriteSheet, Texture},
     tiles::{MortonEncoder2D, RenderTiles2D, Tile, TileMap},
-    core::math::{Point3, Vector2, Vector3},
+    core::math::{Point3, Vector3},
     input::{InputBundle, StringBindings, Bindings, InputHandler, Button},
     winit::MouseButton
 };

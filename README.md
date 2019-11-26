@@ -46,15 +46,14 @@ fn main() {
 }
 ```
 
-### Advanced Usage
+### Advanced Usage: multiple back-ends
 
 RLTK supports a number of *feature flags* to let you use it the way you want.
 
 * If you remove default features, it goes into "dummy" mode. The game state and rendering functions are disabled, but all of the library functions are available (and the lib becomes *tiny* - dropping most of its dependencies).
 * By default, the `opengl` feature will use WebGL or native OpenGL to render your consoles with a psuedo-terminal.
 * You can disable `opengl` and enable `curses` to render to `ncurses` or `pdcurses` (depending upon your platform). All of the demos are available as console-only now, via `cargo run --example curses14-dwarfmap --features curses --no-default-features` (substitute `curses` for `ex` in the example names, and specify the feature set).
-
-Now working on supporting: `cargo run --example av01-helloworld --features "amethyst_engine_vulkan" --no-default-features`
+* You can disable `opengl` and enable `amethyst_engine_vulkan` or `amethyst_engine_metal` to render via the [Amethyst game engine](https://github.com/amethyst/amethyst). The examples are prefixed with `av` and `am` (for Vulkan and Metal respectively). For example, `cargo run --example av13-textblock --no-default-features --features amethyst_engine_vulkan` will run example 13 on Vulkan.
 
 ## Examples
 
