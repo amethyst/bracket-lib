@@ -1,6 +1,5 @@
 use crate::{GameState, Rltk};
 use super::tiles::SimpleConsoleTile;
-use super::init::PlatformGL;
 
 use amethyst::{
     prelude::*,
@@ -8,15 +7,14 @@ use amethyst::{
         plugins::{RenderFlat2D, RenderToWindow},
         types::DefaultBackend,
         RenderingBundle,
-        palette::Srgba
     },
     utils::application_root_dir,
     assets::{AssetStorage, Loader},
     core::transform::Transform,
     core::TransformBundle,
     renderer::{Camera, ImageFormat, SpriteSheet, Texture},
-    tiles::{MortonEncoder2D, RenderTiles2D, Tile, TileMap},
-    core::math::{Point3, Vector3},
+    tiles::{MortonEncoder2D, RenderTiles2D, TileMap},
+    core::math::{Vector3},
     input::{InputBundle, StringBindings, Bindings, InputHandler, Button},
     winit::MouseButton
 };
