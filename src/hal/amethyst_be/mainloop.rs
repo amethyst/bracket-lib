@@ -161,14 +161,17 @@ impl RltkGemBridge {
 
     fn initialize_fonts(&mut self, world : &mut World) {
         use amethyst::renderer::Sprite;
+        use std::path::*;
 
         let loader = world.read_resource::<Loader>();
         let texture_storage = world.read_resource::<AssetStorage<Texture>>();
         let ss_storage = world.read_resource::<AssetStorage<SpriteSheet>>();
+        let app_root = application_root_dir().expect("Fail");
 
         for font in self.rltk.fonts.iter_mut() {
+            let filename = app_root.join(font.filename.clone());
             let handle = loader.load(
-                &font.filename,
+                filename.to_str().unwrap(),
                 ImageFormat::default(),
                 (),
                 &texture_storage
