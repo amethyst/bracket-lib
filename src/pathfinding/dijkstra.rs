@@ -273,7 +273,7 @@ impl DijkstraMap {
         Some(exits[0].0)
     }
 
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(not(feature = "threaded"))]
     pub fn find_highest_exit(dm: &DijkstraMap, position: i32, map: &dyn BaseMap) -> Option<i32> {
         let mut exits = map.get_available_exits(position);
 
