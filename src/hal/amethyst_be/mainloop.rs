@@ -178,11 +178,6 @@ impl RltkGemBridge {
                         Vector3::new(font_size.0, font_size.1, 1),
                         Some(ss.clone()),
                     );
-                    /*let bgmap = TileMap::<SimpleConsoleBackgroundTile, MortonEncoder2D>::new(
-                        Vector3::new(size.0, size.1, 1),
-                        Vector3::new(font_size.0, font_size.1, 1),
-                        Some(ss.clone()),
-                    );*/
 
                     world.insert(SimpleConsoleResource{
                         size,
@@ -194,13 +189,6 @@ impl RltkGemBridge {
                         .with(transform.clone())
                         .with(map)                    
                         .build();
-
-                    /*world
-                        .create_entity()
-                        .with(transform.clone())
-                        .with(bgmap)                    
-                        .build();
-                    */
                 }
             };            
         }
