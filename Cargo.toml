@@ -14,14 +14,14 @@ license = "MIT"
 maintenance = { status = "actively-developed" }
 
 [features]
-default = [ "opengl" ]
+default = [ "amethyst_engine_vulkan" ]
 serialization = [ "serde/derive", "serde_json" ]
 threaded = ["rayon"]
 opengl = [ "glow", "image", "glutin", "cgmath" ]
 ecs = [ "specs" ]
 curses = [ "pancurses" ]
-amethyst_engine_vulkan = [ "amethyst/vulkan" ]
-amethyst_engine_metal = [ "amethyst/metal" ]
+amethyst_engine_vulkan = [ "amethyst/vulkan", "image" ]
+amethyst_engine_metal = [ "amethyst/metal", "image" ]
 
 [dependencies]
 glow = { version = "0.3.0-alpha2", optional = true }
