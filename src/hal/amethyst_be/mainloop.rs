@@ -28,6 +28,7 @@ impl SimpleState for RltkGemBridge {
         let world = data.world;
         world.register::<SimpleConsoleSprite>();
         world.register::<SimpleConsoleBackground>();
+        world.register::<SparseConsoleSprite>();
         self.make_camera(world);
         self.initialize_fonts(world);
         self.initialize_console_objects(world);
@@ -81,26 +82,57 @@ impl SimpleState for RltkGemBridge {
             return Trans::Quit;
         }
 
-        // Update the simple consoles
-        let simple_console_sprites = data.world.read_storage::<SimpleConsoleSprite>();
-        let simple_console_bgs = data.world.read_storage::<SimpleConsoleBackground>();
-        let mut sprites = data.world.write_storage::<SpriteRender>();
-        let mut tints = data.world.write_storage::<Tint>();
+        // Update the consoles
+        {
+            let simple_console_sprites = data.world.read_storage::<SimpleConsoleSprite>();
+            let simple_console_bgs = data.world.read_storage::<SimpleConsoleBackground>();
+            let mut sprites = data.world.write_storage::<SpriteRender>();
+            let mut tints = data.world.write_storage::<Tint>();
+            let mut sparse_consoles = data.world.write_storage::<SparseConsoleSprite>();
+            let entities = data.world.entities();
+            let mut transforms = data.world.write_storage::<Transform>();
 
-        for cons in self.rltk.consoles.iter_mut() {
-            if let Some(concrete) = cons.console.as_any().downcast_ref::<crate::SimpleConsole>() {
-                (&simple_console_sprites, &mut sprites, &mut tints).par_join().for_each(|(tile,sprite,tint)| {
-                    let tile = &concrete.tiles[tile.idx];
-                    sprite.sprite_number = tile.glyph as usize;
-                    tint.0 = Srgba::new(tile.fg.r, tile.fg.g, tile.fg.b, 1.0);
-                });
+            for (entity, _sc) in (&entities, &sparse_consoles).join() {
+                entities.delete(entity).expect("Fail");
+            }
 
-                (&simple_console_bgs, &mut tints).par_join().for_each(|(tile,tint)| {
-                    let tile = &concrete.tiles[tile.idx];
-                    tint.0 = Srgba::new(tile.bg.r, tile.bg.g, tile.bg.b, 1.0);
-                });
+            for cons in self.rltk.consoles.iter_mut() {
+                let size = cons.console.get_char_size();
+
+                if let Some(concrete) = cons.console.as_any().downcast_ref::<crate::SimpleConsole>() {
+                    (&simple_console_sprites, &mut sprites, &mut tints).par_join().for_each(|(tile,sprite,tint)| {
+                        let tile = &concrete.tiles[tile.idx];
+                        sprite.sprite_number = tile.glyph as usize;
+                        tint.0 = Srgba::new(tile.fg.r, tile.fg.g, tile.fg.b, 1.0);
+                    });
+
+                    (&simple_console_bgs, &mut tints).par_join().for_each(|(tile,tint)| {
+                        let tile = &concrete.tiles[tile.idx];
+                        tint.0 = Srgba::new(tile.bg.r, tile.bg.g, tile.bg.b, 1.0);
+                    });
+                } else if let Some(concrete) = cons.console.as_any().downcast_ref::<crate::SparseConsole>() {
+                    // Sparse console detected
+                    if let Some(ss) = &self.rltk.fonts[cons.font_index].ss {
+                        let font_size = &self.rltk.fonts[cons.font_index].tile_size;
+                        for tile in concrete.tiles.iter() {
+                            let mut tile_transform = Transform::default();
+                            tile_transform.set_translation_xyz(
+                                (font_size.0 * (tile.idx as u32 % size.0)) as f32, 
+                                (font_size.1 * (tile.idx as u32 / size.0)) as f32, 
+                                0.5
+                            );
+
+                            let c = entities.create();
+                            transforms.insert(c, tile_transform).expect("Fail");
+                            sprites.insert(c, SpriteRender{ sprite_sheet: ss.clone(), sprite_number: tile.glyph as usize }).expect("Fail");;
+                            sparse_consoles.insert(c, SparseConsoleSprite{}).expect("Fail");;
+                            tints.insert(c, Tint(Srgba::new(tile.fg.r, tile.fg.g, tile.fg.b, 1.0))).expect("Fail");;
+                        }
+                    }
+                }
             }
         }
+        data.world.maintain();
 
         Trans::None
     }
@@ -111,7 +143,6 @@ impl RltkGemBridge {
         let mut transform = Transform::default();
         let width = self.rltk.width_pixels as f32;
         let height = self.rltk.height_pixels as f32;
-        println!("{} x {}", width, height);
         transform.set_translation_xyz(width * 0.5, height * 0.5, 1.0);
 
         world
@@ -279,5 +310,11 @@ struct SimpleConsoleBackground {
 }
 
 impl Component for SimpleConsoleBackground {
+    type Storage = DenseVecStorage<Self>;
+}
+
+struct SparseConsoleSprite {}
+
+impl Component for SparseConsoleSprite {
     type Storage = DenseVecStorage<Self>;
 }

@@ -216,7 +216,7 @@ fn main() {
         rltk::SimpleConsole::init(WIDTH as u32, HEIGHT as u32, &context.backend),
         font,
     );
-    context.register_console_no_bg(
+    context.register_console(
         rltk::SparseConsole::init(WIDTH as u32, HEIGHT as u32, &context.backend),
         font,
     );

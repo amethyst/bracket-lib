@@ -15,9 +15,8 @@ pub struct SparseConsole {
     pub width: u32,
     pub height: u32,
 
-    // Private
-    tiles: Vec<SparseTile>,
-    is_dirty: bool,
+    pub tiles: Vec<SparseTile>,
+    pub is_dirty: bool,
 
     // To handle offset tiles for people who want thin walls between tiles
     offset_x: f32,
