@@ -49,7 +49,7 @@ impl SimpleState for RltkGemBridge {
         self.rltk.control = false;
         self.rltk.alt = false;
         let inputs = data.world.fetch::<InputHandler<StringBindings>>();
-        if self.key_delay > 50.0 {
+        if self.key_delay > 75.0 {
             self.key_delay = 0.0;
             for key in inputs.keys_that_are_down() {
                 use crate::VirtualKeyCode;
