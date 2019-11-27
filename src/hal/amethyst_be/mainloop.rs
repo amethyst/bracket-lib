@@ -1,5 +1,4 @@
 use crate::{GameState, Rltk};
-use super::tiles::SimpleConsoleTile;
 
 use amethyst::{
     prelude::*,
@@ -12,11 +11,10 @@ use amethyst::{
     assets::{AssetStorage, Loader},
     core::transform::Transform,
     core::TransformBundle,
-    renderer::{Camera, ImageFormat, SpriteSheet, Texture},
-    tiles::{MortonEncoder2D, RenderTiles2D, TileMap},
-    core::math::{Vector3},
+    renderer::{Camera, ImageFormat, SpriteSheet, Texture, SpriteRender, palette::Srgba, resources::Tint, camera::Projection},
     input::{InputBundle, StringBindings, Bindings, InputHandler, Button},
-    winit::MouseButton
+    winit::MouseButton,
+    ecs::prelude::*,
 };
 
 pub struct RltkGemBridge {
@@ -28,6 +26,8 @@ pub struct RltkGemBridge {
 impl SimpleState for RltkGemBridge {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
+        world.register::<SimpleConsoleSprite>();
+        world.register::<SimpleConsoleBackground>();
         self.make_camera(world);
         self.initialize_fonts(world);
         self.initialize_console_objects(world);
@@ -82,12 +82,22 @@ impl SimpleState for RltkGemBridge {
         }
 
         // Update the simple consoles
+        let simple_console_sprites = data.world.read_storage::<SimpleConsoleSprite>();
+        let simple_console_bgs = data.world.read_storage::<SimpleConsoleBackground>();
+        let mut sprites = data.world.write_storage::<SpriteRender>();
+        let mut tints = data.world.write_storage::<Tint>();
+
         for cons in self.rltk.consoles.iter_mut() {
-            let size = cons.console.get_char_size();
             if let Some(concrete) = cons.console.as_any().downcast_ref::<crate::SimpleConsole>() {
-                data.world.insert(SimpleConsoleResource{
-                    size,
-                    tiles : concrete.tiles.clone()
+                (&simple_console_sprites, &mut sprites, &mut tints).par_join().for_each(|(tile,sprite,tint)| {
+                    let tile = &concrete.tiles[tile.idx];
+                    sprite.sprite_number = tile.glyph as usize;
+                    tint.0 = Srgba::new(tile.fg.r, tile.fg.g, tile.fg.b, 1.0);
+                });
+
+                (&simple_console_bgs, &mut tints).par_join().for_each(|(tile,tint)| {
+                    let tile = &concrete.tiles[tile.idx];
+                    tint.0 = Srgba::new(tile.bg.r, tile.bg.g, tile.bg.b, 1.0);
                 });
             }
         }
@@ -106,7 +116,14 @@ impl RltkGemBridge {
 
         world
             .create_entity()
-            .with(Camera::standard_2d(width, height))
+            .with(Camera::from(Projection::orthographic(
+                -width / 2.0,
+                width / 2.0,
+                -height / 2.0,
+                height / 2.0,
+                0.0,
+                5.0
+            )))
             .with(transform)
             .build();
     }
@@ -166,29 +183,45 @@ impl RltkGemBridge {
                     count += 1;
                     let font_size = &self.rltk.fonts[cons.font_index].tile_size;
     
-                    let mut transform = Transform::default();
-                    transform.set_translation_xyz(
-                        (self.rltk.width_pixels as f32 * 0.5) + (font_size.0 as f32 / 2.0), 
-                        (self.rltk.height_pixels as f32 * 0.5) - (font_size.1 as f32 / 2.0), 
-                        0.0
-                    );
-            
-                    let map = TileMap::<SimpleConsoleTile, MortonEncoder2D>::new(
-                        Vector3::new(size.0, size.1, 1),
-                        Vector3::new(font_size.0, font_size.1, 1),
-                        Some(ss.clone()),
-                    );
+                    let mut y = 0;
+                    let mut x = 0;
+                    for (idx, _chr) in concrete.tiles.iter().enumerate() {
+                        let mut tile_transform = Transform::default();
+                        tile_transform.set_translation_xyz(
+                            (font_size.0 * x) as f32, 
+                            (font_size.1 * y) as f32, 
+                            0.0
+                        );
 
-                    world.insert(SimpleConsoleResource{
-                        size,
-                        tiles : concrete.tiles.clone()
-                    });
-    
-                    world
-                        .create_entity()
-                        .with(transform.clone())
-                        .with(map)                    
-                        .build();
+                        let mut tile_bg_transform = Transform::default();
+                        tile_bg_transform.set_translation_xyz(
+                            (font_size.0 * x) as f32, 
+                            (font_size.1 * y) as f32, 
+                            -1.0
+                        );
+
+                        world
+                            .create_entity()
+                            .with(tile_transform)
+                            .with(SpriteRender{ sprite_sheet: ss.clone(), sprite_number: 1 })
+                            .with(SimpleConsoleSprite{ idx })
+                            .with(Tint(Srgba::new(1.0, 1.0, 1.0, 1.0)))
+                            .build();
+
+                        world
+                            .create_entity()
+                            .with(tile_bg_transform)
+                            .with(SpriteRender{ sprite_sheet: ss.clone(), sprite_number: 219 })
+                            .with(SimpleConsoleBackground{ idx })
+                            .with(Tint(Srgba::new(1.0, 0.0, 0.0, 1.0)))
+                            .build();
+
+                        x += 1;
+                        if x >= size.0 {
+                            x = 0;
+                            y += 1;
+                        }
+                    }
                 }
             };            
         }
@@ -222,7 +255,6 @@ pub fn main_loop<GS: GameState>(rltk: Rltk, gamestate: GS) {
                     .with_clear([0.00196, 0.23726, 0.21765, 1.0]),
             )
             .with_plugin(RenderFlat2D::default())
-            .with_plugin(RenderTiles2D::<SimpleConsoleTile, MortonEncoder2D>::default())
         ).expect("Game data fail");
     let assets_dir = app_root;
     //let mut world = World::new(); // Why is this even here?
@@ -232,4 +264,20 @@ pub fn main_loop<GS: GameState>(rltk: Rltk, gamestate: GS) {
         game_data)
     .expect("Failed to make game data");
     game.run();
+}
+
+struct SimpleConsoleSprite {
+    idx : usize
+}
+
+impl Component for SimpleConsoleSprite {
+    type Storage = DenseVecStorage<Self>;
+}
+
+struct SimpleConsoleBackground {
+    idx : usize
+}
+
+impl Component for SimpleConsoleBackground {
+    type Storage = DenseVecStorage<Self>;
 }

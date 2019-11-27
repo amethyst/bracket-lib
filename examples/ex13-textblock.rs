@@ -11,8 +11,10 @@ impl GameState for State {
         let mut buf = TextBuilder::empty();
         buf.ln()
             .fg(RGB::named(rltk::YELLOW))
+            .bg(RGB::named(rltk::BLUE))
             .centered("Hello World")
             .fg(RGB::named(rltk::WHITE))
+            .bg(RGB::named(rltk::BLACK))
             .ln()
             .ln()
             .line_wrap("The quick brown fox jumped over the lazy dog, and just kept on running in an attempt to exceed the console width.")
