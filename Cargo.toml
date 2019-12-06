@@ -14,7 +14,7 @@ license = "MIT"
 maintenance = { status = "actively-developed" }
 
 [features]
-default = [ "amethyst_engine_vulkan" ]
+default = [ "opengl" ]
 serialization = [ "serde/derive", "serde_json" ]
 threaded = ["rayon"]
 opengl = [ "glow", "image", "glutin", "cgmath" ]
