@@ -8,7 +8,7 @@ description = "A CP437/ASCII terminal library and helpers to make creating rogue
 homepage = "https://github.com/thebracket/rltk_rs"
 repository = "https://github.com/thebracket/rltk_rs"
 readme = "README.md"
-keywords = ["roguelike", "cp437", "ascii", "virtual-terminal", "terminal", "gamedev"]
+keywords = ["roguelike", "cp437", "ascii", "virtual-terminal", "gamedev"]
 categories = ["game-engines", "graphics"]
 license = "MIT"
 maintenance = { status = "actively-developed" }
