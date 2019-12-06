@@ -12,6 +12,11 @@ keywords = ["roguelike", "cp437", "ascii", "virtual terminal", "gamedev"]
 categories = ["game-engines", "graphics"]
 license = "MIT"
 maintenance = { status = "actively-developed" }
+exclude = [
+    "webglbuild.bat",
+    "wasm_help/*",
+    "screenshots/*"
+]
 
 [features]
 default = [ "opengl" ]
@@ -53,6 +58,7 @@ rand = { version = "0.7.2", features = ["wasm-bindgen"] }
 
 [build-dependencies]
 gl_generator = "0.14.0"
+
 
 [[example]]
 name = "ex01-helloworld"
