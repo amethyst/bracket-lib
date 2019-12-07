@@ -2,6 +2,7 @@ use super::geometry::DistanceAlg;
 use super::Algorithm2D;
 use super::Point;
 use std::collections::HashSet;
+use bresenham::Bresenham;
 
 /// Calculates field-of-view for a map that supports Algorithm2D.
 pub fn field_of_view(start: Point, range: i32, fov_check: &dyn Algorithm2D) -> Vec<Point> {
@@ -46,22 +47,22 @@ fn scan_fov_line(
     fov_check: &dyn Algorithm2D,
 ) -> Vec<Point> {
     let mut result: Vec<Point> = Vec::new();
-    let line = super::line2d(super::LineAlg::Bresenham, start, end);
+    let line = Bresenham::new(
+        (start.x as isize, start.y as isize),
+        (end.x as isize, end.y as isize),
+    );
 
-    for target in line.iter() {
-        if !fov_check.in_bounds(*target) {
+    for t in line {
+        let target = Point{ x: t.0 as i32, y: t.1 as i32};
+        if !fov_check.in_bounds(target) {
             // We're outside of the map
             break;
         }
-        let dsq = DistanceAlg::PythagorasSquared.distance2d(start, *target);
-        if dsq <= range_squared {
-            result.push(*target);
-            if fov_check.is_opaque(fov_check.point2d_to_index(*target)) {
-                // FoV is blocked
-                break;
-            }
-        } else {
-            // FoV is out of range
+        let dsq = DistanceAlg::PythagorasSquared.distance2d(start, target);
+        if dsq > range_squared { break; }
+        result.push(target);
+        if fov_check.is_opaque(fov_check.point2d_to_index(target)) {
+            // FoV is blocked
             break;
         }
     }
