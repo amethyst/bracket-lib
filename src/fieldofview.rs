@@ -6,37 +6,29 @@ use bresenham::Bresenham;
 
 /// Calculates field-of-view for a map that supports Algorithm2D.
 pub fn field_of_view(start: Point, range: i32, fov_check: &dyn Algorithm2D) -> Vec<Point> {
-    let mut result: HashSet<Point> = HashSet::new();
-
     let left = start.x - range;
     let right = start.x + range;
     let top = start.y - range;
     let bottom = start.y + range;
     let range_squared: f32 = (range as f32) * (range as f32);
 
+    let mut visible_points: HashSet<Point> = HashSet::new();
+
     for x in left..=right {
-        for pt in scan_fov_line(start, Point::new(x, top), range_squared, fov_check) {
-            result.insert(pt);
-        }
-        for pt in scan_fov_line(start, Point::new(x, bottom), range_squared, fov_check) {
-            result.insert(pt);
-        }
+        scan_fov_line(start, Point::new(x, top), range_squared, fov_check, &mut visible_points);
+        scan_fov_line(start, Point::new(x, bottom), range_squared, fov_check, &mut visible_points);
     }
 
     for y in top+1..bottom {
-        for pt in scan_fov_line(start, Point::new(left, y), range_squared, fov_check) {
-            result.insert(pt);
-        }
-        for pt in scan_fov_line(start, Point::new(right, y), range_squared, fov_check) {
-            result.insert(pt);
-        }
+        scan_fov_line(start, Point::new(left, y), range_squared, fov_check, &mut visible_points);
+        scan_fov_line(start, Point::new(right, y), range_squared, fov_check, &mut visible_points);
     }
 
-    let mut dedupe = Vec::new();
-    for p in result.iter() {
-        dedupe.push(*p);
+    let mut result = Vec::new();
+    for p in visible_points.iter() {
+        result.push(*p);
     }
-    dedupe
+    result
 }
 
 /// Helper method to scan along a line.
@@ -45,8 +37,8 @@ fn scan_fov_line(
     end: Point,
     range_squared: f32,
     fov_check: &dyn Algorithm2D,
-) -> Vec<Point> {
-    let mut result: Vec<Point> = Vec::new();
+    visible_points: &mut HashSet<Point>,
+) {
     let line = Bresenham::new(
         (start.x as isize, start.y as isize),
         (end.x as isize, end.y as isize),
@@ -60,13 +52,12 @@ fn scan_fov_line(
         }
         let dsq = DistanceAlg::PythagorasSquared.distance2d(start, target);
         if dsq > range_squared { break; }
-        result.push(target);
+        visible_points.insert(target);
         if fov_check.is_opaque(fov_check.point2d_to_index(target)) {
             // FoV is blocked
             break;
         }
     }
-    result
 }
 
 #[cfg(test)]
