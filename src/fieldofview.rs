@@ -24,11 +24,7 @@ pub fn field_of_view(start: Point, range: i32, fov_check: &dyn Algorithm2D) -> V
         scan_fov_line(start, Point::new(right, y), range_squared, fov_check, &mut visible_points);
     }
 
-    let mut result = Vec::with_capacity(visible_points.len());
-    for p in visible_points.iter() {
-        result.push(*p);
-    }
-    result
+    visible_points.into_iter().collect()
 }
 
 /// Helper method to scan along a line.
