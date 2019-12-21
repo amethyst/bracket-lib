@@ -14,7 +14,7 @@ pub fn bind_wasm_events(canvas: &web_sys::HtmlCanvasElement) {
     }) as Box<dyn FnMut(_)>);
 
     let document = web_sys::window().unwrap();
-    document.set_onkeydown(Some(key_callback.as_ref().unchecked_ref()));;
+    document.set_onkeydown(Some(key_callback.as_ref().unchecked_ref()));
     key_callback.forget();
 
     // Handle mouse moving
@@ -22,7 +22,7 @@ pub fn bind_wasm_events(canvas: &web_sys::HtmlCanvasElement) {
         on_mouse_move(e.clone());
     }) as Box<dyn FnMut(_)>);
 
-    canvas.set_onmousemove(Some(mousemove_callback.as_ref().unchecked_ref()));;
+    canvas.set_onmousemove(Some(mousemove_callback.as_ref().unchecked_ref()));
     mousemove_callback.forget();
 
     // Handle mouse clicking
@@ -30,6 +30,6 @@ pub fn bind_wasm_events(canvas: &web_sys::HtmlCanvasElement) {
         on_mouse_down(e.clone());
     }) as Box<dyn FnMut(_)>);
 
-    canvas.set_onmousedown(Some(mouseclick_callback.as_ref().unchecked_ref()));;
+    canvas.set_onmousedown(Some(mouseclick_callback.as_ref().unchecked_ref()));
     mouseclick_callback.forget();
 }

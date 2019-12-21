@@ -124,9 +124,9 @@ impl SimpleState for RltkGemBridge {
 
                             let c = entities.create();
                             transforms.insert(c, tile_transform).expect("Fail");
-                            sprites.insert(c, SpriteRender{ sprite_sheet: ss.clone(), sprite_number: tile.glyph as usize }).expect("Fail");;
-                            sparse_consoles.insert(c, SparseConsoleSprite{}).expect("Fail");;
-                            tints.insert(c, Tint(Srgba::new(tile.fg.r, tile.fg.g, tile.fg.b, 1.0))).expect("Fail");;
+                            sprites.insert(c, SpriteRender{ sprite_sheet: ss.clone(), sprite_number: tile.glyph as usize }).expect("Fail");
+                            sparse_consoles.insert(c, SparseConsoleSprite{}).expect("Fail");
+                            tints.insert(c, Tint(Srgba::new(tile.fg.r, tile.fg.g, tile.fg.b, 1.0))).expect("Fail");
                         }
                     }
                 }
