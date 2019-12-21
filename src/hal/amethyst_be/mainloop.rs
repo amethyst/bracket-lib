@@ -178,7 +178,7 @@ impl RltkGemBridge {
                 .lock()
                 .unwrap()
                 .get_resource(font.filename.to_string());
-            
+
                 let handle;
             if let Some(data) = resource {
                 let png = image::load_from_memory(data).expect("Failed to load texture from memory");
@@ -187,7 +187,7 @@ impl RltkGemBridge {
                     .with_data_height(png.height())
                     .with_kind(hal::image::Kind::D2(png.width(), png.height(), 1, 1))
                     .with_view_kind(hal::image::ViewKind::D2)
-                    .with_sampler_info(hal::image::SamplerInfo::new(hal::image::Filter::Linear, hal::image::WrapMode::Clamp))
+                    .with_sampler_info(hal::image::SamplerInfo::new(hal::image::Filter::Nearest, hal::image::WrapMode::Clamp))
                     .with_raw_data(png.raw_pixels(), Format::Rgba8Unorm);
                 handle = loader.load_from_data(TextureData(texture_builder), (), &texture_storage);
             } else {
@@ -199,8 +199,8 @@ impl RltkGemBridge {
                     &texture_storage
                 );
             }
-            
-            // Make a font-specific sprite sheet            
+
+            // Make a font-specific sprite sheet
             let offsets = [0.0 - (font.tile_size.0 as f32 / 2.0), 0.0 - (font.tile_size.1 as f32 / 2.0)];
             let mut sprites = Vec::with_capacity(256);
 
@@ -239,21 +239,21 @@ impl RltkGemBridge {
                     assert!(count == 0, "Amethyst back-end only supports one simple console.");
                     count += 1;
                     let font_size = &self.rltk.fonts[cons.font_index].tile_size;
-    
+
                     let mut y = 0;
                     let mut x = 0;
                     for (idx, _chr) in concrete.tiles.iter().enumerate() {
                         let mut tile_transform = Transform::default();
                         tile_transform.set_translation_xyz(
-                            (font_size.0 * x) as f32, 
-                            (font_size.1 * y) as f32, 
+                            (font_size.0 * x) as f32,
+                            (font_size.1 * y) as f32,
                             0.0
                         );
 
                         let mut tile_bg_transform = Transform::default();
                         tile_bg_transform.set_translation_xyz(
-                            (font_size.0 * x) as f32, 
-                            (font_size.1 * y) as f32, 
+                            (font_size.0 * x) as f32,
+                            (font_size.1 * y) as f32,
                             -1.0
                         );
 
@@ -280,7 +280,7 @@ impl RltkGemBridge {
                         }
                     }
                 }
-            };            
+            };
         }
     }
 }
