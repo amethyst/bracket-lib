@@ -6,7 +6,6 @@
 extern crate rand;
 use crate::rand::Rng;
 
-#[macro_use]
 extern crate criterion;
 
 use criterion::{
@@ -68,6 +67,7 @@ fn xy_idx(x: i32, y: i32) -> usize {
     ((y * W) + x) as usize
 }
 
+#[allow(dead_code)]
 fn idx_xy(idx: usize) -> (i32, i32) {
     (idx as i32 % W, idx as i32 / W)
 }

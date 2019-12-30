@@ -2,14 +2,12 @@
 
 // Benchmark field of geometry calculations
 
-#[macro_use]
 extern crate criterion;
 
 extern crate rand;
 use crate::rand::Rng;
 
 use criterion::{
-    black_box,
     criterion_group,
     criterion_main,
     Criterion,
