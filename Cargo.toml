@@ -1,6 +1,6 @@
 [package]
 name = "rltk"
-version = "0.5.13"
+version = "0.5.14"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = true
@@ -19,7 +19,7 @@ exclude = [
 ]
 
 [features]
-default = [ "amethyst_engine_vulkan" ]
+default = [ "opengl" ]
 serialization = [ "serde/derive", "serde_json" ]
 threaded = ["rayon"]
 opengl = [ "glow", "image", "glutin", "cgmath" ]

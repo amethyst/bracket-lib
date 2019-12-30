@@ -89,33 +89,31 @@ impl SimpleState for RltkGemBridge {
                 let cons = &mut self.rltk.consoles[conlink.console_index];
                 let size = cons.console.get_char_size();
                 if let Some(concrete) = cons.console.as_any().downcast_ref::<crate::SimpleConsole>() {
-                    let mut y = size.1;
-                    let mut x = 0;
-                    for tile in concrete.tiles.iter() {
-                        let point = Point3::new(x, y-1, 1);
-                        let fg = map.get_mut(&point);
-                        if let Some(t) = fg {
-                            t.glyph = tile.glyph as usize;
-                            t.color.color.red = tile.fg.r;
-                            t.color.color.green = tile.fg.g;
-                            t.color.color.blue = tile.fg.b;
+                    amethyst::tiles::iters::Region::new(Point3::new(0, 0, 1), Point3::new(size.0, size.1, 1)).iter().for_each(|coord| {
+                        if let Some(fg) = map.get_mut(&coord) {
+                            let idx = ((coord.y * size.0) + coord.x) as usize;
+                            if idx < concrete.tiles.len() {
+                                let tile = &concrete.tiles[idx];
+                                fg.glyph = tile.glyph as usize;
+                                fg.color.color.red = tile.fg.r;
+                                fg.color.color.green = tile.fg.g;
+                                fg.color.color.blue = tile.fg.b;
+                            }
                         }
+                    });
 
-                        let bpoint = Point3::new(x, y-1, 0);
-                        let bg = map.get_mut(&bpoint);
-                        if let Some(t) = bg {
-                            t.glyph = 219;
-                            t.color.color.red = tile.bg.r;
-                            t.color.color.green = tile.bg.g;
-                            t.color.color.blue = tile.bg.b;
+                    amethyst::tiles::iters::Region::new(Point3::new(0, 0, 0), Point3::new(size.0, size.1, 0)).iter().for_each(|coord| {
+                        if let Some(bg) = map.get_mut(&coord) {
+                            let idx = ((coord.y * size.0) + coord.x) as usize;
+                            if idx < concrete.tiles.len() {
+                                let tile = &concrete.tiles[idx];
+                                bg.glyph = 219;
+                                bg.color.color.red = tile.bg.r;
+                                bg.color.color.green = tile.bg.g;
+                                bg.color.color.blue = tile.bg.b;
+                            }
                         }
-
-                        x += 1;
-                        if x >= size.0 {
-                            x = 0;
-                            y -= 1;
-                        }
-                    }
+                    });
                 }
             }
 
@@ -124,15 +122,11 @@ impl SimpleState for RltkGemBridge {
                 let cons = &mut self.rltk.consoles[conlink.console_index];
                 let size = cons.console.get_char_size();
                 if let Some(concrete) = cons.console.as_any().downcast_ref::<crate::SparseConsole>() {
-                    for y in 0..size.1 {
-                        for x in 0..size.0 {
-                            let point = Point3::new(x, y, 0);
-                            let t = map.get_mut(&point);
-                            if let Some(t) = t {
-                                t.glyph = None;
-                            }
+                    amethyst::tiles::iters::Region::new(Point3::new(0, 0, 0), Point3::new(size.0, size.1, 0)).iter().for_each(|coord| {
+                        if let Some(t) = map.get_mut(&coord) {
+                            t.glyph = None;
                         }
-                    }
+                    });
 
                     for tile in concrete.tiles.iter() {
                         let x = tile.idx as u32 % size.0;
