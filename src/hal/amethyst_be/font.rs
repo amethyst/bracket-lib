@@ -3,9 +3,8 @@ use amethyst::{
     assets::Handle,
     ecs::prelude::*,
     assets::{AssetStorage, Loader},
-    prelude::*,
     utils::application_root_dir,
-    renderer::{Camera, ImageFormat, SpriteSheet, Texture, SpriteRender, palette::Srgba, resources::Tint, camera::Projection},
+    renderer::{ImageFormat, SpriteSheet, Texture},
 };
 
 pub struct Font{

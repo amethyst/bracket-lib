@@ -8,10 +8,9 @@ use amethyst::{
         RenderingBundle,
     },
     utils::application_root_dir,
-    assets::{AssetStorage, Loader},
     core::transform::Transform,
     core::TransformBundle,
-    renderer::{Camera, ImageFormat, SpriteSheet, Texture, SpriteRender, palette::Srgba, resources::Tint, camera::Projection},
+    renderer::{Camera, SpriteRender, palette::Srgba, resources::Tint, camera::Projection},
     input::{InputBundle, StringBindings, Bindings, InputHandler, Button},
     winit::MouseButton,
     ecs::prelude::*,
@@ -157,7 +156,7 @@ impl RltkGemBridge {
             )))
             .with(transform)
             .build();
-    }    
+    }
 
     fn initialize_console_objects(&mut self, world : &mut World) {
         let mut count = 0;
