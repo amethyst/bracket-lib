@@ -118,6 +118,36 @@ impl SimpleState for RltkGemBridge {
                     }
                 }
             }
+
+            let mut smap_storage = data.world.write_storage::<TileMap::<SparseConsoleTile, FlatEncoder>>();
+            for (map, conlink) in (&mut smap_storage, &console_storage).join() {
+                let cons = &mut self.rltk.consoles[conlink.console_index];
+                let size = cons.console.get_char_size();
+                if let Some(concrete) = cons.console.as_any().downcast_ref::<crate::SparseConsole>() {
+                    for y in 0..size.1 {
+                        for x in 0..size.0 {
+                            let point = Point3::new(x, y, 0);
+                            let t = map.get_mut(&point);
+                            if let Some(t) = t {
+                                t.glyph = None;
+                            }
+                        }
+                    }
+
+                    for tile in concrete.tiles.iter() {
+                        let x = tile.idx as u32 % size.0;
+                        let y = size.1 - (tile.idx as u32 / size.0);
+                        let point = Point3::new(x, y-1, 0);
+                            let t = map.get_mut(&point);
+                            if let Some(t) = t {
+                                t.glyph = Some(tile.glyph as usize);
+                                t.color.color.red = tile.fg.r;
+                                t.color.color.green = tile.fg.g;
+                                t.color.color.blue = tile.fg.b;
+                            }
+                    }
+                }
+            }
         }
 
         Trans::None
@@ -171,7 +201,32 @@ impl RltkGemBridge {
                         .with(SimpleConsoleLink{ console_index : i })
                         .build();
                 }
-            };
+            }
+
+            if let Some(_concrete) = cons.console.as_any().downcast_ref::<crate::SparseConsole>() {
+                if let Some(ss) = &self.rltk.fonts[cons.font_index].ss {
+                    let font_size = &self.rltk.fonts[cons.font_index].tile_size;
+
+                    let mut transform = Transform::default();
+                    transform.set_translation_xyz(
+                        (self.rltk.width_pixels as f32 * 0.5) + (font_size.0 as f32 / 2.0),
+                        (self.rltk.height_pixels as f32 * 0.5) - (font_size.1 as f32 / 2.0),
+                        1.0
+                    );
+
+                    let map = TileMap::<SparseConsoleTile, FlatEncoder>::new(
+                        Vector3::new(size.0, size.1, 1),
+                        Vector3::new(font_size.0, font_size.1, 1),
+                        Some(ss.clone())
+                    );
+
+                    world.create_entity()
+                        .with(transform.clone())
+                        .with(map)
+                        .with(SimpleConsoleLink{ console_index : i })
+                        .build();
+                }
+            }
         }
     }
 }
@@ -199,6 +254,7 @@ pub fn main_loop<GS: GameState>(rltk: Rltk, gamestate: GS) {
             )
             .with_plugin(RenderFlat2D::default())
             .with_plugin(RenderTiles2D::<SimpleConsoleTile, FlatEncoder>::default())
+            .with_plugin(RenderTiles2D::<SparseConsoleTile, FlatEncoder>::default())
         ).expect("Game data fail");
     let assets_dir = app_root;
     let mut game = Application::new(
@@ -231,11 +287,33 @@ impl Default for SimpleConsoleTile {
 }
 
 impl Tile for SimpleConsoleTile {
-    fn sprite(&self, pt : Point3<u32>, world: &World) -> Option<usize> {
+    fn sprite(&self, _pt : Point3<u32>, _world: &World) -> Option<usize> {
         Some(self.glyph)
     }
 
-    fn tint(&self, pt: Point3<u32>, world: &World) -> Srgba {
+    fn tint(&self, _pt: Point3<u32>, _world: &World) -> Srgba {
+        self.color
+    }
+}
+
+#[derive(Clone, Debug)]
+struct SparseConsoleTile {
+    glyph : Option<usize>,
+    color : Srgba
+}
+
+impl Default for SparseConsoleTile {
+    fn default() -> Self {
+        SparseConsoleTile { glyph : None, color : Srgba::new(1.0, 1.0, 1.0, 1.0) }
+    }
+}
+
+impl Tile for SparseConsoleTile {
+    fn sprite(&self, _pt : Point3<u32>, _world: &World) -> Option<usize> {
+        self.glyph
+    }
+
+    fn tint(&self, _pt: Point3<u32>, _world: &World) -> Srgba {
         self.color
     }
 }
