@@ -14,7 +14,7 @@ use amethyst::{
     input::{InputBundle, StringBindings, Bindings, InputHandler, Button},
     winit::MouseButton,
     ecs::prelude::*,
-    tiles::{MortonEncoder2D, RenderTiles2D, Tile, TileMap},
+    tiles::{MortonEncoder2D, RenderTiles2D, Tile, TileMap, FlatEncoder, Map, MapStorage},
     core::math::{Point3, Vector2, Vector3},
 };
 
@@ -27,6 +27,7 @@ pub struct RltkGemBridge {
 impl SimpleState for RltkGemBridge {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
+        world.register::<SimpleConsoleLink>();
         self.make_camera(world);
         super::font::initialize_fonts(&mut self.rltk, world);
         self.initialize_console_objects(world);
@@ -81,13 +82,31 @@ impl SimpleState for RltkGemBridge {
         }
 
         {
-            for cons in self.rltk.consoles.iter_mut() {
+            let mut map_storage = data.world.write_storage::<TileMap::<SimpleConsoleTile, FlatEncoder>>();
+            let console_storage = data.world.read_storage::<SimpleConsoleLink>();
+            for (map, conlink) in (&mut map_storage, &console_storage).join() {
+
+                let cons = &mut self.rltk.consoles[conlink.console_index];
                 let size = cons.console.get_char_size();
                 if let Some(concrete) = cons.console.as_any().downcast_ref::<crate::SimpleConsole>() {
-                    data.world.insert(SimpleConsoleResource{
-                        size,
-                        tiles : concrete.tiles.clone()
-                    });
+                    let mut y = size.1;
+                    let mut x = 0;
+                    for tile in concrete.tiles.iter() {
+                        let point = Point3::new(x, y-1, 0);
+                        let t = map.get_mut(&point);
+                        if let Some(t) = t {
+                            t.glyph = tile.glyph as usize;
+                            t.color.color.red = tile.fg.r;
+                            t.color.color.green = tile.fg.g;
+                            t.color.color.blue = tile.fg.b;
+                        }
+
+                        x += 1;
+                        if x >= size.0 {
+                            x = 0;
+                            y -= 1;
+                        }
+                    }
                 }
             }
         }
@@ -118,13 +137,10 @@ impl RltkGemBridge {
     }
 
     fn initialize_console_objects(&mut self, world : &mut World) {
-        let mut count = 0;
-        for cons in self.rltk.consoles.iter_mut() {
+        for (i,cons) in self.rltk.consoles.iter_mut().enumerate() {
             let size = cons.console.get_char_size();
-            if let Some(concrete) = cons.console.as_any().downcast_ref::<crate::SimpleConsole>() {
+            if let Some(_concrete) = cons.console.as_any().downcast_ref::<crate::SimpleConsole>() {
                 if let Some(ss) = &self.rltk.fonts[cons.font_index].ss {
-                    assert!(count == 0, "Amethyst back-end only supports one simple console.");
-                    count += 1;
                     let font_size = &self.rltk.fonts[cons.font_index].tile_size;
 
                     let mut transform = Transform::default();
@@ -134,28 +150,21 @@ impl RltkGemBridge {
                         0.0
                     );
 
-                    let map = TileMap::<SimpleConsoleTile, MortonEncoder2D>::new(
+                    let map = TileMap::<SimpleConsoleTile, FlatEncoder>::new(
                         Vector3::new(size.0, size.1, 1),
                         Vector3::new(font_size.0, font_size.1, 1),
                         Some(ss.clone())
                     );
-                    println!("{:?}", map);
 
-                    world.insert(SimpleConsoleResource{
-                        size,
-                        tiles : concrete.tiles.clone()
-                    });
-
-                    world.create_entity().with(transform.clone()).with(map).build();
+                    world.create_entity()
+                        .with(transform.clone())
+                        .with(map)
+                        .with(SimpleConsoleLink{ console_index : i })
+                        .build();
                 }
             };
         }
     }
-}
-
-pub struct SimpleConsoleResource {
-    pub size : (u32, u32),
-    pub tiles : Vec<crate::Tile>
 }
 
 pub fn main_loop<GS: GameState>(rltk: Rltk, gamestate: GS) {
@@ -180,7 +189,7 @@ pub fn main_loop<GS: GameState>(rltk: Rltk, gamestate: GS) {
                     .with_clear([0.00196, 0.23726, 0.21765, 1.0]),
             )
             .with_plugin(RenderFlat2D::default())
-            .with_plugin(RenderTiles2D::<SimpleConsoleTile, MortonEncoder2D>::default())
+            .with_plugin(RenderTiles2D::<SimpleConsoleTile, FlatEncoder>::default())
         ).expect("Game data fail");
     let assets_dir = app_root;
     //let mut world = World::new(); // Why is this even here?
@@ -192,22 +201,37 @@ pub fn main_loop<GS: GameState>(rltk: Rltk, gamestate: GS) {
     game.run();
 }
 
-#[derive(Default, Clone)]
-struct SimpleConsoleTile;
+#[derive(Clone, Debug)]
+struct SimpleConsoleLink {
+    console_index : usize
+}
+
+impl Component for SimpleConsoleLink {
+    type Storage = DenseVecStorage<Self>;
+}
+
+#[derive(Clone, Debug)]
+struct SimpleConsoleTile {
+    glyph : usize,
+    color : Srgba
+}
+
+impl Default for SimpleConsoleTile {
+    fn default() -> Self {
+        SimpleConsoleTile { glyph : 65, color : Srgba::new(1.0, 1.0, 1.0, 1.0) }
+    }
+}
 
 impl Tile for SimpleConsoleTile {
     fn sprite(&self, pt : Point3<u32>, world: &World) -> Option<usize> {
-        let tiles = world.fetch::<SimpleConsoleResource>();
+        /*let tiles = world.fetch::<SimpleConsoleResource>();
         let y = (tiles.size.1-1) - pt.y;
         let idx = (y * tiles.size.0) + pt.x;
-        Some(tiles.tiles[idx as usize].glyph as usize)
+        Some(tiles.tiles[idx as usize].glyph as usize)*/
+        Some(self.glyph)
     }
 
     fn tint(&self, pt: Point3<u32>, world: &World) -> Srgba {
-        let tiles = world.fetch::<SimpleConsoleResource>();
-        let y = (tiles.size.1-1) - pt.y;
-        let idx = (y * tiles.size.0) + pt.x;
-        let fg = tiles.tiles[idx as usize].fg;
-        Srgba::new(fg.r, fg.g, fg.b, 1.0)
+        self.color
     }
 }
