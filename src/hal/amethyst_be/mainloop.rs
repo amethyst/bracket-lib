@@ -139,6 +139,7 @@ impl RltkGemBridge {
                         Vector3::new(font_size.0, font_size.1, 1),
                         Some(ss.clone())
                     );
+                    println!("{:?}", map);
 
                     world.insert(SimpleConsoleResource{
                         size,
