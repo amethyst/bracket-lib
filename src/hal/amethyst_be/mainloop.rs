@@ -92,13 +92,22 @@ impl SimpleState for RltkGemBridge {
                     let mut y = size.1;
                     let mut x = 0;
                     for tile in concrete.tiles.iter() {
-                        let point = Point3::new(x, y-1, 0);
-                        let t = map.get_mut(&point);
-                        if let Some(t) = t {
+                        let point = Point3::new(x, y-1, 1);
+                        let fg = map.get_mut(&point);
+                        if let Some(t) = fg {
                             t.glyph = tile.glyph as usize;
                             t.color.color.red = tile.fg.r;
                             t.color.color.green = tile.fg.g;
                             t.color.color.blue = tile.fg.b;
+                        }
+
+                        let bpoint = Point3::new(x, y-1, 0);
+                        let bg = map.get_mut(&bpoint);
+                        if let Some(t) = bg {
+                            t.glyph = 219;
+                            t.color.color.red = tile.bg.r;
+                            t.color.color.green = tile.bg.g;
+                            t.color.color.blue = tile.bg.b;
                         }
 
                         x += 1;
@@ -151,7 +160,7 @@ impl RltkGemBridge {
                     );
 
                     let map = TileMap::<SimpleConsoleTile, FlatEncoder>::new(
-                        Vector3::new(size.0, size.1, 1),
+                        Vector3::new(size.0, size.1, 2),
                         Vector3::new(font_size.0, font_size.1, 1),
                         Some(ss.clone())
                     );
@@ -192,7 +201,6 @@ pub fn main_loop<GS: GameState>(rltk: Rltk, gamestate: GS) {
             .with_plugin(RenderTiles2D::<SimpleConsoleTile, FlatEncoder>::default())
         ).expect("Game data fail");
     let assets_dir = app_root;
-    //let mut world = World::new(); // Why is this even here?
     let mut game = Application::new(
         assets_dir, 
         RltkGemBridge{rltk, state: Box::new(gamestate), key_delay : 0.0}, 
@@ -224,10 +232,6 @@ impl Default for SimpleConsoleTile {
 
 impl Tile for SimpleConsoleTile {
     fn sprite(&self, pt : Point3<u32>, world: &World) -> Option<usize> {
-        /*let tiles = world.fetch::<SimpleConsoleResource>();
-        let y = (tiles.size.1-1) - pt.y;
-        let idx = (y * tiles.size.0) + pt.x;
-        Some(tiles.tiles[idx as usize].glyph as usize)*/
         Some(self.glyph)
     }
 

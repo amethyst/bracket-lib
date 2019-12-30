@@ -4,7 +4,7 @@ use amethyst::{
     ecs::prelude::*,
     assets::{AssetStorage, Loader},
     utils::application_root_dir,
-    renderer::{ImageFormat, SpriteSheet, Texture},
+    renderer::{ImageFormat, SpriteSheet, Texture, palette::Srgba},
 };
 
 pub struct Font{
@@ -54,13 +54,34 @@ pub fn initialize_fonts(rltk: &mut Rltk, world : &mut World) {
             let handle;
         if let Some(data) = resource {
             let png = image::load_from_memory(data).expect("Failed to load texture from memory");
+
+            // This sets black pixels to be transparent
+            const MIN_VAL : u8 = 10;
+            let mut raw_pixels = png.raw_pixels().clone();
+            for i in 0..raw_pixels.len() / 4 {
+                if raw_pixels[(i*4)] < MIN_VAL && raw_pixels[(i*4)+1] < MIN_VAL && raw_pixels[(i*4)+2] < MIN_VAL {
+                    raw_pixels[(i*4)+3] = 0; // Make it transparent
+                }
+            }
+
             let texture_builder = TextureBuilder::new()
                 .with_data_width(png.width())
                 .with_data_height(png.height())
                 .with_kind(hal::image::Kind::D2(png.width(), png.height(), 1, 1))
                 .with_view_kind(hal::image::ViewKind::D2)
-                .with_sampler_info(hal::image::SamplerInfo::new(hal::image::Filter::Nearest, hal::image::WrapMode::Clamp))
-                .with_raw_data(png.raw_pixels(), Format::Rgba8Unorm);
+                //.with_sampler_info(hal::image::SamplerInfo::new(hal::image::Filter::Nearest, hal::image::WrapMode::Clamp))
+                .with_sampler_info(hal::image::SamplerInfo{
+                    min_filter : hal::image::Filter::Nearest,
+                    mag_filter : hal::image::Filter::Nearest,
+                    mip_filter : hal::image::Filter::Nearest,
+                    wrap_mode : (hal::image::WrapMode::Clamp, hal::image::WrapMode::Clamp, hal::image::WrapMode::Clamp),
+                    lod_bias : 0.0.into(),
+                    lod_range : std::ops::Range { start: 0.0.into(), end: 1000.0.into() },
+                    comparison: None,
+                    border: hal::image::PackedColor(0),
+                    anisotropic: hal::image::Anisotropic::Off
+                })
+                .with_raw_data(raw_pixels, Format::Rgba8Srgb);
             handle = loader.load_from_data(TextureData(texture_builder), (), &texture_storage);
         } else {
             let filename = app_root.join(font.filename.clone());
