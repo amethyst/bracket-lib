@@ -67,6 +67,9 @@ gl_generator = "0.14.0"
 name = "fov_benchmark"
 harness = false
 
+[[bench]]
+name = "geometry_benchmark"
+harness = false
 
 [[example]]
 name = "ex01-helloworld"

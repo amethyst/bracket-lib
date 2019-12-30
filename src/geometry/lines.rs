@@ -31,7 +31,8 @@ pub fn line2d_vector(start: Point, end: Point) -> Vec<Point> {
     let dest: (f32, f32) = (end.x as f32 + 0.5, end.y as f32 + 0.5);
     let n_steps = DistanceAlg::Pythagoras.distance2d(start, end);
     let slope: (f32, f32) = ((dest.0 - pos.0) / n_steps, (dest.1 - pos.1) / n_steps);
-    let mut result: Vec<Point> = vec![start];
+    let mut result: Vec<Point> = Vec::with_capacity(n_steps as usize);
+    result.push(start);
 
     loop {
         pos.0 += slope.0;
