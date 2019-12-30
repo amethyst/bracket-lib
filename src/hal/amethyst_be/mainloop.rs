@@ -10,11 +10,11 @@ use amethyst::{
     utils::application_root_dir,
     core::transform::Transform,
     core::TransformBundle,
-    renderer::{Camera, SpriteRender, palette::Srgba, resources::Tint, camera::Projection},
+    renderer::{Camera, palette::Srgba, resources::Tint, camera::Projection},
     input::{InputBundle, StringBindings, Bindings, InputHandler, Button},
     winit::MouseButton,
     ecs::prelude::*,
-    tiles::{MortonEncoder2D, RenderTiles2D, Tile, TileMap, FlatEncoder, Map, MapStorage},
+    tiles::{MortonEncoder2D, RenderTiles2D, Tile, TileMap, FlatEncoder, MapStorage},
     core::math::{Point3, Vector2, Vector3},
 };
 

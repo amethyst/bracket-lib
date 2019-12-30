@@ -4,7 +4,7 @@ use amethyst::{
     ecs::prelude::*,
     assets::{AssetStorage, Loader},
     utils::application_root_dir,
-    renderer::{ImageFormat, SpriteSheet, Texture, palette::Srgba},
+    renderer::{ImageFormat, SpriteSheet, Texture},
 };
 
 pub struct Font{
