@@ -19,7 +19,7 @@ exclude = [
 ]
 
 [features]
-default = [ "opengl" ]
+default = [ "amethyst_engine_vulkan" ]
 serialization = [ "serde/derive", "serde_json" ]
 threaded = ["rayon"]
 opengl = [ "glow", "image", "glutin", "cgmath" ]
