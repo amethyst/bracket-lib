@@ -17,6 +17,8 @@ mod sparse_console;
 pub mod textblock;
 pub use hal::*;
 mod parsing;
+mod rect;
+pub use rect::Rect;
 
 pub use self::codepage437::{string_to_cp437, to_char, to_cp437};
 pub use self::color::*;
