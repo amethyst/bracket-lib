@@ -18,14 +18,16 @@ pub mod textblock;
 pub use hal::*;
 mod parsing;
 
-pub use self::codepage437::{string_to_cp437, to_cp437, to_char};
+pub use self::codepage437::{string_to_cp437, to_char, to_cp437};
 pub use self::color::*;
 pub use self::console::*;
 pub use self::fastnoise::*;
 pub use self::fieldofview::{field_of_view, field_of_view_set};
 pub use self::font::Font;
-pub use self::geometry::{line2d, project_angle, DistanceAlg, LineAlg, Point, Point3, VectorLine, 
-    Bresenham, BresenhamCircle};
+pub use self::geometry::{
+    line2d, project_angle, Bresenham, BresenhamCircle, DistanceAlg, LineAlg, Point, Point3,
+    VectorLine,
+};
 pub use self::pathfinding::astar::{a_star_search, NavigationPath};
 pub use self::pathfinding::dijkstra::DijkstraMap;
 pub use self::random::RandomNumberGenerator;
@@ -33,7 +35,7 @@ pub use self::rltk::{letter_to_option, main_loop, Rltk};
 pub use self::simple_console::SimpleConsole;
 pub use self::sparse_console::SparseConsole;
 pub use self::textblock::{TextBlock, TextBuilder};
-pub use parsing::{parse_dice_string, DiceType, DiceParseError};
+pub use parsing::{parse_dice_string, DiceParseError, DiceType};
 pub mod embedding;
 
 #[macro_export]
@@ -77,7 +79,10 @@ macro_rules! link_resource {
 #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
 pub use glutin::event::VirtualKeyCode;
 
-#[cfg(all(not(feature="opengl"), any(feature="amethyst_engine_vulkan", feature="amethyst_engine_metal")))]
+#[cfg(all(
+    not(feature = "opengl"),
+    any(feature = "amethyst_engine_vulkan", feature = "amethyst_engine_metal")
+))]
 pub use amethyst::input::VirtualKeyCode;
 
 #[cfg(target_arch = "wasm32")]
@@ -112,7 +117,9 @@ pub trait Algorithm2D: BaseMap {
     fn index_to_point2d(&self, idx: i32) -> Point;
 
     // Optional - check that an x/y coordinate is within the map bounds
-    fn in_bounds(&self, _pos : Point) -> bool { true }
+    fn in_bounds(&self, _pos: Point) -> bool {
+        true
+    }
 }
 
 /// Implement these for handling conversion to/from 2D coordinates (they are separate, because you might

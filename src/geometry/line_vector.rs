@@ -1,13 +1,13 @@
-use super::{Point};
-use ultraviolet::Vec2;
+use super::Point;
 use core::iter::Iterator;
+use ultraviolet::Vec2;
 
 pub struct VectorLine {
-    end : Point,
-    current_pos : Vec2,
-    slope : Vec2,
-    finished : bool,
-    really_finished : bool
+    end: Point,
+    current_pos: Vec2,
+    slope: Vec2,
+    finished: bool,
+    really_finished: bool,
 }
 
 impl VectorLine {
@@ -17,12 +17,12 @@ impl VectorLine {
         let mut slope = destination - current_pos;
         slope.normalize();
 
-        VectorLine{
+        VectorLine {
             end,
             current_pos,
             slope,
             finished: false,
-            really_finished : false
+            really_finished: false,
         }
     }
 }
@@ -34,7 +34,10 @@ impl Iterator for VectorLine {
         if self.finished {
             if !self.really_finished {
                 self.really_finished = true;
-                Some(Point::new(self.current_pos.x as i32, self.current_pos.y as i32))
+                Some(Point::new(
+                    self.current_pos.x as i32,
+                    self.current_pos.y as i32,
+                ))
             } else {
                 None
             }

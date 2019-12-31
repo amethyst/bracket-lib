@@ -3,14 +3,18 @@ use crate::sparse_console::SparseTile;
 use glow::HasContext;
 
 pub struct SparseConsoleBackend {
-    charbuffer : glow::WebTextureKey,
-    background : glow::WebTextureKey,
-    offset_x : f32,
-    offset_y : f32
+    charbuffer: glow::WebTextureKey,
+    background: glow::WebTextureKey,
+    offset_x: f32,
+    offset_y: f32,
 }
 
 impl SparseConsoleBackend {
-    pub fn new(platform: &super::super::RltkPlatform, width: usize, height: usize) -> SparseConsoleBackend {
+    pub fn new(
+        platform: &super::super::RltkPlatform,
+        width: usize,
+        height: usize,
+    ) -> SparseConsoleBackend {
         let gl = &platform.platform.gl;
         let texture;
         unsafe {
@@ -93,13 +97,12 @@ impl SparseConsoleBackend {
         }
 
         SparseConsoleBackend {
-            charbuffer : texture,
-            background : texture2,
-            offset_x : 0.0,
-            offset_y : 0.0
+            charbuffer: texture,
+            background: texture2,
+            offset_x: 0.0,
+            offset_y: 0.0,
         }
     }
-
 
     /// Helper to build vertices for the sparse grid.
     pub fn rebuild_vertices(
@@ -118,10 +121,10 @@ impl SparseConsoleBackend {
 
             for t in tiles.iter() {
                 let i = t.idx;
-                data[i*4] = t.glyph;
-                data[(i*4)+1] = (t.fg.r * 255.0) as u8;
-                data[(i*4)+2] = (t.fg.g * 255.0) as u8;
-                data[(i*4)+3] = (t.fg.b * 255.0) as u8;
+                data[i * 4] = t.glyph;
+                data[(i * 4) + 1] = (t.fg.r * 255.0) as u8;
+                data[(i * 4) + 2] = (t.fg.g * 255.0) as u8;
+                data[(i * 4) + 3] = (t.fg.b * 255.0) as u8;
             }
 
             gl.bind_texture(glow::TEXTURE_2D, Some(self.charbuffer));
@@ -172,7 +175,13 @@ impl SparseConsoleBackend {
             gl.bind_texture(glow::TEXTURE_2D, Some(self.background));
             shader.setInt(gl, "bgBuffer", 2);
 
-            shader.setVec3(gl, "font", font.width as f32 / 16.0, font.height as f32 / 16.0, 0.0);
+            shader.setVec3(
+                gl,
+                "font",
+                font.width as f32 / 16.0,
+                font.height as f32 / 16.0,
+                0.0,
+            );
             shader.setBool(gl, "hasBackground", false);
             shader.setVec3(gl, "offset", self.offset_x, self.offset_y, 0.0);
             gl.draw_arrays(glow::TRIANGLES, 0, 6);

@@ -14,7 +14,11 @@ pub struct SimpleConsoleBackend {
 }
 
 impl SimpleConsoleBackend {
-    pub fn new(platform: &super::super::RltkPlatform, width: usize, height: usize) -> SimpleConsoleBackend {
+    pub fn new(
+        platform: &super::super::RltkPlatform,
+        width: usize,
+        height: usize,
+    ) -> SimpleConsoleBackend {
         let vertex_capacity: usize = (11 * width as usize * height as usize) * 4;
         let index_capacity: usize = 6 * width as usize * height as usize;
         let (vbo, vao, ebo) = SimpleConsoleBackend::init_gl_for_console(&platform.platform.gl);
@@ -87,8 +91,16 @@ impl SimpleConsoleBackend {
             texture = gl.create_texture().unwrap();
             gl.bind_texture(glow::TEXTURE_2D, Some(texture)); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
                                                               // set the texture wrapping parameters
-            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_S, glow::CLAMP_TO_EDGE as i32); // set texture wrapping to glow::REPEAT (default wrapping method)
-            gl.tex_parameter_i32(glow::TEXTURE_2D, glow::TEXTURE_WRAP_T, glow::CLAMP_TO_EDGE as i32);
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_WRAP_S,
+                glow::CLAMP_TO_EDGE as i32,
+            ); // set texture wrapping to glow::REPEAT (default wrapping method)
+            gl.tex_parameter_i32(
+                glow::TEXTURE_2D,
+                glow::TEXTURE_WRAP_T,
+                glow::CLAMP_TO_EDGE as i32,
+            );
             // set texture filtering parameters
             gl.tex_parameter_i32(
                 glow::TEXTURE_2D,
@@ -164,7 +176,7 @@ impl SimpleConsoleBackend {
                 let glyph_left = f32::from(glyph_x) * glyph_size_x;
                 let glyph_right = f32::from(glyph_x + 1) * glyph_size_x;
                 let glyph_top = f32::from(glyph_y) * glyph_size_y;
-                let glyph_bottom = (f32::from(glyph_y)-0.95) * glyph_size_y;
+                let glyph_bottom = (f32::from(glyph_y) - 0.95) * glyph_size_y;
 
                 self.push_point(
                     screen_x + step_x,

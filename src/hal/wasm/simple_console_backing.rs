@@ -1,16 +1,20 @@
-use super::super::super::{Tile};
+use super::super::super::Tile;
 use super::super::{font::Font, shader::Shader};
 use glow::HasContext;
 
 pub struct SimpleConsoleBackend {
-    charbuffer : glow::WebTextureKey,
-    background : glow::WebTextureKey,
-    offset_x : f32,
-    offset_y : f32
+    charbuffer: glow::WebTextureKey,
+    background: glow::WebTextureKey,
+    offset_x: f32,
+    offset_y: f32,
 }
 
 impl SimpleConsoleBackend {
-    pub fn new(platform: &super::super::RltkPlatform, width: usize, height: usize) -> SimpleConsoleBackend {
+    pub fn new(
+        platform: &super::super::RltkPlatform,
+        width: usize,
+        height: usize,
+    ) -> SimpleConsoleBackend {
         let gl = &platform.platform.gl;
         let texture;
         unsafe {
@@ -93,10 +97,10 @@ impl SimpleConsoleBackend {
         }
 
         SimpleConsoleBackend {
-            charbuffer : texture,
-            background : texture2,
-            offset_x : 0.0,
-            offset_y : 0.0
+            charbuffer: texture,
+            background: texture2,
+            offset_x: 0.0,
+            offset_y: 0.0,
         }
     }
 
@@ -116,14 +120,14 @@ impl SimpleConsoleBackend {
             let mut data2 = vec![0u8; width as usize * height as usize * 4];
 
             for (i, t) in tiles.iter().enumerate() {
-                data[i*4] = t.glyph;
-                data[(i*4)+1] = (t.fg.r * 255.0) as u8;
-                data[(i*4)+2] = (t.fg.g * 255.0) as u8;
-                data[(i*4)+3] = (t.fg.b * 255.0) as u8;
+                data[i * 4] = t.glyph;
+                data[(i * 4) + 1] = (t.fg.r * 255.0) as u8;
+                data[(i * 4) + 2] = (t.fg.g * 255.0) as u8;
+                data[(i * 4) + 3] = (t.fg.b * 255.0) as u8;
 
-                data2[(i*4)] = (t.bg.r * 255.0) as u8;
-                data2[(i*4)+1] = (t.bg.g * 255.0) as u8;
-                data2[(i*4)+2] = (t.bg.b * 255.0) as u8;
+                data2[(i * 4)] = (t.bg.r * 255.0) as u8;
+                data2[(i * 4) + 1] = (t.bg.g * 255.0) as u8;
+                data2[(i * 4) + 2] = (t.bg.b * 255.0) as u8;
             }
 
             gl.bind_texture(glow::TEXTURE_2D, Some(self.charbuffer));
@@ -175,7 +179,13 @@ impl SimpleConsoleBackend {
             gl.bind_texture(glow::TEXTURE_2D, Some(self.background));
             shader.setInt(gl, "bgBuffer", 2);
 
-            shader.setVec3(gl, "font", font.width as f32 / 16.0, font.height as f32 / 16.0, 0.0);
+            shader.setVec3(
+                gl,
+                "font",
+                font.width as f32 / 16.0,
+                font.height as f32 / 16.0,
+                0.0,
+            );
             shader.setBool(gl, "hasBackground", true);
             shader.setVec3(gl, "offset", self.offset_x, self.offset_y, 0.0);
             gl.draw_arrays(glow::TRIANGLES, 0, 6);

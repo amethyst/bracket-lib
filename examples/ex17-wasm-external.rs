@@ -188,7 +188,12 @@ impl GameState for State {
 
 #[cfg(target_arch = "wasm32")]
 fn main() {
-    let context = Rltk::init_simple8x8(80, 50, "RLTK Example 17 - WASM External Events", "resources");
+    let context = Rltk::init_simple8x8(
+        80,
+        50,
+        "RLTK Example 17 - WASM External Events",
+        "resources",
+    );
     let gs = State::new();
     rltk::register_html_button("go_nw");
     rltk::register_html_button("go_n");

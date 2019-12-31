@@ -1,7 +1,7 @@
 use crate::console::log;
-use ultraviolet::Vec3;
 use glow::HasContext;
 use std::str;
+use ultraviolet::Vec3;
 
 #[allow(non_snake_case)]
 pub struct Shader {

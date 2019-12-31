@@ -4,8 +4,8 @@
 #[cfg(test)]
 extern crate std;
 
-use core::iter::Iterator;
 use super::Point;
+use core::iter::Iterator;
 
 /// Line-drawing iterator
 pub struct Bresenham {
@@ -130,7 +130,6 @@ impl Iterator for Bresenham {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::{Bresenham, Point};
@@ -141,7 +140,17 @@ mod tests {
         let bi = Bresenham::new(Point::new(0, 1), Point::new(6, 4));
         let res: Vec<_> = bi.collect();
 
-        assert_eq!(res, [Point::new(0, 1), Point::new(1, 1), Point::new(2, 2), Point::new(3, 2), Point::new(4, 3), Point::new(5, 3)])
+        assert_eq!(
+            res,
+            [
+                Point::new(0, 1),
+                Point::new(1, 1),
+                Point::new(2, 2),
+                Point::new(3, 2),
+                Point::new(4, 3),
+                Point::new(5, 3)
+            ]
+        )
     }
 
     #[test]
@@ -149,7 +158,17 @@ mod tests {
         let bi = Bresenham::new(Point::new(6, 4), Point::new(0, 1));
         let res: Vec<_> = bi.collect();
 
-        assert_eq!(res, [Point::new(6, 4), Point::new(5, 4), Point::new(4, 3), Point::new(3, 3), Point::new(2, 2), Point::new(1, 2)])
+        assert_eq!(
+            res,
+            [
+                Point::new(6, 4),
+                Point::new(5, 4),
+                Point::new(4, 3),
+                Point::new(3, 3),
+                Point::new(2, 2),
+                Point::new(1, 2)
+            ]
+        )
     }
 
     #[test]

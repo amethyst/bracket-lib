@@ -1,7 +1,7 @@
 use super::GameState;
 use super::{
-    font, hal::init_raw, rex::XpFile, rex::XpLayer, Console, RltkPlatform,
-    Shader, SimpleConsole, VirtualKeyCode, RGB,
+    font, hal::init_raw, rex::XpFile, rex::XpLayer, Console, RltkPlatform, Shader, SimpleConsole,
+    VirtualKeyCode, RGB,
 };
 use std::any::Any;
 
@@ -174,7 +174,13 @@ impl Rltk {
 impl Console for Rltk {
     // A couple of ones we'll never use
     fn rebuild_if_dirty(&mut self, _platform: &super::hal::RltkPlatform) {}
-    fn gl_draw(&mut self, _font: &font::Font, _shader: &Shader, _platform: &super::hal::RltkPlatform) {}
+    fn gl_draw(
+        &mut self,
+        _font: &font::Font,
+        _shader: &Shader,
+        _platform: &super::hal::RltkPlatform,
+    ) {
+    }
 
     fn get_char_size(&mut self) -> (u32, u32) {
         self.consoles[self.active_console].console.get_char_size()

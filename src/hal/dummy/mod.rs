@@ -7,28 +7,22 @@ pub use keycodes::VirtualKeyCode;
 pub struct PlatformGL {}
 
 pub mod shader {
-    pub struct Shader{}
+    pub struct Shader {}
 }
 
 pub mod font {
-    pub struct Font{
-        pub tile_size: (u32, u32)
+    pub struct Font {
+        pub tile_size: (u32, u32),
     }
 
     impl Font {
         pub fn load<S: ToString>(_filename: S, _tile_size: (u32, u32)) -> Font {
-            Font{
-                tile_size : (0, 0)
-            }
+            Font { tile_size: (0, 0) }
         }
 
-        pub fn setup_gl_texture(&mut self, _gl: &crate::hal::RltkPlatform) {
+        pub fn setup_gl_texture(&mut self, _gl: &crate::hal::RltkPlatform) {}
 
-        }
-
-        pub fn bind_texture(&self, _gl: &crate::hal::RltkPlatform) {
-
-        }
+        pub fn bind_texture(&self, _gl: &crate::hal::RltkPlatform) {}
     }
 }
 
@@ -38,12 +32,14 @@ pub fn init_raw<S: ToString>(
     _window_title: S,
 ) -> crate::Rltk {
     crate::Rltk {
-        backend: super::RltkPlatform { platform: PlatformGL{} },
+        backend: super::RltkPlatform {
+            platform: PlatformGL {},
+        },
         width_pixels,
         height_pixels,
         fonts: Vec::new(),
         consoles: Vec::new(),
-        shaders : Vec::new(),
+        shaders: Vec::new(),
         fps: 0.0,
         frame_time_ms: 0.0,
         active_console: 0,
@@ -60,15 +56,13 @@ pub fn init_raw<S: ToString>(
     }
 }
 
-pub fn main_loop<GS: GameState>(mut _rltk: Rltk, mut _gamestate: GS) {
-}
+pub fn main_loop<GS: GameState>(mut _rltk: Rltk, mut _gamestate: GS) {}
 
-pub struct SimpleConsoleBackend {
-}
+pub struct SimpleConsoleBackend {}
 
 impl SimpleConsoleBackend {
     pub fn new(_gl: &super::RltkPlatform, _width: usize, _height: usize) -> SimpleConsoleBackend {
-        SimpleConsoleBackend{}
+        SimpleConsoleBackend {}
     }
 
     pub fn rebuild_vertices(
@@ -93,12 +87,11 @@ impl SimpleConsoleBackend {
     }
 }
 
-pub struct SparseConsoleBackend {
-}
+pub struct SparseConsoleBackend {}
 
 impl SparseConsoleBackend {
     pub fn new(_gl: &super::RltkPlatform, _width: usize, _height: usize) -> SparseConsoleBackend {
-        SparseConsoleBackend{}
+        SparseConsoleBackend {}
     }
 
     pub fn rebuild_vertices(

@@ -21,13 +21,13 @@ impl Point {
     // Create a zero point
     #[inline]
     pub fn zero() -> Self {
-        Point { x:0, y:0 }
+        Point { x: 0, y: 0 }
     }
 
     #[inline]
     // Create a point from a tuple of two i32s
-    pub fn from_tuple(t : (i32, i32)) -> Self {
-        Point { x : t.0, y : t.1 }
+    pub fn from_tuple(t: (i32, i32)) -> Self {
+        Point { x: t.0, y: t.1 }
     }
 }
 

@@ -1,7 +1,7 @@
 use super::super::RltkPlatform;
 
 pub struct PlatformGL {
-    pub window_title : String
+    pub window_title: String,
 }
 
 pub fn init_raw<S: ToString>(
@@ -10,12 +10,16 @@ pub fn init_raw<S: ToString>(
     window_title: S,
 ) -> crate::Rltk {
     crate::Rltk {
-        backend: RltkPlatform { platform: PlatformGL{ window_title : window_title.to_string() } },
+        backend: RltkPlatform {
+            platform: PlatformGL {
+                window_title: window_title.to_string(),
+            },
+        },
         width_pixels,
         height_pixels,
         fonts: Vec::new(),
         consoles: Vec::new(),
-        shaders : Vec::new(),
+        shaders: Vec::new(),
         fps: 0.0,
         frame_time_ms: 0.0,
         active_console: 0,

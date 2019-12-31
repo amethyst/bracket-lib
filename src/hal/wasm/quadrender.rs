@@ -27,7 +27,14 @@ pub fn setup_quad(gl: &glow::Context) -> glow::WebVertexArrayKey {
         let stride = 4 * std::mem::size_of::<f32>() as i32;
         gl.vertex_attrib_pointer_f32(0, 2, glow::FLOAT, false, stride, 0);
         gl.enable_vertex_attrib_array(1);
-        gl.vertex_attrib_pointer_f32(1, 2, glow::FLOAT, false, stride, 2 * std::mem::size_of::<f32>() as i32);
+        gl.vertex_attrib_pointer_f32(
+            1,
+            2,
+            glow::FLOAT,
+            false,
+            stride,
+            2 * std::mem::size_of::<f32>() as i32,
+        );
 
         gl.bind_vertex_array(None);
     }

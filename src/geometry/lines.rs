@@ -1,4 +1,4 @@
-use super::{DistanceAlg, LineAlg, Point, Bresenham};
+use super::{Bresenham, DistanceAlg, LineAlg, Point};
 
 /// Plots a line between two 2D points and returns a vector of points along the line.
 pub fn line2d(algorithm: LineAlg, start: Point, end: Point) -> Vec<Point> {

@@ -1,1 +1,1 @@
-pub struct Shader{}
+pub struct Shader {}

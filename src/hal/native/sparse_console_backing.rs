@@ -1,4 +1,4 @@
-use super::super::super::{RGB};
+use super::super::super::RGB;
 use super::super::{font::Font, shader::Shader};
 use crate::sparse_console::SparseTile;
 use glow::HasContext;
@@ -13,7 +13,11 @@ pub struct SparseConsoleBackend {
 }
 
 impl SparseConsoleBackend {
-    pub fn new(platform: &super::super::RltkPlatform, _width: usize, _height: usize) -> SparseConsoleBackend {
+    pub fn new(
+        platform: &super::super::RltkPlatform,
+        _width: usize,
+        _height: usize,
+    ) -> SparseConsoleBackend {
         let (vbo, vao, ebo) = SparseConsoleBackend::init_gl_for_console(&platform.platform.gl);
         SparseConsoleBackend {
             vertex_buffer: Vec::new(),

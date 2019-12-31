@@ -1,6 +1,6 @@
 use crate::embedding;
 use glow::HasContext;
-use image::{GenericImageView, ColorType};
+use image::{ColorType, GenericImageView};
 
 #[derive(PartialEq, Clone)]
 /// RLTK's representation of a font or tileset file.
@@ -52,7 +52,7 @@ impl Font {
     }
 
     /// Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
-    pub fn setup_gl_texture(&mut self, platform : &super::super::RltkPlatform) -> u32 {
+    pub fn setup_gl_texture(&mut self, platform: &super::super::RltkPlatform) -> u32 {
         let gl = &platform.platform.gl;
         let texture;
 
@@ -87,7 +87,13 @@ impl Font {
             let format = match img.color() {
                 ColorType::RGB(_) => glow::RGB,
                 ColorType::RGBA(_) => glow::RGBA,
-                _ => { panic!("unexpected image format {:?} for {}", img.color(), self.bitmap_file); }
+                _ => {
+                    panic!(
+                        "unexpected image format {:?} for {}",
+                        img.color(),
+                        self.bitmap_file
+                    );
+                }
             };
             gl.tex_image_2d(
                 glow::TEXTURE_2D,

@@ -1,6 +1,6 @@
+use super::{parse_dice_string, DiceParseError, DiceType};
 use rand::{Rng, RngCore, SeedableRng};
 use rand_xorshift::XorShiftRng;
-use super::{DiceType, parse_dice_string, DiceParseError};
 
 pub struct RandomNumberGenerator {
     rng: XorShiftRng,
@@ -49,21 +49,21 @@ impl RandomNumberGenerator {
     }
 
     // Rolls dice based on a DiceType struct, including application of the bonus
-    pub fn roll(&mut self, dice : DiceType) -> i32 {
+    pub fn roll(&mut self, dice: DiceType) -> i32 {
         self.roll_dice(dice.n_dice, dice.die_type) + dice.bonus
     }
 
     // Rolls dice based on passing in a string, such as roll_str("1d12")
-    #[cfg(feature="parsing")]
-    pub fn roll_str<S : ToString>(&mut self, dice : S) -> Result<i32, DiceParseError> {
+    #[cfg(feature = "parsing")]
+    pub fn roll_str<S: ToString>(&mut self, dice: S) -> Result<i32, DiceParseError> {
         match parse_dice_string(&dice.to_string()) {
             Ok(dt) => Ok(self.roll(dt)),
-            Err(e) => Err(e)
+            Err(e) => Err(e),
         }
     }
 
     // Returns a random index into a slice
-    pub fn random_slice_index<T>(&mut self, slice : &[T]) -> Option<usize> {
+    pub fn random_slice_index<T>(&mut self, slice: &[T]) -> Option<usize> {
         if slice.is_empty() {
             None
         } else {
@@ -71,13 +71,13 @@ impl RandomNumberGenerator {
             if sz == 1 {
                 Some(0)
             } else {
-                Some(self.roll_dice(1, sz as i32) as usize -1)
+                Some(self.roll_dice(1, sz as i32) as usize - 1)
             }
         }
     }
 
     // Returns a random entry in a slice (or none if empty)
-    pub fn random_slice_entry<'a,T>(&mut self, slice : &'a [T]) -> Option<&'a T> {
+    pub fn random_slice_entry<'a, T>(&mut self, slice: &'a [T]) -> Option<&'a T> {
         if slice.is_empty() {
             None
         } else {
@@ -85,7 +85,7 @@ impl RandomNumberGenerator {
             if sz == 1 {
                 Some(&slice[0])
             } else {
-                Some(&slice[self.roll_dice(1, sz as i32) as usize -1])
+                Some(&slice[self.roll_dice(1, sz as i32) as usize - 1])
             }
         }
     }
@@ -131,18 +131,18 @@ mod tests {
     #[test]
     fn random_slice_index_empty() {
         let mut rng = RandomNumberGenerator::new();
-        let test_data : Vec<i32> = Vec::new();
+        let test_data: Vec<i32> = Vec::new();
         assert!(rng.random_slice_index(&test_data).is_none());
     }
 
     #[test]
     fn random_slice_index_valid() {
         let mut rng = RandomNumberGenerator::new();
-        let test_data : Vec<i32> = vec![1,2,3,4,5,6,7,8,9,10];
+        let test_data: Vec<i32> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         for _ in 0..100 {
             match rng.random_slice_index(&test_data) {
-                None => assert!(1==2),
-                Some(idx) => assert!(idx < test_data.len())
+                None => assert!(1 == 2),
+                Some(idx) => assert!(idx < test_data.len()),
             }
         }
     }
@@ -150,18 +150,18 @@ mod tests {
     #[test]
     fn random_slice_entry_empty() {
         let mut rng = RandomNumberGenerator::new();
-        let test_data : Vec<i32> = Vec::new();
+        let test_data: Vec<i32> = Vec::new();
         assert!(rng.random_slice_entry(&test_data).is_none());
     }
 
     #[test]
     fn random_slice_entry_valid() {
         let mut rng = RandomNumberGenerator::new();
-        let test_data : Vec<i32> = vec![1,2,3,4,5,6,7,8,9,10];
+        let test_data: Vec<i32> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         for _ in 0..100 {
             match rng.random_slice_entry(&test_data) {
-                None => assert!(1==2),
-                Some(e) => assert!(*e > 0 && *e < 11)
+                None => assert!(1 == 2),
+                Some(e) => assert!(*e > 0 && *e < 11),
             }
         }
     }

@@ -77,7 +77,12 @@ fn tock<GS: GameState>(
 
     // Clear the screen
     unsafe {
-        rltk.backend.platform.gl.viewport(0, 0, rltk.width_pixels as i32, rltk.height_pixels as i32);
+        rltk.backend.platform.gl.viewport(
+            0,
+            0,
+            rltk.width_pixels as i32,
+            rltk.height_pixels as i32,
+        );
         rltk.backend.platform.gl.clear_color(0.2, 0.3, 0.3, 1.0);
         rltk.backend.platform.gl.clear(glow::COLOR_BUFFER_BIT);
     }
@@ -105,7 +110,13 @@ fn tock<GS: GameState>(
             font.bind_texture(&rltk.backend);
             shader.setBool(gl, "showScanLines", rltk.post_scanlines);
             shader.setBool(gl, "screenBurn", rltk.post_screenburn);
-            shader.setVec3(gl, "screenSize", rltk.width_pixels as f32, rltk.height_pixels as f32, 0.0);
+            shader.setVec3(
+                gl,
+                "screenSize",
+                rltk.width_pixels as f32,
+                rltk.height_pixels as f32,
+                0.0,
+            );
         }
         cons.console.gl_draw(font, shader, &rltk.backend);
     }

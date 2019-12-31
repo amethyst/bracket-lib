@@ -2,12 +2,11 @@ use super::super::RltkPlatform;
 use super::font::Font;
 use super::shader::Shader;
 
-pub struct SimpleConsoleBackend {
-}
+pub struct SimpleConsoleBackend {}
 
 impl SimpleConsoleBackend {
     pub fn new(_gl: &RltkPlatform, _width: usize, _height: usize) -> SimpleConsoleBackend {
-        SimpleConsoleBackend{}
+        SimpleConsoleBackend {}
     }
 
     pub fn rebuild_vertices(
@@ -32,12 +31,11 @@ impl SimpleConsoleBackend {
     }
 }
 
-pub struct SparseConsoleBackend {
-}
+pub struct SparseConsoleBackend {}
 
 impl SparseConsoleBackend {
     pub fn new(_gl: &RltkPlatform, _width: usize, _height: usize) -> SparseConsoleBackend {
-        SparseConsoleBackend{}
+        SparseConsoleBackend {}
     }
 
     pub fn rebuild_vertices(

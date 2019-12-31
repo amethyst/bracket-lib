@@ -1,6 +1,4 @@
-use glutin::{
-    dpi::LogicalSize, event_loop::EventLoop, window::WindowBuilder, ContextBuilder,
-};
+use glutin::{dpi::LogicalSize, event_loop::EventLoop, window::WindowBuilder, ContextBuilder};
 
 pub fn init_raw<S: ToString>(
     width_pixels: u32,

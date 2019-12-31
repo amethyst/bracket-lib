@@ -74,7 +74,7 @@ mod tests {
     #[test]
     fn circle_test_radius1() {
         let circle = BresenhamCircle::new(0, 0, 1);
-        let points : Vec<Point> = circle.collect();
+        let points: Vec<Point> = circle.collect();
         assert_eq!(
             points,
             vec![
@@ -89,7 +89,7 @@ mod tests {
     #[test]
     fn circle_test_radius3() {
         let circle = BresenhamCircle::new(0, 0, 3);
-        let points : Vec<Point> = circle.collect();
+        let points: Vec<Point> = circle.collect();
         assert_eq!(
             points,
             vec![

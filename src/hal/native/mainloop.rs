@@ -1,18 +1,19 @@
 use super::super::super::{Console, GameState, Rltk};
 use super::super::*;
 use glow::HasContext;
-use glutin::{
-    event::Event, event::WindowEvent, event_loop::ControlFlow
-};
+use glutin::{event::Event, event::WindowEvent, event_loop::ControlFlow};
 use std::time::Instant;
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
 pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     unsafe {
-        rltk.backend.platform
-            .gl
-            .viewport(0, 0, rltk.width_pixels as i32, rltk.height_pixels as i32);
+        rltk.backend.platform.gl.viewport(
+            0,
+            0,
+            rltk.width_pixels as i32,
+            rltk.height_pixels as i32,
+        );
     }
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
@@ -151,7 +152,10 @@ fn tock<GS: GameState>(
 
     // Bind to the backing buffer
     if rltk.post_scanlines {
-        rltk.backend.platform.backing_buffer.bind(&rltk.backend.platform.gl);
+        rltk.backend
+            .platform
+            .backing_buffer
+            .bind(&rltk.backend.platform.gl);
     }
 
     // Clear the screen
@@ -183,11 +187,16 @@ fn tock<GS: GameState>(
                     rltk.height_pixels as f32,
                     0.0,
                 );
-                rltk.shaders[3].setBool(&rltk.backend.platform.gl, "screenBurn", rltk.post_screenburn);
+                rltk.shaders[3].setBool(
+                    &rltk.backend.platform.gl,
+                    "screenBurn",
+                    rltk.post_screenburn,
+                );
             } else {
                 rltk.shaders[2].useProgram(&rltk.backend.platform.gl);
             }
-            rltk.backend.platform
+            rltk.backend
+                .platform
                 .gl
                 .bind_vertex_array(Some(rltk.backend.platform.quad_vao));
             rltk.backend.platform.gl.bind_texture(

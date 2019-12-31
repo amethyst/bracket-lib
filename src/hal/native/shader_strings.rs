@@ -61,7 +61,7 @@ void main()
 	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
 }"#;
 
-pub static CONSOLE_WITH_BG_FS : &str = r#"#version 330 core
+pub static CONSOLE_WITH_BG_FS: &str = r#"#version 330 core
 out vec4 FragColor;
 
 in vec3 ourColor;
@@ -97,7 +97,7 @@ void main()
 	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
 }"#;
 
-pub static SCANLINES_FS : &str = r#"#version 330 core
+pub static SCANLINES_FS: &str = r#"#version 330 core
 out vec4 FragColor;
 
 in vec2 TexCoords;

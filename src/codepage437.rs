@@ -275,7 +275,7 @@ pub fn to_cp437(c: char) -> u8 {
     }
 }
 
-pub fn to_char(c : u8) -> char {
+pub fn to_char(c: u8) -> char {
     match c {
         1 => '☺',
         2 => '☻',

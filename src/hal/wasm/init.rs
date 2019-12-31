@@ -49,7 +49,7 @@ pub fn init_raw<S: ToString>(
             platform: PlatformGL {
                 gl,
                 context_wrapper: Some(WrappedContext {}),
-                quad_vao : quad_vao
+                quad_vao: quad_vao,
             },
         },
         width_pixels,
