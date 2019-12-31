@@ -90,7 +90,7 @@ impl GameState for State {
 
         // Obtain the player's visible tile set, and apply it
         let player_position = self.index_to_point2d(self.player_position as i32);
-        let fov = _set(player_position, 8, self);
+        let fov = rltk::field_of_view_set(player_position, 8, self);
 
         // Note that the steps above would generally not be run every frame!
         for idx in &fov {
