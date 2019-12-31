@@ -3,11 +3,6 @@
 // Benchmark field of view calculations,
 // most of the code copied from ex04-fov.rs
 
-extern crate rand;
-use crate::rand::Rng;
-
-extern crate criterion;
-
 use criterion::{
     black_box,
     criterion_group,
@@ -94,21 +89,9 @@ impl Algorithm2D for State {
 
 impl State {
     pub fn new() -> Self {
-        let mut state = State {
+        let state = State {
             map: vec![TileType::Floor; (W * H) as usize],
         };
-
-        /*let player_start = xy_idx(W/2, H/2);
-        let mut rng = rand::thread_rng();
-        for _ in 0..400 {
-            let x = rng.gen_range(1, W-1);
-            let y = rng.gen_range(1, H-1);
-
-            let idx = xy_idx(x, y);
-            if idx != player_start {
-                state.map[idx] = TileType::Wall;
-            }
-        }*/
 
         state
     }

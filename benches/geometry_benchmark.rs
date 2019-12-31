@@ -2,8 +2,6 @@
 
 // Benchmark field of geometry calculations
 
-extern crate criterion;
-
 use criterion::{
     black_box,
     criterion_group,
