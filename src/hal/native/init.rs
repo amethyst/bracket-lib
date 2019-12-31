@@ -18,7 +18,7 @@ pub fn init_raw<S: ToString>(
             f64::from(height_pixels),
         ));
     let windowed_context = ContextBuilder::new()
-        .with_gl(glutin::GlRequest::Specific(glutin::Api::OpenGl, (3, 3)))
+        .with_gl(glutin::GlRequest::Latest)
         .with_gl_profile(glutin::GlProfile::Core)
         .with_hardware_acceleration(Some(true))
         .with_vsync(true)
