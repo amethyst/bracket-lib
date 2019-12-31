@@ -14,8 +14,7 @@ impl VectorLine {
     pub fn new(start: Point, end: Point) -> Self {
         let current_pos = Vec2::new(start.x as f32 + 0.5, start.y as f32 + 0.5);
         let destination = Vec2::new(end.x as f32 + 0.5, end.y as f32 + 0.5);
-        let mut slope = destination - current_pos;
-        slope.normalize();
+        let slope = (destination - current_pos).normalized();
 
         VectorLine {
             end,
