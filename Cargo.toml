@@ -19,7 +19,7 @@ exclude = [
 ]
 
 [features]
-default = [ "opengl" ]
+default = [ "opengl", "parsing" ]
 serialization = [ "serde/derive", "serde_json" ]
 threaded = ["rayon"]
 opengl = [ "glow", "image", "glutin" ]
@@ -27,6 +27,7 @@ ecs = [ "specs" ]
 curses = [ "pancurses" ]
 amethyst_engine_vulkan = [ "amethyst/vulkan", "image" ]
 amethyst_engine_metal = [ "amethyst/metal", "image" ]
+parsing = [ "regex" ]
 
 [dependencies]
 glow = { version = "0.3.0-alpha2", optional = true }
@@ -42,6 +43,7 @@ specs = { version = "0.15.1", optional = true }
 pancurses = { version = "0.16.1", optional = true }
 amethyst = { version = "0.13", features = [ "tiles" ], optional = true }
 ultraviolet = "0.4.5"
+regex = { version = "1.3.1", optional = true }
 
 [dev-dependencies]
 criterion = "0.3.0"

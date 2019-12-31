@@ -1,5 +1,6 @@
 use rand::{Rng, RngCore, SeedableRng};
 use rand_xorshift::XorShiftRng;
+use super::{DiceType, parse_dice_string, DiceParseError};
 
 pub struct RandomNumberGenerator {
     rng: XorShiftRng,
@@ -42,7 +43,60 @@ impl RandomNumberGenerator {
         (0..n).map(|_| self.range(1, die_type + 1)).sum()
     }
 
+    // Returns the RNG's next unsigned-64 type
     pub fn next_u64(&mut self) -> u64 {
         self.rng.next_u64()
+    }
+
+    // Rolls dice based on a DiceType struct, including application of the bonus
+    pub fn roll(&mut self, dice : DiceType) -> i32 {
+        self.roll_dice(dice.n_dice, dice.die_type) + dice.bonus
+    }
+
+    // Rolls dice based on passing in a string, such as roll_str("1d12")
+    #[cfg(feature="parsing")]
+    pub fn roll_str<S : ToString>(&mut self, dice : S) -> Result<i32, DiceParseError> {
+        match parse_dice_string(&dice.to_string()) {
+            Ok(dt) => Ok(self.roll(dt)),
+            Err(e) => Err(e)
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::RandomNumberGenerator;
+
+    #[test]
+    fn roll_str_1d6() {
+        let mut rng = RandomNumberGenerator::new();
+        assert!(rng.roll_str("1d6").is_ok());
+    }
+
+    #[test]
+    fn roll_str_3d6plus1() {
+        let mut rng = RandomNumberGenerator::new();
+        assert!(rng.roll_str("3d6+1").is_ok());
+    }
+
+    #[test]
+    fn roll_str_3d20minus1() {
+        let mut rng = RandomNumberGenerator::new();
+        assert!(rng.roll_str("3d20-1").is_ok());
+    }
+
+    #[test]
+    fn roll_str_error() {
+        let mut rng = RandomNumberGenerator::new();
+        assert!(rng.roll_str("blah").is_err());
+    }
+
+    #[test]
+    fn test_roll_range() {
+        let mut rng = RandomNumberGenerator::new();
+        for _ in 0..100 {
+            let n = rng.roll_dice(1, 20);
+            assert!(n > 0 && n < 21);
+        }
     }
 }

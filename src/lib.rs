@@ -16,6 +16,7 @@ mod simple_console;
 mod sparse_console;
 pub mod textblock;
 pub use hal::*;
+mod parsing;
 
 pub use self::codepage437::{string_to_cp437, to_cp437, to_char};
 pub use self::color::*;
@@ -32,6 +33,7 @@ pub use self::rltk::{letter_to_option, main_loop, Rltk};
 pub use self::simple_console::SimpleConsole;
 pub use self::sparse_console::SparseConsole;
 pub use self::textblock::{TextBlock, TextBuilder};
+pub use parsing::{parse_dice_string, DiceType, DiceParseError};
 pub mod embedding;
 
 #[macro_export]
