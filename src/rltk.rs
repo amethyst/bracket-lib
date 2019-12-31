@@ -236,6 +236,24 @@ impl Console for Rltk {
             .console
             .draw_box_double(x, y, width, height, fg, bg);
     }
+    fn draw_hollow_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB) {
+        self.consoles[self.active_console]
+            .console
+            .draw_hollow_box(x, y, width, height, fg, bg);
+    }
+    fn draw_hollow_box_double(
+        &mut self,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
+        fg: RGB,
+        bg: RGB,
+    ) {
+        self.consoles[self.active_console]
+            .console
+            .draw_hollow_box_double(x, y, width, height, fg, bg);
+    }
     fn draw_bar_horizontal(
         &mut self,
         x: i32,

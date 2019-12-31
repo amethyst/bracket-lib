@@ -153,9 +153,27 @@ impl Console for SimpleConsole {
         gui_helpers::draw_box(self, sx, sy, width, height, fg, bg);
     }
 
+    /// Draws a box, starting at x/y with the extents width/height using CP437 line characters
+    fn draw_hollow_box(&mut self, sx: i32, sy: i32, width: i32, height: i32, fg: RGB, bg: RGB) {
+        gui_helpers::draw_hollow_box(self, sx, sy, width, height, fg, bg);
+    }
+
     /// Draws a box, starting at x/y with the extents width/height using CP437 double line characters
     fn draw_box_double(&mut self, sx: i32, sy: i32, width: i32, height: i32, fg: RGB, bg: RGB) {
         gui_helpers::draw_box_double(self, sx, sy, width, height, fg, bg);
+    }
+
+    /// Draws a box, starting at x/y with the extents width/height using CP437 double line characters
+    fn draw_hollow_box_double(
+        &mut self,
+        sx: i32,
+        sy: i32,
+        width: i32,
+        height: i32,
+        fg: RGB,
+        bg: RGB,
+    ) {
+        gui_helpers::draw_hollow_box_double(self, sx, sy, width, height, fg, bg);
     }
 
     /// Draws a horizontal progress bar

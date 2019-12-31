@@ -47,8 +47,16 @@ pub trait Console {
     /// Draws a box, starting at x/y with the extents width/height using CP437 line characters
     fn draw_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB);
 
+    /// Draws a box, starting at x/y with the extents width/height using CP437 line characters,
+    /// without filling in the middle
+    fn draw_hollow_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB);
+
     /// Draws a box, starting at x/y with the extents width/height using CP437 double line characters
     fn draw_box_double(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB);
+
+    /// Draws a box, starting at x/y with the extents width/height using CP437 double line characters,
+    /// without filling in the middle
+    fn draw_hollow_box_double(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB);
 
     /// Draws a horizontal progress bar.
     #[allow(clippy::too_many_arguments)]
