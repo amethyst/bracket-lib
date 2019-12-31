@@ -27,7 +27,6 @@ pub fn init_raw<S: ToString>(
         .unwrap();
     let windowed_context = unsafe { windowed_context.make_current().unwrap() };
 
-    //let gl = glow::glow::load_with(|ptr| windowed_context.get_proc_address(ptr) as *const _);
     let gl = glow::Context::from_loader_function(|ptr| {
         windowed_context.get_proc_address(ptr) as *const _
     });
