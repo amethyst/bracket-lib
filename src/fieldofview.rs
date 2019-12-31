@@ -1,8 +1,6 @@
 use super::geometry::DistanceAlg;
-use super::Algorithm2D;
-use super::Point;
+use super::{Algorithm2D, Point, Bresenham};
 use std::collections::HashSet;
-use bresenham::Bresenham;
 
 /// Calculates field-of-view for a map that supports Algorithm2D.
 pub fn field_of_view(start: Point, range: i32, fov_check: &dyn Algorithm2D) -> Vec<Point> {
@@ -12,7 +10,7 @@ pub fn field_of_view(start: Point, range: i32, fov_check: &dyn Algorithm2D) -> V
     let bottom = start.y + range;
     let range_squared: f32 = (range as f32) * (range as f32);
 
-    let mut visible_points: HashSet<Point> = HashSet::new();
+    let mut visible_points: HashSet<Point> = HashSet::with_capacity(((range*2)*(range*2)) as usize);
 
     for x in left..=right {
         scan_fov_line(start, Point::new(x, top), range_squared, fov_check, &mut visible_points);
@@ -35,13 +33,9 @@ fn scan_fov_line(
     fov_check: &dyn Algorithm2D,
     visible_points: &mut HashSet<Point>,
 ) {
-    let line = Bresenham::new(
-        (start.x as isize, start.y as isize),
-        (end.x as isize, end.y as isize),
-    );
+    let line = Bresenham::new(start, end);
 
-    for t in line {
-        let target = Point{ x: t.0 as i32, y: t.1 as i32};
+    for target in line {
         if !fov_check.in_bounds(target) {
             // We're outside of the map
             break;

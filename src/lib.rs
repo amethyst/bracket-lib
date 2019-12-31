@@ -23,7 +23,7 @@ pub use self::console::*;
 pub use self::fastnoise::*;
 pub use self::fieldofview::field_of_view;
 pub use self::font::Font;
-pub use self::geometry::{line2d, project_angle, DistanceAlg, LineAlg, Point, Point3};
+pub use self::geometry::{line2d, project_angle, DistanceAlg, LineAlg, Point, Point3, VectorLine, Bresenham};
 pub use self::pathfinding::astar::{a_star_search, NavigationPath};
 pub use self::pathfinding::dijkstra::DijkstraMap;
 pub use self::random::RandomNumberGenerator;

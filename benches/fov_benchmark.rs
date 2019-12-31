@@ -24,28 +24,24 @@ use rltk::{
 pub fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("all fov 8", |b| b.iter(|| {
         let s = State::new();
-        let mut i = 0;
-        for x in 0 .. W-1 {
-            for y in 0 .. H-1 {
-                i += 1;
-                if i % 10 != 0 { continue; }
-                let p = Point::new(x, y);
-                let fov = rltk::field_of_view(p, 8, &s);
-                black_box(fov);
-            }
+        let x = W/2;
+        let y = H/2;
+        let idx = xy_idx(x, y);
+        if s.map[idx] != TileType::Wall {
+            let p = Point::new(x, y);
+            let fov = rltk::field_of_view(p, 8, &s);
+            black_box(fov);
         }
     }));
     c.bench_function("all fov 20", |b| b.iter(|| {
         let s = State::new();
-        let mut i = 0;
-        for x in 0 .. W-1 {
-            for y in 0 .. H-1 {
-                i += 1;
-                if i % 10 != 0 { continue; }
-                let p = Point::new(x, y);
-                let fov = rltk::field_of_view(p, 20, &s);
-                black_box(fov);
-            }
+        let x = W/2;
+        let y = H/2;
+        let idx = xy_idx(x, y);
+        if s.map[idx] != TileType::Wall {
+            let p = Point::new(x, y);
+            let fov = rltk::field_of_view(p, 20, &s);
+            black_box(fov);
         }
     }));
 }
@@ -92,8 +88,7 @@ impl Algorithm2D for State {
         Point::new(idx % W, idx / W)
     }
     fn in_bounds(&self, pos:Point) -> bool {
-        let idx = self.point2d_to_index(pos);
-        !(idx < 0 || idx >= W-1 * H-1)
+        pos.x > 0 && pos.x < W-1 && pos.y > 0 && pos.y < H-1
     }
 }
 
@@ -103,13 +98,17 @@ impl State {
             map: vec![TileType::Floor; (W * H) as usize],
         };
 
+        /*let player_start = xy_idx(W/2, H/2);
         let mut rng = rand::thread_rng();
         for _ in 0..400 {
             let x = rng.gen_range(1, W-1);
             let y = rng.gen_range(1, H-1);
+
             let idx = xy_idx(x, y);
-            state.map[idx] = TileType::Wall;
-        }
+            if idx != player_start {
+                state.map[idx] = TileType::Wall;
+            }
+        }*/
 
         state
     }

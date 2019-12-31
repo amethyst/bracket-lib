@@ -1,5 +1,4 @@
-use super::{DistanceAlg, LineAlg, Point};
-use bresenham::Bresenham;
+use super::{DistanceAlg, LineAlg, Point, Bresenham};
 
 /// Plots a line between two 2D points and returns a vector of points along the line.
 pub fn line2d(algorithm: LineAlg, start: Point, end: Point) -> Vec<Point> {
@@ -12,32 +11,28 @@ pub fn line2d(algorithm: LineAlg, start: Point, end: Point) -> Vec<Point> {
 /// Uses a Bresenham's algorithm to plot a line between two points. On some CPUs, this is faster
 /// than Bresenham.
 pub fn line2d_bresenham(start: Point, end: Point) -> Vec<Point> {
-    let line = Bresenham::new(
-        (start.x as isize, start.y as isize),
-        (end.x as isize, end.y as isize),
-    );
-    line.map(|p| Point::new(p.0 as i32, p.1 as i32))
-        .chain(std::iter::once(end))
-        .collect()
+    let line = Bresenham::new(start, end);
+    line.collect()
 }
 
 /// Uses a 2D vector algorithm to plot a line between two points. On some CPUs, this is faster
 /// than Bresenham.
 pub fn line2d_vector(start: Point, end: Point) -> Vec<Point> {
+    use nalgebra::Vector2;
+
     if start == end {
         return vec![start];
     }
-    let mut pos: (f32, f32) = (start.x as f32 + 0.5, start.y as f32 + 0.5);
-    let dest: (f32, f32) = (end.x as f32 + 0.5, end.y as f32 + 0.5);
-    let n_steps = DistanceAlg::Pythagoras.distance2d(start, end);
-    let slope: (f32, f32) = ((dest.0 - pos.0) / n_steps, (dest.1 - pos.1) / n_steps);
-    let mut result: Vec<Point> = Vec::with_capacity(n_steps as usize);
-    result.push(start);
 
+    let mut pos = Vector2::new(start.x as f32 + 0.5, start.y as f32 + 0.5);
+    let dest = Vector2::new(end.x as f32 + 0.5, end.y as f32 + 0.5);
+    let n_steps = DistanceAlg::Pythagoras.distance2d(start, end);
+    let slope = (dest - pos) / n_steps;
+    let mut result: Vec<Point> = Vec::with_capacity(n_steps as usize + 1);
+    result.push(start);
     loop {
-        pos.0 += slope.0;
-        pos.1 += slope.1;
-        let new_point = Point::new(pos.0 as i32, pos.1 as i32);
+        pos += slope;
+        let new_point = Point::new(pos.x as i32, pos.y as i32);
         if result[result.len() - 1] != new_point {
             result.push(new_point);
             if new_point == end {
