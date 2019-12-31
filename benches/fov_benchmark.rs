@@ -29,7 +29,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         let idx = xy_idx(x, y);
         if s.map[idx] != TileType::Wall {
             let p = Point::new(x, y);
-            let fov = rltk::field_of_view(p, 8, &s);
+            let fov = rltk::field_of_view_set(p, 8, &s);
             black_box(fov);
         }
     }));
@@ -40,7 +40,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         let idx = xy_idx(x, y);
         if s.map[idx] != TileType::Wall {
             let p = Point::new(x, y);
-            let fov = rltk::field_of_view(p, 20, &s);
+            let fov = rltk::field_of_view_set(p, 20, &s);
             black_box(fov);
         }
     }));

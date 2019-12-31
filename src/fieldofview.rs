@@ -1,47 +1,37 @@
-use super::geometry::DistanceAlg;
-use super::{Algorithm2D, Point, Bresenham};
+use super::{Algorithm2D, Point, VectorLine, BresenhamCircle};
 use std::collections::HashSet;
+
+/// Calculates field-of-view for a map that supports Algorithm2D, returning a HashSet. This is a bit faster
+/// than coercing the results into a vector, since internally it uses the set for de-duplication.
+pub fn field_of_view_set(start: Point, range: i32, fov_check: &dyn Algorithm2D) -> HashSet<Point> {
+    let mut visible_points: HashSet<Point> = HashSet::with_capacity(((range*2)*(range*2)) as usize);
+
+    BresenhamCircle::new(start.x, start.y, range).for_each(|point| {
+        scan_fov_line(start, point, fov_check, &mut visible_points);
+    });
+
+    visible_points
+}
 
 /// Calculates field-of-view for a map that supports Algorithm2D.
 pub fn field_of_view(start: Point, range: i32, fov_check: &dyn Algorithm2D) -> Vec<Point> {
-    let left = start.x - range;
-    let right = start.x + range;
-    let top = start.y - range;
-    let bottom = start.y + range;
-    let range_squared: f32 = (range as f32) * (range as f32);
-
-    let mut visible_points: HashSet<Point> = HashSet::with_capacity(((range*2)*(range*2)) as usize);
-
-    for x in left..=right {
-        scan_fov_line(start, Point::new(x, top), range_squared, fov_check, &mut visible_points);
-        scan_fov_line(start, Point::new(x, bottom), range_squared, fov_check, &mut visible_points);
-    }
-
-    for y in top+1..bottom {
-        scan_fov_line(start, Point::new(left, y), range_squared, fov_check, &mut visible_points);
-        scan_fov_line(start, Point::new(right, y), range_squared, fov_check, &mut visible_points);
-    }
-
-    visible_points.into_iter().collect()
+    field_of_view_set(start, range, fov_check).into_iter().collect()
 }
 
 /// Helper method to scan along a line.
 fn scan_fov_line(
     start: Point,
     end: Point,
-    range_squared: f32,
     fov_check: &dyn Algorithm2D,
     visible_points: &mut HashSet<Point>,
 ) {
-    let line = Bresenham::new(start, end);
+    let line = VectorLine::new(start, end);
 
     for target in line {
         if !fov_check.in_bounds(target) {
             // We're outside of the map
             break;
         }
-        let dsq = DistanceAlg::PythagorasSquared.distance2d(start, target);
-        if dsq > range_squared { break; }
         visible_points.insert(target);
         if fov_check.is_opaque(fov_check.point2d_to_index(target)) {
             // FoV is blocked
@@ -99,7 +89,7 @@ mod tests {
         }
 
         fn get_pathing_distance(&self, idx1: i32, idx2: i32) -> f32 {
-            super::DistanceAlg::Pythagoras.distance2d(
+            crate::DistanceAlg::Pythagoras.distance2d(
                 Point::new( idx1 % TESTMAP_W, idx1 / TESTMAP_W ),
                 Point::new( idx2 % TESTMAP_W, idx2 / TESTMAP_W )
             )
