@@ -7,6 +7,8 @@ pub use {lines::line2d, point::Point, point3::Point3};
 mod line_vector;
 pub use line_vector::VectorLine;
 pub use line_bresenham::Bresenham;
+mod circle_bresenham;
+pub use circle_bresenham::BresenhamCircle;
 
 /// Enumeration of available 2D Distance algorithms
 pub enum DistanceAlg {

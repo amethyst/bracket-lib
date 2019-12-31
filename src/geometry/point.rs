@@ -13,8 +13,21 @@ pub struct Point {
 
 impl Point {
     /// Create a new point from an x/y coordinate.
+    #[inline]
     pub fn new(x: i32, y: i32) -> Point {
         Point { x, y }
+    }
+
+    // Create a zero point
+    #[inline]
+    pub fn zero() -> Self {
+        Point { x:0, y:0 }
+    }
+
+    #[inline]
+    // Create a point from a tuple of two i32s
+    pub fn from_tuple(t : (i32, i32)) -> Self {
+        Point { x : t.0, y : t.1 }
     }
 }
 
