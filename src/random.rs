@@ -61,6 +61,34 @@ impl RandomNumberGenerator {
             Err(e) => Err(e)
         }
     }
+
+    // Returns a random index into a slice
+    pub fn random_slice_index<T>(&mut self, slice : &[T]) -> Option<usize> {
+        if slice.is_empty() {
+            None
+        } else {
+            let sz = slice.len();
+            if sz == 1 {
+                Some(0)
+            } else {
+                Some(self.roll_dice(1, sz as i32) as usize -1)
+            }
+        }
+    }
+
+    // Returns a random entry in a slice (or none if empty)
+    pub fn random_slice_entry<'a,T>(&mut self, slice : &'a [T]) -> Option<&'a T> {
+        if slice.is_empty() {
+            None
+        } else {
+            let sz = slice.len();
+            if sz == 1 {
+                Some(&slice[0])
+            } else {
+                Some(&slice[self.roll_dice(1, sz as i32) as usize -1])
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -97,6 +125,44 @@ mod tests {
         for _ in 0..100 {
             let n = rng.roll_dice(1, 20);
             assert!(n > 0 && n < 21);
+        }
+    }
+
+    #[test]
+    fn random_slice_index_empty() {
+        let mut rng = RandomNumberGenerator::new();
+        let test_data : Vec<i32> = Vec::new();
+        assert!(rng.random_slice_index(&test_data).is_none());
+    }
+
+    #[test]
+    fn random_slice_index_valid() {
+        let mut rng = RandomNumberGenerator::new();
+        let test_data : Vec<i32> = vec![1,2,3,4,5,6,7,8,9,10];
+        for _ in 0..100 {
+            match rng.random_slice_index(&test_data) {
+                None => assert!(1==2),
+                Some(idx) => assert!(idx < test_data.len())
+            }
+        }
+    }
+
+    #[test]
+    fn random_slice_entry_empty() {
+        let mut rng = RandomNumberGenerator::new();
+        let test_data : Vec<i32> = Vec::new();
+        assert!(rng.random_slice_entry(&test_data).is_none());
+    }
+
+    #[test]
+    fn random_slice_entry_valid() {
+        let mut rng = RandomNumberGenerator::new();
+        let test_data : Vec<i32> = vec![1,2,3,4,5,6,7,8,9,10];
+        for _ in 0..100 {
+            match rng.random_slice_entry(&test_data) {
+                None => assert!(1==2),
+                Some(e) => assert!(*e > 0 && *e < 11)
+            }
         }
     }
 }
