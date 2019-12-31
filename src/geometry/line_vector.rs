@@ -1,20 +1,21 @@
 use super::{Point};
-use nalgebra::Vector2;
+use ultraviolet::Vec2;
 use core::iter::Iterator;
 
 pub struct VectorLine {
     end : Point,
-    current_pos : Vector2<f32>,
-    slope : Vector2<f32>,
+    current_pos : Vec2,
+    slope : Vec2,
     finished : bool,
     really_finished : bool
 }
 
 impl VectorLine {
     pub fn new(start: Point, end: Point) -> Self {
-        let current_pos = Vector2::new(start.x as f32 + 0.5, start.y as f32 + 0.5);
-        let destination = Vector2::new(end.x as f32 + 0.5, end.y as f32 + 0.5);
-        let slope = (destination - current_pos).normalize();
+        let current_pos = Vec2::new(start.x as f32 + 0.5, start.y as f32 + 0.5);
+        let destination = Vec2::new(end.x as f32 + 0.5, end.y as f32 + 0.5);
+        let mut slope = destination - current_pos;
+        slope.normalize();
 
         VectorLine{
             end,

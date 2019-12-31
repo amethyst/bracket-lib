@@ -1,5 +1,5 @@
 use crate::console::log;
-use nalgebra::Vector3;
+use ultraviolet::Vec3;
 use glow::HasContext;
 use std::str;
 
@@ -82,7 +82,7 @@ impl Shader {
 
     #[allow(non_snake_case)]
     /// ------------------------------------------------------------------------
-    pub unsafe fn setVector3(&self, gl: &glow::Context, name: &str, value: &Vector3<f32>) {
+    pub unsafe fn setVector3(&self, gl: &glow::Context, name: &str, value: &Vec3) {
         gl.uniform_3_f32(
             gl.get_uniform_location(self.ID, name),
             value.x,
