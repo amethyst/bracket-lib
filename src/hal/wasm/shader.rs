@@ -1,5 +1,5 @@
 use crate::console::log;
-use cgmath::Vector3;
+use nalgebra::Vector3;
 use glow::HasContext;
 use std::str;
 

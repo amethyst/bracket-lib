@@ -1,38 +1,5 @@
 //! Original at: https://github.com/mbr/bresenham-rs/blob/master/src/lib.rs
 //! Modified to use more RLTK-friendly types
-//!
-//! Iterator-based Bresenham's line drawing algorithm
-//!
-//! [Bresenham's line drawing algorithm]
-//! (https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm) is fast
-//! algorithm to draw a line between two points. This crate implements the fast
-//! integer variant, using an iterator-based appraoch for flexibility. It
-//! calculates coordinates without knowing anything about drawing methods or
-//! surfaces.
-//!
-//! Example:
-//!
-//! ```rust
-//! extern crate bresenham;
-//! use bresenham::Bresenham;
-//!
-//! fn main() {
-//!     for (x, y) in Bresenham::new((0, 1), (6, 4)) {
-//!         println!("{}, {}", x, y);
-//!     }
-//! }
-//! ```
-//!
-//! Will print:
-//!
-//! ```text
-//! (0, 1)
-//! (1, 1)
-//! (2, 2)
-//! (3, 2)
-//! (4, 3)
-//! (5, 3)
-//! ```
 
 #[cfg(test)]
 extern crate std;

@@ -12,7 +12,7 @@ pub fn line2d(algorithm: LineAlg, start: Point, end: Point) -> Vec<Point> {
 /// than Bresenham.
 pub fn line2d_bresenham(start: Point, end: Point) -> Vec<Point> {
     let line = Bresenham::new(start, end);
-    line.collect()
+    line.chain(std::iter::once(end)).collect()
 }
 
 /// Uses a 2D vector algorithm to plot a line between two points. On some CPUs, this is faster

@@ -22,7 +22,7 @@ exclude = [
 default = [ "opengl" ]
 serialization = [ "serde/derive", "serde_json" ]
 threaded = ["rayon"]
-opengl = [ "glow", "image", "glutin", "cgmath" ]
+opengl = [ "glow", "image", "glutin" ]
 ecs = [ "specs" ]
 curses = [ "pancurses" ]
 amethyst_engine_vulkan = [ "amethyst/vulkan", "image" ]
@@ -31,7 +31,6 @@ amethyst_engine_metal = [ "amethyst/metal", "image" ]
 [dependencies]
 glow = { version = "0.3.0-alpha2", optional = true }
 image = { version = "0.22.3", default-features = false, features = ["jpeg", "png_codec"], optional = true }
-cgmath = { version = "0.17.0", optional = true }
 rand_xorshift = "0.2.0"
 serde= { version = "1.0.103", features = ["derive"], optional = true }
 serde_json =  { version = "1.0.44", optional = true }
