@@ -1,7 +1,7 @@
 use super::GameState;
 use super::{
-    font, hal::init_raw, rex::XpFile, rex::XpLayer, Console, RltkPlatform, Shader, SimpleConsole,
-    VirtualKeyCode, RGB, Rect
+    font, hal::init_raw, rex::XpFile, rex::XpLayer, Console, Rect, RltkPlatform, Shader,
+    SimpleConsole, VirtualKeyCode, RGB,
 };
 use std::any::Any;
 
@@ -282,8 +282,13 @@ impl Console for Rltk {
             .console
             .draw_bar_vertical(x, y, height, n, max, fg, bg);
     }
-    fn fill_region(&mut self, target : Rect, glyph : u8, fg : RGB, bg : RGB) {
-        self.consoles[self.active_console].console.fill_region(target, glyph, fg, bg);
+    fn fill_region(&mut self, target: Rect, glyph: u8, fg: RGB, bg: RGB) {
+        self.consoles[self.active_console]
+            .console
+            .fill_region(target, glyph, fg, bg);
+    }
+    fn get(&self, x: i32, y: i32) -> Option<(&u8, &RGB, &RGB)> {
+        self.consoles[self.active_console].console.get(x, y)
     }
     fn print_centered(&mut self, y: i32, text: &str) {
         self.consoles[self.active_console]

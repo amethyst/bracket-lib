@@ -1,5 +1,4 @@
-use super::{color, gui_helpers, hal, rex::XpLayer, Console, Font, Shader, Tile, 
-    RGB, Rect};
+use super::{color, gui_helpers, hal, rex::XpLayer, Console, Font, Rect, Shader, Tile, RGB};
 use std::any::Any;
 
 /// A simple console with background color.
@@ -178,10 +177,24 @@ impl Console for SimpleConsole {
     }
 
     /// Fills a rectangle with the specified rendering information
-    fn fill_region(&mut self, target : Rect, glyph : u8, fg : RGB, bg : RGB) {
+    fn fill_region(&mut self, target: Rect, glyph: u8, fg: RGB, bg: RGB) {
         target.for_each(|point| {
             self.set(point.x, point.y, fg, bg, glyph);
         });
+    }
+
+    /// Gets the content of a cell
+    fn get(&self, x: i32, y: i32) -> Option<(&u8, &RGB, &RGB)> {
+        if x < self.width as i32 && y < self.height as i32 {
+            let idx = self.at(x, y);
+            Some((
+                &self.tiles[idx].glyph,
+                &self.tiles[idx].fg,
+                &self.tiles[idx].bg,
+            ))
+        } else {
+            None
+        }
     }
 
     /// Draws a horizontal progress bar
