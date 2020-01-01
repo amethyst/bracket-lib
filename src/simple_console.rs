@@ -1,4 +1,5 @@
-use super::{color, gui_helpers, hal, rex::XpLayer, Console, Font, Shader, Tile, RGB};
+use super::{color, gui_helpers, hal, rex::XpLayer, Console, Font, Shader, Tile, 
+    RGB, Rect};
 use std::any::Any;
 
 /// A simple console with background color.
@@ -174,6 +175,13 @@ impl Console for SimpleConsole {
         bg: RGB,
     ) {
         gui_helpers::draw_hollow_box_double(self, sx, sy, width, height, fg, bg);
+    }
+
+    /// Fills a rectangle with the specified rendering information
+    fn fill_region(&mut self, target : Rect, glyph : u8, fg : RGB, bg : RGB) {
+        target.for_each(|point| {
+            self.set(point.x, point.y, fg, bg, glyph);
+        });
     }
 
     /// Draws a horizontal progress bar

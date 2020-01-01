@@ -1,4 +1,5 @@
-use super::{gui_helpers, hal, rex::XpColor, rex::XpLayer, Console, Font, Shader, RGB};
+use super::{gui_helpers, hal, rex::XpColor, rex::XpLayer, Console, Font, Shader, 
+    RGB, Rect};
 use std::any::Any;
 
 /// Internal storage structure for sparse tiles.
@@ -164,6 +165,13 @@ impl Console for SparseConsole {
         bg: RGB,
     ) {
         gui_helpers::draw_hollow_box_double(self, sx, sy, width, height, fg, bg);
+    }
+
+    /// Fills a rectangle with the specified rendering information
+    fn fill_region(&mut self, target : Rect, glyph : u8, fg : RGB, bg : RGB) {
+        target.for_each(|point| {
+            self.set(point.x, point.y, fg, bg, glyph);
+        });
     }
 
     /// Draws a horizontal progress bar

@@ -1,4 +1,4 @@
-use super::{hal, rex::XpLayer, Font, Shader, RGB};
+use super::{hal, rex::XpLayer, Font, Shader, RGB, Rect};
 use std::any::Any;
 
 /// The internal storage type for tiles in a simple console.
@@ -57,6 +57,9 @@ pub trait Console {
     /// Draws a box, starting at x/y with the extents width/height using CP437 double line characters,
     /// without filling in the middle
     fn draw_hollow_box_double(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB);
+
+    /// Fills a rectangle-defined region with a given glyph
+    fn fill_region(&mut self, target : Rect, glyph : u8, fg : RGB, bg : RGB);
 
     /// Draws a horizontal progress bar.
     #[allow(clippy::too_many_arguments)]
