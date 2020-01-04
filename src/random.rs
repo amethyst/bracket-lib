@@ -1,3 +1,4 @@
+#[cfg(feature = "parsing")]
 use super::{parse_dice_string, DiceParseError, DiceType};
 use rand::{Rng, RngCore, SeedableRng};
 use rand_xorshift::XorShiftRng;
@@ -49,6 +50,7 @@ impl RandomNumberGenerator {
     }
 
     // Rolls dice based on a DiceType struct, including application of the bonus
+    #[cfg(feature = "parsing")]
     pub fn roll(&mut self, dice: DiceType) -> i32 {
         self.roll_dice(dice.n_dice, dice.die_type) + dice.bonus
     }

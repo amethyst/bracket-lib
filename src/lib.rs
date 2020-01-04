@@ -16,6 +16,7 @@ mod simple_console;
 mod sparse_console;
 pub mod textblock;
 pub use hal::*;
+#[cfg(feature = "parsing")]
 mod parsing;
 mod rect;
 pub use rect::Rect;
@@ -37,6 +38,7 @@ pub use self::rltk::{letter_to_option, main_loop, Rltk};
 pub use self::simple_console::SimpleConsole;
 pub use self::sparse_console::SparseConsole;
 pub use self::textblock::{TextBlock, TextBuilder};
+#[cfg(feature = "parsing")]
 pub use parsing::{parse_dice_string, DiceParseError, DiceType};
 pub mod embedding;
 
