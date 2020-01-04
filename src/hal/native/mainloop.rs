@@ -43,7 +43,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                 rltk.control = false;
                 rltk.alt = false;
             }
-            Event::EventsCleared => {
+            Event::MainEventsCleared => {
                 tock(
                     &mut rltk,
                     &mut gamestate,
@@ -76,10 +76,10 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                         physical.height as i32,
                     );
                 }
-                WindowEvent::RedrawRequested => {
+                /*WindowEvent::RedrawRequested => {
                     //tock(&mut rltk, &mut gamestate, &mut frames, &mut prev_seconds, &mut prev_ms, &now);
                     wc.swap_buffers().unwrap();
-                }
+                }*/
                 WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
 
                 WindowEvent::CursorMoved { position: pos, .. } => {
@@ -101,13 +101,13 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                     ..
                 } => {
                     rltk.key = Some(*virtual_keycode);
-                    if modifiers.shift {
+                    if modifiers.shift() {
                         rltk.shift = true;
                     }
-                    if modifiers.alt {
+                    if modifiers.alt() {
                         rltk.alt = true;
                     }
-                    if modifiers.ctrl {
+                    if modifiers.ctrl() {
                         rltk.control = true;
                     }
                 }
