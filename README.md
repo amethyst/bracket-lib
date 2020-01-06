@@ -6,7 +6,9 @@ To use this, you will want to have a working `Rust` and `Cargo` setup. On Window
 
 If you'd like to see a functional roguelike that uses `rltk_rs`, check out [Rusty Roguelike](https://github.com/thebracket/rustyroguelike). It was built for the 2019 */r/roguelikedev does the complete roguelike tutorial* event, and implements the [TCOD Tutorial](http://rogueliketutorials.com/tutorials/tcod/) - but using RLTK. It started out as the home of this project, which was then spun off into a separate crate.
 
-**NEW**: You can read a tutorial series on writing a Roguelike with this library at: [http://bfnightly.bracketproductions.com/rustbook/](http://bfnightly.bracketproductions.com/rustbook/)
+You can read a tutorial series on writing a Roguelike with this library at: [http://bfnightly.bracketproductions.com/rustbook/](http://bfnightly.bracketproductions.com/rustbook/)
+
+A note on `winit`: The API changed on Friday, and I had to push out 0.5.15 to work with it. I woke up this morning (1/6) to find the API had changed back, so 0.5.16 uses that. You may need to `cargo update` to make it work. Sorry about the mess.
 
 ## Running the examples
 
