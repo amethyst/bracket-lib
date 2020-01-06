@@ -43,7 +43,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                 rltk.control = false;
                 rltk.alt = false;
             }
-            Event::MainEventsCleared => {
+            Event::EventsCleared => {
                 tock(
                     &mut rltk,
                     &mut gamestate,
@@ -101,13 +101,13 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                     ..
                 } => {
                     rltk.key = Some(*virtual_keycode);
-                    if modifiers.shift() {
+                    if modifiers.shift {
                         rltk.shift = true;
                     }
-                    if modifiers.alt() {
+                    if modifiers.alt {
                         rltk.alt = true;
                     }
-                    if modifiers.ctrl() {
+                    if modifiers.ctrl {
                         rltk.control = true;
                     }
                 }
