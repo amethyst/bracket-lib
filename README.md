@@ -20,7 +20,7 @@ In your `Cargo.toml` file, include the following:
 
 ```toml
 [dependencies]
-rltk = "0.5.16"
+rltk = "0.5.17"
 ```
 
 *Note: we don't do that in the example files, we use a relative path - to avoid having nested git repos.*

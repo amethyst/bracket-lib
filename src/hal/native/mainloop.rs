@@ -43,7 +43,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                 rltk.control = false;
                 rltk.alt = false;
             }
-            Event::EventsCleared => {
+            Event::MainEventsCleared => {
                 tock(
                     &mut rltk,
                     &mut gamestate,
@@ -56,24 +56,23 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
             }
             Event::LoopDestroyed => (),
             Event::WindowEvent { ref event, .. } => match event {
-                WindowEvent::Resized(logical_size) => {
+                WindowEvent::Resized(physical_size) => {
                     // Commenting out to see if it helps the Linux world
-                    let dpi_factor = wc.window().hidpi_factor();
-                    let physical = logical_size.to_physical(dpi_factor);
-                    wc.resize(physical);
-                    rltk.resize_pixels(physical.width as u32, physical.height as u32);
+                    //let dpi_factor = wc.window().hidpi_factor();
+                    wc.resize(*physical_size);
+                    rltk.resize_pixels(physical_size.width as u32, physical_size.height as u32);
                     unsafe {
                         rltk.backend.platform.gl.viewport(
                             0,
                             0,
-                            physical.width as i32,
-                            physical.height as i32,
+                            physical_size.width as i32,
+                            physical_size.height as i32,
                         );
                     }
                     rltk.backend.platform.backing_buffer = Framebuffer::build_fbo(
                         &rltk.backend.platform.gl,
-                        physical.width as i32,
-                        physical.height as i32,
+                        physical_size.width as i32,
+                        physical_size.height as i32,
                     );
                 }
                 /*WindowEvent::RedrawRequested => {
@@ -101,13 +100,13 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                     ..
                 } => {
                     rltk.key = Some(*virtual_keycode);
-                    if modifiers.shift {
+                    if modifiers.shift() {
                         rltk.shift = true;
                     }
-                    if modifiers.alt {
+                    if modifiers.alt() {
                         rltk.alt = true;
                     }
-                    if modifiers.ctrl {
+                    if modifiers.ctrl() {
                         rltk.control = true;
                     }
                 }
