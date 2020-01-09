@@ -50,7 +50,7 @@ impl Point {
         (self.x, self.y)
     }
 
-    pub fn to_signed_tuple(&self) -> (usize, usize) {
+    pub fn to_unsigned_tuple(&self) -> (usize, usize) {
         (
             self.x.try_into().ok().unwrap(),
             self.y.try_into().ok().unwrap()
