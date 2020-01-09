@@ -89,7 +89,7 @@ impl GameState for State {
         }
 
         // Obtain the player's visible tile set, and apply it
-        let player_position = self.index_to_point2d(self.player_position as i32);
+        let player_position = self.index_to_point2d(self.player_position);
         let fov = rltk::field_of_view_set(player_position, 8, self);
 
         // Note that the steps above would generally not be run every frame!
@@ -144,11 +144,11 @@ impl GameState for State {
                 "X",
             );
             if self.map[mouse_idx as usize] != TileType::Wall {
-                let path = rltk::a_star_search(self.player_position as i32, mouse_idx as i32, self);
+                let path = rltk::a_star_search(self.player_position, mouse_idx, self);
                 if path.success {
                     for loc in path.steps.iter().skip(1) {
-                        let x = loc % 80;
-                        let y = loc / 80;
+                        let x = (loc % 80) as i32;
+                        let y = (loc / 80) as i32;
                         ctx.print_color(
                             x,
                             y,
@@ -185,14 +185,14 @@ impl GameState for State {
 }
 
 impl BaseMap for State {
-    fn is_opaque(&self, idx: i32) -> bool {
-        self.map[idx as usize] == TileType::Wall
+    fn is_opaque(&self, idx: usize) -> bool {
+        self.map[idx] == TileType::Wall
     }
 
-    fn get_available_exits(&self, idx: i32) -> Vec<(i32, f32)> {
-        let mut exits: Vec<(i32, f32)> = Vec::new();
-        let x = idx % 80;
-        let y = idx / 80;
+    fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)> {
+        let mut exits: Vec<(usize, f32)> = Vec::new();
+        let x = (idx % 80) as i32;
+        let y = (idx / 80) as i32;
 
         // Cardinal directions
         if self.is_exit_valid(x - 1, y) {
@@ -225,7 +225,7 @@ impl BaseMap for State {
         exits
     }
 
-    fn get_pathing_distance(&self, idx1: i32, idx2: i32) -> f32 {
+    fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
         let p1 = Point::new(idx1 % 80, idx1 / 80);
         let p2 = Point::new(idx2 % 80, idx2 / 80);
         DistanceAlg::Pythagoras.distance2d(p1, p2)
@@ -233,10 +233,10 @@ impl BaseMap for State {
 }
 
 impl Algorithm2D for State {
-    fn point2d_to_index(&self, pt: Point) -> i32 {
-        xy_idx(pt.x, pt.y) as i32
+    fn point2d_to_index(&self, pt: Point) -> usize {
+        xy_idx(pt.x, pt.y)
     }
-    fn index_to_point2d(&self, idx: i32) -> Point {
+    fn index_to_point2d(&self, idx: usize) -> Point {
         Point::new(idx % 80, idx / 80)
     }
 }

@@ -115,7 +115,7 @@ impl GameState for State {
         }
 
         // Obtain the player's visible tile set, and apply it
-        let player_position = self.index_to_point2d(self.player_position as i32);
+        let player_position = self.index_to_point2d(self.player_position);
         let fov = rltk::field_of_view_set(player_position, 8, self);
 
         // Note that the steps above would generally not be run every frame!
@@ -181,24 +181,24 @@ impl GameState for State {
 // First, default implementations of some we aren't using yet (more on these later!)
 impl BaseMap for State {
     // We'll use this one - if its a wall, we can't see through it
-    fn is_opaque(&self, idx: i32) -> bool {
+    fn is_opaque(&self, idx: usize) -> bool {
         self.map[idx as usize] == TileType::Wall
     }
-    fn get_available_exits(&self, _idx: i32) -> Vec<(i32, f32)> {
+    fn get_available_exits(&self, _idx: usize) -> Vec<(usize, f32)> {
         Vec::new()
     }
-    fn get_pathing_distance(&self, _idx1: i32, _idx2: i32) -> f32 {
+    fn get_pathing_distance(&self, _idx1: usize, _idx2: usize) -> f32 {
         0.0
     }
 }
 
 impl Algorithm2D for State {
     // Point translations that we need for field-of-view. Fortunately, we've already written them!
-    fn point2d_to_index(&self, pt: Point) -> i32 {
-        xy_idx(pt.x, pt.y) as i32
+    fn point2d_to_index(&self, pt: Point) -> usize {
+        xy_idx(pt.x, pt.y)
     }
-    fn index_to_point2d(&self, idx: i32) -> Point {
-        Point::new(idx % WIDTH, idx / WIDTH)
+    fn index_to_point2d(&self, idx: usize) -> Point {
+        Point::new(idx % WIDTH as usize, idx / WIDTH as usize)
     }
 }
 
