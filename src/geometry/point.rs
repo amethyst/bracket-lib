@@ -32,6 +32,17 @@ impl Point {
     pub fn from_tuple(t: (i32, i32)) -> Self {
         Point { x: t.0, y: t.1 }
     }
+
+    #[inline]
+    // Helper for map index conversion
+    pub fn to_index<T>(&self, width : T) -> usize 
+    where T : TryInto<usize>
+    {
+        let x : usize = self.x.try_into().ok().unwrap();
+        let y : usize = self.y.try_into().ok().unwrap();
+        let w : usize = width.try_into().ok().unwrap();
+        (y * w) + x
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
