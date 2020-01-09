@@ -3,12 +3,16 @@ use std::cmp::Ordering;
 use std::collections::{BinaryHeap, HashMap};
 
 /// Bail out if the A* search exceeds this many steps.
-const MAX_ASTAR_STEPS: i32 = 65536;
+const MAX_ASTAR_STEPS: usize = 65536;
 
 /// Request an A-Star search. The start and end are specified as index numbers (compatible with your
 /// BaseMap implementation), and it requires access to your map so as to call distance and exit
 /// determinations.
+<<<<<<< HEAD
 pub fn a_star_search(start: i32, end: i32, map: &dyn BaseMap) -> NavigationPath {
+=======
+pub fn a_star_search(start: usize, end: usize, map: &mut dyn BaseMap) -> NavigationPath {
+>>>>>>> Pedantry round 1 - convert a lot of i32 into usize that make sense.
     AStar::new(start, end).search(map)
 }
 
@@ -18,9 +22,9 @@ pub fn a_star_search(start: i32, end: i32, map: &dyn BaseMap) -> NavigationPath 
 /// `steps` is a vector of each step towards the target, *including* the starting position.
 #[derive(Clone, Default)]
 pub struct NavigationPath {
-    pub destination: i32,
+    pub destination: usize,
     pub success: bool,
-    pub steps: Vec<i32>,
+    pub steps: Vec<usize>,
 }
 
 #[allow(dead_code)]
@@ -29,7 +33,7 @@ pub struct NavigationPath {
 /// f is the total cost, g the neighbor cost, and h the heuristic cost.
 /// See: https://en.wikipedia.org/wiki/A*_search_algorithm
 struct Node {
-    idx: i32,
+    idx: usize,
     f: f32,
     g: f32,
     h: f32,
@@ -68,17 +72,17 @@ impl NavigationPath {
 
 /// Private structure for calculating an A-Star navigation path.
 struct AStar {
-    start: i32,
-    end: i32,
+    start: usize,
+    end: usize,
     open_list: BinaryHeap<Node>,
-    closed_list: HashMap<i32, f32>,
-    parents: HashMap<i32, i32>,
-    step_counter: i32,
+    closed_list: HashMap<usize, f32>,
+    parents: HashMap<usize, usize>,
+    step_counter: usize,
 }
 
 impl AStar {
     /// Creates a new path, with specified starting and ending indices.
-    fn new(start: i32, end: i32) -> AStar {
+    fn new(start: usize, end: usize) -> AStar {
         let mut open_list: BinaryHeap<Node> = BinaryHeap::new();
         open_list.push(Node {
             idx: start,
@@ -98,12 +102,12 @@ impl AStar {
     }
 
     /// Wrapper to the BaseMap's distance function.
-    fn distance_to_end(&self, idx: i32, map: &dyn BaseMap) -> f32 {
+    fn distance_to_end(&self, idx: usize, map: &dyn BaseMap) -> f32 {
         map.get_pathing_distance(idx, self.end)
     }
 
     /// Adds a successor; if we're at the end, marks success.
-    fn add_successor(&mut self, q: Node, idx: i32, cost: f32, map: &dyn BaseMap) -> bool {
+    fn add_successor(&mut self, q: Node, idx: usize, cost: f32, map: &dyn BaseMap) -> bool {
         // Did we reach our goal?
         if idx == self.end {
             self.parents.insert(idx, q.idx);

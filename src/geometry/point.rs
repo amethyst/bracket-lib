@@ -1,4 +1,5 @@
 use std::ops;
+use std::convert::{TryFrom, TryInto};
 
 #[cfg_attr(
     feature = "serialization",
@@ -14,8 +15,10 @@ pub struct Point {
 impl Point {
     /// Create a new point from an x/y coordinate.
     #[inline]
-    pub fn new(x: i32, y: i32) -> Point {
-        Point { x, y }
+    pub fn new<T>(x: T, y: T) -> Point
+    where T : TryInto<i32>
+    {
+        Point { x: x.try_into().ok().unwrap(), y: y.try_into().ok().unwrap() }
     }
 
     // Create a zero point

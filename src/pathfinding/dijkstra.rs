@@ -10,8 +10,8 @@ use std::mem;
 /// max_depth is the maximum number of iterations this search shall support.
 pub struct DijkstraMap {
     pub map: Vec<f32>,
-    size_x: i32,
-    size_y: i32,
+    size_x: usize,
+    size_y: usize,
     max_depth: f32,
 }
 
@@ -28,9 +28,9 @@ impl DijkstraMap {
     /// Construct a new Dijkstra map, ready to run. You must specify the map size, and link to an implementation
     /// of a BaseMap trait that can generate exits lists. It then builds the map, giving you a result.
     pub fn new(
-        size_x: i32,
-        size_y: i32,
-        starts: &[i32],
+        size_x: usize,
+        size_y: usize,
+        starts: &[usize],
         map: &dyn BaseMap,
         max_depth: f32,
     ) -> DijkstraMap {
@@ -46,7 +46,7 @@ impl DijkstraMap {
     }
 
     /// Creates an empty Dijkstra map node.
-    pub fn new_empty(size_x: i32, size_y: i32, max_depth: f32) -> DijkstraMap {
+    pub fn new_empty(size_x: usize, size_y: usize, max_depth: f32) -> DijkstraMap {
         let result: Vec<f32> = vec![MAX; (size_x * size_y) as usize];
         DijkstraMap {
             map: result,
@@ -60,8 +60,8 @@ impl DijkstraMap {
     /// Adds the entry to the closed list.
     fn add_if_open(
         max_depth: f32,
-        idx: i32,
-        open_list: &mut Vec<(i32, f32)>,
+        idx: usize,
+        open_list: &mut Vec<(usize, f32)>,
         closed_list: &mut Vec<bool>,
         new_depth: f32,
     ) {
@@ -96,17 +96,17 @@ impl DijkstraMap {
     }
 
     #[cfg(not(feature = "threaded"))]
-    fn build_helper(_dm: &mut DijkstraMap, _starts: &[i32], _map: &dyn BaseMap) {}
+    fn build_helper(_dm: &mut DijkstraMap, _starts: &[usize], _map: &dyn BaseMap) {}
 
     /// Builds the Dijkstra map: iterate from each starting point, to each exit provided by BaseMap's
     /// exits implementation. Each step adds cost to the current depth, and is discarded if the new
     /// depth is further than the current depth.
     /// If you provide more starting points than you have CPUs, automatically branches to a parallel
     /// version.
-    pub fn build(dm: &mut DijkstraMap, starts: &[i32], map: &dyn BaseMap) {
+    pub fn build(dm: &mut DijkstraMap, starts: &[usize], map: &dyn BaseMap) {
         DijkstraMap::build_helper(dm, starts, map);
         let mapsize: usize = (dm.size_x * dm.size_y) as usize;
-        let mut open_list: Vec<(i32, f32)> = Vec::with_capacity(mapsize * 2);
+        let mut open_list: Vec<(usize, f32)> = Vec::with_capacity(mapsize * 2);
         let mut closed_list: Vec<bool> = vec![false; mapsize];
 
         for start in starts {
@@ -236,7 +236,7 @@ impl DijkstraMap {
     }
 
     #[cfg(not(feature = "threaded"))]
-    pub fn find_lowest_exit(dm: &DijkstraMap, position: i32, map: &dyn BaseMap) -> Option<i32> {
+    pub fn find_lowest_exit(dm: &DijkstraMap, position: usize, map: &dyn BaseMap) -> Option<usize> {
         let mut exits = map.get_available_exits(position);
 
         if exits.is_empty() {
@@ -274,7 +274,7 @@ impl DijkstraMap {
     }
 
     #[cfg(not(feature = "threaded"))]
-    pub fn find_highest_exit(dm: &DijkstraMap, position: i32, map: &dyn BaseMap) -> Option<i32> {
+    pub fn find_highest_exit(dm: &DijkstraMap, position: usize, map: &dyn BaseMap) -> Option<usize> {
         let mut exits = map.get_available_exits(position);
 
         if exits.is_empty() {

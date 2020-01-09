@@ -59,23 +59,23 @@ fn idx_xy(idx: usize) -> (i32, i32) {
 }
 
 impl BaseMap for State {
-    fn is_opaque(&self, idx: i32) -> bool {
-        self.map[idx as usize] == TileType::Wall
+    fn is_opaque(&self, idx: usize) -> bool {
+        self.map[idx] == TileType::Wall
     }
-    fn get_available_exits(&self, _idx: i32) -> Vec<(i32, f32)> {
+    fn get_available_exits(&self, _idx: usize) -> Vec<(usize, f32)> {
         Vec::new()
     }
-    fn get_pathing_distance(&self, _idx1: i32, _idx2: i32) -> f32 {
+    fn get_pathing_distance(&self, _idx1: usize, _idx2: usize) -> f32 {
         0.0
     }
 }
 
 impl Algorithm2D for State {
-    fn point2d_to_index(&self, pt: Point) -> i32 {
-        xy_idx(pt.x, pt.y) as i32
+    fn point2d_to_index(&self, pt: Point) -> usize {
+        xy_idx(pt.x, pt.y)
     }
-    fn index_to_point2d(&self, idx: i32) -> Point {
-        Point::new(idx % W, idx / W)
+    fn index_to_point2d(&self, idx: usize) -> Point {
+        Point::new(idx % W as usize, idx / W as usize)
     }
     fn in_bounds(&self, pos: Point) -> bool {
         pos.x > 0 && pos.x < W - 1 && pos.y > 0 && pos.y < H - 1

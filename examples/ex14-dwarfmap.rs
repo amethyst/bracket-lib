@@ -223,7 +223,7 @@ impl GameState for State {
             if self.map[mouse_idx as usize] != TileType::Wall
                 && self.map[mouse_idx as usize] != TileType::OpenSpace
             {
-                let path = rltk::a_star_search(player_idx as i32, mouse_idx as i32, self);
+                let path = rltk::a_star_search(player_idx, mouse_idx, self);
                 if path.success {
                     for loc in path.steps.iter().skip(1) {
                         let (x, y, _z) = idx_xyz(*loc as usize);
@@ -262,12 +262,12 @@ impl GameState for State {
 }
 
 impl BaseMap for State {
-    fn is_opaque(&self, idx: i32) -> bool {
+    fn is_opaque(&self, idx: usize) -> bool {
         self.map[idx as usize] == TileType::Wall
     }
 
-    fn get_available_exits(&self, idx: i32) -> Vec<(i32, f32)> {
-        let mut exits: Vec<(i32, f32)> = Vec::new();
+    fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)> {
+        let mut exits: Vec<(usize, f32)> = Vec::new();
         let (x, y, z) = idx_xyz(idx as usize);
 
         // Cardinal directions
@@ -278,52 +278,52 @@ impl BaseMap for State {
             exits.push((idx + 1, 1.0))
         };
         if self.is_exit_valid(x, y - 1, z) {
-            exits.push((idx - WIDTH, 1.0))
+            exits.push((idx - WIDTH as usize, 1.0))
         };
         if self.is_exit_valid(x, y + 1, z) {
-            exits.push((idx + WIDTH, 1.0))
+            exits.push((idx + WIDTH as usize, 1.0))
         };
 
         // Diagonals
         if self.is_exit_valid(x - 1, y - 1, z) {
-            exits.push(((idx - WIDTH) - 1, 1.4));
+            exits.push(((idx - WIDTH as usize) - 1, 1.4));
         }
         if self.is_exit_valid(x + 1, y - 1, z) {
-            exits.push(((idx - WIDTH) + 1, 1.4));
+            exits.push(((idx - WIDTH as usize) + 1, 1.4));
         }
         if self.is_exit_valid(x - 1, y + 1, z) {
-            exits.push(((idx + WIDTH) - 1, 1.4));
+            exits.push(((idx + WIDTH as usize) - 1, 1.4));
         }
         if self.is_exit_valid(x + 1, y + 1, z) {
-            exits.push(((idx + WIDTH) + 1, 1.4));
+            exits.push(((idx + WIDTH as usize) + 1, 1.4));
         }
 
         // Up and down for ramps
         if self.map[idx as usize] == TileType::Ramp {
-            exits.push((idx + LAYER_SIZE as i32, 1.4));
+            exits.push((idx + LAYER_SIZE, 1.4));
         }
         if self.map[idx as usize] == TileType::RampDown {
-            exits.push((idx - LAYER_SIZE as i32, 1.4));
+            exits.push((idx - LAYER_SIZE, 1.4));
         }
 
         exits
     }
 
-    fn get_pathing_distance(&self, idx1: i32, idx2: i32) -> f32 {
-        let pt1 = idx_xyz(idx1 as usize);
+    fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
+        let pt1 = idx_xyz(idx1);
         let p1 = Point3::new(pt1.0, pt1.1, pt1.2);
-        let pt2 = idx_xyz(idx2 as usize);
+        let pt2 = idx_xyz(idx2);
         let p2 = Point3::new(pt2.0, pt2.1, pt2.2);
         DistanceAlg::Pythagoras.distance3d(p1, p2)
     }
 }
 
 impl Algorithm3D for State {
-    fn point3d_to_index(&self, pt: Point3) -> i32 {
-        xyz_idx(pt.x, pt.y, pt.z) as i32
+    fn point3d_to_index(&self, pt: Point3) -> usize {
+        xyz_idx(pt.x, pt.y, pt.z)
     }
-    fn index_to_point3d(&self, idx: i32) -> Point3 {
-        let i = idx_xyz(idx as usize);
+    fn index_to_point3d(&self, idx: usize) -> Point3 {
+        let i = idx_xyz(idx);
         Point3::new(i.0, i.1, i.2)
     }
 }
