@@ -1,5 +1,5 @@
 use std::ops;
-use std::convert::{TryFrom, TryInto};
+use std::convert::{TryInto};
 
 #[cfg_attr(
     feature = "serialization",
@@ -29,8 +29,10 @@ impl Point {
 
     #[inline]
     // Create a point from a tuple of two i32s
-    pub fn from_tuple(t: (i32, i32)) -> Self {
-        Point { x: t.0, y: t.1 }
+    pub fn from_tuple<T>(t: (T, T)) -> Self 
+    where T : TryInto<i32>
+    {
+        Point::new(t.0, t.1)
     }
 
     #[inline]
@@ -42,6 +44,17 @@ impl Point {
         let y : usize = self.y.try_into().ok().unwrap();
         let w : usize = width.try_into().ok().unwrap();
         (y * w) + x
+    }
+
+    pub fn to_tuple(&self) -> (i32, i32) {
+        (self.x, self.y)
+    }
+
+    pub fn to_signed_tuple(&self) -> (usize, usize) {
+        (
+            self.x.try_into().ok().unwrap(),
+            self.y.try_into().ok().unwrap()
+        )
     }
 }
 
