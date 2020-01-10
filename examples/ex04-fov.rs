@@ -171,21 +171,11 @@ impl BaseMap for State {
     fn is_opaque(&self, idx: usize) -> bool {
         self.map[idx as usize] == TileType::Wall
     }
-    fn get_available_exits(&self, _idx: usize) -> Vec<(usize, f32)> {
-        Vec::new()
-    }
-    fn get_pathing_distance(&self, _idx1: usize, _idx2: usize) -> f32 {
-        0.0
-    }
 }
 
 impl Algorithm2D for State {
-    // Point translations that we need for field-of-view. Fortunately, we've already written them!
-    fn point2d_to_index(&self, pt: Point) -> usize {
-        xy_idx(pt.x, pt.y)
-    }
-    fn index_to_point2d(&self, idx: usize) -> Point {
-        Point::new(idx % 80, idx / 80)
+    fn dimensions(&self) -> Point {
+        Point::new(80, 50)
     }
 }
 
