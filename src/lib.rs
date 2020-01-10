@@ -21,7 +21,13 @@ pub use hal::*;
 mod parsing;
 mod rect;
 pub use rect::Rect;
+mod algorithm2d;
+mod algorithm3d;
+mod basemap;
 
+pub use algorithm2d::Algorithm2D;
+pub use algorithm3d::Algorithm3D;
+pub use basemap::BaseMap;
 pub use self::codepage437::{string_to_cp437, to_char, to_cp437};
 pub use self::color::*;
 pub use self::console::*;
@@ -96,43 +102,4 @@ pub use hal::VirtualKeyCode;
 /// Implement this trait on your state struct, so the engine knows what to call on each tick.
 pub trait GameState: 'static {
     fn tick(&mut self, ctx: &mut Rltk);
-}
-
-/// Implement this trait to support path-finding functions.
-pub trait BaseMap {
-    /// True is you can see through the tile, false otherwise.
-    fn is_opaque(&self, idx: usize) -> bool;
-
-    /// Return a vector of tile indices to which one can path from the idx.
-    /// These do NOT have to be contiguous - if you want to support teleport pads, that's awesome.
-    fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)>;
-
-    /// Return the distance you would like to use for path-finding. Generally, Pythagoras distance (implemented in geometry)
-    /// is fine, but you might use Manhattan or any other heuristic that fits your problem.
-    fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32;
-}
-
-/// Implement these for handling conversion to/from 2D coordinates (they are separate, because you might
-/// want Dwarf Fortress style 3D!)
-pub trait Algorithm2D: BaseMap {
-    /// Convert a Point (x/y) to an array index.
-    fn point2d_to_index(&self, pt: Point) -> usize;
-
-    /// Convert an array index to a point.
-    fn index_to_point2d(&self, idx: usize) -> Point;
-
-    // Optional - check that an x/y coordinate is within the map bounds
-    fn in_bounds(&self, _pos: Point) -> bool {
-        true
-    }
-}
-
-/// Implement these for handling conversion to/from 2D coordinates (they are separate, because you might
-/// want Dwarf Fortress style 3D!)
-pub trait Algorithm3D: BaseMap {
-    /// Convert a Point (x/y) to an array index.
-    fn point3d_to_index(&self, pt: Point3) -> usize;
-
-    /// Convert an array index to a point.
-    fn index_to_point3d(&self, idx: usize) -> Point3;
 }

@@ -233,11 +233,8 @@ impl BaseMap for State {
 }
 
 impl Algorithm2D for State {
-    fn point2d_to_index(&self, pt: Point) -> usize {
-        xy_idx(pt.x, pt.y)
-    }
-    fn index_to_point2d(&self, idx: usize) -> Point {
-        Point::new(idx % 80, idx / 80)
+    fn dimensions(&self) -> Point {
+        Point::new(80, 50)
     }
 }
 

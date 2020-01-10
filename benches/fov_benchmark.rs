@@ -71,14 +71,8 @@ impl BaseMap for State {
 }
 
 impl Algorithm2D for State {
-    fn point2d_to_index(&self, pt: Point) -> usize {
-        xy_idx(pt.x, pt.y)
-    }
-    fn index_to_point2d(&self, idx: usize) -> Point {
-        Point::new(idx % W as usize, idx / W as usize)
-    }
-    fn in_bounds(&self, pos: Point) -> bool {
-        pos.x > 0 && pos.x < W - 1 && pos.y > 0 && pos.y < H - 1
+    fn dimensions(&self) -> Point {
+        Point::new(W, H)
     }
 }
 
