@@ -1,5 +1,5 @@
 use std::ops;
-use std::convert::{TryInto};
+use std::convert::TryInto;
 
 #[cfg_attr(
     feature = "serialization",

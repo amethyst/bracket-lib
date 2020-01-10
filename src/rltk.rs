@@ -4,6 +4,7 @@ use super::{
     SimpleConsole, VirtualKeyCode, RGB,
 };
 use std::any::Any;
+use std::convert::TryInto;
 
 /// A display console, used internally to provide console render support.
 /// Public in case you want to play with it, or access it directly.
@@ -38,39 +39,51 @@ pub struct Rltk {
 
 impl Rltk {
     /// Initializes an OpenGL context and a window, stores the info in the Rltk structure.
-    pub fn init_raw<S: ToString>(width_pixels: u32, height_pixels: u32, window_title: S) -> Rltk {
-        init_raw(width_pixels, height_pixels, window_title)
+    pub fn init_raw<S: ToString, T>(width_pixels: T, height_pixels: T, window_title: S) -> Rltk 
+    where T : TryInto<u32>
+    {
+        let w : u32 = width_pixels.try_into().ok().unwrap();
+        let h : u32 = height_pixels.try_into().ok().unwrap();
+        init_raw(w, h, window_title)
     }
 
     /// Quick initialization for when you just want an 8x8 font terminal
-    pub fn init_simple8x8<S: ToString>(
-        width_chars: u32,
-        height_chars: u32,
+    pub fn init_simple8x8<S: ToString, T>(
+        width_chars: T,
+        height_chars: T,
         window_title: S,
         path_to_shaders: S,
-    ) -> Rltk {
+    ) -> Rltk 
+    where T : TryInto<u32>
+    {
+        let w : u32 = width_chars.try_into().ok().unwrap();
+        let h : u32 = height_chars.try_into().ok().unwrap();
         let font_path = format!("{}/terminal8x8.png", &path_to_shaders.to_string());
-        let mut context = Rltk::init_raw(width_chars * 8, height_chars * 8, window_title);
+        let mut context = Rltk::init_raw(w * 8, h * 8, window_title);
         let font = context.register_font(font::Font::load(&font_path.to_string(), (8, 8)));
         context.register_console(
-            SimpleConsole::init(width_chars, height_chars, &context.backend),
+            SimpleConsole::init(w, h, &context.backend),
             font,
         );
         context
     }
 
     /// Quick initialization for when you just want an 8x16 VGA font terminal
-    pub fn init_simple8x16<S: ToString>(
-        width_chars: u32,
-        height_chars: u32,
+    pub fn init_simple8x16<S: ToString, T>(
+        width_chars: T,
+        height_chars: T,
         window_title: S,
         path_to_shaders: S,
-    ) -> Rltk {
+    ) -> Rltk 
+    where T : TryInto<u32>
+    {
+        let w : u32 = width_chars.try_into().ok().unwrap();
+        let h : u32 = height_chars.try_into().ok().unwrap();
         let font_path = format!("{}/vga8x16.png", &path_to_shaders.to_string());
-        let mut context = Rltk::init_raw(width_chars * 8, height_chars * 16, window_title);
+        let mut context = Rltk::init_raw(w * 8, h * 16, window_title);
         let font = context.register_font(font::Font::load(&font_path.to_string(), (8, 16)));
         context.register_console(
-            SimpleConsole::init(width_chars, height_chars, &context.backend),
+            SimpleConsole::init(w, h, &context.backend),
             font,
         );
         context
