@@ -47,6 +47,10 @@ pub use self::textblock::{TextBlock, TextBuilder};
 pub use parsing::{parse_dice_string, DiceParseError, DiceType};
 pub mod embedding;
 
+pub mod prelude {
+    pub use crate::*;
+}
+
 #[macro_export]
 macro_rules! add_wasm_support {
     () => {
