@@ -7,7 +7,7 @@ pub fn field_of_view_set(start: Point, range: i32, fov_check: &dyn Algorithm2D) 
     let mut visible_points: HashSet<Point> =
         HashSet::with_capacity(((range * 2) * (range * 2)) as usize);
 
-    BresenhamCircle::new(start.x, start.y, range).for_each(|point| {
+    BresenhamCircle::new(start, range).for_each(|point| {
         scan_fov_line(start, point, fov_check, &mut visible_points);
     });
 

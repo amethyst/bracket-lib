@@ -6,8 +6,7 @@ use super::Point;
 pub struct BresenhamCircle {
     x: i32,
     y: i32,
-    center_x: i32,
-    center_y: i32,
+    center : Point,
     radius: i32,
     error: i32,
     quadrant: u8,
@@ -16,10 +15,9 @@ pub struct BresenhamCircle {
 impl BresenhamCircle {
     #[inline]
     #[allow(dead_code)]
-    pub fn new(center_x: i32, center_y: i32, radius: i32) -> Self {
+    pub fn new(center: Point, radius: i32) -> Self {
         Self {
-            center_x,
-            center_y,
+            center,
             radius,
             x: -radius,
             y: 0,
@@ -36,10 +34,10 @@ impl Iterator for BresenhamCircle {
     fn next(&mut self) -> Option<Self::Item> {
         if self.x < 0 {
             let point = match self.quadrant {
-                1 => (self.center_x - self.x, self.center_y + self.y),
-                2 => (self.center_x - self.y, self.center_y - self.x),
-                3 => (self.center_x + self.x, self.center_y - self.y),
-                4 => (self.center_x + self.y, self.center_y + self.x),
+                1 => (self.center.x - self.x, self.center.y + self.y),
+                2 => (self.center.x - self.y, self.center.y - self.x),
+                3 => (self.center.x + self.x, self.center.y - self.y),
+                4 => (self.center.x + self.y, self.center.y + self.x),
                 _ => unreachable!(),
             };
 
@@ -73,7 +71,7 @@ mod tests {
 
     #[test]
     fn circle_test_radius1() {
-        let circle = BresenhamCircle::new(0, 0, 1);
+        let circle = BresenhamCircle::new(Point::new(0,0), 1);
         let points: Vec<Point> = circle.collect();
         assert_eq!(
             points,
@@ -88,7 +86,7 @@ mod tests {
 
     #[test]
     fn circle_test_radius3() {
-        let circle = BresenhamCircle::new(0, 0, 3);
+        let circle = BresenhamCircle::new(Point::new(0,0), 3);
         let points: Vec<Point> = circle.collect();
         assert_eq!(
             points,
