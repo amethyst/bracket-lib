@@ -19,8 +19,6 @@ pub mod textblock;
 pub use hal::*;
 #[cfg(feature = "parsing")]
 mod parsing;
-mod rect;
-pub use rect::Rect;
 mod algorithm2d;
 mod algorithm3d;
 mod basemap;
@@ -36,7 +34,7 @@ pub use self::fieldofview::{field_of_view, field_of_view_set};
 pub use self::font::Font;
 pub use self::geometry::{
     line2d, project_angle, Bresenham, BresenhamCircle, DistanceAlg, LineAlg, Point, Point3,
-    VectorLine,
+    VectorLine, Rect
 };
 pub use self::pathfinding::astar::{a_star_search, NavigationPath};
 pub use self::pathfinding::dijkstra::DijkstraMap;
