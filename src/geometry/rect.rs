@@ -1,6 +1,7 @@
 use super::Point;
 use std::collections::HashSet;
 use std::ops;
+use std::convert::TryInto;
 
 #[cfg_attr(
     feature = "serialization",
@@ -22,18 +23,29 @@ impl Default for Rect {
 
 impl Rect {
     // Create a new rectangle, specifying X/Y Width/Height
-    pub fn new(x: i32, y: i32, w: i32, h: i32) -> Rect {
+    pub fn with_size<T>(x: T, y: T, w: T, h: T) -> Rect 
+    where T : TryInto<i32>
+    {
+        let x_i32 : i32 = x.try_into().ok().unwrap();
+        let y_i32 : i32 = y.try_into().ok().unwrap();
         Rect {
-            x1: x,
-            y1: y,
-            x2: x + w,
-            y2: y + h,
+            x1: x_i32,
+            y1: y_i32,
+            x2: x_i32 + w.try_into().ok().unwrap(),
+            y2: y_i32 + h.try_into().ok().unwrap(),
         }
     }
 
     // Create a new rectangle, specifying exact dimensions
-    pub fn new_exact(x1: i32, y1: i32, x2: i32, y2: i32) -> Rect {
-        Rect { x1, y1, x2, y2 }
+    pub fn with_exact<T>(x1: T, y1: T, x2: T, y2: T) -> Rect
+    where T : TryInto<i32>
+    {
+        Rect {
+            x1: x1.try_into().ok().unwrap(),
+            y1: y1.try_into().ok().unwrap(),
+            x2: x2.try_into().ok().unwrap(),
+            y2: y2.try_into().ok().unwrap()
+        }
     }
 
     // Creates a zero rectangle
@@ -114,44 +126,44 @@ mod tests {
 
     #[test]
     fn test_dimensions() {
-        let rect = Rect::new(0, 0, 10, 10);
+        let rect = Rect::with_size(0, 0, 10, 10);
         assert!(rect.width() == 10);
         assert!(rect.height() == 10);
     }
 
     #[test]
     fn test_add() {
-        let rect = Rect::new(0, 0, 10, 10) + Rect::new(1, 1, 1, 1);
+        let rect = Rect::with_size(0, 0, 10, 10) + Rect::with_size(1, 1, 1, 1);
         assert!(rect.x1 == 1 && rect.y1 == 1);
         assert!(rect.x2 == 11 && rect.y2 == 11);
     }
 
     #[test]
     fn test_intersect() {
-        let r1 = Rect::new(0, 0, 10, 10);
-        let r2 = Rect::new(5, 5, 10, 10);
-        let r3 = Rect::new(100, 100, 5, 5);
+        let r1 = Rect::with_size(0, 0, 10, 10);
+        let r2 = Rect::with_size(5, 5, 10, 10);
+        let r3 = Rect::with_size(100, 100, 5, 5);
         assert!(r1.intersect(&r2));
         assert!(!r1.intersect(&r3));
     }
 
     #[test]
     fn test_center() {
-        let r1 = Rect::new(0, 0, 10, 10);
+        let r1 = Rect::with_size(0, 0, 10, 10);
         let center = r1.center();
         assert!(center.x == 5 && center.y == 5);
     }
 
     #[test]
     fn test_point_in_rect() {
-        let r1 = Rect::new(0, 0, 10, 10);
+        let r1 = Rect::with_size(0, 0, 10, 10);
         assert!(r1.point_in_rect(Point::new(5, 5)));
         assert!(!r1.point_in_rect(Point::new(100, 100)));
     }
 
     #[test]
     fn test_rect_set() {
-        let r1 = Rect::new(0, 0, 1, 1);
+        let r1 = Rect::with_size(0, 0, 1, 1);
         let points = r1.point_set();
         assert!(points.contains(&Point::new(0, 0)));
         assert!(points.contains(&Point::new(1, 0)));
@@ -163,7 +175,7 @@ mod tests {
     fn test_rect_callback() {
         use std::collections::HashSet;
 
-        let r1 = Rect::new(0, 0, 1, 1);
+        let r1 = Rect::with_size(0, 0, 1, 1);
         let mut points: HashSet<Point> = HashSet::new();
         r1.for_each(|p| {
             points.insert(p);
