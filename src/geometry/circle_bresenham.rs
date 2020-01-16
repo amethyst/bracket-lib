@@ -6,7 +6,7 @@ use super::Point;
 pub struct BresenhamCircle {
     x: i32,
     y: i32,
-    center : Point,
+    center: Point,
     radius: i32,
     error: i32,
     quadrant: u8,
@@ -71,7 +71,7 @@ mod tests {
 
     #[test]
     fn circle_test_radius1() {
-        let circle = BresenhamCircle::new(Point::new(0,0), 1);
+        let circle = BresenhamCircle::new(Point::new(0, 0), 1);
         let points: Vec<Point> = circle.collect();
         assert_eq!(
             points,
@@ -86,7 +86,7 @@ mod tests {
 
     #[test]
     fn circle_test_radius3() {
-        let circle = BresenhamCircle::new(Point::new(0,0), 3);
+        let circle = BresenhamCircle::new(Point::new(0, 0), 3);
         let points: Vec<Point> = circle.collect();
         assert_eq!(
             points,

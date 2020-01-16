@@ -98,7 +98,7 @@ impl SimpleState for RltkGemBridge {
                     .iter()
                     .for_each(|coord| {
                         if let Some(fg) = map.get_mut(&coord) {
-                            let flipped_y = (size.1-1) - coord.y;
+                            let flipped_y = (size.1 - 1) - coord.y;
                             let idx = ((flipped_y * size.0) + coord.x) as usize;
                             if idx < concrete.tiles.len() {
                                 let tile = &concrete.tiles[idx];

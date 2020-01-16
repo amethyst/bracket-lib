@@ -17,15 +17,12 @@ mod simple_console;
 mod sparse_console;
 pub mod textblock;
 pub use hal::*;
-#[cfg(feature = "parsing")]
-mod parsing;
 mod algorithm2d;
 mod algorithm3d;
 mod basemap;
+#[cfg(feature = "parsing")]
+mod parsing;
 
-pub use algorithm2d::Algorithm2D;
-pub use algorithm3d::Algorithm3D;
-pub use basemap::BaseMap;
 pub use self::codepage437::{string_to_cp437, to_char, to_cp437};
 pub use self::color::*;
 pub use self::console::*;
@@ -33,8 +30,8 @@ pub use self::fastnoise::*;
 pub use self::fieldofview::{field_of_view, field_of_view_set};
 pub use self::font::Font;
 pub use self::geometry::{
-    line2d, project_angle, Bresenham, BresenhamCircle, DistanceAlg, LineAlg, Point, Point3,
-    VectorLine, Rect
+    line2d, project_angle, Bresenham, BresenhamCircle, DistanceAlg, LineAlg, Point, Point3, Rect,
+    VectorLine,
 };
 pub use self::pathfinding::astar::{a_star_search, NavigationPath};
 pub use self::pathfinding::dijkstra::DijkstraMap;
@@ -43,6 +40,9 @@ pub use self::rltk::{letter_to_option, main_loop, Rltk};
 pub use self::simple_console::SimpleConsole;
 pub use self::sparse_console::SparseConsole;
 pub use self::textblock::{TextBlock, TextBuilder};
+pub use algorithm2d::Algorithm2D;
+pub use algorithm3d::Algorithm3D;
+pub use basemap::BaseMap;
 #[cfg(feature = "parsing")]
 pub use parsing::{parse_dice_string, DiceParseError, DiceType};
 pub mod embedding;

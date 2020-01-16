@@ -8,18 +8,17 @@ pub trait Algorithm2D: BaseMap {
     /// strided X first.
     fn point2d_to_index(&self, pt: Point) -> usize {
         let bounds = self.dimensions();
-        ((pt.y * bounds.x) + pt.x).try_into().expect("Not a valid usize")
+        ((pt.y * bounds.x) + pt.x)
+            .try_into()
+            .expect("Not a valid usize")
     }
 
     /// Convert an array index to a point. Defaults to an index based on an array
     /// strided X first.
     fn index_to_point2d(&self, idx: usize) -> Point {
         let bounds = self.dimensions();
-        let w : usize = bounds.x.try_into().expect("Not a valid usize");
-        Point::new(
-            idx % w,
-            idx / w
-        )
+        let w: usize = bounds.x.try_into().expect("Not a valid usize");
+        Point::new(idx % w, idx / w)
     }
 
     /// Retrieve the map's dimensions. Made optional to reduce API breakage.
@@ -33,5 +32,5 @@ pub trait Algorithm2D: BaseMap {
     fn in_bounds(&self, pos: Point) -> bool {
         let bounds = self.dimensions();
         pos.x > 0 && pos.x < bounds.x && pos.y > 0 && pos.y < bounds.y
-    }    
+    }
 }

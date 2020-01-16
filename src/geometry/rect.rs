@@ -1,7 +1,7 @@
 use super::Point;
 use std::collections::HashSet;
-use std::ops;
 use std::convert::TryInto;
+use std::ops;
 
 #[cfg_attr(
     feature = "serialization",
@@ -23,11 +23,12 @@ impl Default for Rect {
 
 impl Rect {
     // Create a new rectangle, specifying X/Y Width/Height
-    pub fn with_size<T>(x: T, y: T, w: T, h: T) -> Rect 
-    where T : TryInto<i32>
+    pub fn with_size<T>(x: T, y: T, w: T, h: T) -> Rect
+    where
+        T: TryInto<i32>,
     {
-        let x_i32 : i32 = x.try_into().ok().unwrap();
-        let y_i32 : i32 = y.try_into().ok().unwrap();
+        let x_i32: i32 = x.try_into().ok().unwrap();
+        let y_i32: i32 = y.try_into().ok().unwrap();
         Rect {
             x1: x_i32,
             y1: y_i32,
@@ -38,13 +39,14 @@ impl Rect {
 
     // Create a new rectangle, specifying exact dimensions
     pub fn with_exact<T>(x1: T, y1: T, x2: T, y2: T) -> Rect
-    where T : TryInto<i32>
+    where
+        T: TryInto<i32>,
     {
         Rect {
             x1: x1.try_into().ok().unwrap(),
             y1: y1.try_into().ok().unwrap(),
             x2: x2.try_into().ok().unwrap(),
-            y2: y2.try_into().ok().unwrap()
+            y2: y2.try_into().ok().unwrap(),
         }
     }
 

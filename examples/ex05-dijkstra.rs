@@ -126,11 +126,8 @@ impl GameState for State {
         if anything_left {
             // Now we use the flow map to move
             // If its MAX, then there's nowhere to go.
-            let destination = DijkstraMap::find_lowest_exit(
-                &self.flow_map,
-                self.player_position,
-                &self.map,
-            );
+            let destination =
+                DijkstraMap::find_lowest_exit(&self.flow_map, self.player_position, &self.map);
             match destination {
                 None => {}
                 Some(idx) => {

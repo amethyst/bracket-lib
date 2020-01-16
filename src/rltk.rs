@@ -1,7 +1,7 @@
 use super::GameState;
 use super::{
-    font, hal::init_raw, rex::XpFile, rex::XpLayer, Console, Rect, RltkPlatform, Shader,
-    SimpleConsole, VirtualKeyCode, RGB, Point
+    font, hal::init_raw, rex::XpFile, rex::XpLayer, Console, Point, Rect, RltkPlatform, Shader,
+    SimpleConsole, VirtualKeyCode, RGB,
 };
 use std::any::Any;
 use std::convert::TryInto;
@@ -39,11 +39,12 @@ pub struct Rltk {
 
 impl Rltk {
     /// Initializes an OpenGL context and a window, stores the info in the Rltk structure.
-    pub fn init_raw<S: ToString, T>(width_pixels: T, height_pixels: T, window_title: S) -> Rltk 
-    where T : TryInto<u32>
+    pub fn init_raw<S: ToString, T>(width_pixels: T, height_pixels: T, window_title: S) -> Rltk
+    where
+        T: TryInto<u32>,
     {
-        let w : u32 = width_pixels.try_into().ok().unwrap();
-        let h : u32 = height_pixels.try_into().ok().unwrap();
+        let w: u32 = width_pixels.try_into().ok().unwrap();
+        let h: u32 = height_pixels.try_into().ok().unwrap();
         init_raw(w, h, window_title)
     }
 
@@ -53,18 +54,16 @@ impl Rltk {
         height_chars: T,
         window_title: S,
         path_to_shaders: S,
-    ) -> Rltk 
-    where T : TryInto<u32>
+    ) -> Rltk
+    where
+        T: TryInto<u32>,
     {
-        let w : u32 = width_chars.try_into().ok().unwrap();
-        let h : u32 = height_chars.try_into().ok().unwrap();
+        let w: u32 = width_chars.try_into().ok().unwrap();
+        let h: u32 = height_chars.try_into().ok().unwrap();
         let font_path = format!("{}/terminal8x8.png", &path_to_shaders.to_string());
         let mut context = Rltk::init_raw(w * 8, h * 8, window_title);
         let font = context.register_font(font::Font::load(&font_path.to_string(), (8, 8)));
-        context.register_console(
-            SimpleConsole::init(w, h, &context.backend),
-            font,
-        );
+        context.register_console(SimpleConsole::init(w, h, &context.backend), font);
         context
     }
 
@@ -74,18 +73,16 @@ impl Rltk {
         height_chars: T,
         window_title: S,
         path_to_shaders: S,
-    ) -> Rltk 
-    where T : TryInto<u32>
+    ) -> Rltk
+    where
+        T: TryInto<u32>,
     {
-        let w : u32 = width_chars.try_into().ok().unwrap();
-        let h : u32 = height_chars.try_into().ok().unwrap();
+        let w: u32 = width_chars.try_into().ok().unwrap();
+        let h: u32 = height_chars.try_into().ok().unwrap();
         let font_path = format!("{}/vga8x16.png", &path_to_shaders.to_string());
         let mut context = Rltk::init_raw(w * 8, h * 16, window_title);
         let font = context.register_font(font::Font::load(&font_path.to_string(), (8, 16)));
-        context.register_console(
-            SimpleConsole::init(w, h, &context.backend),
-            font,
-        );
+        context.register_console(SimpleConsole::init(w, h, &context.backend), font);
         context
     }
 

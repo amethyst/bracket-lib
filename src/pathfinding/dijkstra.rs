@@ -274,7 +274,11 @@ impl DijkstraMap {
     }
 
     #[cfg(not(feature = "threaded"))]
-    pub fn find_highest_exit(dm: &DijkstraMap, position: usize, map: &dyn BaseMap) -> Option<usize> {
+    pub fn find_highest_exit(
+        dm: &DijkstraMap,
+        position: usize,
+        map: &dyn BaseMap,
+    ) -> Option<usize> {
         let mut exits = map.get_available_exits(position);
 
         if exits.is_empty() {
