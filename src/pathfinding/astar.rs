@@ -6,13 +6,8 @@ use std::collections::{BinaryHeap, HashMap};
 const MAX_ASTAR_STEPS: usize = 65536;
 
 /// Request an A-Star search. The start and end are specified as index numbers (compatible with your
-/// BaseMap implementation), and it requires access to your map so as to call distance and exit
-/// determinations.
-<<<<<<< HEAD
+/// BaseMap implementation), and it requires access to your map so as to call distance and exit determinations.
 pub fn a_star_search(start: usize, end: usize, map: &dyn BaseMap) -> NavigationPath {
-=======
-pub fn a_star_search(start: usize, end: usize, map: &mut dyn BaseMap) -> NavigationPath {
->>>>>>> d13e044469a56a64f241c84b1c1c30811a39affb
     AStar::new(start, end).search(map)
 }
 
