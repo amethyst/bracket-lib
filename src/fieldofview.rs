@@ -66,10 +66,6 @@ mod tests {
         }
     }
 
-    fn mapidx(x: usize, y: usize) -> usize {
-        (y * TESTMAP_W) + x
-    }
-
     impl crate::BaseMap for Map {}
 
     impl super::Algorithm2D for Map {
