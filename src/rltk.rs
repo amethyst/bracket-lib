@@ -1,7 +1,7 @@
 use super::GameState;
 use super::{
     font, hal::init_raw, rex::XpFile, rex::XpLayer, Console, Rect, RltkPlatform, Shader,
-    SimpleConsole, VirtualKeyCode, RGB,
+    SimpleConsole, VirtualKeyCode, RGB, Point
 };
 use std::any::Any;
 use std::convert::TryInto;
@@ -132,6 +132,23 @@ impl Rltk {
         let max_sizes = self.consoles[self.active_console].console.get_char_size();
 
         (
+            iclamp(
+                self.mouse_pos.0 * max_sizes.0 as i32 / self.width_pixels as i32,
+                0,
+                max_sizes.0 as i32 - 1,
+            ),
+            iclamp(
+                self.mouse_pos.1 * max_sizes.1 as i32 / self.height_pixels as i32,
+                0,
+                max_sizes.1 as i32 - 1,
+            ),
+        )
+    }
+
+    /// Applies the current physical mouse position to the active console, and translates the coordinates into that console's coordinate space.
+    pub fn mouse_point(&self) -> Point {
+        let max_sizes = self.consoles[self.active_console].console.get_char_size();
+        Point::new(
             iclamp(
                 self.mouse_pos.0 * max_sizes.0 as i32 / self.width_pixels as i32,
                 0,
