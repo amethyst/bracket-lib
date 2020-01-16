@@ -15,7 +15,7 @@ pub trait Console {
     fn rebuild_if_dirty(&mut self, platform: &hal::RltkPlatform);
 
     /// Gets the dimensions of the console in characters
-    fn get_char_size(&mut self) -> (u32, u32);
+    fn get_char_size(&self) -> (u32, u32);
 
     // Resizes the viewport
     fn resize_pixels(&mut self, width: u32, height: u32);

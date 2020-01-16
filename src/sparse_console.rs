@@ -63,7 +63,7 @@ impl Console for SparseConsole {
         }
     }
 
-    fn get_char_size(&mut self) -> (u32, u32) {
+    fn get_char_size(&self) -> (u32, u32) {
         (self.width, self.height)
     }
 

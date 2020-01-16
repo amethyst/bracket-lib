@@ -116,7 +116,7 @@ impl Rltk {
 
     /// Applies the current physical mouse position to the active console, and translates
     /// the coordinates into that console's coordinate space.
-    pub fn mouse_pos(&mut self) -> (i32, i32) {
+    pub fn mouse_pos(&self) -> (i32, i32) {
         let font_size = self.fonts[self.consoles[self.active_console].font_index].tile_size;
         let max_sizes = self.consoles[self.active_console].console.get_char_size();
 
@@ -182,7 +182,7 @@ impl Console for Rltk {
     ) {
     }
 
-    fn get_char_size(&mut self) -> (u32, u32) {
+    fn get_char_size(&self) -> (u32, u32) {
         self.consoles[self.active_console].console.get_char_size()
     }
 
