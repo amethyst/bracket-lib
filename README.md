@@ -8,7 +8,23 @@ If you'd like to see a functional roguelike that uses `rltk_rs`, check out [Rust
 
 You can read a tutorial series on writing a Roguelike with this library at: [http://bfnightly.bracketproductions.com/rustbook/](http://bfnightly.bracketproductions.com/rustbook/)
 
-A note on `winit`: The API changed on Friday, and I had to push out 0.5.15 to work with it. I woke up this morning (1/6) to find the API had changed back, so 0.5.16 uses that. You may need to `cargo update` to make it work. Sorry about the mess.
+## A note on 0.6.0: it breaks things, but I feel it's worth it.
+
+If you want to keep your code-base as-is, lock your version in `cargo.toml` to `0.5.17`. You can do this with:
+
+```toml
+[dependencies]
+rltk = "=0.5.17"
+```
+
+It's worth upgrading, however:
+
+* There's fixes for "sticky" ctrl/alt/shift modifiers (and you can now read them as a key - thanks to `bofh69`).
+* The `BaseMap2D` and `Algorithm2D` systems have been overhauled to require considerably less type casting in actual use. All of the traits that refer to a tile index now return a `usize` rather than an `i32`. That eliminates a whole class of `idx as usize` casting in most client code. Unfortunately, it will require that you update your code to match.
+* `Algorithm2D` now supports a `dimensions` function, returning a `Point`. (`fn dimensions(&self) -> Point`). If you implement this, the rest of the trait can automatically implement `point2d_to_index`, `index_to_point2d` and `in_bounds` for you - so long as you're okay with my preferred array striding (2D array, rows of X values). If you don't like it, you can implement them and use your preferred storage scheme.
+* Likewise, the path-finding functions that previously returned `i32` indices now return `usize`.
+* There's a bunch of `try_into` added into various functions to relax the types they require. I believe this needs one of the newer Rust setups, so make sure you update the language.
+* I've updated all the examples to use the new scheme, and the tutorial is being updated in the `pedantry` branch. This version won't go live until the tutorial is updated to match.
 
 ## Running the examples
 
@@ -20,7 +36,7 @@ In your `Cargo.toml` file, include the following:
 
 ```toml
 [dependencies]
-rltk = "0.5.17"
+rltk = "0.6.0"
 ```
 
 *Note: we don't do that in the example files, we use a relative path - to avoid having nested git repos.*
