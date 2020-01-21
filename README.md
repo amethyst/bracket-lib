@@ -24,7 +24,7 @@ It's worth upgrading, however:
 * `Algorithm2D` now supports a `dimensions` function, returning a `Point`. (`fn dimensions(&self) -> Point`). If you implement this, the rest of the trait can automatically implement `point2d_to_index`, `index_to_point2d` and `in_bounds` for you - so long as you're okay with my preferred array striding (2D array, rows of X values). If you don't like it, you can implement them and use your preferred storage scheme.
 * Likewise, the path-finding functions that previously returned `i32` indices now return `usize`.
 * There's a bunch of `try_into` added into various functions to relax the types they require. I believe this needs one of the newer Rust setups, so make sure you update the language.
-* I've updated all the examples to use the new scheme, and the tutorial is being updated in the `pedantry` branch. This version won't go live until the tutorial is updated to match.
+* I've updated all the examples to use the new scheme. The [Roguelike Tutorial](http://bfnightly.bracketproductions.com/rustbook/) has also been updated to work with the new setup.
 
 ## Running the examples
 
