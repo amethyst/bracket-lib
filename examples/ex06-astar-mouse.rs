@@ -1,3 +1,4 @@
+#![warn(clippy::pedantic)]
 // This is based on example 3, but adds in highlighting visible tiles.
 //
 // Comments that duplicate previous examples have been removed for brevity.

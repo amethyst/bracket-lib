@@ -1,3 +1,4 @@
+#![warn(clippy::pedantic)]
 // Generates a map with FoV like example 4, and replaces human input with path-finding
 // to reveal the whole map. Uses RLTK's Dijkstra flow maps functionality.
 //
@@ -36,14 +37,6 @@ struct State {
     flow_map: DijkstraMap,
 }
 
-pub fn xy_idx(x: i32, y: i32) -> usize {
-    (y as usize * 80) + x as usize
-}
-
-pub fn idx_xy(idx: usize) -> (i32, i32) {
-    (idx as i32 % 80, idx as i32 / 80)
-}
-
 impl State {
     pub fn new() -> State {
         let mut state = State {
@@ -52,19 +45,23 @@ impl State {
                 visible: vec![false; 80 * 50],
                 revealed: vec![false; 80 * 50],
             },
-            player_position: xy_idx(40, 25),
+            player_position: (40*80)+25, // Equivalent to point2d_to_index
             search_targets: Vec::with_capacity(80 * 50),
             // Here we create an empty placeholder for the flow map; this way we don't allocate it repeatedly
             flow_map: DijkstraMap::new_empty(80, 50, 2048.0),
         };
 
         for x in 0..80 {
-            state.map.tiles[xy_idx(x, 0)] = TileType::Wall;
-            state.map.tiles[xy_idx(x, 49)] = TileType::Wall;
+            let wall1_pos = state.map.point2d_to_index(Point::new(x, 0));
+            let wall2_pos = state.map.point2d_to_index(Point::new(x, 49));
+            state.map.tiles[wall1_pos] = TileType::Wall;
+            state.map.tiles[wall2_pos] = TileType::Wall;
         }
         for y in 0..50 {
-            state.map.tiles[xy_idx(0, y)] = TileType::Wall;
-            state.map.tiles[xy_idx(79, y)] = TileType::Wall;
+            let wall1_pos = state.map.point2d_to_index(Point::new(0, y));
+            let wall2_pos = state.map.point2d_to_index(Point::new(79, y));
+            state.map.tiles[wall1_pos] = TileType::Wall;
+            state.map.tiles[wall2_pos] = TileType::Wall;
         }
 
         let mut rng = rand::thread_rng();
@@ -73,7 +70,7 @@ impl State {
         for _ in 0..1600 {
             let x = rng.gen_range(1, 79);
             let y = rng.gen_range(1, 49);
-            let idx = xy_idx(x, y);
+            let idx = state.map.point2d_to_index(Point::new(x, y));
             if state.player_position != idx {
                 state.map.tiles[idx] = TileType::Wall;
             }
@@ -107,7 +104,7 @@ impl GameState for State {
 
         // Note that the steps above would generally not be run every frame!
         for idx in &fov {
-            let mapidx = xy_idx(idx.x, idx.y);
+            let mapidx = self.map.point2d_to_index(*idx);
             self.map.visible[mapidx] = true;
             if !self.map.revealed[mapidx] {
                 self.map.revealed[mapidx] = true;
@@ -183,10 +180,10 @@ impl GameState for State {
         }
 
         // Render the player @ symbol
-        let ppos = idx_xy(self.player_position);
+        let ppos = self.map.index_to_point2d(self.player_position);
         ctx.print_color(
-            ppos.0,
-            ppos.1,
+            ppos.x,
+            ppos.y,
             RGB::from_f32(1.0, 1.0, 0.0),
             RGB::from_f32(0., 0., 0.),
             "@",

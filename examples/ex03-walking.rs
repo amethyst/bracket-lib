@@ -1,3 +1,4 @@
+#![warn(clippy::pedantic)]
 // This the first roguelike-ish example - a walking @. We build a very simple map,
 // and you can use the cursor keys to move around a world.
 //

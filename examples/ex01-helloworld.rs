@@ -1,3 +1,4 @@
+#![warn(clippy::pedantic)]
 // This is the canonical "Hello World" example for RLTK.
 // It is crammed into one file, and kept as short as possible
 //////////////////////////////////////////////////////////////

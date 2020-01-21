@@ -1,3 +1,4 @@
+#![warn(clippy::pedantic)]
 // This is the canonical "Hello World" example for RLTK.
 // It's like example 01, but we implement a sparse second terminal using a nicer VGA font
 // for the FPS and frame time portions. This illustrates how you can combine multiple fonts

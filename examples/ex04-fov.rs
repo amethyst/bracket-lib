@@ -1,3 +1,4 @@
+#![warn(clippy::pedantic)]
 // This is based on example 3, but adds in highlighting visible tiles.
 //
 // Comments that duplicate previous examples have been removed for brevity.
@@ -22,30 +23,26 @@ struct State {
     visible: Vec<bool>,
 }
 
-pub fn xy_idx(x: i32, y: i32) -> usize {
-    (y as usize * 80) + x as usize
-}
-
-pub fn idx_xy(idx: usize) -> (i32, i32) {
-    (idx as i32 % 80, idx as i32 / 80)
-}
-
 impl State {
     pub fn new() -> State {
         // Same as example 3, but we've added the visible tiles
         let mut state = State {
             map: vec![TileType::Floor; 80 * 50],
-            player_position: xy_idx(40, 25),
+            player_position: (25 * 80) + 40, // Equivalent to point2d_to_index(40, 25) but we haven't initialized it yet
             visible: vec![false; 80 * 50],
         };
 
         for x in 0..80 {
-            state.map[xy_idx(x, 0)] = TileType::Wall;
-            state.map[xy_idx(x, 49)] = TileType::Wall;
+            let wall1_pos = state.point2d_to_index(Point::new(x, 0));
+            let wall2_pos = state.point2d_to_index(Point::new(x, 49));
+            state.map[wall1_pos] = TileType::Wall;
+            state.map[wall2_pos] = TileType::Wall;
         }
         for y in 0..50 {
-            state.map[xy_idx(0, y)] = TileType::Wall;
-            state.map[xy_idx(79, y)] = TileType::Wall;
+            let wall1_pos = state.point2d_to_index(Point::new(0, y));
+            let wall2_pos = state.point2d_to_index(Point::new(79, y));
+            state.map[wall1_pos] = TileType::Wall;
+            state.map[wall2_pos] = TileType::Wall;
         }
 
         let mut rng = rand::thread_rng();
@@ -53,7 +50,7 @@ impl State {
         for _ in 0..400 {
             let x = rng.gen_range(1, 79);
             let y = rng.gen_range(1, 49);
-            let idx = xy_idx(x, y);
+            let idx = state.point2d_to_index(Point::new(x, y));
             if state.player_position != idx {
                 state.map[idx] = TileType::Wall;
             }
@@ -62,10 +59,10 @@ impl State {
         state
     }
 
-    pub fn move_player(&mut self, delta_x: i32, delta_y: i32) {
-        let current_position = idx_xy(self.player_position);
-        let new_position = (current_position.0 + delta_x, current_position.1 + delta_y);
-        let new_idx = xy_idx(new_position.0, new_position.1);
+    pub fn move_player(&mut self, delta: Point) {
+        let current_position = self.index_to_point2d(self.player_position);
+        let new_position = current_position + delta;
+        let new_idx = self.point2d_to_index(new_position);
         if self.map[new_idx] == TileType::Floor {
             self.player_position = new_idx;
         }
@@ -82,22 +79,22 @@ impl GameState for State {
                 // A key is pressed or held
                 match key {
                     // Numpad
-                    VirtualKeyCode::Numpad8 => self.move_player(0, -1),
-                    VirtualKeyCode::Numpad4 => self.move_player(-1, 0),
-                    VirtualKeyCode::Numpad6 => self.move_player(1, 0),
-                    VirtualKeyCode::Numpad2 => self.move_player(0, 1),
+                    VirtualKeyCode::Numpad8 => self.move_player(Point::new(0, -1)),
+                    VirtualKeyCode::Numpad4 => self.move_player(Point::new(-1, 0)),
+                    VirtualKeyCode::Numpad6 => self.move_player(Point::new(1, 0)),
+                    VirtualKeyCode::Numpad2 => self.move_player(Point::new(0, 1)),
 
                     // Numpad diagonals
-                    VirtualKeyCode::Numpad7 => self.move_player(-1, -1),
-                    VirtualKeyCode::Numpad9 => self.move_player(1, -1),
-                    VirtualKeyCode::Numpad1 => self.move_player(-1, 1),
-                    VirtualKeyCode::Numpad3 => self.move_player(1, 1),
+                    VirtualKeyCode::Numpad7 => self.move_player(Point::new(-1, -1)),
+                    VirtualKeyCode::Numpad9 => self.move_player(Point::new(1, -1)),
+                    VirtualKeyCode::Numpad1 => self.move_player(Point::new(-1, 1)),
+                    VirtualKeyCode::Numpad3 => self.move_player(Point::new(1, 1)),
 
                     // Cursors
-                    VirtualKeyCode::Up => self.move_player(0, -1),
-                    VirtualKeyCode::Down => self.move_player(0, 1),
-                    VirtualKeyCode::Left => self.move_player(-1, 0),
-                    VirtualKeyCode::Right => self.move_player(1, 0),
+                    VirtualKeyCode::Up => self.move_player(Point::new(0, -1)),
+                    VirtualKeyCode::Down => self.move_player(Point::new(0, 1)),
+                    VirtualKeyCode::Left => self.move_player(Point::new(-1, 0)),
+                    VirtualKeyCode::Right => self.move_player(Point::new(1, 0)),
 
                     _ => {} // Ignore all the other possibilities
                 }
@@ -115,7 +112,8 @@ impl GameState for State {
 
         // Note that the steps above would generally not be run every frame!
         for idx in fov.iter() {
-            self.visible[xy_idx(idx.x, idx.y)] = true;
+            let point = self.point2d_to_index(*idx);
+            self.visible[point] = true;
         }
 
         // Clear the screen
@@ -152,10 +150,10 @@ impl GameState for State {
         }
 
         // Render the player @ symbol
-        let ppos = idx_xy(self.player_position);
+        let ppos = self.index_to_point2d(self.player_position);
         ctx.print_color(
-            ppos.0,
-            ppos.1,
+            ppos.x,
+            ppos.y,
             RGB::from_f32(1.0, 1.0, 0.0),
             RGB::from_f32(0., 0., 0.),
             "@",
