@@ -3,6 +3,7 @@ use super::BaseMap;
 use rayon::prelude::*;
 use std::f32::MAX;
 use std::mem;
+use std::convert::TryInto;
 
 /// Representation of a Dijkstra flow map.
 /// map is a vector of floats, having a size equal to size_x * size_y (one per tile).
@@ -27,18 +28,23 @@ struct ParallelDm {
 impl DijkstraMap {
     /// Construct a new Dijkstra map, ready to run. You must specify the map size, and link to an implementation
     /// of a BaseMap trait that can generate exits lists. It then builds the map, giving you a result.
-    pub fn new(
-        size_x: usize,
-        size_y: usize,
+    pub fn new<T>(
+        size_x: T,
+        size_y: T,
         starts: &[usize],
         map: &dyn BaseMap,
         max_depth: f32,
-    ) -> DijkstraMap {
-        let result: Vec<f32> = vec![MAX; (size_x * size_y) as usize];
+    ) -> DijkstraMap 
+    where
+        T: TryInto<usize>,
+    {
+        let sz_x : usize = size_x.try_into().ok().unwrap();
+        let sz_y : usize = size_y.try_into().ok().unwrap();
+        let result: Vec<f32> = vec![MAX; sz_x * sz_y];
         let mut d = DijkstraMap {
             map: result,
-            size_x,
-            size_y,
+            size_x : sz_x,
+            size_y : sz_y,
             max_depth,
         };
         DijkstraMap::build(&mut d, starts, map);
@@ -46,12 +52,17 @@ impl DijkstraMap {
     }
 
     /// Creates an empty Dijkstra map node.
-    pub fn new_empty(size_x: usize, size_y: usize, max_depth: f32) -> DijkstraMap {
-        let result: Vec<f32> = vec![MAX; (size_x * size_y) as usize];
+    pub fn new_empty<T>(size_x: T, size_y: T, max_depth: f32) -> DijkstraMap 
+    where
+        T: TryInto<usize>,
+    {
+        let sz_x : usize = size_x.try_into().ok().unwrap();
+        let sz_y : usize = size_y.try_into().ok().unwrap();
+        let result: Vec<f32> = vec![MAX; sz_x * sz_y];
         DijkstraMap {
             map: result,
-            size_x,
-            size_y,
+            size_x : sz_x,
+            size_y : sz_y,
             max_depth,
         }
     }
