@@ -400,8 +400,4 @@ required-features = ["curses"]
 [[example]]
 name = "curses17-wasm-external"
 path = "examples/ex17-wasm-external.rs"
-<<<<<<< HEAD
 required-features = ["curses"]
-=======
-required-features = ["curses"]
->>>>>>> master
