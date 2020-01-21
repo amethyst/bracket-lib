@@ -97,7 +97,11 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                 WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
 
                 WindowEvent::CursorMoved { position: pos, .. } => {
-                    rltk.mouse_pos = (pos.x as i32, pos.y as i32);
+                    let initial_dpi_factor = wc.window().scale_factor();
+                    rltk.mouse_pos = (
+                        (pos.x as f64 / initial_dpi_factor) as i32, 
+                        (pos.y as f64 / initial_dpi_factor) as i32
+                    );
                 }
 
                 WindowEvent::MouseInput { .. } => {
