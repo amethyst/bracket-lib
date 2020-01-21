@@ -15,6 +15,11 @@ pub struct Rect {
     pub y2: i32,
 }
 
+#[cfg(feature = "ecs")]
+impl specs::prelude::Component for Point {
+    type Storage = specs::prelude::VecStorage<Self>;
+}
+
 impl Default for Rect {
     fn default() -> Rect {
         Rect::zero()

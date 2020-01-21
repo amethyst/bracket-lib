@@ -13,6 +13,11 @@ pub struct Point3 {
     pub z: i32,
 }
 
+#[cfg(feature = "ecs")]
+impl specs::prelude::Component for Point {
+    type Storage = specs::prelude::VecStorage<Self>;
+}
+
 impl Point3 {
     /// Create a new point from an x/y/z coordinate.
     pub fn new<T>(x: T, y: T, z: T) -> Point3
