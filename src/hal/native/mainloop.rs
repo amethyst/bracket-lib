@@ -38,7 +38,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
         rltk.backend.platform.gl.viewport(
             0,
             0,
-            (rltk.width_pixels  as f64 * initial_dpi_factor) as i32,
+            (rltk.width_pixels as f64 * initial_dpi_factor) as i32,
             (rltk.height_pixels as f64 * initial_dpi_factor) as i32,
         );
     }
@@ -104,8 +104,8 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                 WindowEvent::CursorMoved { position: pos, .. } => {
                     let initial_dpi_factor = wc.window().scale_factor();
                     rltk.mouse_pos = (
-                        (pos.x as f64 / initial_dpi_factor) as i32, 
-                        (pos.y as f64 / initial_dpi_factor) as i32
+                        (pos.x as f64 / initial_dpi_factor) as i32,
+                        (pos.y as f64 / initial_dpi_factor) as i32,
                     );
                 }
 

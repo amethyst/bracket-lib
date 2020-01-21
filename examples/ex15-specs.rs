@@ -1,5 +1,5 @@
 rltk::add_wasm_support!();
-use rltk::{Console, GameState, Rltk, VirtualKeyCode, RGB, Point};
+use rltk::{Console, GameState, Point, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
 
 // Define a bunch of components
@@ -141,10 +141,7 @@ fn main() {
     for i in 0..3 {
         gs.ecs
             .create_entity()
-            .with(Point::new(
-                (i * 22) + 12,
-                gs.rng.roll_dice(1, 20),
-            ))
+            .with(Point::new((i * 22) + 12, gs.rng.roll_dice(1, 20)))
             .with(Renderable {
                 glyph: rltk::to_cp437('☺'),
                 fg: RGB::named(rltk::MAGENTA),
