@@ -14,7 +14,7 @@ pub struct Point3 {
 }
 
 #[cfg(feature = "ecs")]
-impl specs::prelude::Component for Point {
+impl specs::prelude::Component for Point3 {
     type Storage = specs::prelude::VecStorage<Self>;
 }
 
