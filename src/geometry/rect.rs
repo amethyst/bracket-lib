@@ -16,7 +16,7 @@ pub struct Rect {
 }
 
 #[cfg(feature = "ecs")]
-impl specs::prelude::Component for Point {
+impl specs::prelude::Component for Rect {
     type Storage = specs::prelude::VecStorage<Self>;
 }
 
