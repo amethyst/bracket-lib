@@ -99,7 +99,7 @@ impl DijkstraMap {
     }
 
     #[cfg(feature = "threaded")]
-    fn build_helper(dm: &mut DijkstraMap, starts: &[i32], map: &dyn BaseMap) {
+    fn build_helper(dm: &mut DijkstraMap, starts: &[usize], map: &dyn BaseMap) {
         if starts.len() > rayon::current_num_threads() {
             DijkstraMap::build_parallel(dm, starts, map);
             return;
@@ -164,7 +164,7 @@ impl DijkstraMap {
 
     /// Implementation of Parallel Dijkstra.
     #[cfg(feature = "threaded")]
-    fn build_parallel(dm: &mut DijkstraMap, starts: &[i32], map: &dyn BaseMap) {
+    fn build_parallel(dm: &mut DijkstraMap, starts: &[usize], map: &dyn BaseMap) {
         let mapsize: usize = (dm.size_x * dm.size_y) as usize;
         let mut layers: Vec<ParallelDm> = Vec::with_capacity(starts.len());
         for start_chunk in starts.chunks(rayon::current_num_threads()) {
@@ -179,17 +179,17 @@ impl DijkstraMap {
             layers.push(layer);
         }
 
-        let exits: Vec<Vec<(i32, f32)>> = (0..mapsize as i32)
+        let exits: Vec<Vec<(usize, f32)>> = (0..mapsize)
             .map(|idx| map.get_available_exits(idx))
             .collect();
 
         // Run each map in parallel
         layers.par_iter_mut().for_each(|l| {
-            let mut open_list: Vec<(i32, f32)> = Vec::with_capacity(mapsize * 2);
+            let mut open_list: Vec<(usize, f32)> = Vec::with_capacity(mapsize * 2);
             let mut closed_list: Vec<bool> = vec![false; mapsize];
 
             for start in l.starts.iter().copied() {
-                open_list.push((start as i32, 0.0));
+                open_list.push((start, 0.0));
 
                 while !open_list.is_empty() {
                     let last_idx = open_list.len() - 1;
@@ -230,7 +230,7 @@ impl DijkstraMap {
     /// exit from the specified position index, or None if there isn't one.
     /// You would use this for pathing TOWARDS a starting node.
     #[cfg(feature = "threaded")]
-    pub fn find_lowest_exit(dm: &DijkstraMap, position: i32, map: &dyn BaseMap) -> Option<i32> {
+    pub fn find_lowest_exit(dm: &DijkstraMap, position: usize, map: &dyn BaseMap) -> Option<usize> {
         let mut exits = map.get_available_exits(position);
 
         if exits.is_empty() {
@@ -268,7 +268,7 @@ impl DijkstraMap {
     /// You would use this for pathing AWAY from a starting node, for example if you are running
     /// away.
     #[cfg(feature = "threaded")]
-    pub fn find_highest_exit(dm: &DijkstraMap, position: i32, map: &dyn BaseMap) -> Option<i32> {
+    pub fn find_highest_exit(dm: &DijkstraMap, position: usize, map: &dyn BaseMap) -> Option<usize> {
         let mut exits = map.get_available_exits(position);
 
         if exits.is_empty() {
