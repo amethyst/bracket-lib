@@ -1,5 +1,5 @@
 rltk::add_wasm_support!();
-use rltk::{Console, GameState, Point, Rltk, VirtualKeyCode, RGB};
+use rltk::prelude::*;
 use specs::prelude::*;
 
 // Define a bunch of components
@@ -41,6 +41,9 @@ struct State {
 
 impl GameState for State {
     fn tick(&mut self, ctx: &mut Rltk) {
+        let mut draw_batch = DrawBatch::new();
+        draw_batch.cls();
+
         // Readable data stores
         let mut positions = self.ecs.write_storage::<Point>();
         let renderables = self.ecs.write_storage::<Renderable>();
@@ -102,15 +105,15 @@ impl GameState for State {
 
         // Draw renderables
         for (pos, render) in (&positions, &renderables).join() {
-            ctx.set(pos.x, pos.y, render.fg, render.bg, render.glyph);
+            draw_batch.set(*pos, ColorPair::new(render.fg, render.bg), render.glyph);
         }
 
         // Print the score
-        ctx.print_centered(0, "Left & right arrows to move. Catch the falling babies!");
-        ctx.print_centered(
-            2,
-            &format!("Saved {}, Squished {}", self.saved, self.squished),
-        );
+        draw_batch.print_centered(0, "Left & right arrows to move. Catch the falling babies!");
+        draw_batch.print_centered(2, &format!("Saved {}, Squished {}", self.saved, self.squished));
+
+        draw_batch.submit();
+        render_draw_buffer(ctx);
     }
 }
 

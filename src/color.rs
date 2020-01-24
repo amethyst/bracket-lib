@@ -12,6 +12,17 @@ pub struct RGB {
     pub g: f32,
     pub b: f32,
 }
+#[derive(PartialEq, Copy, Clone, Default, Debug)]
+pub struct ColorPair {
+    pub fg : RGB,
+    pub bg : RGB
+}
+
+impl ColorPair {
+    pub fn new(fg: RGB, bg: RGB) -> Self {
+        ColorPair{ fg, bg }
+    }
+}
 
 #[derive(PartialEq, Copy, Clone, Default, Debug)]
 /// Represents an H/S/V triplet, in the range 0..1 (32-bit float)
