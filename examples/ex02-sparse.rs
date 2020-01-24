@@ -11,7 +11,7 @@ extern crate rltk;
 
 // We're using Rltk (the main context) and GameState (a trait defining what our callback
 // looks like), so we need to use that, too.`
-use rltk::{Console, GameState, Rltk, RGB};
+use rltk::prelude::*;
 
 // This is the structure that will store our game state, typically a state machine pointing to
 // other structures. This demo is realy simple, so we'll just put the minimum to make it work
@@ -29,6 +29,7 @@ impl GameState for State {
     // console, you have to run your game as something of a state machine. This will be fleshed out in
     // later tutorials. For now, it just shows you the frame rate and says "Hello World".
     fn tick(&mut self, ctx: &mut Rltk) {
+        let mut draw_batch = DrawBatch::new();
         let col1 = RGB::named(rltk::CYAN);
         let col2 = RGB::named(rltk::YELLOW);
         let percent: f32 = self.y as f32 / 50.0;
@@ -36,9 +37,9 @@ impl GameState for State {
 
         // The first console created (8x8) is always console 0. This makes it the recipient
         // of draw calls sent to ctx. You can also do ctx.consoles[0] - but that's more typing.
-        ctx.set_active_console(0);
-        ctx.cls();
-        ctx.print_color(1, self.y, fg, RGB::named(rltk::BLACK), "Hello RLTK World");
+        draw_batch.target(0);
+        draw_batch.cls();
+        draw_batch.print_color(Point::new(1, self.y), "Hello RLTK World", ColorPair::new(fg, RGB::named(rltk::BLACK)));
 
         // Lets make the hello bounce up and down
         if self.going_down {
@@ -56,30 +57,25 @@ impl GameState for State {
         // We'll also show the frame rate, since we generally care about keeping that high.
         // We want to show this in VGA 8x16 font, so we'll set to console 1 - the one we added.
         // Again, this could be ctx.consoles[1] - but the short-hand is easier.
-        ctx.set_active_console(1);
-        ctx.cls();
-        ctx.draw_box_double(
-            39,
-            0,
-            20,
-            3,
-            RGB::named(rltk::WHITE),
-            RGB::named(rltk::BLACK),
+        draw_batch.target(1);
+        draw_batch.cls();
+        draw_batch.draw_double_box(
+            Rect::with_size(39, 0, 20, 3),
+            ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
         );
-        ctx.print_color(
-            40,
-            1,
-            RGB::named(rltk::YELLOW),
-            RGB::named(rltk::BLACK),
+        draw_batch.print_color(
+            Point::new(40, 1),
             &format!("FPS: {}", ctx.fps),
+            ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
         );
-        ctx.print_color(
-            40,
-            2,
-            RGB::named(rltk::CYAN),
-            RGB::named(rltk::BLACK),
+        draw_batch.print_color(
+            Point::new(40, 2),
             &format!("Frame Time: {} ms", ctx.frame_time_ms),
+            ColorPair::new(RGB::named(rltk::CYAN), RGB::named(rltk::BLACK)),
         );
+        draw_batch.submit();
+
+        render_draw_buffer(ctx);
     }
 }
 
