@@ -6,7 +6,7 @@ use crate::{ColorPair, Console, Point, Rect, Rltk, RGB};
 use std::sync::Mutex;
 
 lazy_static! {
-    static ref COMMAND_BUFFER: Mutex<Vec<DrawCommand>> = Mutex::new(Vec::new());
+    static ref COMMAND_BUFFER: Mutex<Vec<DrawCommand>> = Mutex::new(Vec::with_capacity(10000));
 }
 
 /// Clears the global command buffer. This is called internally by RLTK at the end of each
@@ -97,7 +97,7 @@ pub struct DrawBatch {
 impl DrawBatch {
     /// Obtain a new, empty draw batch
     pub fn new() -> Self {
-        DrawBatch { batch: Vec::new() }
+        DrawBatch { batch: Vec::with_capacity(5000) }
     }
 
     /// Submits a batch to the global drawing buffer, and empties the batch.
