@@ -1,15 +1,10 @@
-#![warn(
-    clippy::all,
-    clippy::restriction,
-    clippy::pedantic,
-    clippy::nursery,
-    clippy::cargo
-)]
 rltk::add_wasm_support!();
 use rltk::prelude::*;
 use specs::prelude::*;
 
+////////////////////////////////
 // Define a bunch of components
+////////////////////////////////
 
 /// Renderable is a glyph definition
 struct Renderable {
@@ -36,6 +31,13 @@ impl Component for BouncingBaby {
     type Storage = VecStorage<Self>;
 }
 
+////////////////////////////////
+// Define a resource
+////////////////////////////////
+
+// We're breaking out game state that the systems need into a GameInfo structure.
+// We'll insert it as a resource, so systems can gain access to it as needed.
+// In a real example, we'd probably break it into multiple resources.
 struct GameInfo {
     time: f32,
     saved: i32,
@@ -43,6 +45,7 @@ struct GameInfo {
     rng: RandomNumberGenerator,
 }
 
+// Specs wants resources to implement default, so here we are.
 impl Default for GameInfo {
     fn default() -> Self {
         GameInfo {
@@ -53,13 +56,23 @@ impl Default for GameInfo {
         }
     }
 }
+
+////////////////////////////////
+// Define the systems dispatcher
+////////////////////////////////
+
+// This is a messy structure because WASM and threads don't co-exist well together. So if we are using
+// a native setup, we'll use a Specs dispatcher. Unfortunately, that doesn't even compile on WASM, so we
+// are doing some conditional compilation.
 struct SysRunner {
     dispatcher: Dispatcher<'static, 'static>,
 }
 
 impl SysRunner {
+
+    // This makes a SysRunner with a dispatcher, so it's native code only.
     pub fn new() -> Self {
-        let mut dispatcher = DispatcherBuilder::new()
+        let dispatcher = DispatcherBuilder::new()
             .with(PlayerMovementSystem, "player_move", &[])
             .with(BabyMovementSystem, "baby_fall", &[])
             .with(RenderableSystem, "render", &[])
@@ -69,18 +82,25 @@ impl SysRunner {
         SysRunner { dispatcher }
     }
 
+    // Non-WASM version of the runner - call the dispatcher and update the world.
     pub fn run(&mut self, ecs: &mut World) {
         self.dispatcher.dispatch(ecs);
         ecs.maintain();
     }
 }
 
+////////////////////////////////
+// Game State for RLTK
+////////////////////////////////
+
+// Our game state holds the World (ECS) and our systems runner abstraction.
 struct State {
     ecs: World,
     systems: SysRunner,
 }
 
 impl GameState for State {
+    // Notice how we've got `tick` down to such a small function by using the dispatcher.
     fn tick(&mut self, ctx: &mut Rltk) {
         // Start with a screen clear
         let mut draw_batch = DrawBatch::new();
@@ -99,6 +119,11 @@ impl GameState for State {
     }
 }
 
+////////////////////////////////
+// Systems
+////////////////////////////////
+
+// The PlayerMovementSystem reads the keyboard and moves the player as necessary.
 struct PlayerMovementSystem;
 
 impl<'a> System<'a> for PlayerMovementSystem {
@@ -134,6 +159,8 @@ impl<'a> System<'a> for PlayerMovementSystem {
     }
 }
 
+// The BabyMovementSystem reads the positions of babies and has them fall downwards. It accesses frame time
+// to ensure that the babies don't ZOOM to their death. It also reads the Player's position.
 struct BabyMovementSystem;
 
 impl<'a> System<'a> for BabyMovementSystem {
@@ -174,6 +201,7 @@ impl<'a> System<'a> for BabyMovementSystem {
     }
 }
 
+// The RenderableSystem draws all entities with a Renderable and Point/Position
 struct RenderableSystem;
 
 impl<'a> System<'a> for RenderableSystem {
@@ -188,6 +216,7 @@ impl<'a> System<'a> for RenderableSystem {
     }
 }
 
+// The UI system renders the instructions and score.
 struct UiSystem;
 
 impl<'a> System<'a> for UiSystem {
@@ -205,22 +234,27 @@ impl<'a> System<'a> for UiSystem {
     }
 }
 
+////////////////////////////////
+// Main program
+////////////////////////////////
+
 fn main() {
+    // We start by making a new game state containing an ECS and dispatcher.
     let mut gs = State {
         ecs: World::new(),
         systems: SysRunner::new(),
     };
+
+    // Specs requires that we register our component types.
     gs.ecs.register::<Point>();
     gs.ecs.register::<Renderable>();
     gs.ecs.register::<Player>();
     gs.ecs.register::<BouncingBaby>();
-    gs.ecs.insert(GameInfo {
-        time: 0.0,
-        saved: 0,
-        squished: 0,
-        rng: rltk::RandomNumberGenerator::new(),
-    });
 
+    // We need GameInfo to be a resource so all systems can access it if needed.
+    gs.ecs.insert(GameInfo::default());
+
+    // Insert the player
     gs.ecs
         .create_entity()
         .with(Point { x: 40, y: 49 })
@@ -232,6 +266,7 @@ fn main() {
         .with(Player {})
         .build();
 
+    // Insert 3 falling babies
     for i in 0..3 {
         gs.ecs
             .create_entity()
@@ -245,11 +280,14 @@ fn main() {
             .build();
     }
 
+    // Initialize RLTK
     let context = Rltk::init_simple8x8(
         80,
         50,
         "Example 15 - Bouncing Babies with SPECS",
         "resources",
     );
+
+    // Run the game loop
     rltk::main_loop(context, gs);
 }
