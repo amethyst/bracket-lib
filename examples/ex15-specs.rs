@@ -110,7 +110,10 @@ impl GameState for State {
 
         // Print the score
         draw_batch.print_centered(0, "Left & right arrows to move. Catch the falling babies!");
-        draw_batch.print_centered(2, &format!("Saved {}, Squished {}", self.saved, self.squished));
+        draw_batch.print_centered(
+            2,
+            &format!("Saved {}, Squished {}", self.saved, self.squished),
+        );
 
         draw_batch.submit();
         render_draw_buffer(ctx);

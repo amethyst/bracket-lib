@@ -14,13 +14,13 @@ pub struct RGB {
 }
 #[derive(PartialEq, Copy, Clone, Default, Debug)]
 pub struct ColorPair {
-    pub fg : RGB,
-    pub bg : RGB
+    pub fg: RGB,
+    pub bg: RGB,
 }
 
 impl ColorPair {
     pub fn new(fg: RGB, bg: RGB) -> Self {
-        ColorPair{ fg, bg }
+        ColorPair { fg, bg }
     }
 }
 

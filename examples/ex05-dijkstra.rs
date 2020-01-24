@@ -45,7 +45,7 @@ impl State {
                 visible: vec![false; 80 * 50],
                 revealed: vec![false; 80 * 50],
             },
-            player_position: (40*80)+25, // Equivalent to point2d_to_index
+            player_position: (40 * 80) + 25, // Equivalent to point2d_to_index
             search_targets: Vec::with_capacity(80 * 50),
             // Here we create an empty placeholder for the flow map; this way we don't allocate it repeatedly
             flow_map: DijkstraMap::new_empty(80, 50, 2048.0),

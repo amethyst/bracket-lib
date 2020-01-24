@@ -45,8 +45,8 @@ pub use algorithm3d::Algorithm3D;
 pub use basemap::BaseMap;
 #[cfg(feature = "parsing")]
 pub use parsing::{parse_dice_string, DiceParseError, DiceType};
-pub mod embedding;
 mod command_buffer;
+pub mod embedding;
 pub use command_buffer::*;
 
 pub mod prelude {
