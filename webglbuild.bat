@@ -14,8 +14,9 @@ CALL :StageExample ex11-random, ex11
 CALL :StageExample ex12-simplex, ex12
 CALL :StageExample ex13-textblock, ex13
 CALL :StageExample ex14-dwarfmap, ex14
-CALL :StageExample ex15-specs, ex15
+REM CALL :StageExample ex15-specs, ex15
 CALL :StageExample ex16-keyboard, ex16
+CALL :Example15Builder
 CALL :Example17Builder
 
 REM Duplicate example 1 into the root for compatibility with links I've already shared
@@ -50,3 +51,14 @@ wasm-bindgen .\target\wasm32-unknown-unknown\release\examples\ex17-wasm-external
 copy .\wasm_help\index-ex17.html .\wasm_help\staging\ex17\index.html
 move .\wasm_help\staging\ex17\ex17-wasm-external_bg.wasm .\wasm_help\staging\ex17\myblob_bg.wasm
 move .\wasm_help\staging\ex17\ex17-wasm-external.js .\wasm_help\staging\ex17\myblob.js
+
+REM This is for the Specs example which needs different feature flags
+:Example15Builder
+echo Building example %ex15-specs
+cargo build --example %ex15-specs --target wasm32-unknown-unknown --release --features="opengl,ecs"
+echo wasm-gc .\target\wasm32-unknown-unknown\release\examples\%ex15-specs.wasm
+mkdir .\wasm_help\staging\%ex15
+wasm-bindgen .\target\wasm32-unknown-unknown\release\examples\%ex15-specs.wasm --out-dir .\wasm_help\staging\%ex15 --no-modules --no-typescript
+copy .\wasm_help\index.html .\wasm_help\staging\%ex15
+move .\wasm_help\staging\%ex15\%ex15-specs_bg.wasm .\wasm_help\staging\%ex15\myblob_bg.wasm
+move .\wasm_help\staging\%ex15\%ex15-specs.js .\wasm_help\staging\%ex15\myblob.js

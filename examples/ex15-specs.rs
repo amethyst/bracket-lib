@@ -102,6 +102,14 @@ impl SysRunner {
 
     #[cfg(target_arch = "wasm32")]
     pub fn run(&mut self, ecs: &mut World) {
+        let mut pms = PlayerMovementSystem{};
+        let mut bms = BabyMovementSystem{};
+        let mut render = RenderableSystem{};
+        let mut ui = UiSystem{};
+        pms.run_now(ecs);
+        bms.run_now(ecs);
+        render.run_now(ecs);
+        ui.run_now(ecs);
         ecs.maintain();
     }
 }
