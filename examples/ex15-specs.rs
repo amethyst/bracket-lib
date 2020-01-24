@@ -64,13 +64,19 @@ impl Default for GameInfo {
 // This is a messy structure because WASM and threads don't co-exist well together. So if we are using
 // a native setup, we'll use a Specs dispatcher. Unfortunately, that doesn't even compile on WASM, so we
 // are doing some conditional compilation.
+#[cfg(not(target_arch = "wasm32"))]
 struct SysRunner {
     dispatcher: Dispatcher<'static, 'static>,
+}
+
+#[cfg(target_arch = "wasm32")]
+struct SysRunner {
 }
 
 impl SysRunner {
 
     // This makes a SysRunner with a dispatcher, so it's native code only.
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn new() -> Self {
         let dispatcher = DispatcherBuilder::new()
             .with(PlayerMovementSystem, "player_move", &[])
@@ -82,9 +88,20 @@ impl SysRunner {
         SysRunner { dispatcher }
     }
 
+    #[cfg(target_arch = "wasm32")]
+    pub fn new() -> Self {
+        SysRunner{}
+    }
+
     // Non-WASM version of the runner - call the dispatcher and update the world.
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn run(&mut self, ecs: &mut World) {
         self.dispatcher.dispatch(ecs);
+        ecs.maintain();
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    pub fn run(&mut self, ecs: &mut World) {
         ecs.maintain();
     }
 }
