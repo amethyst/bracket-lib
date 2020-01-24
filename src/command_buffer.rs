@@ -4,9 +4,15 @@
 
 use crate::{ColorPair, Console, Point, Rect, Rltk, RGB};
 use std::sync::Mutex;
+use std::sync::Arc;
+use object_pool::{Pool, Reusable};
 
 lazy_static! {
     static ref COMMAND_BUFFER: Mutex<Vec<DrawCommand>> = Mutex::new(Vec::with_capacity(10000));
+}
+
+lazy_static! {
+    static ref BUFFER_POOL : Arc<Pool<'static, DrawBatch>> = Arc::new(Pool::new(128, || DrawBatch{ batch: Vec::with_capacity(5000) }));
 }
 
 /// Clears the global command buffer. This is called internally by RLTK at the end of each
@@ -96,8 +102,8 @@ pub struct DrawBatch {
 
 impl DrawBatch {
     /// Obtain a new, empty draw batch
-    pub fn new() -> Self {
-        DrawBatch { batch: Vec::with_capacity(5000) }
+    pub fn new() -> Reusable<'static, DrawBatch, > {
+        BUFFER_POOL.pull()
     }
 
     /// Submits a batch to the global drawing buffer, and empties the batch.
