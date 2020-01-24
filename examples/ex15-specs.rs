@@ -1,3 +1,10 @@
+#![warn(
+    clippy::all,
+    clippy::restriction,
+    clippy::pedantic,
+    clippy::nursery,
+    clippy::cargo
+)]
 rltk::add_wasm_support!();
 use rltk::prelude::*;
 use specs::prelude::*;
@@ -23,41 +30,90 @@ impl Component for Player {
 }
 
 /// Marker for this is a bouncing baby
-struct BouncingBacy {}
+struct BouncingBaby {}
 
-impl Component for BouncingBacy {
+impl Component for BouncingBaby {
     type Storage = VecStorage<Self>;
 }
 
-// State gets a new World entry for Specs, an RNG, and a score counter
+struct GameInfo {
+    time: f32,
+    saved: i32,
+    squished: i32,
+    rng: RandomNumberGenerator,
+}
+
+impl Default for GameInfo {
+    fn default() -> Self {
+        GameInfo {
+            time: 0.0,
+            saved: 0,
+            squished: 0,
+            rng: rltk::RandomNumberGenerator::new(),
+        }
+    }
+}
+struct SysRunner {
+    dispatcher: Dispatcher<'static, 'static>,
+}
+
+impl SysRunner {
+    pub fn new() -> Self {
+        let mut dispatcher = DispatcherBuilder::new()
+            .with(PlayerMovementSystem, "player_move", &[])
+            .with(BabyMovementSystem, "baby_fall", &[])
+            .with(RenderableSystem, "render", &[])
+            .with(UiSystem, "ui", &[])
+            .build();
+
+        SysRunner { dispatcher }
+    }
+
+    pub fn run(&mut self, ecs: &mut World) {
+        self.dispatcher.dispatch(ecs);
+        ecs.maintain();
+    }
+}
 
 struct State {
     ecs: World,
-    time: f32,
-    rng: rltk::RandomNumberGenerator,
-    saved: i32,
-    squished: i32,
+    systems: SysRunner,
 }
 
 impl GameState for State {
     fn tick(&mut self, ctx: &mut Rltk) {
+        // Start with a screen clear
         let mut draw_batch = DrawBatch::new();
         draw_batch.cls();
+        draw_batch.submit();
 
-        // Readable data stores
-        let mut positions = self.ecs.write_storage::<Point>();
-        let renderables = self.ecs.write_storage::<Renderable>();
-        let mut players = self.ecs.write_storage::<Player>();
-        let mut babies = self.ecs.write_storage::<BouncingBacy>();
+        // Insert some resources so systems have access to them
+        self.ecs.insert(ctx.key);
+        self.ecs.insert(ctx.frame_time_ms);
 
-        ctx.cls();
+        // Running the systems...
+        self.systems.run(&mut self.ecs);
 
-        // Player movement
-        match ctx.key {
+        // Commit the rendering
+        render_draw_buffer(ctx);
+    }
+}
+
+struct PlayerMovementSystem;
+
+impl<'a> System<'a> for PlayerMovementSystem {
+    type SystemData = (
+        ReadStorage<'a, Player>,
+        WriteStorage<'a, Point>,
+        Read<'a, Option<VirtualKeyCode>>,
+    );
+
+    fn run(&mut self, (players, mut positions, maybe_key): Self::SystemData) {
+        match *maybe_key {
             None => {} // Nothing happened
             Some(key) => match key {
                 VirtualKeyCode::Left => {
-                    for (_player, pos) in (&mut players, &mut positions).join() {
+                    for (_player, pos) in (&players, &mut positions).join() {
                         pos.x -= 1;
                         if pos.x < 0 {
                             pos.x = 0;
@@ -65,7 +121,7 @@ impl GameState for State {
                     }
                 }
                 VirtualKeyCode::Right => {
-                    for (_player, pos) in (&mut players, &mut positions).join() {
+                    for (_player, pos) in (&players, &mut positions).join() {
                         pos.x += 1;
                         if pos.x > 79 {
                             pos.x = 79;
@@ -75,63 +131,95 @@ impl GameState for State {
                 _ => {}
             },
         }
+    }
+}
 
-        self.time += ctx.frame_time_ms;
-        if self.time > 200.0 {
-            self.time = 0.0;
+struct BabyMovementSystem;
 
+impl<'a> System<'a> for BabyMovementSystem {
+    type SystemData = (
+        ReadStorage<'a, Player>,
+        WriteStorage<'a, Point>,
+        ReadStorage<'a, BouncingBaby>,
+        Write<'a, GameInfo>,
+        Read<'a, f32>,
+    );
+
+    fn run(&mut self, (players, mut positions, babies, mut info, frame_time): Self::SystemData) {
+        info.time += *frame_time;
+        if info.time > 200.0 {
+            info.time = 0.0;
             // Find the player
             let mut player_x = 0;
-            for (_player, player_pos) in (&mut players, &mut positions).join() {
+            for (_player, player_pos) in (&players, &mut positions).join() {
                 player_x = player_pos.x;
             }
 
             // Baby movement
-            for (_baby, pos) in (&mut babies, &mut positions).join() {
+            for (_baby, pos) in (&babies, &mut positions).join() {
                 pos.y += 1;
                 if pos.y > 48 {
                     pos.y = 0;
                     if player_x == pos.x {
                         // We saved them
-                        self.saved += 1;
+                        info.saved += 1;
                     } else {
                         // Squish!
-                        self.squished += 1;
+                        info.squished += 1;
                     }
-                    pos.x = self.rng.roll_dice(1, 79);
+                    pos.x = info.rng.roll_dice(1, 79);
                 }
             }
         }
+    }
+}
 
-        // Draw renderables
+struct RenderableSystem;
+
+impl<'a> System<'a> for RenderableSystem {
+    type SystemData = (ReadStorage<'a, Point>, ReadStorage<'a, Renderable>);
+
+    fn run(&mut self, (positions, renderables): Self::SystemData) {
+        let mut draw_batch = DrawBatch::new();
         for (pos, render) in (&positions, &renderables).join() {
             draw_batch.set(*pos, ColorPair::new(render.fg, render.bg), render.glyph);
         }
+        draw_batch.submit();
+    }
+}
 
-        // Print the score
+struct UiSystem;
+
+impl<'a> System<'a> for UiSystem {
+    type SystemData = Read<'a, GameInfo>;
+
+    fn run(&mut self, info: Self::SystemData) {
+        let mut draw_batch = DrawBatch::new();
         draw_batch.print_centered(0, "Left & right arrows to move. Catch the falling babies!");
         draw_batch.print_centered(
             2,
-            &format!("Saved {}, Squished {}", self.saved, self.squished),
+            &format!("Saved {}, Squished {}", info.saved, info.squished),
         );
 
         draw_batch.submit();
-        render_draw_buffer(ctx);
     }
 }
 
 fn main() {
     let mut gs = State {
         ecs: World::new(),
-        time: 0.0,
-        rng: rltk::RandomNumberGenerator::new(),
-        saved: 0,
-        squished: 0,
+        systems: SysRunner::new(),
     };
     gs.ecs.register::<Point>();
     gs.ecs.register::<Renderable>();
     gs.ecs.register::<Player>();
-    gs.ecs.register::<BouncingBacy>();
+    gs.ecs.register::<BouncingBaby>();
+    gs.ecs.insert(GameInfo {
+        time: 0.0,
+        saved: 0,
+        squished: 0,
+        rng: rltk::RandomNumberGenerator::new(),
+    });
 
     gs.ecs
         .create_entity()
@@ -147,13 +235,13 @@ fn main() {
     for i in 0..3 {
         gs.ecs
             .create_entity()
-            .with(Point::new((i * 22) + 12, gs.rng.roll_dice(1, 20)))
+            .with(Point::new((i * 22) + 12, 1 + (i * 10)))
             .with(Renderable {
                 glyph: rltk::to_cp437('☺'),
                 fg: RGB::named(rltk::MAGENTA),
                 bg: RGB::named(rltk::BLACK),
             })
-            .with(BouncingBacy {})
+            .with(BouncingBaby {})
             .build();
     }
 
