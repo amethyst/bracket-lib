@@ -261,7 +261,7 @@ impl DrawBatch {
 /// Submits the current batch to the RLTK buffer and empties it
 pub fn render_draw_buffer(rltk: &mut Rltk) {
     let mut buffer = COMMAND_BUFFER.lock().unwrap();
-    buffer.sort_by(|a,b| a.0.cmp(&b.0));
+    buffer.sort_unstable_by(|a,b| a.0.cmp(&b.0));
     buffer
         .iter()
         .for_each(|(_,cmd)| 
