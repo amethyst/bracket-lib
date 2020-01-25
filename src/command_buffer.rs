@@ -109,11 +109,10 @@ impl DrawBatch {
 
     /// Submits a batch to the global drawing buffer, and empties the batch.
     pub fn submit(&mut self, z_order : usize) {
-        let mut cmd = COMMAND_BUFFER.lock().unwrap();
-        self.batch.iter().enumerate().for_each(|(z,(_,c))| {
-            cmd.push((z + z_order,c.clone()));
+        self.batch.iter_mut().enumerate().for_each(|(i, (z, _))| {
+            *z = z_order + i;
         });
-        self.batch.clear();
+        COMMAND_BUFFER.lock().unwrap().append(&mut self.batch);
     }
 
     /// Adds a CLS (clear screen) to the drawing batch

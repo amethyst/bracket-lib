@@ -19,7 +19,7 @@ pub fn init_raw<S: ToString>(
         .with_gl(glutin::GlRequest::Latest)
         .with_gl_profile(glutin::GlProfile::Core)
         .with_hardware_acceleration(Some(true))
-        .with_vsync(false)
+        .with_vsync(true)
         .with_srgb(true)
         .build_windowed(wb, &el)
         .unwrap();
