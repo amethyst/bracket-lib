@@ -151,7 +151,11 @@ impl GameState for State {
                         / 10.0);
                 fg = RGB::from_f32(distance, distance, distance);
             }
-            draw_batch.set(Point::new(x,y), ColorPair::new(fg, RGB::from_f32(0., 0., 0.)), glyph);
+            draw_batch.set(
+                Point::new(x, y),
+                ColorPair::new(fg, RGB::from_f32(0., 0., 0.)),
+                glyph,
+            );
 
             // Move the coordinates
             x += 1;
@@ -165,9 +169,13 @@ impl GameState for State {
         let ppos = idx_xy(self.player_position);
         draw_batch.target(1);
         draw_batch.cls();
-        draw_batch.set(Point::from_tuple(ppos), ColorPair::new(RGB::from_f32(1.0, 1.0, 1.0), RGB::from_f32(0., 0., 0.)), 2);
+        draw_batch.set(
+            Point::from_tuple(ppos),
+            ColorPair::new(RGB::from_f32(1.0, 1.0, 1.0), RGB::from_f32(0., 0., 0.)),
+            2,
+        );
 
-        draw_batch.submit();
+        draw_batch.submit(0);
 
         render_draw_buffer(ctx);
     }

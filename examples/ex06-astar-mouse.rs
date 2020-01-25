@@ -124,7 +124,11 @@ impl GameState for State {
             if !self.visible[i] {
                 fg = fg.to_greyscale();
             }
-            draw_batch.print_color(Point::new(x, y), glyph, ColorPair::new(fg, RGB::from_f32(0., 0., 0.)));
+            draw_batch.print_color(
+                Point::new(x, y),
+                glyph,
+                ColorPair::new(fg, RGB::from_f32(0., 0., 0.)),
+            );
 
             // Move the coordinates
             x += 1;
@@ -140,14 +144,22 @@ impl GameState for State {
             let mouse_pos = ctx.mouse_pos();
             //println!("Received mouse pos: {},{}", mouse_pos.0, mouse_pos.1);
             let mouse_idx = self.point2d_to_index(Point::new(mouse_pos.0, mouse_pos.1));
-            draw_batch.print_color(Point::from_tuple(mouse_pos), "X", ColorPair::new(RGB::from_f32(0.0, 1.0, 1.0), RGB::from_f32(0.0, 1.0, 1.0),));
+            draw_batch.print_color(
+                Point::from_tuple(mouse_pos),
+                "X",
+                ColorPair::new(RGB::from_f32(0.0, 1.0, 1.0), RGB::from_f32(0.0, 1.0, 1.0)),
+            );
             if self.map[mouse_idx as usize] != TileType::Wall {
                 let path = rltk::a_star_search(self.player_position, mouse_idx, self);
                 if path.success {
                     for loc in path.steps.iter().skip(1) {
                         let x = (loc % 80) as i32;
                         let y = (loc / 80) as i32;
-                        draw_batch.print_color(Point::new(x,y), "*", ColorPair::new(RGB::from_f32(1., 0., 0.), RGB::from_f32(0., 0., 0.)));
+                        draw_batch.print_color(
+                            Point::new(x, y),
+                            "*",
+                            ColorPair::new(RGB::from_f32(1., 0., 0.), RGB::from_f32(0., 0., 0.)),
+                        );
                     }
 
                     if ctx.left_click {
@@ -166,10 +178,14 @@ impl GameState for State {
 
         // Render the player @ symbol
         let ppos = idx_xy(self.player_position);
-        draw_batch.print_color(Point::from_tuple(ppos), "@", ColorPair::new(RGB::from_f32(1.0, 1.0, 0.0), RGB::from_f32(0., 0., 0.)));
+        draw_batch.print_color(
+            Point::from_tuple(ppos),
+            "@",
+            ColorPair::new(RGB::from_f32(1.0, 1.0, 0.0), RGB::from_f32(0., 0., 0.)),
+        );
 
         // Submit the rendering
-        draw_batch.submit();
+        draw_batch.submit(0);
         render_draw_buffer(ctx);
     }
 }

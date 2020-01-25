@@ -39,7 +39,11 @@ impl GameState for State {
         // of draw calls sent to ctx. You can also do ctx.consoles[0] - but that's more typing.
         draw_batch.target(0);
         draw_batch.cls();
-        draw_batch.print_color(Point::new(1, self.y), "Hello RLTK World", ColorPair::new(fg, RGB::named(rltk::BLACK)));
+        draw_batch.print_color(
+            Point::new(1, self.y),
+            "Hello RLTK World",
+            ColorPair::new(fg, RGB::named(rltk::BLACK)),
+        );
 
         // Lets make the hello bounce up and down
         if self.going_down {
@@ -73,7 +77,7 @@ impl GameState for State {
             &format!("Frame Time: {} ms", ctx.frame_time_ms),
             ColorPair::new(RGB::named(rltk::CYAN), RGB::named(rltk::BLACK)),
         );
-        draw_batch.submit();
+        draw_batch.submit(0);
 
         render_draw_buffer(ctx);
     }

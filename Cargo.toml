@@ -73,6 +73,10 @@ harness = false
 name = "geometry_benchmark"
 harness = false
 
+[[bench]]
+name = "batching_benchmark"
+harness = false
+
 [[example]]
 name = "ex01-helloworld"
 path = "examples/ex01-helloworld.rs"

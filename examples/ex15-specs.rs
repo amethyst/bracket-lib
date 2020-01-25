@@ -70,11 +70,9 @@ struct SysRunner {
 }
 
 #[cfg(target_arch = "wasm32")]
-struct SysRunner {
-}
+struct SysRunner {}
 
 impl SysRunner {
-
     // This makes a SysRunner with a dispatcher, so it's native code only.
     #[cfg(not(target_arch = "wasm32"))]
     pub fn new() -> Self {
@@ -90,7 +88,7 @@ impl SysRunner {
 
     #[cfg(target_arch = "wasm32")]
     pub fn new() -> Self {
-        SysRunner{}
+        SysRunner {}
     }
 
     // Non-WASM version of the runner - call the dispatcher and update the world.
@@ -102,10 +100,10 @@ impl SysRunner {
 
     #[cfg(target_arch = "wasm32")]
     pub fn run(&mut self, ecs: &mut World) {
-        let mut pms = PlayerMovementSystem{};
-        let mut bms = BabyMovementSystem{};
-        let mut render = RenderableSystem{};
-        let mut ui = UiSystem{};
+        let mut pms = PlayerMovementSystem {};
+        let mut bms = BabyMovementSystem {};
+        let mut render = RenderableSystem {};
+        let mut ui = UiSystem {};
         pms.run_now(ecs);
         bms.run_now(ecs);
         render.run_now(ecs);
@@ -130,7 +128,7 @@ impl GameState for State {
         // Start with a screen clear
         let mut draw_batch = DrawBatch::new();
         draw_batch.cls();
-        draw_batch.submit();
+        draw_batch.submit(0);
 
         // Insert some resources so systems have access to them
         self.ecs.insert(ctx.key);
@@ -237,7 +235,7 @@ impl<'a> System<'a> for RenderableSystem {
         for (pos, render) in (&positions, &renderables).join() {
             draw_batch.set(*pos, ColorPair::new(render.fg, render.bg), render.glyph);
         }
-        draw_batch.submit();
+        draw_batch.submit(1000);
     }
 }
 
@@ -255,7 +253,7 @@ impl<'a> System<'a> for UiSystem {
             &format!("Saved {}, Squished {}", info.saved, info.squished),
         );
 
-        draw_batch.submit();
+        draw_batch.submit(2000);
     }
 }
 
