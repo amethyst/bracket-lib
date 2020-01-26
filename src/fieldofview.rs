@@ -1,4 +1,4 @@
-use super::{Algorithm2D, BresenhamCircle, Point, VectorLine};
+use super::{Algorithm2D, BresenhamCircleNoDiag, Point, VectorLine};
 use std::collections::HashSet;
 
 /// Calculates field-of-view for a map that supports Algorithm2D, returning a HashSet. This is a bit faster
@@ -7,7 +7,7 @@ pub fn field_of_view_set(start: Point, range: i32, fov_check: &dyn Algorithm2D) 
     let mut visible_points: HashSet<Point> =
         HashSet::with_capacity(((range * 2) * (range * 2)) as usize);
 
-    BresenhamCircle::new(start, range).for_each(|point| {
+    BresenhamCircleNoDiag::new(start, range).for_each(|point| {
         scan_fov_line(start, point, fov_check, &mut visible_points);
     });
 
@@ -46,7 +46,9 @@ fn scan_fov_line(
 #[cfg(test)]
 mod tests {
 
+    use crate::BresenhamCircle;
     use crate::Point;
+    use std::cmp::max;
     use std::collections::HashSet;
     use std::hash::Hash;
 
@@ -66,7 +68,12 @@ mod tests {
         }
     }
 
-    impl crate::BaseMap for Map {}
+    // The map needs to be see-through for the tests to check FOV
+    impl crate::BaseMap for Map {
+        fn is_opaque(&self, _idx: usize) -> bool {
+            false
+        }
+    }
 
     impl super::Algorithm2D for Map {
         fn dimensions(&self) -> Point {
@@ -102,9 +109,36 @@ mod tests {
 
         for t in visible.iter() {
             assert!(t.x > 0);
-            assert!(t.x < TESTMAP_W as i32);
+            assert!(t.x < TESTMAP_W as i32 - 1);
             assert!(t.y > 0);
-            assert!(t.y < TESTMAP_H as i32);
+            assert!(t.y < TESTMAP_H as i32 - 1);
+        }
+    }
+
+    // Tests that the FOV scan does not miss any interior points
+    #[test]
+    fn fov_inclusive() {
+        use super::*;
+
+        let map = Map::new();
+        let dimensions = map.dimensions();
+        let c = Point::new(10, 10);
+        // A radius of 8 has points that should be visible in the interior
+        let radius: i32 = 8;
+        let visible = super::field_of_view(c, radius, &map);
+        // let max_radius_sq: i32 = visible.iter().fold(0, |max_r2, p| {
+        let max_radius_sq: i32 = BresenhamCircle::new(c, radius).fold(0, |max_r2, p| {
+            let r2 = (p.x - c.x) * (p.x - c.x) + (p.y - c.y) * (p.y - c.y);
+            max(r2, max_r2)
+        });
+        for x in 0..dimensions.x {
+            for y in 0..dimensions.y {
+                let r2 = (x - c.x) * (x - c.x) + (y - c.y) * (y - c.y);
+                assert!(
+                    r2 >= max_radius_sq || visible.contains(&Point::new(x, y)),
+                    "Interior point not in FOV"
+                );
+            }
         }
     }
 }
