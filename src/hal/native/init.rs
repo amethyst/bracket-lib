@@ -54,7 +54,12 @@ pub fn init_raw<S: ToString>(
     ));
 
     // Build the backing frame-buffer
-    let backing_fbo = Framebuffer::build_fbo(&gl, width_pixels as i32, height_pixels as i32);
+    let initial_dpi_factor = windowed_context.window().scale_factor();
+    let backing_fbo = Framebuffer::build_fbo(
+        &gl, 
+        (width_pixels as f64 * initial_dpi_factor) as i32, 
+        (height_pixels as f64 * initial_dpi_factor) as i32
+    );
 
     // Build a simple quad rendering vao
     let quad_vao = setup_quad(&gl);
