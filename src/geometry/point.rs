@@ -2,7 +2,7 @@ use std::convert::TryInto;
 use std::ops;
 
 #[cfg_attr(
-    feature = "serialization",
+    feature = "serde",
     derive(serde::Serialize, serde::Deserialize)
 )]
 #[derive(Eq, PartialEq, Copy, Clone, Debug, Hash)]
@@ -12,7 +12,7 @@ pub struct Point {
     pub y: i32,
 }
 
-#[cfg(feature = "ecs")]
+#[cfg(feature = "specs")]
 impl specs::prelude::Component for Point {
     type Storage = specs::prelude::VecStorage<Self>;
 }
