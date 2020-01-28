@@ -22,7 +22,6 @@ exclude = [
 default = [ "opengl", "parsing" ]
 threaded = ["rayon"]
 opengl = [ "glow", "image", "glutin" ]
-ecs = [ "specs" ]
 curses = [ "pancurses" ]
 amethyst_engine_vulkan = [ "amethyst/vulkan", "image" ]
 amethyst_engine_metal = [ "amethyst/metal", "image" ]
@@ -148,7 +147,7 @@ required-features = ["opengl"]
 [[example]]
 name = "ex15-specs"
 path = "examples/ex15-specs.rs"
-required-features = ["opengl", "ecs"]
+required-features = ["opengl", "specs"]
 
 [[example]]
 name = "ex16-keyboard"
@@ -233,7 +232,7 @@ required-features = ["amethyst/vulkan"]
 [[example]]
 name = "av15-specs"
 path = "examples/ex15-specs.rs"
-required-features = ["amethyst/vulkan", "ecs"]
+required-features = ["amethyst/vulkan", "specs"]
 
 [[example]]
 name = "av16-keyboard"
@@ -313,7 +312,7 @@ required-features = ["amethyst/metal"]
 [[example]]
 name = "am15-specs"
 path = "examples/ex15-specs.rs"
-required-features = ["amethyst/metal", "ecs"]
+required-features = ["amethyst/metal", "specs"]
 
 [[example]]
 name = "am16-keyboard"
@@ -393,7 +392,7 @@ required-features = ["curses"]
 [[example]]
 name = "curses15-specs"
 path = "examples/ex15-specs.rs"
-required-features = ["curses", "ecs"]
+required-features = ["curses", "specs"]
 
 [[example]]
 name = "curses16-keyboard"

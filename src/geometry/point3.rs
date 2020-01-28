@@ -13,7 +13,7 @@ pub struct Point3 {
     pub z: i32,
 }
 
-#[cfg(feature = "ecs")]
+#[cfg(feature = "specs")]
 impl specs::prelude::Component for Point3 {
     type Storage = specs::prelude::VecStorage<Self>;
 }

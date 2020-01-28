@@ -15,7 +15,7 @@ pub struct Rect {
     pub y2: i32,
 }
 
-#[cfg(feature = "ecs")]
+#[cfg(feature = "specs")]
 impl specs::prelude::Component for Rect {
     type Storage = specs::prelude::VecStorage<Self>;
 }
