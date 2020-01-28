@@ -26,6 +26,8 @@ It's worth upgrading, however:
 * There's a bunch of `try_into` added into various functions to relax the types they require. I believe this needs one of the newer Rust setups, so make sure you update the language.
 * I've updated all the examples to use the new scheme. The [Roguelike Tutorial](http://bfnightly.bracketproductions.com/rustbook/) has also been updated to work with the new setup.
 
+6.0.1 additionally renamed the "specs" feature to `ecs` and the "serialization" feature `serde` in accordance with guidelines.
+
 ## Running the examples
 
 The examples use Cargo's built-in support for example code. E.g. To run example 1, enter: `cargo run --example ex01-helloworld`.
@@ -36,7 +38,7 @@ In your `Cargo.toml` file, include the following:
 
 ```toml
 [dependencies]
-rltk = "0.6.0"
+rltk = "0.6.1"
 ```
 
 *Note: we don't do that in the example files, we use a relative path - to avoid having nested git repos.*
