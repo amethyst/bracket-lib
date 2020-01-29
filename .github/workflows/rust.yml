@@ -19,69 +19,69 @@ jobs:
       run: cargo check --benches
     - name: Check examples
       run: |
-        cargo check ex01-helloworld
-        cargo check ex02-sparse
-        cargo check ex03-walking
-        cargo check ex04-fov
-        cargo check ex05-dijkstra
-        cargo check ex06-astar-mouse
-        cargo check ex07-tiles
-        cargo check ex08-rex
-        cargo check ex09-offsets
-        cargo check ex10-postprocess
-        cargo check ex11-random
-        cargo check ex12-simplex
-        cargo check ex13-textblock
-        cargo check ex14-dwarfmap
-        cargo check ex15-specs
-        cargo check ex16-keyboard
-        cargo check ex17-wasm-external
-        cargo check av01-helloworld
-        cargo check av02-sparse
-        cargo check av03-walking
-        cargo check av04-fov
-        cargo check av05-dijkstra
-        cargo check av06-astar-mouse
-        cargo check av07-tiles
-        cargo check av08-rex
-        cargo check av09-offsets
-        cargo check av10-postprocess
-        cargo check av11-random
-        cargo check av12-simplex
-        cargo check av13-textblock
-        cargo check av14-dwarfmap
-        cargo check av15-specs
-        cargo check av16-keyboard
-        cargo check am01-helloworld
-        cargo check am02-sparse
-        cargo check am03-walking
-        cargo check am04-fov
-        cargo check am05-dijkstra
-        cargo check am06-astar-mouse
-        cargo check am07-tiles
-        cargo check am08-rex
-        cargo check am09-offsets
-        cargo check am10-postprocess
-        cargo check am11-random
-        cargo check am12-simplex
-        cargo check am13-textblock
-        cargo check am14-dwarfmap
-        cargo check am15-specs
-        cargo check am16-keyboard
-        cargo check curses01-helloworld
-        cargo check curses02-sparse
-        cargo check curses03-walking
-        cargo check curses04-fov
-        cargo check curses05-dijkstra
-        cargo check curses06-astar-mouse
-        cargo check curses07-tiles
-        cargo check curses08-rex
-        cargo check curses09-offsets
-        cargo check curses10-postprocess
-        cargo check curses11-random
-        cargo check curses12-simplex
-        cargo check curses13-textblock
-        cargo check curses14-dwarfmap
-        cargo check curses15-specs
-        cargo check curses16-keyboard
-        cargo check curses17-wasm-external
+        cargo check --example ex01-helloworld
+        cargo check --example ex02-sparse
+        cargo check --example ex03-walking
+        cargo check --example ex04-fov
+        cargo check --example ex05-dijkstra
+        cargo check --example ex06-astar-mouse
+        cargo check --example ex07-tiles
+        cargo check --example ex08-rex
+        cargo check --example ex09-offsets
+        cargo check --example ex10-postprocess
+        cargo check --example ex11-random
+        cargo check --example ex12-simplex
+        cargo check --example ex13-textblock
+        cargo check --example ex14-dwarfmap
+        cargo check --example ex15-specs
+        cargo check --example ex16-keyboard
+        cargo check --example ex17-wasm-external
+        cargo check --example av01-helloworld
+        cargo check --example av02-sparse
+        cargo check --example av03-walking
+        cargo check --example av04-fov
+        cargo check --example av05-dijkstra
+        cargo check --example av06-astar-mouse
+        cargo check --example av07-tiles
+        cargo check --example av08-rex
+        cargo check --example av09-offsets
+        cargo check --example av10-postprocess
+        cargo check --example av11-random
+        cargo check --example av12-simplex
+        cargo check --example av13-textblock
+        cargo check --example av14-dwarfmap
+        cargo check --example av15-specs
+        cargo check --example av16-keyboard
+        cargo check --example am01-helloworld
+        cargo check --example am02-sparse
+        cargo check --example am03-walking
+        cargo check --example am04-fov
+        cargo check --example am05-dijkstra
+        cargo check --example am06-astar-mouse
+        cargo check --example am07-tiles
+        cargo check --example am08-rex
+        cargo check --example am09-offsets
+        cargo check --example am10-postprocess
+        cargo check --example am11-random
+        cargo check --example am12-simplex
+        cargo check --example am13-textblock
+        cargo check --example am14-dwarfmap
+        cargo check --example am15-specs
+        cargo check --example am16-keyboard
+        cargo check --example curses01-helloworld
+        cargo check --example curses02-sparse
+        cargo check --example curses03-walking
+        cargo check --example curses04-fov
+        cargo check --example curses05-dijkstra
+        cargo check --example curses06-astar-mouse
+        cargo check --example curses07-tiles
+        cargo check --example curses08-rex
+        cargo check --example curses09-offsets
+        cargo check --example curses10-postprocess
+        cargo check --example curses11-random
+        cargo check --example curses12-simplex
+        cargo check --example curses13-textblock
+        cargo check --example curses14-dwarfmap
+        cargo check --example curses15-specs
+        cargo check --example curses16-keyboard
+        cargo check --example curses17-wasm-external
