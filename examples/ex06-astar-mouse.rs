@@ -245,7 +245,9 @@ impl Algorithm2D for State {
 }
 
 fn main() {
-    let context = Rltk::init_simple8x8(80, 50, "RLTK Example 05 - A Star and a Mouse", "resources");
+    let context = RltkBuilder::simple80x50()
+        .with_title("Hello RLTK World")
+        .build();
     let gs = State::new();
     rltk::main_loop(context, gs);
 }

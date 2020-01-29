@@ -5,7 +5,7 @@
 //////////////////////////////////////////////////////////////
 
 rltk::add_wasm_support!();
-use rltk::{Algorithm2D, BaseMap, Console, GameState, Point, Rltk, VirtualKeyCode, RGB};
+use rltk::prelude::*;
 
 extern crate rand;
 use crate::rand::Rng;
@@ -178,7 +178,9 @@ impl Algorithm2D for State {
 }
 
 fn main() {
-    let context = Rltk::init_simple8x8(80, 50, "RLTK Example 04 - FOV", "resources");
+    let context = RltkBuilder::simple80x50()
+        .with_title("Hello RLTK World")
+        .build();
     let gs = State::new();
     rltk::main_loop(context, gs);
 }

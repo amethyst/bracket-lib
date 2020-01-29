@@ -7,7 +7,7 @@
 // Comments that duplicate previous examples have been removed for brevity.
 //////////////////////////////////////////////////////////////
 
-use rltk::{Algorithm2D, BaseMap, Console, DijkstraMap, DistanceAlg, GameState, Point, Rltk, RGB};
+use rltk::prelude::*;
 rltk::add_wasm_support!();
 
 extern crate rand;
@@ -284,7 +284,9 @@ impl Algorithm2D for Map {
 }
 
 fn main() {
-    let context = Rltk::init_simple8x8(80, 50, "RLTK Example 05 - Dijstra Flow Maps", "resources");
+    let context = RltkBuilder::simple80x50()
+        .with_title("Hello RLTK World")
+        .build();
     let gs = State::new();
     rltk::main_loop(context, gs);
 }
