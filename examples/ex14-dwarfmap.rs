@@ -5,10 +5,7 @@
 //////////////////////////////////////////////////////////////
 
 rltk::add_wasm_support!();
-use rltk::{
-    Algorithm3D, BaseMap, Console, DistanceAlg, FastNoise, FractalType, GameState, NoiseType,
-    Point3, Rltk, RGB,
-};
+use rltk::prelude::*;
 
 #[derive(PartialEq, Copy, Clone)]
 enum TileType {
@@ -329,12 +326,9 @@ impl Algorithm3D for State {
 }
 
 fn main() {
-    let context = Rltk::init_simple8x8(
-        80,
-        50,
-        "RLTK Example 14 - Dwarf Fortress Map Style",
-        "resources",
-    );
+    let context = RltkBuilder::simple80x50()
+        .with_title("RLTK Example 14 - Dwarf Fortress Map Style")
+        .build();
     let gs = State::new();
     rltk::main_loop(context, gs);
 }
