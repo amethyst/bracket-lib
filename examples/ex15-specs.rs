@@ -304,12 +304,9 @@ fn main() {
     }
 
     // Initialize RLTK
-    let context = Rltk::init_simple8x8(
-        80,
-        50,
-        "Example 15 - Bouncing Babies with SPECS",
-        "resources",
-    );
+    let context = RltkBuilder::simple80x50()
+        .with_title("RLTK Example 15 - Bouncing Babies with Specs")
+        .build();
 
     // Run the game loop
     rltk::main_loop(context, gs);
