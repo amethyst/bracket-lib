@@ -1,5 +1,5 @@
 rltk::add_wasm_support!();
-use rltk::{Console, FastNoise, FractalType, GameState, NoiseType, Rltk, RGB};
+use rltk::prelude::*;
 
 struct State {
     colors: Vec<RGB>,
@@ -58,6 +58,8 @@ fn main() {
     };
     gs.rebuild_noise();
 
-    let context = Rltk::init_simple8x8(80, 50, "Example 12 - Perlin Noise", "resources");
+    let context = RltkBuilder::simple80x50()
+        .with_title("RLTK Example 12 - Perlin Noise")
+        .build();
     rltk::main_loop(context, gs);
 }
