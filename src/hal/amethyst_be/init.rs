@@ -8,6 +8,7 @@ pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
     window_title: S,
+    _vsync: bool
 ) -> crate::Rltk {
     crate::Rltk {
         backend: RltkPlatform {

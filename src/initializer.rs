@@ -20,7 +20,8 @@ pub struct RltkBuilder {
     fonts : Vec<BuilderFont>,
     consoles : Vec<ConsoleType>,
     tile_width: u32,
-    tile_height: u32
+    tile_height: u32,
+    vsync : bool
 }
 
 impl RltkBuilder {
@@ -33,7 +34,8 @@ impl RltkBuilder {
             fonts : Vec::new(),
             consoles : Vec::new(),
             tile_height: 8,
-            tile_width: 8
+            tile_width: 8,
+            vsync: true
         }
     }
 
@@ -46,7 +48,8 @@ impl RltkBuilder {
             fonts : Vec::new(),
             consoles : Vec::new(),
             tile_height: 8,
-            tile_width: 8
+            tile_width: 8,
+            vsync: true
         };
         cb.fonts.push(
             BuilderFont{ path: "terminal8x8.png".to_string(), dimensions: (8, 8) }
@@ -72,7 +75,8 @@ impl RltkBuilder {
             fonts : Vec::new(),
             consoles : Vec::new(),
             tile_height: 8,
-            tile_width: 8
+            tile_width: 8,
+            vsync: true
         };
         cb.fonts.push(
             BuilderFont{ path: "terminal8x8.png".to_string(), dimensions: (8, 8) }
@@ -94,7 +98,8 @@ impl RltkBuilder {
             fonts : Vec::new(),
             consoles : Vec::new(),
             tile_height: 16,
-            tile_width: 8
+            tile_width: 8,
+            vsync: true
         };
         cb.fonts.push(
             BuilderFont{ path: "vga8x16.png".to_string(), dimensions: (8, 8) }
@@ -120,7 +125,8 @@ impl RltkBuilder {
             fonts : Vec::new(),
             consoles : Vec::new(),
             tile_height: 16,
-            tile_width: 8
+            tile_width: 8,
+            vsync: true
         };
         cb.fonts.push(
             BuilderFont{ path: "vga8x16.png".to_string(), dimensions: (8, 8) }
@@ -193,11 +199,17 @@ impl RltkBuilder {
         self
     }
 
+    pub fn with_vsync(mut self, vsync : bool) -> Self {
+        self.vsync = vsync;
+        self
+    }
+
     pub fn build(self) -> Rltk {
         let mut context = init_raw(
             self.width * self.tile_width,
             self.height * self.tile_height,
-            self.title.unwrap_or("RLTK Window".to_string())
+            self.title.unwrap_or("RLTK Window".to_string()),
+            self.vsync
         );
 
         let mut font_map : HashMap<String, usize> = HashMap::new();

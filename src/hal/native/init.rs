@@ -4,6 +4,7 @@ pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
     window_title: S,
+    vsync: bool
 ) -> super::super::super::Rltk {
     use super::super::super::Rltk;
     use super::super::*;
@@ -19,7 +20,7 @@ pub fn init_raw<S: ToString>(
         .with_gl(glutin::GlRequest::Latest)
         .with_gl_profile(glutin::GlProfile::Core)
         .with_hardware_acceleration(Some(true))
-        .with_vsync(true)
+        .with_vsync(vsync)
         .with_srgb(true)
         .build_windowed(wb, &el)
         .unwrap();

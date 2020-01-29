@@ -205,6 +205,7 @@ fn main() {
         WIDTH as u32 * 16,
         HEIGHT as u32 * 16,
         "RLTK Example 07 - Tiles",
+        true
     );
     let font = context.register_font(rltk::Font::load("resources/example_tiles.png", (16, 16)));
     context.register_console(

@@ -65,6 +65,7 @@ pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
     _window_title: S,
+    _vsync: bool
 ) -> crate::Rltk {
     let window = initscr();
     resize_term(height_pixels as i32 / 8, width_pixels as i32 / 8);
