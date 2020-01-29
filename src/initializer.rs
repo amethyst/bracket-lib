@@ -234,6 +234,12 @@ impl RltkBuilder {
         self
     }
 
+    /// Enables you to override the full screen setting for native rendering.
+    pub fn with_fullscreen(mut self, fullscreen : bool) -> Self {
+        self.platform_hints.fullscreen = fullscreen;
+        self
+    }
+
     /// Push platform-specific initialization hints to the builder. THIS REMOVES CROSS-PLATFORM COMPATIBILITY
     pub fn with_platform_specific(mut self, hints : InitHints) -> Self {
         self.platform_hints = hints;

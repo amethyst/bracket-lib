@@ -27,6 +27,11 @@ pub fn init_raw<S: ToString>(
         .unwrap();
     let windowed_context = unsafe { windowed_context.make_current().unwrap() };
 
+    if platform_hints.fullscreen {
+        let mh = el.available_monitors().nth(0).unwrap();
+        windowed_context.window().set_fullscreen(Some(glutin::window::Fullscreen::Borderless(mh)));
+    }
+
     let gl = glow::Context::from_loader_function(|ptr| {
         windowed_context.get_proc_address(ptr) as *const _
     });
