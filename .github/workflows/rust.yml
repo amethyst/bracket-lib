@@ -18,6 +18,7 @@ jobs:
     - name: Check benchmarks
       run: cargo check --benches
     - name: Check examples
+      if: matrix.os != 'windows.latest'
       run: |
         cargo check --example ex01-helloworld  --features "opengl" 
         cargo check --example ex02-sparse  --features "opengl"
@@ -38,23 +39,6 @@ jobs:
     - name: Check Linux examples
       if: matrix.os == 'ubuntu-latest'
       run: |
-        cargo check --example av01-helloworld  --features "amethyst/vulkan" 
-        cargo check --example av02-sparse  --features "amethyst/vulkan"
-        cargo check --example av03-walking  --features "amethyst/vulkan"
-        cargo check --example av04-fov  --features "amethyst/vulkan"
-        cargo check --example av05-dijkstra  --features "amethyst/vulkan"
-        cargo check --example av06-astar-mouse  --features "amethyst/vulkan"
-        cargo check --example av07-tiles  --features "amethyst/vulkan"
-        cargo check --example av08-rex  --features "amethyst/vulkan"
-        cargo check --example av09-offsets  --features "amethyst/vulkan"
-        cargo check --example av10-postprocess  --features "amethyst/vulkan"
-        cargo check --example av11-random  --features "amethyst/vulkan"
-        cargo check --example av12-simplex  --features "amethyst/vulkan"
-        cargo check --example av13-textblock  --features "amethyst/vulkan"
-        cargo check --example av14-dwarfmap  --features "amethyst/vulkan"
-        cargo check --example av15-specs  --features "amethyst/vulkan specs"
-        cargo check --example av16-keyboard  --features "amethyst/vulkan"
-
         cargo check --example curses01-helloworld  --features "curses" 
         cargo check --example curses02-sparse  --features "curses"
         cargo check --example curses03-walking  --features "curses"
