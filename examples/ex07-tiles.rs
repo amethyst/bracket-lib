@@ -201,21 +201,26 @@ rltk::embedded_resource!(TILE_FONT, "../resources/example_tiles.png");
 
 fn main() {
     rltk::link_resource!(TILE_FONT, "resources/example_tiles.png");
-    let mut context = Rltk::init_raw(
-        WIDTH as u32 * 16,
-        HEIGHT as u32 * 16,
-        "RLTK Example 07 - Tiles",
-        true
-    );
-    let font = context.register_font(rltk::Font::load("resources/example_tiles.png", (16, 16)));
-    context.register_console(
-        rltk::SimpleConsole::init(WIDTH as u32, HEIGHT as u32, &context.backend),
-        font,
-    );
-    context.register_console(
-        rltk::SparseConsole::init(WIDTH as u32, HEIGHT as u32, &context.backend),
-        font,
-    );
+
+    // This initialization is a bit more complicated than the previous examples. It uses
+    // the "raw" initialization to build a tile-based setup from scatch.
+    // new() starts with basically no useful settings
+    let context = RltkBuilder::new()
+        // We specify the CONSOLE dimensions
+        .with_dimensions(WIDTH, HEIGHT)
+        // We specify the size of the tiles
+        .with_tile_dimensions(16, 16)
+        // We give it a window title
+        .with_title("RLTK Example 07 - Tiles")
+        // We register our embedded "example_tiles.png" as a font.
+        .with_font("example_tiles.png", 16, 16)
+        // We want a base simple console for the terrain background
+        .with_simple_console(WIDTH, HEIGHT, "example_tiles.png")
+        // We also want a sparse console atop it to handle moving the character
+        .with_sparse_console(WIDTH, HEIGHT, "example_tiles.png")
+        // And we call the builder function
+        .build();
+
     let gs = State::new();
     rltk::main_loop(context, gs);
 }

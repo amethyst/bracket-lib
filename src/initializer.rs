@@ -160,6 +160,16 @@ impl RltkBuilder {
         self
     }
 
+    /// Overrides the default assumption for tile sizes. Needed for a raw initialization.
+    pub fn with_tile_dimensions<T>(mut self, width: T, height: T) -> Self
+    where
+        T: TryInto<u32>,
+    {
+        self.tile_width = width.try_into().ok().unwrap();
+        self.tile_height = height.try_into().ok().unwrap();
+        self
+    }
+
     /// Adds a window title to the RLTK builder.
     pub fn with_title<S: ToString>(mut self, title : S) -> Self {
         self.title = Some(title.to_string());

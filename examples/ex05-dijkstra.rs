@@ -285,7 +285,7 @@ impl Algorithm2D for Map {
 
 fn main() {
     let context = RltkBuilder::simple80x50()
-        .with_title("Hello RLTK World")
+        .with_title("RLTK Example 5 - Dijkstra")
         .build();
     let gs = State::new();
     rltk::main_loop(context, gs);

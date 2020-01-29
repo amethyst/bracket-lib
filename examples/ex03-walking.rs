@@ -172,7 +172,7 @@ impl GameState for State {
 
 fn main() {
     let context = RltkBuilder::simple80x50()
-        .with_title("Hello RLTK World")
+        .with_title("RLTK Example 3 - Walking")
         .build();
     let gs = State::new();
     rltk::main_loop(context, gs);
