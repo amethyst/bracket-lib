@@ -18,7 +18,7 @@ jobs:
     - name: Check benchmarks
       run: cargo check --benches
     - name: Check examples
-      if: matrix.os != 'windows.latest'
+      if: matrix.os != 'windows-latest'
       run: |
         cargo check --example ex01-helloworld  --features "opengl" 
         cargo check --example ex02-sparse  --features "opengl"
