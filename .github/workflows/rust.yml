@@ -36,41 +36,4 @@ jobs:
         cargo check --example ex14-dwarfmap  --features "opengl"
         cargo check --example ex15-specs  --features "opengl, specs"
         cargo check --example ex16-keyboard  --features "opengl"
-    - name: Check Linux examples
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        cargo check --example curses01-helloworld  --features "curses" 
-        cargo check --example curses02-sparse  --features "curses"
-        cargo check --example curses03-walking  --features "curses"
-        cargo check --example curses04-fov  --features "curses"
-        cargo check --example curses05-dijkstra  --features "curses"
-        cargo check --example curses06-astar-mouse  --features "curses"
-        cargo check --example curses07-tiles  --features "curses"
-        cargo check --example curses08-rex  --features "curses"
-        cargo check --example curses09-offsets  --features "curses"
-        cargo check --example curses10-postprocess  --features "curses"
-        cargo check --example curses11-random  --features "curses"
-        cargo check --example curses12-simplex  --features "curses"
-        cargo check --example curses13-textblock  --features "curses"
-        cargo check --example curses14-dwarfmap  --features "curses"
-        cargo check --example curses15-specs  --features "curses specs"
-        cargo check --example curses16-keyboard  --features "curses"
-    - name: Check Macos examples
-      if: matrix.os == 'macos-latest'
-      run: |
-        cargo check --example am01-helloworld  --features "amethyst/metal" 
-        cargo check --example am02-sparse  --features "amethyst/metal"
-        cargo check --example am03-walking  --features "amethyst/metal"
-        cargo check --example am04-fov  --features "amethyst/metal"
-        cargo check --example am05-dijkstra  --features "amethyst/metal"
-        cargo check --example am06-astar-mouse  --features "amethyst/metal"
-        cargo check --example am07-tiles  --features "amethyst/metal"
-        cargo check --example am08-rex  --features "amethyst/metal"
-        cargo check --example am09-offsets  --features "amethyst/metal"
-        cargo check --example am10-postprocess  --features "amethyst/metal"
-        cargo check --example am11-random  --features "amethyst/metal"
-        cargo check --example am12-simplex  --features "amethyst/metal"
-        cargo check --example am13-textblock  --features "amethyst/metal"
-        cargo check --example am14-dwarfmap  --features "amethyst/metal"
-        cargo check --example am15-specs  --features "amethyst/metal", "specs"
-        cargo check --example am16-keyboard  --features "amethyst/metal"
+
