@@ -1,5 +1,5 @@
 rltk::add_wasm_support!();
-use rltk::{rex::XpFile, Console, GameState, Rltk, VirtualKeyCode, RGB};
+use rltk::{rex::XpFile, Console, GameState, Rltk, VirtualKeyCode, RGB, RltkBuilder};
 
 struct State {
     nyan: XpFile,
@@ -51,8 +51,10 @@ fn main() {
     rltk::link_resource!(NYAN_CAT, "../resources/nyan.xp");
     let xp = XpFile::from_resource("../resources/nyan.xp").unwrap();
 
-    let mut context =
-        Rltk::init_simple8x8(80, 50, "Example 10 - Post Process Effects", "resources");
+    let mut context = RltkBuilder::simple80x50()
+        .with_title("RLTK Example 10 - Post-Processing Effects")
+        .build();
+
     context.with_post_scanlines(true);
     let gs: State = State {
         nyan: xp,
