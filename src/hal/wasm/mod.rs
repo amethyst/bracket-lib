@@ -16,6 +16,18 @@ pub use sparse_console_backing::*;
 pub mod font;
 pub mod shader;
 
+pub struct InitHints {
+    pub vsync : bool,
+}
+
+impl InitHints {
+    pub fn new() -> Self {
+        Self{
+            vsync : true,
+        }
+    }
+}
+
 pub struct PlatformGL {
     pub gl: glow::Context,
     pub context_wrapper: Option<WrappedContext>,

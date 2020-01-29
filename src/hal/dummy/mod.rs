@@ -1,8 +1,21 @@
 // Dummy platform to let it compile and do nothing. Only useful if you don't want a graphical backend.
 use crate::{GameState, Rltk};
+use super::InitHints;
 
 mod keycodes;
 pub use keycodes::VirtualKeyCode;
+
+pub struct InitHints {
+    pub vsync : bool,
+}
+
+impl InitHints {
+    pub fn new() -> Self {
+        Self{
+            vsync : true,
+        }
+    }
+}
 
 pub struct PlatformGL {}
 
@@ -30,7 +43,7 @@ pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
     _window_title: S,
-    _vsync: bool
+    _platform_hints: InitHints
 ) -> crate::Rltk {
     crate::Rltk {
         backend: super::RltkPlatform {

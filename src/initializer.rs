@@ -26,7 +26,7 @@ pub struct RltkBuilder {
     consoles : Vec<ConsoleType>,
     tile_width: u32,
     tile_height: u32,
-    vsync : bool
+    platform_hints : InitHints
 }
 
 impl RltkBuilder {
@@ -42,7 +42,7 @@ impl RltkBuilder {
             consoles : Vec::new(),
             tile_height: 8,
             tile_width: 8,
-            vsync: true
+            platform_hints : InitHints::new()
         }
     }
 
@@ -57,7 +57,7 @@ impl RltkBuilder {
             consoles : Vec::new(),
             tile_height: 8,
             tile_width: 8,
-            vsync: true
+            platform_hints : InitHints::new()
         };
         cb.fonts.push(
             BuilderFont{ path: "terminal8x8.png".to_string(), dimensions: (8, 8) }
@@ -85,7 +85,7 @@ impl RltkBuilder {
             consoles : Vec::new(),
             tile_height: 8,
             tile_width: 8,
-            vsync: true
+            platform_hints : InitHints::new()
         };
         cb.fonts.push(
             BuilderFont{ path: "terminal8x8.png".to_string(), dimensions: (8, 8) }
@@ -109,7 +109,7 @@ impl RltkBuilder {
             consoles : Vec::new(),
             tile_height: 16,
             tile_width: 8,
-            vsync: true
+            platform_hints : InitHints::new()
         };
         cb.fonts.push(
             BuilderFont{ path: "vga8x16.png".to_string(), dimensions: (8, 8) }
@@ -137,7 +137,7 @@ impl RltkBuilder {
             consoles : Vec::new(),
             tile_height: 16,
             tile_width: 8,
-            vsync: true
+            platform_hints : InitHints::new()
         };
         cb.fonts.push(
             BuilderFont{ path: "vga8x16.png".to_string(), dimensions: (8, 8) }
@@ -230,7 +230,13 @@ impl RltkBuilder {
 
     /// Enables you to override the vsync default for native rendering.
     pub fn with_vsync(mut self, vsync : bool) -> Self {
-        self.vsync = vsync;
+        self.platform_hints.vsync = vsync;
+        self
+    }
+
+    /// Push platform-specific initialization hints to the builder. THIS REMOVES CROSS-PLATFORM COMPATIBILITY
+    pub fn with_platform_specific(mut self, hints : InitHints) -> Self {
+        self.platform_hints = hints;
         self
     }
 
@@ -240,7 +246,7 @@ impl RltkBuilder {
             self.width * self.tile_width,
             self.height * self.tile_height,
             self.title.unwrap_or("RLTK Window".to_string()),
-            self.vsync
+            self.platform_hints
         );
 
         let mut font_map : HashMap<String, usize> = HashMap::new();

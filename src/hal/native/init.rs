@@ -1,10 +1,11 @@
 use glutin::{dpi::LogicalSize, event_loop::EventLoop, window::WindowBuilder, ContextBuilder};
+use super::InitHints;
 
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
     window_title: S,
-    vsync: bool
+    platform_hints: InitHints
 ) -> super::super::super::Rltk {
     use super::super::super::Rltk;
     use super::super::*;
@@ -17,11 +18,11 @@ pub fn init_raw<S: ToString>(
             f64::from(height_pixels),
         ));
     let windowed_context = ContextBuilder::new()
-        .with_gl(glutin::GlRequest::Latest)
-        .with_gl_profile(glutin::GlProfile::Core)
+        .with_gl(platform_hints.gl_version)
+        .with_gl_profile(platform_hints.gl_profile)
         .with_hardware_acceleration(Some(true))
-        .with_vsync(vsync)
-        .with_srgb(true)
+        .with_vsync(platform_hints.vsync)
+        .with_srgb(platform_hints.srgb)
         .build_windowed(wb, &el)
         .unwrap();
     let windowed_context = unsafe { windowed_context.make_current().unwrap() };

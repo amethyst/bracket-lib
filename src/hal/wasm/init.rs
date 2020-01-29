@@ -1,8 +1,10 @@
+use super::InitHints;
+
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
     _window_title: S,
-    _vsync: bool
+    _platform_hints: InitHints
 ) -> super::super::super::Rltk {
     use super::super::super::Rltk;
     use super::super::*;
