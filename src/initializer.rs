@@ -237,7 +237,6 @@ impl RltkBuilder {
         for font in &self.fonts {
             let font_path = format!("{}/{}", self.resource_path, font.path);
             let font_id = context.register_font(Font::load(font_path.clone(), font.dimensions));
-            println!("Registered font: {} as {}", font_path, font_id);
             font_map.insert(font_path, font_id);
         }
 
@@ -245,13 +244,11 @@ impl RltkBuilder {
             match console {
                 ConsoleType::SimpleConsole{width, height, font} => {
                     let font_path = format!("{}/{}", self.resource_path, font);
-                    println!("Looking for font: {}", font_path);
                     let font_id = font_map[&font_path];
                     context.register_console(SimpleConsole::init(*width, *height, &context.backend), font_id);
                 }
                 ConsoleType::SparseConsole{width, height, font} => {
                     let font_path = format!("{}/{}", self.resource_path, font);
-                    println!("Looking for font: {}", font_path);
                     let font_id = font_map[&font_path];
                     context.register_console(SparseConsole::init(*width, *height, &context.backend), font_id);
                 }
