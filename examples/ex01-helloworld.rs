@@ -8,7 +8,7 @@ rltk::add_wasm_support!();
 
 // We're using Rltk (the main context) and GameState (a trait defining what our callback
 // looks like), so we need to use that, too.`
-use rltk::{Console, GameState, Rltk, RGB};
+use rltk::prelude::*;
 
 // This is the structure that will store our game state, typically a state machine pointing to
 // other structures. This demo is realy simple, so we'll just put the minimum to make it work
@@ -83,13 +83,12 @@ impl GameState for State {
 
 // Every program needs a main() function!
 fn main() {
-    // RLTK provides a simple initializer for a simple 8x8 font window of a given number of
-    // characters. Since that's all we need here, we'll use it!
-    // We're specifying that we want an 80x50 console, with a title, and a relative path
-    // to where it can find the font files and shader files.
-    // These would normally be "resources" rather than "../../resources" - but to make it
-    // work in the repo without duplicating, they are a relative path.
-    let context = Rltk::init_simple8x8(80, 50, "Hello RLTK World", "resources");
+    // RLTK's ConsoleBuilder interface offers a number of helpers to get you up and running quickly.
+    // Here, we are using the `simple80x50()` helper, which builds an 80-wide by 50-tall console,
+    // with the baked-in 8x8 terminal font.
+    let context = RltkBuilder::simple80x50()
+        .with_title("Hello RLTK World")
+        .build();
 
     // Now we create an empty state object.
     let gs: State = State {
