@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////
 
 rltk::add_wasm_support!();
-use rltk::{Console, GameState, Rltk, VirtualKeyCode, RGB};
+use rltk::prelude::*;
 
 // We'll allow map tiles to be either a wall or a floor. We're deriving PartialEq so we don't
 // have to match on it every time. We'll make it a copy type because it's really just an int.
@@ -171,7 +171,9 @@ impl GameState for State {
 }
 
 fn main() {
-    let context = Rltk::init_simple8x8(80, 50, "RLTK Example 03 - Walking Around", "resources");
+    let context = RltkBuilder::simple80x50()
+        .with_title("Hello RLTK World")
+        .build();
     let gs = State::new();
     rltk::main_loop(context, gs);
 }
