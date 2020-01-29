@@ -153,19 +153,20 @@ impl SimpleConsoleBackend {
         tiles: &[Tile],
         offset_x: f32,
         offset_y: f32,
+        scale: f32,
     ) {
         self.vertex_counter = 0;
         self.index_counter = 0;
         let glyph_size_x: f32 = 1.0f32 / 16.0f32;
         let glyph_size_y: f32 = 1.0f32 / 16.0f32;
 
-        let step_x: f32 = 2.0f32 / width as f32;
-        let step_y: f32 = 2.0f32 / height as f32;
+        let step_x: f32 = scale * 2.0f32 / width as f32;
+        let step_y: f32 = scale * 2.0f32 / height as f32;
 
         let mut index_count: i32 = 0;
-        let mut screen_y: f32 = -1.0f32;
+        let mut screen_y: f32 = -1.0f32 * scale;
         for y in 0..height {
-            let mut screen_x: f32 = -1.0f32;
+            let mut screen_x: f32 = -1.0f32 * scale;
             for x in 0..width {
                 let fg = tiles[((y * width) + x) as usize].fg;
                 let bg = tiles[((y * width) + x) as usize].bg;

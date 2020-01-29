@@ -112,6 +112,7 @@ impl SparseConsoleBackend {
         width: u32,
         offset_x: f32,
         offset_y: f32,
+        _scale: f32,
         tiles: &Vec<SparseTile>,
     ) {
         let gl = &platform.platform.gl;

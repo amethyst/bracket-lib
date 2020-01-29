@@ -341,6 +341,10 @@ impl Console for Rltk {
     fn set_offset(&mut self, x: f32, y: f32) {
         self.consoles[self.active_console].console.set_offset(x, y);
     }
+    fn set_scale(&mut self, scale: f32) {
+        self.consoles[self.active_console].console.set_scale(scale);
+    }
+
     fn as_any(&self) -> &dyn Any {
         self
     }

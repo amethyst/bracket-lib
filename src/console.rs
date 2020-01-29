@@ -103,6 +103,9 @@ pub trait Console {
     /// drawing walls between tiles.
     fn set_offset(&mut self, x: f32, y: f32);
 
+    /// Specify a scale of the scale. A scale above 1.0 will make the text larger.
+    fn set_scale(&mut self, scale: f32);
+
     // Produces the implementor as an Any that can be matched to determine type and access
     // natively.
     fn as_any(&self) -> &dyn Any;

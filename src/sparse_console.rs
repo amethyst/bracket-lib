@@ -22,6 +22,8 @@ pub struct SparseConsole {
     offset_x: f32,
     offset_y: f32,
 
+    scale: f32,
+
     backend: hal::SparseConsoleBackend,
 }
 
@@ -36,6 +38,7 @@ impl SparseConsole {
             is_dirty: true,
             offset_x: 0.0,
             offset_y: 0.0,
+            scale: 1.0,
             backend: hal::SparseConsoleBackend::new(platform, width as usize, height as usize),
         };
 
@@ -49,6 +52,7 @@ impl SparseConsole {
             self.width,
             self.offset_x,
             self.offset_y,
+            self.scale,
             &self.tiles,
         );
     }
@@ -261,6 +265,10 @@ impl Console for SparseConsole {
     fn set_offset(&mut self, x: f32, y: f32) {
         self.offset_x = x * (2.0 / self.width as f32);
         self.offset_y = y * (2.0 / self.height as f32);
+    }
+
+    fn set_scale(&mut self, scale: f32) {
+        self.scale = scale;
     }
 
     fn as_any(&self) -> &dyn Any {

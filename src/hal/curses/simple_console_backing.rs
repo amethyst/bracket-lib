@@ -21,6 +21,7 @@ impl SimpleConsoleBackend {
         tiles: &[crate::Tile],
         _offset_x: f32,
         _offset_y: f32,
+        _scale: f32,
     ) {
         self.tiles.clear();
         for t in tiles.iter() {
