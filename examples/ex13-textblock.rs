@@ -1,5 +1,5 @@
 rltk::add_wasm_support!();
-use rltk::{Console, GameState, Rltk, TextBlock, TextBuilder, RGB};
+use rltk::prelude::*;
 
 struct State {}
 
@@ -37,6 +37,8 @@ impl GameState for State {
 fn main() {
     let gs: State = State {};
 
-    let context = Rltk::init_simple8x16(80, 25, "Example 13 - Text Blocks", "resources");
+    let context = RltkBuilder::simple80x50()
+        .with_title("RLTK Example 13 - Text Blocks")
+        .build();
     rltk::main_loop(context, gs);
 }
