@@ -23,3 +23,23 @@ pub struct WrappedContext {
     pub el: glutin::event_loop::EventLoop<()>,
     pub wc: glutin::WindowedContext<glutin::PossiblyCurrent>,
 }
+
+pub struct InitHints {
+    pub vsync : bool,
+    pub gl_version : glutin::GlRequest,
+    pub gl_profile : glutin::GlProfile,
+    pub hardware_acceleration : bool,
+    pub srgb : bool
+}
+
+impl InitHints {
+    pub fn new() -> Self {
+        Self{
+            vsync : true,
+            gl_version : glutin::GlRequest::Latest,
+            gl_profile : glutin::GlProfile::Core,
+            hardware_acceleration : true,
+            srgb : true
+        }
+    }
+}

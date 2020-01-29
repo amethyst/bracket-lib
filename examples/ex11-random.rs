@@ -1,5 +1,5 @@
 rltk::add_wasm_support!();
-use rltk::{Console, GameState, RandomNumberGenerator, Rltk, RGB};
+use rltk::prelude::*;
 
 struct State {
     rng: RandomNumberGenerator,
@@ -44,7 +44,9 @@ impl GameState for State {
 }
 
 fn main() {
-    let context = Rltk::init_simple8x16(80, 23, "Example 11 - Random Numbers", "resources");
+    let context = RltkBuilder::vga(80, 23)
+        .with_title("Example 11 - Random Numbers")
+        .build();
     let gs: State = State {
         rng: RandomNumberGenerator::new(),
         n_rolls: 0,

@@ -48,6 +48,8 @@ pub use parsing::{parse_dice_string, DiceParseError, DiceType};
 mod command_buffer;
 pub mod embedding;
 pub use command_buffer::*;
+mod initializer;
+pub use initializer::*;
 
 pub mod prelude {
     pub use crate::*;

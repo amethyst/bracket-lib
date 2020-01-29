@@ -1,4 +1,5 @@
 use super::super::RltkPlatform;
+use super::InitHints;
 
 pub struct PlatformGL {
     pub window_title: String,
@@ -8,6 +9,7 @@ pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
     window_title: S,
+    _platform_hints: InitHints
 ) -> crate::Rltk {
     crate::Rltk {
         backend: RltkPlatform {

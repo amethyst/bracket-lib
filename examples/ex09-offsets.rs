@@ -1,5 +1,5 @@
 rltk::add_wasm_support!();
-use rltk::{to_cp437, Console, GameState, Rltk, RGB};
+use rltk::prelude::*;
 
 struct State {}
 
@@ -81,8 +81,10 @@ impl GameState for State {
 }
 
 fn main() {
-    let mut context = Rltk::init_simple8x8(80, 50, "Example 9 - Offset Tiles", "resources");
-    context.register_console_no_bg(rltk::SparseConsole::init(80, 50, &context.backend), 0);
+    let mut context = RltkBuilder::simple80x50()
+        .with_title("RLTK Example 9 - Offsets")
+        .with_sparse_console(80, 50, "terminal8x8.png")
+        .build();
 
     // We're going to set the second layer's offset to -0.5 to render between tiles
     context.set_active_console(1);
