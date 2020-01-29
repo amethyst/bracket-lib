@@ -19,69 +19,76 @@ jobs:
       run: cargo check --benches
     - name: Check examples
       run: |
-        cargo check --example ex01-helloworld
-        cargo check --example ex02-sparse
-        cargo check --example ex03-walking
-        cargo check --example ex04-fov
-        cargo check --example ex05-dijkstra
-        cargo check --example ex06-astar-mouse
-        cargo check --example ex07-tiles
-        cargo check --example ex08-rex
-        cargo check --example ex09-offsets
-        cargo check --example ex10-postprocess
-        cargo check --example ex11-random
-        cargo check --example ex12-simplex
-        cargo check --example ex13-textblock
-        cargo check --example ex14-dwarfmap
-        cargo check --example ex15-specs
-        cargo check --example ex16-keyboard
-        cargo check --example ex17-wasm-external
-        cargo check --example av01-helloworld
-        cargo check --example av02-sparse
-        cargo check --example av03-walking
-        cargo check --example av04-fov
-        cargo check --example av05-dijkstra
-        cargo check --example av06-astar-mouse
-        cargo check --example av07-tiles
-        cargo check --example av08-rex
-        cargo check --example av09-offsets
-        cargo check --example av10-postprocess
-        cargo check --example av11-random
-        cargo check --example av12-simplex
-        cargo check --example av13-textblock
-        cargo check --example av14-dwarfmap
-        cargo check --example av15-specs
-        cargo check --example av16-keyboard
-        cargo check --example am01-helloworld
-        cargo check --example am02-sparse
-        cargo check --example am03-walking
-        cargo check --example am04-fov
-        cargo check --example am05-dijkstra
-        cargo check --example am06-astar-mouse
-        cargo check --example am07-tiles
-        cargo check --example am08-rex
-        cargo check --example am09-offsets
-        cargo check --example am10-postprocess
-        cargo check --example am11-random
-        cargo check --example am12-simplex
-        cargo check --example am13-textblock
-        cargo check --example am14-dwarfmap
-        cargo check --example am15-specs
-        cargo check --example am16-keyboard
-        cargo check --example curses01-helloworld
-        cargo check --example curses02-sparse
-        cargo check --example curses03-walking
-        cargo check --example curses04-fov
-        cargo check --example curses05-dijkstra
-        cargo check --example curses06-astar-mouse
-        cargo check --example curses07-tiles
-        cargo check --example curses08-rex
-        cargo check --example curses09-offsets
-        cargo check --example curses10-postprocess
-        cargo check --example curses11-random
-        cargo check --example curses12-simplex
-        cargo check --example curses13-textblock
-        cargo check --example curses14-dwarfmap
-        cargo check --example curses15-specs
-        cargo check --example curses16-keyboard
-        cargo check --example curses17-wasm-external
+        cargo check --example ex01-helloworld  --features "opengl" 
+        cargo check --example ex02-sparse  --features "opengl"
+        cargo check --example ex03-walking  --features "opengl"
+        cargo check --example ex04-fov  --features "opengl"
+        cargo check --example ex05-dijkstra  --features "opengl"
+        cargo check --example ex06-astar-mouse  --features "opengl"
+        cargo check --example ex07-tiles  --features "opengl"
+        cargo check --example ex08-rex  --features "opengl"
+        cargo check --example ex09-offsets  --features "opengl"
+        cargo check --example ex10-postprocess  --features "opengl"
+        cargo check --example ex11-random  --features "opengl"
+        cargo check --example ex12-simplex  --features "opengl"
+        cargo check --example ex13-textblock  --features "opengl"
+        cargo check --example ex14-dwarfmap  --features "opengl"
+        cargo check --example ex15-specs  --features "opengl, specs"
+        cargo check --example ex16-keyboard  --features "opengl"
+        cargo check --example ex17-wasm-external  --features "opengl"
+    - name: Check Linux examples
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        cargo check --example av01-helloworld  --features "amethyst/vulkan" 
+        cargo check --example av02-sparse  --features "amethyst/vulkan"
+        cargo check --example av03-walking  --features "amethyst/vulkan"
+        cargo check --example av04-fov  --features "amethyst/vulkan"
+        cargo check --example av05-dijkstra  --features "amethyst/vulkan"
+        cargo check --example av06-astar-mouse  --features "amethyst/vulkan"
+        cargo check --example av07-tiles  --features "amethyst/vulkan"
+        cargo check --example av08-rex  --features "amethyst/vulkan"
+        cargo check --example av09-offsets  --features "amethyst/vulkan"
+        cargo check --example av10-postprocess  --features "amethyst/vulkan"
+        cargo check --example av11-random  --features "amethyst/vulkan"
+        cargo check --example av12-simplex  --features "amethyst/vulkan"
+        cargo check --example av13-textblock  --features "amethyst/vulkan"
+        cargo check --example av14-dwarfmap  --features "amethyst/vulkan"
+        cargo check --example av15-specs  --features "amethyst/vulkan specs"
+        cargo check --example av16-keyboard  --features "amethyst/vulkan"
+
+        cargo check --example curses01-helloworld  --features "curses" 
+        cargo check --example curses02-sparse  --features "curses"
+        cargo check --example curses03-walking  --features "curses"
+        cargo check --example curses04-fov  --features "curses"
+        cargo check --example curses05-dijkstra  --features "curses"
+        cargo check --example curses06-astar-mouse  --features "curses"
+        cargo check --example curses07-tiles  --features "curses"
+        cargo check --example curses08-rex  --features "curses"
+        cargo check --example curses09-offsets  --features "curses"
+        cargo check --example curses10-postprocess  --features "curses"
+        cargo check --example curses11-random  --features "curses"
+        cargo check --example curses12-simplex  --features "curses"
+        cargo check --example curses13-textblock  --features "curses"
+        cargo check --example curses14-dwarfmap  --features "curses"
+        cargo check --example curses15-specs  --features "curses specs"
+        cargo check --example curses16-keyboard  --features "curses"
+        cargo check --example curses17-wasm-external  --features "curses"
+    - name: Check Macos examples
+      if: matrix.os == 'macos-latest'
+      run: |
+        cargo check --example am01-helloworld  --features "amethyst/metal" 
+        cargo check --example am02-sparse  --features "amethyst/metal"
+        cargo check --example am03-walking  --features "amethyst/metal"
+        cargo check --example am04-fov  --features "amethyst/metal"
+        cargo check --example am05-dijkstra  --features "amethyst/metal"
+        cargo check --example am06-astar-mouse  --features "amethyst/metal"
+        cargo check --example am07-tiles  --features "amethyst/metal"
+        cargo check --example am08-rex  --features "amethyst/metal"
+        cargo check --example am09-offsets  --features "amethyst/metal"
+        cargo check --example am10-postprocess  --features "amethyst/metal"
+        cargo check --example am11-random  --features "amethyst/metal"
+        cargo check --example am12-simplex  --features "amethyst/metal"
+        cargo check --example am13-textblock  --features "amethyst/metal"
+        cargo check --example am14-dwarfmap  --features "amethyst/metal"
+        cargo check --example am15-specs  --features "amethyst/metal", "specs"
+        cargo check --example am16-keyboard  --features "amethyst/metal"
