@@ -32,7 +32,7 @@ impl SparseConsole {
         let new_console = SparseConsole {
             width,
             height,
-            tiles: Vec::new(),
+            tiles: Vec::with_capacity((width * height) as usize),
             is_dirty: true,
             offset_x: 0.0,
             offset_y: 0.0,
