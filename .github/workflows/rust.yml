@@ -35,7 +35,6 @@ jobs:
         cargo check --example ex14-dwarfmap  --features "opengl"
         cargo check --example ex15-specs  --features "opengl, specs"
         cargo check --example ex16-keyboard  --features "opengl"
-        cargo check --example ex17-wasm-external  --features "opengl"
     - name: Check Linux examples
       if: matrix.os == 'ubuntu-latest'
       run: |
@@ -72,7 +71,6 @@ jobs:
         cargo check --example curses14-dwarfmap  --features "curses"
         cargo check --example curses15-specs  --features "curses specs"
         cargo check --example curses16-keyboard  --features "curses"
-        cargo check --example curses17-wasm-external  --features "curses"
     - name: Check Macos examples
       if: matrix.os == 'macos-latest'
       run: |
