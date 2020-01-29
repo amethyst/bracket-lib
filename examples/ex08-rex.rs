@@ -1,5 +1,5 @@
 rltk::add_wasm_support!();
-use rltk::{rex::XpFile, Console, GameState, Rltk, RGB};
+use rltk::{rex::XpFile, Console, GameState, Rltk, RGB, RltkBuilder};
 
 struct State {
     nyan: XpFile,
@@ -34,7 +34,9 @@ fn main() {
     rltk::link_resource!(NYAN_CAT, "../resources/nyan.xp");
     let xp = XpFile::from_resource("../resources/nyan.xp").unwrap();
 
-    let context = Rltk::init_simple8x8(80, 50, "Example 8 - Hello Nyan Cat", "resources");
+    let context = RltkBuilder::simple80x50()
+        .with_title("RLTK Example 8 - REX Paint, Hello Nyan Cat")
+        .build();
     let gs: State = State { nyan: xp };
     rltk::main_loop(context, gs);
 }
