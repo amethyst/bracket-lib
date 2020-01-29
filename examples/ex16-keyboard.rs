@@ -7,7 +7,7 @@ rltk::add_wasm_support!();
 
 // We're using Rltk (the main context) and GameState (a trait defining what our callback
 // looks like), so we need to use that, too.`
-use rltk::{Console, GameState, Rltk};
+use rltk::prelude::*;
 
 // This is the structure that will store our game state, typically a state machine pointing to
 // other structures. This demo is realy simple, so we'll just put the minimum to make it work
@@ -53,7 +53,9 @@ fn main() {
     // to where it can find the font files and shader files.
     // These would normally be "resources" rather than "../../resources" - but to make it
     // work in the repo without duplicating, they are a relative path.
-    let context = Rltk::init_simple8x8(80, 50, "Hello RLTK World", "resources");
+    let context = RltkBuilder::simple80x50()
+        .with_title("RLTK Example 16 - Keyboard Input Visualizer")
+        .build();
 
     // Now we create an empty state object.
     let gs: State = State {
