@@ -85,23 +85,15 @@ impl GameState for State {
 
 // Every program needs a main() function!
 fn main() {
-    // RLTK provides a simple initializer for a simple 8x8 font window of a given number of
-    // characters. Since that's all we need here, we'll use it!
-    // We're specifying that we want an 80x50 console, with a title, and a relative path
-    // to where it can find the font files and shader files.
-    // These would normally be "resources" rather than "../../resources" - but to make it
-    // work in the repo without duplicating, they are a relative path.
-    let mut context = Rltk::init_simple8x8(80, 50, "Hello RLTK World", "resources");
-
-    // We want to add a second layer, using an 8x16 VGA font. It looks nicer, and shows how
-    // RLTK can have layers.
-    //
-    // We start by loading the font.
-    let font = context.register_font(rltk::Font::load("resources/vga8x16.png", (8, 16)));
-
-    // Then we initialize it; notice 80x25 (half the height, since 8x16 is twice as tall).
-    // This actually returns the console number, but it's always going to be 1.
-    context.register_console(rltk::SparseConsole::init(80, 25, &context.backend), font);
+    // We're using the RLTK "builder" system to define what we want. We start with a simple
+    // 80x50 background layer.
+    let context = RltkBuilder::simple80x50()
+        // Then we register the 8x16 VGA font. This is embedded automatically, so you can just use it.
+        .with_font("vga8x16.png", 8, 16)
+        // Next we want a "sparse" (no background) console, of half the height since its an 8x16 font.
+        .with_sparse_console(80, 25, "vga8x16.png")
+        // And call the build function to actually obtain the context.
+        .build();
 
     // Now we create an empty state object.
     let gs = State {
