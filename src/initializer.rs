@@ -2,16 +2,21 @@ use std::convert::TryInto;
 use crate::prelude::*;
 use std::collections::HashMap;
 
+/// Internal structure defining a font to be loaded.
 struct BuilderFont {
     path : String,
     dimensions : (u32, u32)
 }
 
+/// Internal enum defining a console to be loaded.
 enum ConsoleType {
     SimpleConsole{ width: u32, height: u32, font: String },
     SparseConsole{ width: u32, height: u32, font: String }
 }
 
+/// Provides a builder mechanism for initializing RLTK. You can chain builders together,
+/// and and with a call to `.build()`. This allows you to provide settings if you want to,
+/// or just use a simple initializer if you are in a hurry.
 pub struct RltkBuilder {
     width: u32,
     height: u32,
@@ -25,6 +30,8 @@ pub struct RltkBuilder {
 }
 
 impl RltkBuilder {
+    /// Provides a new, unconfigured, starting point for an RLTK session. You'll have to
+    /// specify everything manually.
     pub fn new() -> Self {
         RltkBuilder{ 
             width : 80,
@@ -39,6 +46,7 @@ impl RltkBuilder {
         }
     }
 
+    /// Provides an 80x50 console in the baked-in 8x8 terminal font as your starting point.
     pub fn simple80x50() -> Self {
         let mut cb = RltkBuilder{ 
             width : 80,
@@ -62,6 +70,7 @@ impl RltkBuilder {
         cb
     }
 
+    /// Provides an 8x8 terminal font simple console, with the specified dimensions as your starting point.
     pub fn simple<T>(width: T, height: T) -> Self 
     where T: TryInto<u32>
     {
@@ -89,6 +98,7 @@ impl RltkBuilder {
         cb
     }
 
+    /// Provides an 80x50 terminal, in the VGA font as your starting point.
     pub fn vga80x50() -> Self {
         let mut cb = RltkBuilder{ 
             width : 80,
@@ -112,6 +122,7 @@ impl RltkBuilder {
         cb
     }
 
+    /// Provides a VGA-font simple terminal with the specified dimensions as your starting point.
     pub fn vga<T>(width: T, height: T) -> Self 
     where T: TryInto<u32>
     {
@@ -139,6 +150,7 @@ impl RltkBuilder {
         cb
     }
 
+    /// Adds width/height dimensions to the RLTK builder.
     pub fn with_dimensions<T>(mut self, width: T, height: T) -> Self
     where
         T: TryInto<u32>,
@@ -148,16 +160,20 @@ impl RltkBuilder {
         self
     }
 
+    /// Adds a window title to the RLTK builder.
     pub fn with_title<S: ToString>(mut self, title : S) -> Self {
         self.title = Some(title.to_string());
         self
     }
 
+    /// Adds a resource path to the RLTK builder. You only need to specify this if you aren't
+    /// embedding your resources.
     pub fn with_resource_path<S: ToString>(mut self, path: S) -> Self {
         self.resource_path = path.to_string();
         self
     }
 
+    /// Adds a font registration to the RLTK builder.
     pub fn with_font<S: ToString, T>(mut self, font_path: S, width: T, height: T) -> Self
     where T:TryInto<u32>
     {
@@ -168,6 +184,7 @@ impl RltkBuilder {
         self
     }
 
+    /// Adds a simple console layer to the RLTK builder.
     pub fn with_simple_console<S:ToString, T>(mut self, width: T, height: T, font: S) -> Self
     where T : TryInto<u32>
     {
@@ -179,15 +196,17 @@ impl RltkBuilder {
         self
     }
 
+    /// Adds a simple console, hard-coded to the baked-in 8x8 terminal font. This does NOT register the font.
     pub fn with_simple8x8(mut self) -> Self {
         self.consoles.push(ConsoleType::SimpleConsole{
             width : self.width,
             height : self.height,
-            font : "resources/terminal8x8.png".to_string()
+            font : "terminal8x8.png".to_string()
         });
         self
     }
 
+    /// Adds a sparse console layer to the RLTK builder.
     pub fn with_sparse_console<S:ToString, T>(mut self, width: T, height: T, font: S) -> Self
     where T: TryInto<u32>
     {
@@ -199,11 +218,13 @@ impl RltkBuilder {
         self
     }
 
+    /// Enables you to override the vsync default for native rendering.
     pub fn with_vsync(mut self, vsync : bool) -> Self {
         self.vsync = vsync;
         self
     }
 
+    /// Combine all of the builder parameters, and return an RLTK context ready to go.
     pub fn build(self) -> Rltk {
         let mut context = init_raw(
             self.width * self.tile_width,
