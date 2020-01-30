@@ -64,6 +64,9 @@ pub fn init_raw<S: ToString>(
         SetSize(width_pixels as u16 / 8, height_pixels as u16 / 8),
     ).expect("Console command fail");
 
+    execute!(stdout(), crossterm::cursor::Hide).expect("Command fail");
+    execute!(stdout(), crossterm::event::EnableMouseCapture).expect("Command fail");
+
     crate::Rltk {
         backend: super::RltkPlatform {
             platform: PlatformGL {
