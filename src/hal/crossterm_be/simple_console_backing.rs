@@ -44,6 +44,13 @@ impl SimpleConsoleBackend {
             queue!(stdout(), cursor::MoveTo(0, height as u16 - (y as u16 + 1)));
             for x in 0..width {
                 let t = &self.tiles[idx];
+                queue!(stdout(), crossterm::style::SetForegroundColor(
+                    crossterm::style::Color::RGB(
+                        r: (t.fg.red * 255.0) as u8,
+                        g: (t.fg.green * 255.0) as u8,
+                        b: (t.fg.blue * 255.0) as u8,
+                    )
+                ));
                 queue!(stdout(), Print(crate::to_char(t.glyph)));
                 idx += 1;
             }
