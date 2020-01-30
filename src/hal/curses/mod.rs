@@ -15,14 +15,14 @@ pub use simple_console_backing::SimpleConsoleBackend;
 pub use sparse_console_backing::SparseConsoleBackend;
 
 pub struct InitHints {
-    pub vsync : bool,
-    pub fullscreen : bool
+    pub vsync: bool,
+    pub fullscreen: bool,
 }
 
 impl InitHints {
     pub fn new() -> Self {
-        Self{
-            vsync : true,
+        Self {
+            vsync: true,
             fullscreen: false,
         }
     }
@@ -79,7 +79,7 @@ pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
     _window_title: S,
-    _platform_hints: InitHints
+    _platform_hints: InitHints,
 ) -> crate::Rltk {
     let window = initscr();
     resize_term(height_pixels as i32 / 8, width_pixels as i32 / 8);

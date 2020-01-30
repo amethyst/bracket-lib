@@ -261,9 +261,9 @@ pub fn main_loop<GS: GameState>(rltk: Rltk, gamestate: GS) {
 
     let game_data = GameDataBuilder::default()
         .with_bundle(input_bundle)
-            .expect("Input bundle fail")
+        .expect("Input bundle fail")
         .with_bundle(TransformBundle::new())
-            .expect("Transform bundle fail")
+        .expect("Transform bundle fail")
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(

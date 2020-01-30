@@ -97,33 +97,45 @@ impl Console for SparseConsole {
     /// Prints a string to an x/y position.
     fn print(&mut self, x: i32, y: i32, output: &str) {
         self.is_dirty = true;
-        let mut idx = self.at(x, y);
 
+        let bounds = self.get_char_size();
         let bytes = super::string_to_cp437(output);
 
-        self.tiles.extend(bytes.into_iter().map(|glyph| {
-            let tile = SparseTile {
-                idx,
-                glyph,
-                fg: RGB::from_f32(1.0, 1.0, 1.0),
-                bg: RGB::from_f32(0.0, 0.0, 0.0),
-            };
-            idx += 1;
-            tile
-        }));
+        self.tiles.extend(
+            bytes
+                .into_iter()
+                .enumerate()
+                .filter(|(i, _)| (*i as i32 + x) < bounds.0 as i32)
+                .map(|(i, glyph)| {
+                    let idx =
+                        (((bounds.1 - 1 - y as u32) * bounds.0) + (x + i as i32) as u32) as usize;
+                    SparseTile {
+                        idx,
+                        glyph,
+                        fg: RGB::from_f32(1.0, 1.0, 1.0),
+                        bg: RGB::from_f32(0.0, 0.0, 0.0),
+                    }
+                }),
+        );
     }
 
     /// Prints a string to an x/y position, with foreground and background colors.
     fn print_color(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, output: &str) {
         self.is_dirty = true;
-        let mut idx = self.at(x, y);
 
+        let bounds = self.get_char_size();
         let bytes = super::string_to_cp437(output);
-        self.tiles.extend(bytes.into_iter().map(|glyph| {
-            let tile = SparseTile { idx, glyph, fg, bg };
-            idx += 1;
-            tile
-        }));
+        self.tiles.extend(
+            bytes
+                .into_iter()
+                .enumerate()
+                .filter(|(i, _)| (*i as i32 + x) < bounds.0 as i32)
+                .map(|(i, glyph)| {
+                    let idx =
+                        (((bounds.1 - 1 - y as u32) * bounds.0) + (x + i as i32) as u32) as usize;
+                    SparseTile { idx, glyph, fg, bg }
+                }),
+        );
     }
 
     /// Sets a single cell in the console

@@ -1,7 +1,7 @@
 use super::GameState;
 use super::{
-    font, hal::init_raw, rex::XpFile, rex::XpLayer, Console, Point, Rect, RltkPlatform, Shader,
-    SimpleConsole, VirtualKeyCode, RGB, InitHints
+    font, hal::init_raw, rex::XpFile, rex::XpLayer, Console, InitHints, Point, Rect, RltkPlatform,
+    Shader, SimpleConsole, VirtualKeyCode, RGB,
 };
 use std::any::Any;
 use std::convert::TryInto;
@@ -39,8 +39,16 @@ pub struct Rltk {
 
 impl Rltk {
     /// Initializes an OpenGL context and a window, stores the info in the Rltk structure.
-    #[deprecated(since = "0.6.2", note = "Please migrate to the RltkBuilder system instead.")]
-    pub fn init_raw<S: ToString, T>(width_pixels: T, height_pixels: T, window_title: S, platform_hints: InitHints) -> Rltk
+    #[deprecated(
+        since = "0.6.2",
+        note = "Please migrate to the RltkBuilder system instead."
+    )]
+    pub fn init_raw<S: ToString, T>(
+        width_pixels: T,
+        height_pixels: T,
+        window_title: S,
+        platform_hints: InitHints,
+    ) -> Rltk
     where
         T: TryInto<u32>,
     {
@@ -50,7 +58,10 @@ impl Rltk {
     }
 
     /// Quick initialization for when you just want an 8x8 font terminal
-    #[deprecated(since = "0.6.2", note = "Please migrate to the RltkBuilder system instead.")]
+    #[deprecated(
+        since = "0.6.2",
+        note = "Please migrate to the RltkBuilder system instead."
+    )]
     pub fn init_simple8x8<S: ToString, T>(
         width_chars: T,
         height_chars: T,
@@ -70,7 +81,10 @@ impl Rltk {
     }
 
     /// Quick initialization for when you just want an 8x16 VGA font terminal
-    #[deprecated(since = "0.6.2", note = "Please migrate to the RltkBuilder system instead.")]
+    #[deprecated(
+        since = "0.6.2",
+        note = "Please migrate to the RltkBuilder system instead."
+    )]
     pub fn init_simple8x16<S: ToString, T>(
         width_chars: T,
         height_chars: T,

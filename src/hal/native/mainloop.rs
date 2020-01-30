@@ -6,7 +6,7 @@ use std::time::Instant;
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
-fn on_resize(rltk : &mut Rltk, physical_size : glutin::dpi::PhysicalSize<u32>) {
+fn on_resize(rltk: &mut Rltk, physical_size: glutin::dpi::PhysicalSize<u32>) {
     rltk.resize_pixels(physical_size.width as u32, physical_size.height as u32);
     unsafe {
         rltk.backend.platform.gl.viewport(
@@ -36,7 +36,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
 
     let el = unwrap.el;
     let wc = unwrap.wc;
-    
+
     on_resize(&mut rltk, wc.window().inner_size()); // Additional resize to handle some X11 cases
 
     el.run(move |event, _, control_flow| {
@@ -78,10 +78,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                 WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
 
                 WindowEvent::CursorMoved { position: pos, .. } => {
-                    rltk.mouse_pos = (
-                        pos.x as i32,
-                        pos.y as i32,
-                    );
+                    rltk.mouse_pos = (pos.x as i32, pos.y as i32);
                 }
 
                 WindowEvent::MouseInput { .. } => {
