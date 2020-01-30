@@ -1,11 +1,13 @@
 use crate::prelude::*;
 use std::convert::TryInto;
+/// Represents a sprite consisting of multiple glyphs/colors, occupying multiple console locations.
 pub struct MultiTileSprite {
     content: Vec<Tile>,
     dimensions: Point,
 }
 
 impl MultiTileSprite {
+    /// Generates a sprite from an input string, divided into width x height sizes.
     pub fn from_string<S: ToString, T>(content: S, width: T, height: T) -> Self
     where
         T: TryInto<i32>,
@@ -30,6 +32,7 @@ impl MultiTileSprite {
         }
     }
 
+    /// Generates a sprite from an input string, divided into width x height sizes. Also provides foreground and background colors.
     pub fn from_string_colored<S: ToString, T>(content: S, width: T, height: T, fg : &[RGB], bg : &[RGB]) -> Self
     where
         T: TryInto<i32>,
@@ -55,6 +58,7 @@ impl MultiTileSprite {
         }
     }
 
+    /// Directly renders a sprite to an RLTK context.
     pub fn render(&self, context: &mut Rltk, position: Point) {
         let mut x = 0;
         let mut y = 0;
@@ -68,6 +72,7 @@ impl MultiTileSprite {
         }
     }
 
+    /// Appends draw-calls to a batch to render a multi-tile sprite.
     pub fn add_to_batch(&self, batch: &mut DrawBatch, position: Point) {
         let mut pos = Point::zero();
         for tile in self.content.iter() {
