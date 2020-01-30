@@ -24,6 +24,13 @@ mod curses;
 #[cfg(all(not(feature = "opengl"), feature = "curses"))]
 pub use curses::*;
 
+#[cfg(not(feature = "opengl"))]
+#[cfg(all(not(feature = "opengl"), feature = "crossterm"))]
+mod crossterm_be;
+
+#[cfg(all(not(feature = "opengl"), feature = "crossterm"))]
+pub use crossterm_be::*;
+
 #[cfg(all(
     not(feature = "opengl"),
     any(feature = "amethyst_engine_vulkan", feature = "amethyst_engine_metal")
@@ -40,7 +47,8 @@ pub use amethyst_be::*;
     not(feature = "opengl"),
     not(feature = "curses"),
     not(feature = "amethyst_engine_vulkan"),
-    not(feature = "amethyst_engine_metal")
+    not(feature = "amethyst_engine_metal"),
+    not(feature = "crossterm")
 ))]
 mod dummy;
 
@@ -48,7 +56,8 @@ mod dummy;
     not(feature = "opengl"),
     not(feature = "curses"),
     not(feature = "amethyst_engine_vulkan"),
-    not(feature = "amethyst_engine_metal")
+    not(feature = "amethyst_engine_metal"),
+    not(feature = "crossterm")
 ))]
 pub use dummy::*;
 

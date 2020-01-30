@@ -1,8 +1,15 @@
 // Dummy platform to let it compile and do nothing. Only useful if you don't want a graphical backend.
-use crate::{GameState, Rltk};
+use std::io::{stdout, Write};
+use crossterm::{execute, terminal::{SetSize, size}};
 
 mod keycodes;
 pub use keycodes::VirtualKeyCode;
+
+mod simple_console_backing;
+pub use simple_console_backing::*;
+
+mod main_loop;
+pub use main_loop::*;
 
 pub struct InitHints {
     pub vsync: bool,
@@ -18,7 +25,10 @@ impl InitHints {
     }
 }
 
-pub struct PlatformGL {}
+pub struct PlatformGL {
+    old_width : u16,
+    old_height : u16
+}
 
 pub mod shader {
     pub struct Shader {}
@@ -46,9 +56,23 @@ pub fn init_raw<S: ToString>(
     _window_title: S,
     _platform_hints: InitHints,
 ) -> crate::Rltk {
+    let old_size = size().expect("Unable to get console size");
+    println!("Old size: {:?}", old_size);
+    println!("Resizing to {}x{}", 80, 50);
+    execute!(
+        stdout(),
+        SetSize(width_pixels as u16 / 8, height_pixels as u16 / 8),
+    ).expect("Console command fail");
+
+    execute!(stdout(), crossterm::cursor::Hide).expect("Command fail");
+    execute!(stdout(), crossterm::event::EnableMouseCapture).expect("Command fail");
+
     crate::Rltk {
         backend: super::RltkPlatform {
-            platform: PlatformGL {},
+            platform: PlatformGL {
+                old_width : old_size.0,
+                old_height : old_size.1
+            },
         },
         width_pixels,
         height_pixels,
@@ -68,37 +92,6 @@ pub fn init_raw<S: ToString>(
         quitting: false,
         post_scanlines: false,
         post_screenburn: false,
-    }
-}
-
-pub fn main_loop<GS: GameState>(mut _rltk: Rltk, mut _gamestate: GS) {}
-
-pub struct SimpleConsoleBackend {}
-
-impl SimpleConsoleBackend {
-    pub fn new(_gl: &super::RltkPlatform, _width: usize, _height: usize) -> SimpleConsoleBackend {
-        SimpleConsoleBackend {}
-    }
-
-    pub fn rebuild_vertices(
-        &mut self,
-        _platform: &super::RltkPlatform,
-        _height: u32,
-        _width: u32,
-        _tiles: &[crate::Tile],
-        _offset_x: f32,
-        _offset_y: f32,
-    ) {
-    }
-
-    pub fn gl_draw(
-        &mut self,
-        _font: &font::Font,
-        _shader: &shader::Shader,
-        _platform: &super::RltkPlatform,
-        _width: u32,
-        _height: u32,
-    ) {
     }
 }
 
