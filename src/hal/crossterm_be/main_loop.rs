@@ -65,6 +65,17 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                         KeyCode::Right => rltk.key = Some(VirtualKeyCode::Right),
                         KeyCode::Up => rltk.key = Some(VirtualKeyCode::Up),
                         KeyCode::Down => rltk.key = Some(VirtualKeyCode::Down),
+                        KeyCode::Backspace => rltk.key = Some(VirtualKeyCode::Delete),
+                        KeyCode::Enter => rltk.key = Some(VirtualKeyCode::Return),
+                        KeyCode::Home => rltk.key = Some(VirtualKeyCode::Home),
+                        KeyCode::End => rltk.key = Some(VirtualKeyCode::End),
+                        KeyCode::PageUp => rltk.key = Some(VirtualKeyCode::PageUp),
+                        KeyCode::PageDown => rltk.key = Some(VirtualKeyCode::PageDown),
+                        KeyCode::Tab => rltk.key = Some(VirtualKeyCode::Tab),
+                        KeyCode::Delete => rltk.key = Some(VirtualKeyCode::Delete),
+                        KeyCode::Insert => rltk.key = Some(VirtualKeyCode::Insert),
+                        KeyCode::Esc => rltk.key = Some(VirtualKeyCode::Escape),
+
                         _ => {}
                     }
 
