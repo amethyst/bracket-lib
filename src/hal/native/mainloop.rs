@@ -6,6 +6,23 @@ use std::time::Instant;
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
+fn on_resize(rltk : &mut Rltk, physical_size : glutin::dpi::PhysicalSize<u32>) {
+    rltk.resize_pixels(physical_size.width as u32, physical_size.height as u32);
+    unsafe {
+        rltk.backend.platform.gl.viewport(
+            0,
+            0,
+            physical_size.width as i32,
+            physical_size.height as i32,
+        );
+    }
+    rltk.backend.platform.backing_buffer = Framebuffer::build_fbo(
+        &rltk.backend.platform.gl,
+        physical_size.width as i32,
+        physical_size.height as i32,
+    );
+}
+
 pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
@@ -19,29 +36,8 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
 
     let el = unwrap.el;
     let wc = unwrap.wc;
-
-    // RLTK's API exposes, in glutin::dpi terms, a "logical" window size. A
-    // "logical" window size refers to the number of actual pixels on the
-    // screen ("physical" window size) divided by its scaling factor.
-    //
-    // The width_pixels and height_pixels values, as set by RLTK consumers,
-    // must be scaled according to the window's scale factor to account for
-    // screen DPI scaling.
-    //
-    // This same scaling is unnecessary when handling window resize events in
-    // the main event loop, as the event itself contains the properly-scaled
-    // physical size (suitable for direct use with the viewport).
-    //
-    // https://github.com/thebracket/rltk_rs/issues/46
-    let initial_dpi_factor = wc.window().scale_factor();
-    unsafe {
-        rltk.backend.platform.gl.viewport(
-            0,
-            0,
-            (rltk.width_pixels as f64 * initial_dpi_factor) as i32,
-            (rltk.height_pixels as f64 * initial_dpi_factor) as i32,
-        );
-    }
+    
+    on_resize(&mut rltk, wc.window().inner_size()); // Additional resize to handle some X11 cases
 
     el.run(move |event, _, control_flow| {
         *control_flow = TICK_TYPE;
@@ -77,40 +73,23 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
             Event::LoopDestroyed => (),
             Event::WindowEvent { ref event, .. } => match event {
                 WindowEvent::Resized(physical_size) => {
-                    // Commenting out to see if it helps the Linux world
-                    //let dpi_factor = wc.window().hidpi_factor();
-                    wc.resize(*physical_size);
-                    rltk.resize_pixels(physical_size.width as u32, physical_size.height as u32);
-                    unsafe {
-                        rltk.backend.platform.gl.viewport(
-                            0,
-                            0,
-                            physical_size.width as i32,
-                            physical_size.height as i32,
-                        );
-                    }
-                    rltk.backend.platform.backing_buffer = Framebuffer::build_fbo(
-                        &rltk.backend.platform.gl,
-                        physical_size.width as i32,
-                        physical_size.height as i32,
-                    );
+                    on_resize(&mut rltk, *physical_size);
                 }
-                /*WindowEvent::RedrawRequested => {
-                    //tock(&mut rltk, &mut gamestate, &mut frames, &mut prev_seconds, &mut prev_ms, &now);
-                    wc.swap_buffers().unwrap();
-                }*/
                 WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
 
                 WindowEvent::CursorMoved { position: pos, .. } => {
-                    let initial_dpi_factor = wc.window().scale_factor();
                     rltk.mouse_pos = (
-                        (pos.x as f64 / initial_dpi_factor) as i32,
-                        (pos.y as f64 / initial_dpi_factor) as i32,
+                        pos.x as i32,
+                        pos.y as i32,
                     );
                 }
 
                 WindowEvent::MouseInput { .. } => {
                     rltk.left_click = true;
+                }
+
+                WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
+                    on_resize(&mut rltk, **new_inner_size);
                 }
 
                 WindowEvent::KeyboardInput {
