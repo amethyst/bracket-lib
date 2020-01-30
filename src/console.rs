@@ -104,7 +104,8 @@ pub trait Console {
     fn set_offset(&mut self, x: f32, y: f32);
 
     /// Specify a scale of the scale. A scale above 1.0 will make the text larger.
-    fn set_scale(&mut self, scale: f32);
+    /// The center of the scale is at character position (center_x, center_y).
+    fn set_scale(&mut self, scale: f32, center_x: i32, center_y: i32);
 
     // Produces the implementor as an Any that can be matched to determine type and access
     // natively.

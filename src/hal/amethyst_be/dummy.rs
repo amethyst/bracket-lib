@@ -18,6 +18,7 @@ impl SimpleConsoleBackend {
         _offset_x: f32,
         _offset_y: f32,
         _scale: f32,
+        _scale_center: (i32, i32),
     ) {
     }
 
@@ -47,6 +48,7 @@ impl SparseConsoleBackend {
         _offset_x: f32,
         _offset_y: f32,
         _scale: f32,
+        _scale_center: (i32, i32),
         _tiles: &[crate::sparse_console::SparseTile],
     ) {
     }

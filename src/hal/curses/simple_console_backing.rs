@@ -22,6 +22,7 @@ impl SimpleConsoleBackend {
         _offset_x: f32,
         _offset_y: f32,
         _scale: f32,
+        _scale_center: (i32, i32),
     ) {
         self.tiles.clear();
         for t in tiles.iter() {
