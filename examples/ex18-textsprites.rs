@@ -19,7 +19,7 @@ use rltk::prelude::*;
 struct State {
     y: i32,
     going_down: bool,
-    sprite : MultiTileSprite
+    sprite: MultiTileSprite,
 }
 
 // We have to implement the "trait" GameState for our state object. This gives it a callback
@@ -45,7 +45,8 @@ impl GameState for State {
             "Hello RLTK World",
             ColorPair::new(fg, RGB::named(rltk::BLACK)),
         );
-        self.sprite.add_to_batch(&mut draw_batch, Point::new(20, self.y));
+        self.sprite
+            .add_to_batch(&mut draw_batch, Point::new(20, self.y));
 
         // Lets make the hello bounce up and down
         if self.going_down {
@@ -104,7 +105,7 @@ fn main() {
     let gs = State {
         y: 1,
         going_down: true,
-        sprite : MultiTileSprite::from_string(" ▲ ◄☼► ▼ ", 3, 3)
+        sprite: MultiTileSprite::from_string(" ▲ ◄☼► ▼ ", 3, 3),
     };
 
     // Call into RLTK to run the main loop. This handles rendering, and calls back into State's tick

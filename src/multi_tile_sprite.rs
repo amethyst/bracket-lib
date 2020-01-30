@@ -6,7 +6,7 @@ pub struct MultiTileSprite {
 }
 
 impl MultiTileSprite {
-    pub fn from_string<S:ToString, T>(content: S, width: T, height: T) -> Self
+    pub fn from_string<S: ToString, T>(content: S, width: T, height: T) -> Self
     where
         T: TryInto<i32>,
     {
