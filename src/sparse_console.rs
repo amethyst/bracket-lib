@@ -128,14 +128,16 @@ impl Console for SparseConsole {
 
     /// Sets a single cell in the console
     fn set(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, glyph: u8) {
-        let idx = self.at(x, y);
-        self.tiles.push(SparseTile { idx, glyph, fg, bg });
+        if let Some(idx) = self.try_at(x, y) {
+            self.tiles.push(SparseTile { idx, glyph, fg, bg });
+        }
     }
 
     /// Sets a single cell in the console's background
     fn set_bg(&mut self, x: i32, y: i32, bg: RGB) {
-        let idx = self.at(x, y);
-        self.tiles[idx].bg = bg;
+        if let Some(idx) = self.try_at(x, y) {
+            self.tiles[idx].bg = bg;
+        }
     }
 
     /// Draws a box, starting at x/y with the extents width/height using CP437 line characters
