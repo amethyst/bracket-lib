@@ -3,7 +3,7 @@ use super::VirtualKeyCode;
 use std::time::Instant;
 use std::io::{stdout, Write};
 use crossterm::terminal::{SetSize};
-use crossterm::{execute, queue};
+use crossterm::{execute};
 use crossterm::event::{poll, read, Event};
 use std::time::Duration;
 
@@ -46,7 +46,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                     // Button capture goes here
                     // Mouse doesn't seem to support cursor position? That's going to cause issues.
                     match event {
-                        crossterm::event::MouseEvent::Down(button, x, y, _modifiers) => {
+                        crossterm::event::MouseEvent::Down(_button, x, y, _modifiers) => {
                             rltk.left_click = true;
                             rltk.mouse_pos = (x as i32 * 8, y as i32 * 8);
                         }
