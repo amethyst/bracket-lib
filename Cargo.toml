@@ -160,6 +160,11 @@ path = "examples/ex17-wasm-external.rs"
 required-features = ["opengl"]
 
 [[example]]
+name = "ex18-textsprites"
+path = "examples/ex18-textsprites.rs"
+required-features = ["opengl"]
+
+[[example]]
 name = "av01-helloworld"
 path = "examples/ex01-helloworld.rs"
 required-features = [ "amethyst/vulkan" ]
@@ -240,6 +245,11 @@ path = "examples/ex16-keyboard.rs"
 required-features = ["amethyst/vulkan"]
 
 [[example]]
+name = "av18-textsprites"
+path = "examples/ex18-textsprites.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
 name = "am01-helloworld"
 path = "examples/ex01-helloworld.rs"
 required-features = [ "amethyst/metal" ]
@@ -317,6 +327,11 @@ required-features = ["amethyst/metal", "specs"]
 [[example]]
 name = "am16-keyboard"
 path = "examples/ex16-keyboard.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am18-textsprites"
+path = "examples/ex18-textsprites.rs"
 required-features = ["amethyst/metal"]
 
 [[example]]
@@ -402,4 +417,9 @@ required-features = ["curses"]
 [[example]]
 name = "curses17-wasm-external"
 path = "examples/ex17-wasm-external.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "curses18-textsprites"
+path = "examples/ex18-textsprites.rs"
 required-features = ["curses"]
