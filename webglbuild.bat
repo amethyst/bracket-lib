@@ -16,6 +16,7 @@ CALL :StageExample ex13-textblock, ex13
 CALL :StageExample ex14-dwarfmap, ex14
 REM CALL :StageExample ex15-specs, ex15
 CALL :StageExample ex16-keyboard, ex16
+CALL :StageExample ex18-textsprites, ex18
 CALL :Example15Builder
 CALL :Example17Builder
 
@@ -55,7 +56,7 @@ move .\wasm_help\staging\ex17\ex17-wasm-external.js .\wasm_help\staging\ex17\myb
 REM This is for the Specs example which needs different feature flags
 :Example15Builder
 echo Building example %ex15-specs
-cargo build --example %ex15-specs --target wasm32-unknown-unknown --release --features="opengl,ecs"
+cargo build --example %ex15-specs --target wasm32-unknown-unknown --release --features="opengl,specs"
 echo wasm-gc .\target\wasm32-unknown-unknown\release\examples\%ex15-specs.wasm
 mkdir .\wasm_help\staging\%ex15
 wasm-bindgen .\target\wasm32-unknown-unknown\release\examples\%ex15-specs.wasm --out-dir .\wasm_help\staging\%ex15 --no-modules --no-typescript
