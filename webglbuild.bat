@@ -16,6 +16,7 @@ CALL :StageExample ex13-textblock, ex13
 CALL :StageExample ex14-dwarfmap, ex14
 REM CALL :StageExample ex15-specs, ex15
 CALL :StageExample ex16-keyboard, ex16
+CALL :StageExample ex18-textsprites, ex18
 CALL :Example15Builder
 CALL :Example17Builder
 

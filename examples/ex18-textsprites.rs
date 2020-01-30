@@ -21,7 +21,7 @@ struct State {
     y: i32,
     going_down: bool,
     sprite: MultiTileSprite,
-    nyancat : MultiTileSprite
+    nyancat: MultiTileSprite,
 }
 
 // We have to implement the "trait" GameState for our state object. This gives it a callback
@@ -94,7 +94,7 @@ rltk::embedded_resource!(NYAN_CAT, "../resources/nyan.xp");
 // Every program needs a main() function!
 fn main() {
     rltk::link_resource!(NYAN_CAT, "../resources/nyan.xp");
-    
+
     // We're using the RLTK "builder" system to define what we want. We start with a simple
     // 80x50 background layer.
     let context = RltkBuilder::simple80x50()
@@ -112,17 +112,23 @@ fn main() {
         y: 1,
         going_down: true,
         sprite: MultiTileSprite::from_string_colored(
-            " ▲ ◄☼► ▼ ", 
-            3, 
+            " ▲ ◄☼► ▼ ",
             3,
-            &[RGB::from_f32(0.0,0.0,0.0), RGB::from_f32(0.0,1.0,0.0), RGB::from_f32(0.0,0.0,0.0),
-             RGB::from_f32(0.0,1.0,0.0), RGB::from_f32(1.0,1.0,0.0), RGB::from_f32(0.0,1.0,0.0),
-            RGB::from_f32(0.0,0.0,0.0), RGB::from_f32(0.0,1.0,0.0), RGB::from_f32(0.0,0.0,0.0)],
-            &vec![RGB::from_f32(0.0,0.0,0.0);9]
+            3,
+            &[
+                RGB::from_f32(0.0, 0.0, 0.0),
+                RGB::from_f32(0.0, 1.0, 0.0),
+                RGB::from_f32(0.0, 0.0, 0.0),
+                RGB::from_f32(0.0, 1.0, 0.0),
+                RGB::from_f32(1.0, 1.0, 0.0),
+                RGB::from_f32(0.0, 1.0, 0.0),
+                RGB::from_f32(0.0, 0.0, 0.0),
+                RGB::from_f32(0.0, 1.0, 0.0),
+                RGB::from_f32(0.0, 0.0, 0.0),
+            ],
+            &vec![RGB::from_f32(0.0, 0.0, 0.0); 9],
         ),
-        nyancat : MultiTileSprite::from_xp(
-            &XpFile::from_resource("../resources/nyan.xp").unwrap()
-        )
+        nyancat: MultiTileSprite::from_xp(&XpFile::from_resource("../resources/nyan.xp").unwrap()),
     };
 
     // Call into RLTK to run the main loop. This handles rendering, and calls back into State's tick

@@ -33,7 +33,13 @@ impl MultiTileSprite {
     }
 
     /// Generates a sprite from an input string, divided into width x height sizes. Also provides foreground and background colors.
-    pub fn from_string_colored<S: ToString, T>(content: S, width: T, height: T, fg : &[RGB], bg : &[RGB]) -> Self
+    pub fn from_string_colored<S: ToString, T>(
+        content: S,
+        width: T,
+        height: T,
+        fg: &[RGB],
+        bg: &[RGB],
+    ) -> Self
     where
         T: TryInto<i32>,
     {
@@ -45,7 +51,7 @@ impl MultiTileSprite {
         let tiles = bytes
             .into_iter()
             .enumerate()
-            .map(|(i,glyph)| Tile {
+            .map(|(i, glyph)| Tile {
                 glyph,
                 fg: fg[i],
                 bg: bg[i],
@@ -59,10 +65,15 @@ impl MultiTileSprite {
     }
 
     /// Import a sprite from an XP Rex Paint file.
-    pub fn from_xp(rex : &rex::XpFile) -> Self {
+    pub fn from_xp(rex: &rex::XpFile) -> Self {
         let dimensions = Point::new(rex.layers[0].width, rex.layers[0].height);
-        let mut tiles : Vec<Tile> = vec![
-            Tile{ glyph: 0, fg : RGB::from_f32(1.0,1.0,1.0), bg : RGB::from_f32(0.0,0.0,0.0)}; (dimensions.x * dimensions.y) as usize
+        let mut tiles: Vec<Tile> = vec![
+            Tile {
+                glyph: 0,
+                fg: RGB::from_f32(1.0, 1.0, 1.0),
+                bg: RGB::from_f32(0.0, 0.0, 0.0)
+            };
+            (dimensions.x * dimensions.y) as usize
         ];
 
         for layer in &rex.layers {
@@ -80,8 +91,8 @@ impl MultiTileSprite {
         }
 
         Self {
-            content : tiles,
-            dimensions
+            content: tiles,
+            dimensions,
         }
     }
 
