@@ -46,7 +46,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                     // Button capture goes here
                     // Mouse doesn't seem to support cursor position? That's going to cause issues.
                     match event {
-                        crossterm::event::MouseEvent::Down(button, x, y, modifiers) => {
+                        crossterm::event::MouseEvent::Down(button, x, y, _modifiers) => {
                             rltk.left_click = true;
                             rltk.mouse_pos = (x as i32 * 8, y as i32 * 8);
                         }
@@ -87,6 +87,53 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                         KeyCode::F(10) => rltk.key = Some(VirtualKeyCode::F10),
                         KeyCode::F(11) => rltk.key = Some(VirtualKeyCode::F11),
                         KeyCode::F(12) => rltk.key = Some(VirtualKeyCode::F12),
+                        KeyCode::Char('`') => rltk.key = Some(VirtualKeyCode::Grave),
+                        KeyCode::Char('1') => rltk.key = Some(VirtualKeyCode::Key1),
+                        KeyCode::Char('2') => rltk.key = Some(VirtualKeyCode::Key2),
+                        KeyCode::Char('3') => rltk.key = Some(VirtualKeyCode::Key3),
+                        KeyCode::Char('4') => rltk.key = Some(VirtualKeyCode::Key4),
+                        KeyCode::Char('5') => rltk.key = Some(VirtualKeyCode::Key5),
+                        KeyCode::Char('6') => rltk.key = Some(VirtualKeyCode::Key6),
+                        KeyCode::Char('7') => rltk.key = Some(VirtualKeyCode::Key7),
+                        KeyCode::Char('8') => rltk.key = Some(VirtualKeyCode::Key8),
+                        KeyCode::Char('9') => rltk.key = Some(VirtualKeyCode::Key9),
+                        KeyCode::Char('0') => rltk.key = Some(VirtualKeyCode::Key0),
+                        KeyCode::Char('-') => rltk.key = Some(VirtualKeyCode::Minus),
+                        KeyCode::Char('=') => rltk.key = Some(VirtualKeyCode::Equals),
+                        KeyCode::Char('a') => rltk.key = Some(VirtualKeyCode::A),
+                        KeyCode::Char('b') => rltk.key = Some(VirtualKeyCode::B),
+                        KeyCode::Char('c') => rltk.key = Some(VirtualKeyCode::C),
+                        KeyCode::Char('d') => rltk.key = Some(VirtualKeyCode::D),
+                        KeyCode::Char('e') => rltk.key = Some(VirtualKeyCode::E),
+                        KeyCode::Char('f') => rltk.key = Some(VirtualKeyCode::F),
+                        KeyCode::Char('g') => rltk.key = Some(VirtualKeyCode::G),
+                        KeyCode::Char('h') => rltk.key = Some(VirtualKeyCode::H),
+                        KeyCode::Char('i') => rltk.key = Some(VirtualKeyCode::I),
+                        KeyCode::Char('j') => rltk.key = Some(VirtualKeyCode::J),
+                        KeyCode::Char('k') => rltk.key = Some(VirtualKeyCode::K),
+                        KeyCode::Char('l') => rltk.key = Some(VirtualKeyCode::L),
+                        KeyCode::Char('m') => rltk.key = Some(VirtualKeyCode::M),
+                        KeyCode::Char('n') => rltk.key = Some(VirtualKeyCode::N),
+                        KeyCode::Char('o') => rltk.key = Some(VirtualKeyCode::O),
+                        KeyCode::Char('p') => rltk.key = Some(VirtualKeyCode::P),
+                        KeyCode::Char('q') => rltk.key = Some(VirtualKeyCode::Q),
+                        KeyCode::Char('r') => rltk.key = Some(VirtualKeyCode::R),
+                        KeyCode::Char('s') => rltk.key = Some(VirtualKeyCode::S),
+                        KeyCode::Char('t') => rltk.key = Some(VirtualKeyCode::T),
+                        KeyCode::Char('u') => rltk.key = Some(VirtualKeyCode::U),
+                        KeyCode::Char('v') => rltk.key = Some(VirtualKeyCode::V),
+                        KeyCode::Char('w') => rltk.key = Some(VirtualKeyCode::W),
+                        KeyCode::Char('x') => rltk.key = Some(VirtualKeyCode::X),
+                        KeyCode::Char('y') => rltk.key = Some(VirtualKeyCode::Y),
+                        KeyCode::Char('z') => rltk.key = Some(VirtualKeyCode::Z),
+                        KeyCode::Char('[') => rltk.key = Some(VirtualKeyCode::LBracket),
+                        KeyCode::Char(']') => rltk.key = Some(VirtualKeyCode::RBracket),
+                        KeyCode::Char('\\') => rltk.key = Some(VirtualKeyCode::Backslash),
+                        KeyCode::Char(';') => rltk.key = Some(VirtualKeyCode::Semicolon),
+                        KeyCode::Char('\'') => rltk.key = Some(VirtualKeyCode::Apostrophe),
+                        KeyCode::Char(',') => rltk.key = Some(VirtualKeyCode::Comma),
+                        KeyCode::Char('.') => rltk.key = Some(VirtualKeyCode::Period),
+                        KeyCode::Char('/') => rltk.key = Some(VirtualKeyCode::Slash),
 
                         _ => {}
                     }
