@@ -239,6 +239,16 @@ Run this example with `cargo run --example ex14-dwarfmap` from the root of the c
 
 [Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex17/)
 
+### Example 18: Multi-Tile Sprites
+
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE18.gif)
+
+[Example 18 - Multi-Tile Sprites](examples/ex18-textsprites.rs) demonstrates the use of multi-tile sprites, both from REX Paint and submitted as text.
+
+Run this example with `cargo run --example ex18-textsprites` from the root of the cloned repository.
+
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex18/)
+
 ## Building with WASM
 
 RLTK newly supports web assembly (`WASM`). It's still rough around the edges, but it works. The build process ends up being a bit involved:
