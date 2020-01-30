@@ -58,8 +58,17 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                     if key.code == crossterm::event::KeyCode::Char('c') && key.modifiers == crossterm::event::KeyModifiers::CONTROL {
                         rltk.quitting = true;
                     }
-                    // TODO: A whole lot more key conversion
 
+                    use crossterm::event::KeyCode;
+                    match key.code {
+                        KeyCode::Left => rltk.key = Some(VirtualKeyCode::Left),
+                        KeyCode::Right => rltk.key = Some(VirtualKeyCode::Right),
+                        KeyCode::Up => rltk.key = Some(VirtualKeyCode::Up),
+                        KeyCode::Down => rltk.key = Some(VirtualKeyCode::Down),
+                        _ => {}
+                    }
+
+                    // Modifier handling
                     if key.modifiers == crossterm::event::KeyModifiers::CONTROL {
                         rltk.control = true;
                     }
