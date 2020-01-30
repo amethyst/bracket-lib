@@ -58,6 +58,33 @@ impl MultiTileSprite {
         }
     }
 
+    /// Import a sprite from an XP Rex Paint file.
+    pub fn from_xp(rex : &rex::XpFile) -> Self {
+        let dimensions = Point::new(rex.layers[0].width, rex.layers[0].height);
+        let mut tiles : Vec<Tile> = vec![
+            Tile{ glyph: 0, fg : RGB::from_f32(1.0,1.0,1.0), bg : RGB::from_f32(0.0,0.0,0.0)}; (dimensions.x * dimensions.y) as usize
+        ];
+
+        for layer in &rex.layers {
+            for y in 0..layer.height {
+                for x in 0..layer.width {
+                    let cell = layer.get(x, y).unwrap();
+                    if !cell.bg.is_transparent() {
+                        let idx = (y * (dimensions.x as usize)) + (x as usize);
+                        tiles[idx].glyph = cell.ch as u8;
+                        tiles[idx].fg = RGB::from_xp(cell.fg);
+                        tiles[idx].bg = RGB::from_xp(cell.bg);
+                    }
+                }
+            }
+        }
+
+        Self {
+            content : tiles,
+            dimensions
+        }
+    }
+
     /// Directly renders a sprite to an RLTK context.
     pub fn render(&self, context: &mut Rltk, position: Point) {
         let mut x = 0;

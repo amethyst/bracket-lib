@@ -12,6 +12,7 @@ extern crate rltk;
 // We're using Rltk (the main context) and GameState (a trait defining what our callback
 // looks like), so we need to use that, too.`
 use rltk::prelude::*;
+use rltk::rex::*;
 
 // This is the structure that will store our game state, typically a state machine pointing to
 // other structures. This demo is realy simple, so we'll just put the minimum to make it work
@@ -20,6 +21,7 @@ struct State {
     y: i32,
     going_down: bool,
     sprite: MultiTileSprite,
+    nyancat : MultiTileSprite
 }
 
 // We have to implement the "trait" GameState for our state object. This gives it a callback
@@ -45,7 +47,7 @@ impl GameState for State {
             "Hello RLTK World",
             ColorPair::new(fg, RGB::named(rltk::BLACK)),
         );
-        self.sprite
+        self.nyancat
             .add_to_batch(&mut draw_batch, Point::new(20, self.y));
 
         // Lets make the hello bounce up and down
@@ -87,8 +89,12 @@ impl GameState for State {
     }
 }
 
+rltk::embedded_resource!(NYAN_CAT, "../resources/nyan.xp");
+
 // Every program needs a main() function!
 fn main() {
+    rltk::link_resource!(NYAN_CAT, "../resources/nyan.xp");
+    
     // We're using the RLTK "builder" system to define what we want. We start with a simple
     // 80x50 background layer.
     let context = RltkBuilder::simple80x50()
@@ -114,6 +120,9 @@ fn main() {
             RGB::from_f32(0.0,0.0,0.0), RGB::from_f32(0.0,1.0,0.0), RGB::from_f32(0.0,0.0,0.0)],
             &vec![RGB::from_f32(0.0,0.0,0.0);9]
         ),
+        nyancat : MultiTileSprite::from_xp(
+            &XpFile::from_resource("../resources/nyan.xp").unwrap()
+        )
     };
 
     // Call into RLTK to run the main loop. This handles rendering, and calls back into State's tick
