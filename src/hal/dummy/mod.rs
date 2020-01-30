@@ -1,5 +1,4 @@
 // Dummy platform to let it compile and do nothing. Only useful if you don't want a graphical backend.
-use super::InitHints;
 use crate::{GameState, Rltk};
 
 mod keycodes;
