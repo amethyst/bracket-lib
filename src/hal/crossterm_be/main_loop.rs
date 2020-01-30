@@ -1,8 +1,9 @@
-use super::super::super::{Console, GameState, Rltk};
+use super::super::super::{GameState, Rltk};
 use super::VirtualKeyCode;
 use std::time::Instant;
 use std::io::{stdout, Write};
-use crossterm::{execute, Result, terminal::{ScrollUp, SetSize, size, Clear}};
+use crossterm::terminal::{SetSize};
+use crossterm::{execute, queue};
 
 pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     let now = Instant::now();
@@ -43,8 +44,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
             cons.console.rebuild_if_dirty(&rltk.backend);
         }
 
-        //execute!(stdout(), Clear(crossterm::terminal::ClearType::All));
-        execute!(stdout(), crossterm::cursor::Hide);
+        queue!(stdout(), crossterm::cursor::Hide).expect("Command fail");
 
         // Tell each console to draw itself
         for cons in &mut rltk.consoles {
@@ -53,7 +53,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
         }
 
         //rltk.backend.platform.window.refresh();
-        stdout().flush();
+        stdout().flush().expect("Command fail");
     }
 
     println!("Returning size to {}x{}", rltk.backend.platform.old_width, rltk.backend.platform.old_height);

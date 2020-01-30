@@ -1,10 +1,8 @@
 use super::super::RltkPlatform;
 use super::font;
 use super::shader;
-use std::convert::TryInto;
 use std::io::{stdout, Write};
-use crossterm::{execute, Result, terminal::{ScrollUp, SetSize, size, Clear}};
-use crossterm::{queue, QueueableCommand, cursor};
+use crossterm::{queue, cursor};
 use crossterm::style::Print;
 use crate::RGB;
 
@@ -44,8 +42,8 @@ impl SimpleConsoleBackend {
         let mut last_bg = RGB::new();
         let mut last_fg = RGB::new();
         for y in 0..height {
-            queue!(stdout(), cursor::MoveTo(0, height as u16 - (y as u16 + 1)));
-            for x in 0..width {
+            queue!(stdout(), cursor::MoveTo(0, height as u16 - (y as u16 + 1))).expect("Command fail");
+            for _x in 0..width {
                 let t = &self.tiles[idx];
                 if t.fg != last_fg {
                     queue!(stdout(), crossterm::style::SetForegroundColor(
@@ -54,7 +52,7 @@ impl SimpleConsoleBackend {
                             g: (t.fg.g * 255.0) as u8,
                             b: (t.fg.b * 255.0) as u8,
                         }
-                    ));
+                    )).expect("Command fail");
                     last_fg = t.fg;
                 }
                 if t.bg != last_bg {
@@ -64,10 +62,10 @@ impl SimpleConsoleBackend {
                             g: (t.bg.g * 255.0) as u8,
                             b: (t.bg.b * 255.0) as u8,
                         }
-                    ));
+                    )).expect("Command fail");
                     last_bg = t.bg;
                 }
-                queue!(stdout(), Print(crate::to_char(t.glyph)));
+                queue!(stdout(), Print(crate::to_char(t.glyph))).expect("Command fail");
                 idx += 1;
             }
         }

@@ -1,7 +1,6 @@
 // Dummy platform to let it compile and do nothing. Only useful if you don't want a graphical backend.
-use crate::{GameState, Rltk};
 use std::io::{stdout, Write};
-use crossterm::{execute, Result, terminal::{ScrollUp, SetSize, size}};
+use crossterm::{execute, terminal::{SetSize, size}};
 
 mod keycodes;
 pub use keycodes::VirtualKeyCode;
