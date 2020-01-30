@@ -30,6 +30,31 @@ impl MultiTileSprite {
         }
     }
 
+    pub fn from_string_colored<S: ToString, T>(content: S, width: T, height: T, fg : &[RGB], bg : &[RGB]) -> Self
+    where
+        T: TryInto<i32>,
+    {
+        let w: i32 = width.try_into().ok().unwrap();
+        let h: i32 = height.try_into().ok().unwrap();
+        let content_s = content.to_string();
+
+        let bytes = super::string_to_cp437(content_s);
+        let tiles = bytes
+            .into_iter()
+            .enumerate()
+            .map(|(i,glyph)| Tile {
+                glyph,
+                fg: fg[i],
+                bg: bg[i],
+            })
+            .collect();
+
+        Self {
+            content: tiles,
+            dimensions: Point::new(w, h),
+        }
+    }
+
     pub fn render(&self, context: &mut Rltk, position: Point) {
         let mut x = 0;
         let mut y = 0;

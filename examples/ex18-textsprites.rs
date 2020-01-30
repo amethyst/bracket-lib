@@ -105,7 +105,15 @@ fn main() {
     let gs = State {
         y: 1,
         going_down: true,
-        sprite: MultiTileSprite::from_string(" ▲ ◄☼► ▼ ", 3, 3),
+        sprite: MultiTileSprite::from_string_colored(
+            " ▲ ◄☼► ▼ ", 
+            3, 
+            3,
+            &[RGB::from_f32(0.0,0.0,0.0), RGB::from_f32(0.0,1.0,0.0), RGB::from_f32(0.0,0.0,0.0),
+             RGB::from_f32(0.0,1.0,0.0), RGB::from_f32(1.0,1.0,0.0), RGB::from_f32(0.0,1.0,0.0),
+            RGB::from_f32(0.0,0.0,0.0), RGB::from_f32(0.0,1.0,0.0), RGB::from_f32(0.0,0.0,0.0)],
+            &vec![RGB::from_f32(0.0,0.0,0.0);9]
+        ),
     };
 
     // Call into RLTK to run the main loop. This handles rendering, and calls back into State's tick
