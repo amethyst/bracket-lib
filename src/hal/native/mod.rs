@@ -25,21 +25,23 @@ pub struct WrappedContext {
 }
 
 pub struct InitHints {
-    pub vsync : bool,
-    pub gl_version : glutin::GlRequest,
-    pub gl_profile : glutin::GlProfile,
-    pub hardware_acceleration : bool,
-    pub srgb : bool
+    pub vsync: bool,
+    pub fullscreen: bool,
+    pub gl_version: glutin::GlRequest,
+    pub gl_profile: glutin::GlProfile,
+    pub hardware_acceleration: bool,
+    pub srgb: bool,
 }
 
 impl InitHints {
     pub fn new() -> Self {
-        Self{
-            vsync : true,
-            gl_version : glutin::GlRequest::Latest,
-            gl_profile : glutin::GlProfile::Core,
-            hardware_acceleration : true,
-            srgb : true
+        Self {
+            vsync: true,
+            fullscreen: false,
+            gl_version: glutin::GlRequest::Latest,
+            gl_profile: glutin::GlProfile::Core,
+            hardware_acceleration: true,
+            srgb: true,
         }
     }
 }

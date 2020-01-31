@@ -1,5 +1,5 @@
 rltk::add_wasm_support!();
-use rltk::{rex::XpFile, Console, GameState, Rltk, VirtualKeyCode, RGB, RltkBuilder};
+use rltk::{rex::XpFile, Console, GameState, Rltk, RltkBuilder, VirtualKeyCode, RGB};
 
 struct State {
     nyan: XpFile,

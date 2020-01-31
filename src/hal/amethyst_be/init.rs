@@ -3,18 +3,20 @@ use super::InitHints;
 
 pub struct PlatformGL {
     pub window_title: String,
+    pub platform_hints: InitHints,
 }
 
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
     window_title: S,
-    _platform_hints: InitHints
+    platform_hints: InitHints,
 ) -> crate::Rltk {
     crate::Rltk {
         backend: RltkPlatform {
             platform: PlatformGL {
                 window_title: window_title.to_string(),
+                platform_hints,
             },
         },
         width_pixels,

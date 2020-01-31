@@ -3,16 +3,20 @@
 // multi-threaded environment.
 
 use crate::{ColorPair, Console, Point, Rect, Rltk, RGB};
-use std::sync::Mutex;
-use std::sync::Arc;
 use object_pool::{Pool, Reusable};
+use std::sync::Arc;
+use std::sync::Mutex;
 
 lazy_static! {
-    static ref COMMAND_BUFFER: Mutex<Vec<(usize, DrawCommand)>> = Mutex::new(Vec::with_capacity(10000));
+    static ref COMMAND_BUFFER: Mutex<Vec<(usize, DrawCommand)>> =
+        Mutex::new(Vec::with_capacity(10000));
 }
 
 lazy_static! {
-    static ref BUFFER_POOL : Arc<Pool<'static, DrawBatch>> = Arc::new(Pool::new(128, || DrawBatch{ batch: Vec::with_capacity(5000) }));
+    static ref BUFFER_POOL: Arc<Pool<'static, DrawBatch>> =
+        Arc::new(Pool::new(128, || DrawBatch {
+            batch: Vec::with_capacity(5000)
+        }));
 }
 
 /// Clears the global command buffer. This is called internally by RLTK at the end of each
@@ -98,17 +102,17 @@ pub enum DrawCommand {
 
 /// Represents a batch of drawing commands, designed to be submitted together.
 pub struct DrawBatch {
-    batch: Vec<(usize,DrawCommand)>,
+    batch: Vec<(usize, DrawCommand)>,
 }
 
 impl DrawBatch {
     /// Obtain a new, empty draw batch
-    pub fn new() -> Reusable<'static, DrawBatch, > {
+    pub fn new() -> Reusable<'static, DrawBatch> {
         BUFFER_POOL.pull()
     }
 
     /// Submits a batch to the global drawing buffer, and empties the batch.
-    pub fn submit(&mut self, z_order : usize) {
+    pub fn submit(&mut self, z_order: usize) {
         self.batch.iter_mut().enumerate().for_each(|(i, (z, _))| {
             *z = z_order + i;
         });
@@ -117,13 +121,13 @@ impl DrawBatch {
 
     /// Adds a CLS (clear screen) to the drawing batch
     pub fn cls(&mut self) -> &mut Self {
-        self.batch.push((0,DrawCommand::ClearScreen));
+        self.batch.push((0, DrawCommand::ClearScreen));
         self
     }
 
     /// Adds a CLS (clear screen) to the drawing batch
     pub fn cls_color(&mut self, color: RGB) -> &mut Self {
-        self.batch.push((0,DrawCommand::ClearToColor { color }));
+        self.batch.push((0, DrawCommand::ClearToColor { color }));
         self
     }
 
@@ -147,29 +151,38 @@ impl DrawBatch {
 
     /// Prints text in the default colors at a given location
     pub fn print<S: ToString>(&mut self, pos: Point, text: S) -> &mut Self {
-        self.batch.push((0, DrawCommand::Print {
-            pos,
-            text: text.to_string(),
-        }));
+        self.batch.push((
+            0,
+            DrawCommand::Print {
+                pos,
+                text: text.to_string(),
+            },
+        ));
         self
     }
 
     /// Prints text in the default colors at a given location
     pub fn print_color<S: ToString>(&mut self, pos: Point, text: S, color: ColorPair) -> &mut Self {
-        self.batch.push((0, DrawCommand::PrintColor {
-            pos,
-            text: text.to_string(),
-            color,
-        }));
+        self.batch.push((
+            0,
+            DrawCommand::PrintColor {
+                pos,
+                text: text.to_string(),
+                color,
+            },
+        ));
         self
     }
 
     /// Prints text, centered to the whole console width, at vertical location y.
     pub fn print_centered<S: ToString>(&mut self, y: i32, text: S) -> &mut Self {
-        self.batch.push((0, DrawCommand::PrintCentered {
-            y,
-            text: text.to_string(),
-        }));
+        self.batch.push((
+            0,
+            DrawCommand::PrintCentered {
+                y,
+                text: text.to_string(),
+            },
+        ));
         self
     }
     /// Prints text, centered to the whole console width, at vertical location y.
@@ -179,11 +192,14 @@ impl DrawBatch {
         text: S,
         color: ColorPair,
     ) -> &mut Self {
-        self.batch.push((0, DrawCommand::PrintColorCentered {
-            y,
-            text: text.to_string(),
-            color,
-        }));
+        self.batch.push((
+            0,
+            DrawCommand::PrintColorCentered {
+                y,
+                text: text.to_string(),
+                color,
+            },
+        ));
         self
     }
 
@@ -207,7 +223,8 @@ impl DrawBatch {
 
     /// Draws a non-filled (hollow) double-lined box, starting at x/y with the extents width/height using CP437 line characters
     pub fn draw_hollow_double_box(&mut self, pos: Rect, color: ColorPair) -> &mut Self {
-        self.batch.push((0, DrawCommand::HollowDoubleBox { pos, color }));
+        self.batch
+            .push((0, DrawCommand::HollowDoubleBox { pos, color }));
         self
     }
 
@@ -227,13 +244,16 @@ impl DrawBatch {
         max: i32,
         color: ColorPair,
     ) -> &mut Self {
-        self.batch.push((0, DrawCommand::BarHorizontal {
-            pos,
-            width,
-            n,
-            max,
-            color,
-        }));
+        self.batch.push((
+            0,
+            DrawCommand::BarHorizontal {
+                pos,
+                width,
+                n,
+                max,
+                color,
+            },
+        ));
         self
     }
 
@@ -246,13 +266,16 @@ impl DrawBatch {
         max: i32,
         color: ColorPair,
     ) -> &mut Self {
-        self.batch.push((0, DrawCommand::BarVertical {
-            pos,
-            height,
-            n,
-            max,
-            color,
-        }));
+        self.batch.push((
+            0,
+            DrawCommand::BarVertical {
+                pos,
+                height,
+                n,
+                max,
+                color,
+            },
+        ));
         self
     }
 }
@@ -260,76 +283,72 @@ impl DrawBatch {
 /// Submits the current batch to the RLTK buffer and empties it
 pub fn render_draw_buffer(rltk: &mut Rltk) {
     let mut buffer = COMMAND_BUFFER.lock().unwrap();
-    buffer.sort_unstable_by(|a,b| a.0.cmp(&b.0));
-    buffer
-        .iter()
-        .for_each(|(_,cmd)| 
-            match cmd {
-                DrawCommand::ClearScreen => rltk.cls(),
-                DrawCommand::ClearToColor { color } => rltk.cls_bg(*color),
-                DrawCommand::SetTarget { console } => rltk.set_active_console(*console),
-                DrawCommand::Set { pos, color, glyph } => {
-                    rltk.set(pos.x, pos.y, color.fg, color.bg, *glyph)
-                }
-                DrawCommand::SetBackground { pos, bg } => rltk.set_bg(pos.x, pos.y, *bg),
-                DrawCommand::Print { pos, text } => rltk.print(pos.x, pos.y, &text),
-                DrawCommand::PrintColor { pos, text, color } => {
-                    rltk.print_color(pos.x, pos.y, color.fg, color.bg, &text)
-                }
-                DrawCommand::PrintCentered { y, text } => rltk.print_centered(*y, &text),
-                DrawCommand::PrintColorCentered { y, text, color } => {
-                    rltk.print_color_centered(*y, color.fg, color.bg, &text)
-                }
-                DrawCommand::Box { pos, color } => rltk.draw_box(
-                    pos.x1,
-                    pos.y1,
-                    pos.width(),
-                    pos.height(),
-                    color.fg,
-                    color.bg,
-                ),
-                DrawCommand::HollowBox { pos, color } => rltk.draw_hollow_box(
-                    pos.x1,
-                    pos.y1,
-                    pos.width(),
-                    pos.height(),
-                    color.fg,
-                    color.bg,
-                ),
-                DrawCommand::DoubleBox { pos, color } => rltk.draw_box_double(
-                    pos.x1,
-                    pos.y1,
-                    pos.width(),
-                    pos.height(),
-                    color.fg,
-                    color.bg,
-                ),
-                DrawCommand::HollowDoubleBox { pos, color } => rltk.draw_hollow_box_double(
-                    pos.x1,
-                    pos.y1,
-                    pos.width(),
-                    pos.height(),
-                    color.fg,
-                    color.bg,
-                ),
-                DrawCommand::FillRegion { pos, color, glyph } => {
-                    rltk.fill_region(*pos, *glyph, color.fg, color.bg)
-                }
-                DrawCommand::BarHorizontal {
-                    pos,
-                    width,
-                    n,
-                    max,
-                    color,
-                } => rltk.draw_bar_horizontal(pos.x, pos.y, *width, *n, *max, color.fg, color.bg),
-                DrawCommand::BarVertical {
-                    pos,
-                    height,
-                    n,
-                    max,
-                    color,
-                } => rltk.draw_bar_vertical(pos.x, pos.y, *height, *n, *max, color.fg, color.bg),
+    buffer.sort_unstable_by(|a, b| a.0.cmp(&b.0));
+    buffer.iter().for_each(|(_, cmd)| match cmd {
+        DrawCommand::ClearScreen => rltk.cls(),
+        DrawCommand::ClearToColor { color } => rltk.cls_bg(*color),
+        DrawCommand::SetTarget { console } => rltk.set_active_console(*console),
+        DrawCommand::Set { pos, color, glyph } => {
+            rltk.set(pos.x, pos.y, color.fg, color.bg, *glyph)
         }
-    );
+        DrawCommand::SetBackground { pos, bg } => rltk.set_bg(pos.x, pos.y, *bg),
+        DrawCommand::Print { pos, text } => rltk.print(pos.x, pos.y, &text),
+        DrawCommand::PrintColor { pos, text, color } => {
+            rltk.print_color(pos.x, pos.y, color.fg, color.bg, &text)
+        }
+        DrawCommand::PrintCentered { y, text } => rltk.print_centered(*y, &text),
+        DrawCommand::PrintColorCentered { y, text, color } => {
+            rltk.print_color_centered(*y, color.fg, color.bg, &text)
+        }
+        DrawCommand::Box { pos, color } => rltk.draw_box(
+            pos.x1,
+            pos.y1,
+            pos.width(),
+            pos.height(),
+            color.fg,
+            color.bg,
+        ),
+        DrawCommand::HollowBox { pos, color } => rltk.draw_hollow_box(
+            pos.x1,
+            pos.y1,
+            pos.width(),
+            pos.height(),
+            color.fg,
+            color.bg,
+        ),
+        DrawCommand::DoubleBox { pos, color } => rltk.draw_box_double(
+            pos.x1,
+            pos.y1,
+            pos.width(),
+            pos.height(),
+            color.fg,
+            color.bg,
+        ),
+        DrawCommand::HollowDoubleBox { pos, color } => rltk.draw_hollow_box_double(
+            pos.x1,
+            pos.y1,
+            pos.width(),
+            pos.height(),
+            color.fg,
+            color.bg,
+        ),
+        DrawCommand::FillRegion { pos, color, glyph } => {
+            rltk.fill_region(*pos, *glyph, color.fg, color.bg)
+        }
+        DrawCommand::BarHorizontal {
+            pos,
+            width,
+            n,
+            max,
+            color,
+        } => rltk.draw_bar_horizontal(pos.x, pos.y, *width, *n, *max, color.fg, color.bg),
+        DrawCommand::BarVertical {
+            pos,
+            height,
+            n,
+            max,
+            color,
+        } => rltk.draw_bar_vertical(pos.x, pos.y, *height, *n, *max, color.fg, color.bg),
+    });
     buffer.clear();
 }

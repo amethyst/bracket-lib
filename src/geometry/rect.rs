@@ -3,10 +3,7 @@ use std::collections::HashSet;
 use std::convert::TryInto;
 use std::ops;
 
-#[cfg_attr(
-    feature = "serde",
-    derive(serde::Serialize, serde::Deserialize)
-)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub struct Rect {
     pub x1: i32,

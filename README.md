@@ -73,6 +73,7 @@ RLTK supports a number of *feature flags* to let you use it the way you want.
 * If you remove default features, it goes into "dummy" mode. The game state and rendering functions are disabled, but all of the library functions are available (and the lib becomes *tiny* - dropping most of its dependencies).
 * By default, the `opengl` feature will use WebGL or native OpenGL to render your consoles with a pseudo-terminal.
 * You can disable `opengl` and enable `curses` to render to `ncurses` or `pdcurses` (depending upon your platform). All of the demos are available as console-only now, via `cargo run --example curses14-dwarfmap --features curses --no-default-features` (substitute `curses` for `ex` in the example names, and specify the feature set).
+* You can disable `opengl` and enable `crossterm` to render to the native console via the `crossterm` library (examples use the `crossterm` prefix). For example, `cargo run --example crossterm18-textsprites --no-default-features --features="crossterm"`
 * You can disable `opengl` and enable `amethyst_engine_vulkan` or `amethyst_engine_metal` to render via the [Amethyst game engine](https://github.com/amethyst/amethyst). The examples are prefixed with `av` and `am` (for Vulkan and Metal respectively). For example, `cargo run --example av13-textblock --no-default-features --features amethyst_engine_vulkan` will run example 13 on Vulkan.
 
 ## Examples
@@ -238,6 +239,16 @@ Run this example with `cargo run --example ex14-dwarfmap` from the root of the c
 [Example 17 - External HTML Buttons](examples/ex17-wasm-external.rs) demonstrates the new (as of 0.5.0) ability to add bindings to buttons on the HTML hosting the web assembly, and have them fire events in the new `web_button` context field.
 
 [Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex17/)
+
+### Example 18: Multi-Tile Sprites
+
+![Animated GIF](/screenshots/RLTK_RS_EXAMPLE18.gif)
+
+[Example 18 - Multi-Tile Sprites](examples/ex18-textsprites.rs) demonstrates the use of multi-tile sprites, both from REX Paint and submitted as text.
+
+Run this example with `cargo run --example ex18-textsprites` from the root of the cloned repository.
+
+[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex18/)
 
 ## Building with WASM
 

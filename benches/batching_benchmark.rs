@@ -37,7 +37,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
                     draw_batch.print(Point::new(1, 1), "Hello");
                     draw_batch.print(Point::new(1, 2), "World");
                 }
-                draw_batch.submit(j*1000);
+                draw_batch.submit(j * 1000);
             }
             clear_command_buffer();
         })

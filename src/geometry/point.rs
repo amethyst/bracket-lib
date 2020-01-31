@@ -1,10 +1,7 @@
 use std::convert::TryInto;
 use std::ops;
 
-#[cfg_attr(
-    feature = "serde",
-    derive(serde::Serialize, serde::Deserialize)
-)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Eq, PartialEq, Copy, Clone, Debug, Hash)]
 /// Helper struct defining a 2D point in space.
 pub struct Point {

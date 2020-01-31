@@ -28,8 +28,8 @@ amethyst_engine_metal = [ "amethyst/metal", "image" ]
 parsing = [ "regex" ]
 
 [dependencies]
-glow = { version = "0.3.0-alpha2", optional = true }
-image = { version = "0.22.3", default-features = false, features = ["jpeg", "png_codec"], optional = true }
+glow = { version = "0.4.0", optional = true }
+image = { version = "0.22.4", default-features = false, features = ["jpeg", "png_codec"], optional = true }
 rand_xorshift = "0.2.0"
 serde = { version = "1.0.103", features = ["derive"], optional = true }
 flate2 = "1.0.13"
@@ -42,12 +42,13 @@ amethyst = { version = "0.13", features = [ "tiles" ], optional = true }
 ultraviolet = "0.4.5"
 regex = { version = "1.3.1", optional = true }
 object-pool = "0.4"
+crossterm = { version = "0.15.0", optional = true }
 
 [dev-dependencies]
 criterion = "0.3.0"
 
 [target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
-glutin = {version = "0.22.0-alpha3", optional = true }
+glutin = {version = "0.22.1", optional = true }
 rand = "0.7.2"
 
 [target.wasm32-unknown-unknown.dependencies]
@@ -160,6 +161,11 @@ path = "examples/ex17-wasm-external.rs"
 required-features = ["opengl"]
 
 [[example]]
+name = "ex18-textsprites"
+path = "examples/ex18-textsprites.rs"
+required-features = ["opengl"]
+
+[[example]]
 name = "av01-helloworld"
 path = "examples/ex01-helloworld.rs"
 required-features = [ "amethyst/vulkan" ]
@@ -240,6 +246,11 @@ path = "examples/ex16-keyboard.rs"
 required-features = ["amethyst/vulkan"]
 
 [[example]]
+name = "av18-textsprites"
+path = "examples/ex18-textsprites.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
 name = "am01-helloworld"
 path = "examples/ex01-helloworld.rs"
 required-features = [ "amethyst/metal" ]
@@ -317,6 +328,11 @@ required-features = ["amethyst/metal", "specs"]
 [[example]]
 name = "am16-keyboard"
 path = "examples/ex16-keyboard.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am18-textsprites"
+path = "examples/ex18-textsprites.rs"
 required-features = ["amethyst/metal"]
 
 [[example]]
@@ -403,3 +419,98 @@ required-features = ["curses"]
 name = "curses17-wasm-external"
 path = "examples/ex17-wasm-external.rs"
 required-features = ["curses"]
+
+[[example]]
+name = "curses18-textsprites"
+path = "examples/ex18-textsprites.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "crossterm01-helloworld"
+path = "examples/ex01-helloworld.rs"
+required-features = [ "crossterm" ]
+
+[[example]]
+name = "crossterm02-sparse"
+path = "examples/ex02-sparse.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm03-walking"
+path = "examples/ex03-walking.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm04-fov"
+path = "examples/ex04-fov.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm05-dijkstra"
+path = "examples/ex05-dijkstra.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm06-astar-mouse"
+path = "examples/ex06-astar-mouse.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm07-tiles"
+path = "examples/ex07-tiles.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm08-rex"
+path = "examples/ex08-rex.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm09-offsets"
+path = "examples/ex09-offsets.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm10-postprocess"
+path = "examples/ex10-postprocess.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm11-random"
+path = "examples/ex11-random.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm12-simplex"
+path = "examples/ex12-simplex.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm13-textblock"
+path = "examples/ex13-textblock.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm14-dwarfmap"
+path = "examples/ex14-dwarfmap.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm15-specs"
+path = "examples/ex15-specs.rs"
+required-features = ["crossterm", "specs"]
+
+[[example]]
+name = "crossterm16-keyboard"
+path = "examples/ex16-keyboard.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm17-wasm-external"
+path = "examples/ex17-wasm-external.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm18-textsprites"
+path = "examples/ex18-textsprites.rs"
+required-features = ["crossterm"]
