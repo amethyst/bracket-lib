@@ -122,3 +122,7 @@ impl SparseConsoleBackend {
     ) {
     }
 }
+
+pub fn log(s: &str) {
+    println!("{}", s);
+}

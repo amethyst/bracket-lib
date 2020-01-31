@@ -150,3 +150,7 @@ fn find_nearest_color(color: crate::RGB, map: &[CursesColor]) -> i16 {
 
     result
 }
+
+pub fn log(s: &str) {
+    println!("{}", s);
+}

@@ -67,23 +67,3 @@ pub use shader::Shader;
 pub struct RltkPlatform {
     pub platform: PlatformGL,
 }
-
-#[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
-pub fn log<S: ToString>(message: S) {
-    println!("{}", message.to_string());
-}
-
-#[cfg(all(feature = "opengl", target_arch = "wasm32"))]
-use wasm_bindgen::prelude::*;
-
-#[cfg(all(feature = "opengl", target_arch = "wasm32"))]
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = console)]
-    pub fn log(s: &str);
-}
-
-#[cfg(not(feature = "opengl"))]
-pub fn log<S: ToString>(message: S) {
-    println!("{}", message.to_string());
-}

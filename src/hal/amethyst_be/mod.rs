@@ -21,3 +21,7 @@ impl InitHints {
         }
     }
 }
+
+pub fn log(s: &str) {
+    println!("{}", s);
+}
