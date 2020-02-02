@@ -309,3 +309,28 @@ impl DijkstraMap {
         Some(exits[0].0)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    // 1 by 3 stripe of tiles
+    struct MiniMap;
+    impl BaseMap for MiniMap {
+        fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)> {
+            match idx {
+                0 => vec![(1, 1.)],
+                2 => vec![(1, 1.)],
+                _ => vec![(idx - 1, 1.), (idx + 1, 1.)],
+            }
+        }
+    }
+    #[test]
+    fn test_highest_exit() {
+        let map = MiniMap {};
+        let exits_map = DijkstraMap::new(3, 1, &[0], &map, 10.);
+        let target = DijkstraMap::find_highest_exit(&exits_map, 0, &map);
+        assert_eq!(target, Some(1));
+        let target = DijkstraMap::find_highest_exit(&exits_map, 1, &map);
+        assert_eq!(target, Some(2));
+    }
+}
