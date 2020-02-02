@@ -301,8 +301,8 @@ impl DijkstraMap {
         }
 
         exits.sort_by(|a, b| {
-            dm.map[a.0 as usize]
-                .partial_cmp(&dm.map[b.0 as usize])
+            dm.map[b.0 as usize]
+                .partial_cmp(&dm.map[a.0 as usize])
                 .unwrap()
         });
 
