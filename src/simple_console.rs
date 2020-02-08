@@ -13,6 +13,9 @@ pub struct SimpleConsole {
     offset_x: f32,
     offset_y: f32,
 
+    scale: f32,
+    scale_center: (i32, i32),
+
     backend: hal::SimpleConsoleBackend,
 }
 
@@ -37,6 +40,8 @@ impl SimpleConsole {
             is_dirty: true,
             offset_x: 0.0,
             offset_y: 0.0,
+            scale: 1.0,
+            scale_center: (width as i32 / 2, height as i32 / 2),
             backend: hal::SimpleConsoleBackend::new(platform, width as usize, height as usize),
         };
 
@@ -51,6 +56,8 @@ impl SimpleConsole {
             &self.tiles,
             self.offset_x,
             self.offset_y,
+            self.scale,
+            self.scale_center,
         );
     }
 }
@@ -270,6 +277,11 @@ impl Console for SimpleConsole {
     fn set_offset(&mut self, x: f32, y: f32) {
         self.offset_x = x * (2.0 / self.width as f32);
         self.offset_y = y * (2.0 / self.height as f32);
+    }
+
+    fn set_scale(&mut self, scale: f32, center_x: i32, center_y: i32) {
+        self.scale = scale;
+        self.scale_center = (center_x, center_y);
     }
 
     fn as_any(&self) -> &dyn Any {

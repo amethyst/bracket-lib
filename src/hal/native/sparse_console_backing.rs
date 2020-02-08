@@ -101,6 +101,8 @@ impl SparseConsoleBackend {
         width: u32,
         offset_x: f32,
         offset_y: f32,
+        scale: f32,
+        scale_center: (i32, i32),
         tiles: &[SparseTile],
     ) {
         if tiles.is_empty() {
@@ -113,16 +115,18 @@ impl SparseConsoleBackend {
         let glyph_size_x: f32 = 1.0 / 16.0;
         let glyph_size_y: f32 = 1.0 / 16.0;
 
-        let step_x: f32 = 2.0 / width as f32;
-        let step_y: f32 = 2.0 / height as f32;
+        let step_x: f32 = scale * 2.0 / width as f32;
+        let step_y: f32 = scale * 2.0 / height as f32;
 
         let mut index_count: i32 = 0;
+        let screen_x_start: f32 = -1.0 * scale - 2.0 * (scale_center.0 - width as i32/2) as f32 * (scale - 1.0) / width as f32;
+        let screen_y_start: f32 = -1.0 * scale + 2.0 * (scale_center.1 - height as i32/2) as f32 * (scale - 1.0) / height as f32;
         for t in tiles.iter() {
             let x = t.idx % width as usize;
             let y = t.idx / width as usize;
 
-            let screen_x = ((step_x * x as f32) - 1.0) + offset_x;
-            let screen_y = ((step_y * y as f32) - 1.0) + offset_y;
+            let screen_x = ((step_x * x as f32) + screen_x_start) + offset_x;
+            let screen_y = ((step_y * y as f32) + screen_y_start) + offset_y;
             let fg = t.fg;
             let bg = t.bg;
             let glyph = t.glyph;
