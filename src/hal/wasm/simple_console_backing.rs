@@ -113,6 +113,8 @@ impl SimpleConsoleBackend {
         tiles: &Vec<Tile>,
         offset_x: f32,
         offset_y: f32,
+        _scale: f32,
+        _scale_center: (i32, i32),
     ) {
         let gl = &platform.platform.gl;
         unsafe {
