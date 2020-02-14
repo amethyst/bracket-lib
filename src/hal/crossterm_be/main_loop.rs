@@ -150,7 +150,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                     }
                 }
                 _ => {}
-            }            
+            }
         }
 
         gamestate.tick(&mut rltk);
