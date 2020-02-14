@@ -118,6 +118,14 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
         }
 
         rltk.backend.platform.window.refresh();
+
+        if let Some(wait_time) = rltk.backend.platform.frame_sleep_time {
+            let now = Instant::now();
+            let execute_ms = now.elapsed().as_millis() as u64;
+            if execute_ms < wait_time {
+                std::thread::sleep(std::time::Duration::from_millis(wait_time - execute_ms));
+            }
+        }
     }
 
     endwin();

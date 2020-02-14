@@ -33,6 +33,7 @@ impl InitHints {
 pub struct PlatformGL {
     window: Window,
     color_map: Vec<CursesColor>,
+    pub frame_sleep_time: Option<u64>
 }
 
 pub mod shader {
@@ -81,7 +82,7 @@ pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
     _window_title: S,
-    _platform_hints: InitHints,
+    platform_hints: InitHints,
 ) -> crate::Rltk {
     let window = initscr();
     resize_term(height_pixels as i32 / 8, width_pixels as i32 / 8);
@@ -109,9 +110,14 @@ pub fn init_raw<S: ToString>(
         }
     }
 
+    let fst : Option<u64> = match platform_hints.frame_sleep_time {
+        None => None,
+        Some(f) => Some((f * 1000.0) as u64)
+    };
+
     crate::Rltk {
         backend: super::RltkPlatform {
-            platform: PlatformGL { window, color_map },
+            platform: PlatformGL { window, color_map, frame_sleep_time : fst },            
         },
         width_pixels,
         height_pixels,
