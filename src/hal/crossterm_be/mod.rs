@@ -1,6 +1,9 @@
 // Dummy platform to let it compile and do nothing. Only useful if you don't want a graphical backend.
+use crossterm::{
+    execute,
+    terminal::{size, SetSize},
+};
 use std::io::{stdout, Write};
-use crossterm::{execute, terminal::{SetSize, size}};
 
 mod keycodes;
 pub use keycodes::VirtualKeyCode;
@@ -14,7 +17,7 @@ pub use main_loop::*;
 pub struct InitHints {
     pub vsync: bool,
     pub fullscreen: bool,
-    pub frame_sleep_time: Option<f32>
+    pub frame_sleep_time: Option<f32>,
 }
 
 impl InitHints {
@@ -22,15 +25,15 @@ impl InitHints {
         Self {
             vsync: true,
             fullscreen: false,
-            frame_sleep_time: None
+            frame_sleep_time: None,
         }
     }
 }
 
 pub struct PlatformGL {
-    old_width : u16,
-    old_height : u16,
-    pub frame_sleep_time: Option<u64>
+    old_width: u16,
+    old_height: u16,
+    pub frame_sleep_time: Option<u64>,
 }
 
 pub mod shader {
@@ -65,22 +68,18 @@ pub fn init_raw<S: ToString>(
     execute!(
         stdout(),
         SetSize(width_pixels as u16 / 8, height_pixels as u16 / 8),
-    ).expect("Console command fail");
+    )
+    .expect("Console command fail");
 
     execute!(stdout(), crossterm::cursor::Hide).expect("Command fail");
     execute!(stdout(), crossterm::event::EnableMouseCapture).expect("Command fail");
 
-    let fst : Option<u64> = match platform_hints.frame_sleep_time {
-        None => None,
-        Some(f) => Some((f * 1000.0) as u64)
-    };
-
     crate::Rltk {
         backend: super::RltkPlatform {
             platform: PlatformGL {
-                old_width : old_size.0,
-                old_height : old_size.1,
-                frame_sleep_time : fst
+                old_width: old_size.0,
+                old_height: old_size.1,
+                frame_sleep_time: super::convert_fps_to_wait(platform_hints.frame_sleep_time),
             },
         },
         width_pixels,
@@ -119,7 +118,7 @@ impl SparseConsoleBackend {
         _offset_x: f32,
         _offset_y: f32,
         _scale: f32,
-        _scale_center: (i32,i32),
+        _scale_center: (i32, i32),
         _tiles: &[crate::sparse_console::SparseTile],
     ) {
     }

@@ -23,8 +23,8 @@ enum ConsoleType {
     SparseConsoleNoBg {
         width: u32,
         height: u32,
-        font: String
-    }
+        font: String,
+    },
 }
 
 /// Provides a builder mechanism for initializing RLTK. You can chain builders together,
@@ -39,7 +39,7 @@ pub struct RltkBuilder {
     consoles: Vec<ConsoleType>,
     tile_width: u32,
     tile_height: u32,
-    platform_hints: InitHints
+    platform_hints: InitHints,
 }
 
 impl RltkBuilder {
@@ -55,7 +55,7 @@ impl RltkBuilder {
             consoles: Vec::new(),
             tile_height: 8,
             tile_width: 8,
-            platform_hints: InitHints::new()
+            platform_hints: InitHints::new(),
         }
     }
 
@@ -70,7 +70,7 @@ impl RltkBuilder {
             consoles: Vec::new(),
             tile_height: 8,
             tile_width: 8,
-            platform_hints: InitHints::new()
+            platform_hints: InitHints::new(),
         };
         cb.fonts.push(BuilderFont {
             path: "terminal8x8.png".to_string(),
@@ -100,7 +100,7 @@ impl RltkBuilder {
             consoles: Vec::new(),
             tile_height: 8,
             tile_width: 8,
-            platform_hints: InitHints::new()
+            platform_hints: InitHints::new(),
         };
         cb.fonts.push(BuilderFont {
             path: "terminal8x8.png".to_string(),
@@ -125,7 +125,7 @@ impl RltkBuilder {
             consoles: Vec::new(),
             tile_height: 16,
             tile_width: 8,
-            platform_hints: InitHints::new()
+            platform_hints: InitHints::new(),
         };
         cb.fonts.push(BuilderFont {
             path: "vga8x16.png".to_string(),
@@ -155,7 +155,7 @@ impl RltkBuilder {
             consoles: Vec::new(),
             tile_height: 16,
             tile_width: 8,
-            platform_hints: InitHints::new()
+            platform_hints: InitHints::new(),
         };
         cb.fonts.push(BuilderFont {
             path: "vga8x16.png".to_string(),
@@ -254,13 +254,14 @@ impl RltkBuilder {
     }
 
     /// Adds a sparse console with no bg rendering layer to the RLTK builder.
-    pub fn with_sparse_console_no_bg<S:ToString, T>(mut self, width: T, height: T, font: S) -> Self
-    where T: TryInto<u32>
+    pub fn with_sparse_console_no_bg<S: ToString, T>(mut self, width: T, height: T, font: S) -> Self
+    where
+        T: TryInto<u32>,
     {
-        self.consoles.push(ConsoleType::SparseConsoleNoBg{
-            width : width.try_into().ok().unwrap(),
-            height : height.try_into().ok().unwrap(),
-            font : font.to_string()
+        self.consoles.push(ConsoleType::SparseConsoleNoBg {
+            width: width.try_into().ok().unwrap(),
+            height: height.try_into().ok().unwrap(),
+            font: font.to_string(),
         });
         self
     }
@@ -331,10 +332,17 @@ impl RltkBuilder {
                         font_id,
                     );
                 }
-                ConsoleType::SparseConsoleNoBg{width, height, font} => {
+                ConsoleType::SparseConsoleNoBg {
+                    width,
+                    height,
+                    font,
+                } => {
                     let font_path = format!("{}/{}", self.resource_path, font);
                     let font_id = font_map[&font_path];
-                    context.register_console_no_bg(SparseConsole::init(*width, *height, &context.backend), font_id);
+                    context.register_console_no_bg(
+                        SparseConsole::init(*width, *height, &context.backend),
+                        font_id,
+                    );
                 }
             }
         }

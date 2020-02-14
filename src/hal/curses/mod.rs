@@ -17,7 +17,7 @@ pub use sparse_console_backing::SparseConsoleBackend;
 pub struct InitHints {
     pub vsync: bool,
     pub fullscreen: bool,
-    pub frame_sleep_time: Option<f32>
+    pub frame_sleep_time: Option<f32>,
 }
 
 impl InitHints {
@@ -25,7 +25,7 @@ impl InitHints {
         Self {
             vsync: true,
             fullscreen: false,
-            frame_sleep_time: None
+            frame_sleep_time: None,
         }
     }
 }
@@ -33,7 +33,7 @@ impl InitHints {
 pub struct PlatformGL {
     window: Window,
     color_map: Vec<CursesColor>,
-    pub frame_sleep_time: Option<u64>
+    pub frame_sleep_time: Option<u64>,
 }
 
 pub mod shader {
@@ -110,14 +110,13 @@ pub fn init_raw<S: ToString>(
         }
     }
 
-    let fst : Option<u64> = match platform_hints.frame_sleep_time {
-        None => None,
-        Some(f) => Some((f * 1000.0) as u64)
-    };
-
     crate::Rltk {
         backend: super::RltkPlatform {
-            platform: PlatformGL { window, color_map, frame_sleep_time : fst },            
+            platform: PlatformGL {
+                window,
+                color_map,
+                frame_sleep_time: super::convert_fps_to_wait(platform_hints.frame_sleep_time),
+            },
         },
         width_pixels,
         height_pixels,

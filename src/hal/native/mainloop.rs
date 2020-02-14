@@ -54,7 +54,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
             Event::MainEventsCleared => {
                 wc.window().request_redraw();
             }
-            Event::RedrawRequested{..} => {
+            Event::RedrawRequested { .. } => {
                 tock(
                     &mut rltk,
                     &mut gamestate,
@@ -64,13 +64,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                     &now,
                 );
                 wc.swap_buffers().unwrap();
-                if let Some(wait_time) = rltk.backend.platform.frame_sleep_time {
-                    let now = Instant::now();
-                    let execute_ms = now.elapsed().as_millis() as u64;
-                    if execute_ms < wait_time {
-                        std::thread::sleep(std::time::Duration::from_millis(wait_time - execute_ms));
-                    }
-                }
+                crate::hal::fps_sleep(rltk.backend.platform.frame_sleep_time);
             }
             Event::DeviceEvent {
                 event: DeviceEvent::ModifiersChanged(modifiers),
