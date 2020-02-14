@@ -52,6 +52,9 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                 rltk.key = None;
             }
             Event::MainEventsCleared => {
+                wc.window().request_redraw();
+            }
+            Event::RedrawRequested{..} => {
                 tock(
                     &mut rltk,
                     &mut gamestate,
