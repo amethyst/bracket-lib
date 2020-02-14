@@ -39,7 +39,7 @@ pub struct RltkBuilder {
     consoles: Vec<ConsoleType>,
     tile_width: u32,
     tile_height: u32,
-    platform_hints: InitHints,
+    platform_hints: InitHints
 }
 
 impl RltkBuilder {
@@ -55,7 +55,7 @@ impl RltkBuilder {
             consoles: Vec::new(),
             tile_height: 8,
             tile_width: 8,
-            platform_hints: InitHints::new(),
+            platform_hints: InitHints::new()
         }
     }
 
@@ -70,7 +70,7 @@ impl RltkBuilder {
             consoles: Vec::new(),
             tile_height: 8,
             tile_width: 8,
-            platform_hints: InitHints::new(),
+            platform_hints: InitHints::new()
         };
         cb.fonts.push(BuilderFont {
             path: "terminal8x8.png".to_string(),
@@ -100,7 +100,7 @@ impl RltkBuilder {
             consoles: Vec::new(),
             tile_height: 8,
             tile_width: 8,
-            platform_hints: InitHints::new(),
+            platform_hints: InitHints::new()
         };
         cb.fonts.push(BuilderFont {
             path: "terminal8x8.png".to_string(),
@@ -125,7 +125,7 @@ impl RltkBuilder {
             consoles: Vec::new(),
             tile_height: 16,
             tile_width: 8,
-            platform_hints: InitHints::new(),
+            platform_hints: InitHints::new()
         };
         cb.fonts.push(BuilderFont {
             path: "vga8x16.png".to_string(),
@@ -155,7 +155,7 @@ impl RltkBuilder {
             consoles: Vec::new(),
             tile_height: 16,
             tile_width: 8,
-            platform_hints: InitHints::new(),
+            platform_hints: InitHints::new()
         };
         cb.fonts.push(BuilderFont {
             path: "vga8x16.png".to_string(),
@@ -280,6 +280,12 @@ impl RltkBuilder {
     /// Push platform-specific initialization hints to the builder. THIS REMOVES CROSS-PLATFORM COMPATIBILITY
     pub fn with_platform_specific(mut self, hints: InitHints) -> Self {
         self.platform_hints = hints;
+        self
+    }
+
+    /// Instructs the back-end (not all of them honor it; WASM and Amethyst do their own thing) to try to limit frame-rate and CPU utilization.
+    pub fn with_fps_cap(mut self, fps: f32) -> Self {
+        self.platform_hints.frame_sleep_time = Some(1.0 / fps);
         self
     }
 

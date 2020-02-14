@@ -17,6 +17,7 @@ pub use sparse_console_backing::SparseConsoleBackend;
 pub struct InitHints {
     pub vsync: bool,
     pub fullscreen: bool,
+    pub frame_sleep_time: Option<f32>
 }
 
 impl InitHints {
@@ -24,6 +25,7 @@ impl InitHints {
         Self {
             vsync: true,
             fullscreen: false,
+            frame_sleep_time: None
         }
     }
 }

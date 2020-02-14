@@ -73,6 +73,11 @@ pub fn init_raw<S: ToString>(
     // Build a simple quad rendering vao
     let quad_vao = setup_quad(&gl);
 
+    let fst : Option<u64> = match platform_hints.frame_sleep_time {
+        None => None,
+        Some(f) => Some((f * 1000.0) as u64)
+    };
+
     Rltk {
         backend: RltkPlatform {
             platform: PlatformGL {
@@ -83,6 +88,7 @@ pub fn init_raw<S: ToString>(
                     wc: windowed_context,
                 }),
                 backing_buffer: backing_fbo,
+                frame_sleep_time: fst
             },
         },
         width_pixels,
