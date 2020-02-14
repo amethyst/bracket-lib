@@ -64,7 +64,7 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                     &now,
                 );
                 wc.swap_buffers().unwrap();
-                crate::hal::fps_sleep(rltk.backend.platform.frame_sleep_time);
+                crate::hal::fps_sleep(rltk.backend.platform.frame_sleep_time, &now, prev_ms);
             }
             Event::DeviceEvent {
                 event: DeviceEvent::ModifiersChanged(modifiers),
