@@ -1,6 +1,9 @@
 // Dummy platform to let it compile and do nothing. Only useful if you don't want a graphical backend.
+use crossterm::{
+    execute,
+    terminal::{size, SetSize},
+};
 use std::io::{stdout, Write};
-use crossterm::{execute, terminal::{SetSize, size}};
 
 mod keycodes;
 pub use keycodes::VirtualKeyCode;
@@ -14,6 +17,7 @@ pub use main_loop::*;
 pub struct InitHints {
     pub vsync: bool,
     pub fullscreen: bool,
+    pub frame_sleep_time: Option<f32>,
 }
 
 impl InitHints {
@@ -21,13 +25,15 @@ impl InitHints {
         Self {
             vsync: true,
             fullscreen: false,
+            frame_sleep_time: None,
         }
     }
 }
 
 pub struct PlatformGL {
-    old_width : u16,
-    old_height : u16
+    old_width: u16,
+    old_height: u16,
+    pub frame_sleep_time: Option<u64>,
 }
 
 pub mod shader {
@@ -54,7 +60,7 @@ pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
     _window_title: S,
-    _platform_hints: InitHints,
+    platform_hints: InitHints,
 ) -> crate::Rltk {
     let old_size = size().expect("Unable to get console size");
     println!("Old size: {:?}", old_size);
@@ -62,7 +68,8 @@ pub fn init_raw<S: ToString>(
     execute!(
         stdout(),
         SetSize(width_pixels as u16 / 8, height_pixels as u16 / 8),
-    ).expect("Console command fail");
+    )
+    .expect("Console command fail");
 
     execute!(stdout(), crossterm::cursor::Hide).expect("Command fail");
     execute!(stdout(), crossterm::event::EnableMouseCapture).expect("Command fail");
@@ -70,8 +77,9 @@ pub fn init_raw<S: ToString>(
     crate::Rltk {
         backend: super::RltkPlatform {
             platform: PlatformGL {
-                old_width : old_size.0,
-                old_height : old_size.1
+                old_width: old_size.0,
+                old_height: old_size.1,
+                frame_sleep_time: super::convert_fps_to_wait(platform_hints.frame_sleep_time),
             },
         },
         width_pixels,
@@ -109,6 +117,8 @@ impl SparseConsoleBackend {
         _width: u32,
         _offset_x: f32,
         _offset_y: f32,
+        _scale: f32,
+        _scale_center: (i32, i32),
         _tiles: &[crate::sparse_console::SparseTile],
     ) {
     }

@@ -88,6 +88,7 @@ fn main() {
     // with the baked-in 8x8 terminal font.
     let context = RltkBuilder::simple80x50()
         .with_title("Hello RLTK World")
+        .with_fps_cap(30.0)
         .build();
 
     // Now we create an empty state object.

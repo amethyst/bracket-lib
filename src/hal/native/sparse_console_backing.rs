@@ -119,8 +119,10 @@ impl SparseConsoleBackend {
         let step_y: f32 = scale * 2.0 / height as f32;
 
         let mut index_count: i32 = 0;
-        let screen_x_start: f32 = -1.0 * scale - 2.0 * (scale_center.0 - width as i32/2) as f32 * (scale - 1.0) / width as f32;
-        let screen_y_start: f32 = -1.0 * scale + 2.0 * (scale_center.1 - height as i32/2) as f32 * (scale - 1.0) / height as f32;
+        let screen_x_start: f32 = -1.0 * scale
+            - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
+        let screen_y_start: f32 = -1.0 * scale
+            + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
         for t in tiles.iter() {
             let x = t.idx % width as usize;
             let y = t.idx / width as usize;

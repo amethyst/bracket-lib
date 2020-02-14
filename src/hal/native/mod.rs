@@ -17,6 +17,7 @@ pub struct PlatformGL {
     pub quad_vao: u32,
     pub context_wrapper: Option<WrappedContext>,
     pub backing_buffer: super::Framebuffer,
+    pub frame_sleep_time: Option<u64>,
 }
 
 pub struct WrappedContext {
@@ -31,6 +32,7 @@ pub struct InitHints {
     pub gl_profile: glutin::GlProfile,
     pub hardware_acceleration: bool,
     pub srgb: bool,
+    pub frame_sleep_time: Option<f32>,
 }
 
 impl InitHints {
@@ -42,6 +44,7 @@ impl InitHints {
             gl_profile: glutin::GlProfile::Core,
             hardware_acceleration: true,
             srgb: true,
+            frame_sleep_time: None,
         }
     }
 }

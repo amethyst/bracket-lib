@@ -1,11 +1,11 @@
 use super::super::super::{GameState, Rltk};
 use super::VirtualKeyCode;
-use std::time::Instant;
-use std::io::{stdout, Write};
-use crossterm::terminal::{SetSize};
-use crossterm::{execute};
 use crossterm::event::{poll, read, Event};
+use crossterm::execute;
+use crossterm::terminal::SetSize;
+use std::io::{stdout, Write};
 use std::time::Duration;
+use std::time::Instant;
 
 pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
     let now = Instant::now();
@@ -55,7 +55,9 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
                 }
                 Event::Key(key) => {
                     // Including because it eats my ctrl-C to quit!
-                    if key.code == crossterm::event::KeyCode::Char('c') && key.modifiers == crossterm::event::KeyModifiers::CONTROL {
+                    if key.code == crossterm::event::KeyCode::Char('c')
+                        && key.modifiers == crossterm::event::KeyModifiers::CONTROL
+                    {
                         rltk.quitting = true;
                     }
 
@@ -167,19 +169,35 @@ pub fn main_loop<GS: GameState>(mut rltk: Rltk, mut gamestate: GS) {
 
         //rltk.backend.platform.window.refresh();
         stdout().flush().expect("Command fail");
+
+        crate::hal::fps_sleep(rltk.backend.platform.frame_sleep_time, &now, prev_ms);
     }
 
-    println!("Returning size to {}x{}", rltk.backend.platform.old_width, rltk.backend.platform.old_height);
-    execute!(stdout(), SetSize(rltk.backend.platform.old_width, rltk.backend.platform.old_height)).expect("Unable to resize");
-    execute!(stdout(), crossterm::style::SetForegroundColor(
-        crossterm::style::Color::Rgb{
-            r: 255, g: 255, b: 255
-        }
-    )).expect("Unable to recolor");
-    execute!(stdout(), crossterm::style::SetBackgroundColor(
-        crossterm::style::Color::Rgb{
-            r: 0, g: 0, b: 0
-        }
-    )).expect("Unable to recolor");
+    println!(
+        "Returning size to {}x{}",
+        rltk.backend.platform.old_width, rltk.backend.platform.old_height
+    );
+    execute!(
+        stdout(),
+        SetSize(
+            rltk.backend.platform.old_width,
+            rltk.backend.platform.old_height
+        )
+    )
+    .expect("Unable to resize");
+    execute!(
+        stdout(),
+        crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
+            r: 255,
+            g: 255,
+            b: 255
+        })
+    )
+    .expect("Unable to recolor");
+    execute!(
+        stdout(),
+        crossterm::style::SetBackgroundColor(crossterm::style::Color::Rgb { r: 0, g: 0, b: 0 })
+    )
+    .expect("Unable to recolor");
     execute!(stdout(), crossterm::cursor::Show).expect("Command fail");
 }

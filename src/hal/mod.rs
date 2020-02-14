@@ -67,3 +67,20 @@ pub use shader::Shader;
 pub struct RltkPlatform {
     pub platform: PlatformGL,
 }
+
+fn convert_fps_to_wait(frame_sleep_time: Option<f32>) -> Option<u64> {
+    match frame_sleep_time {
+        None => None,
+        Some(f) => Some((f * 1000.0) as u64),
+    }
+}
+
+#[inline(always)]
+fn fps_sleep(frame_sleep_time: Option<u64>, now: &std::time::Instant, prev_ms: u128) {
+    if let Some(wait_time) = frame_sleep_time {
+        let execute_ms = now.elapsed().as_millis() as u64 - prev_ms as u64;
+        if execute_ms < wait_time {
+            std::thread::sleep(std::time::Duration::from_millis(wait_time - execute_ms));
+        }
+    }
+}
