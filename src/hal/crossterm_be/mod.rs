@@ -29,7 +29,8 @@ impl InitHints {
 
 pub struct PlatformGL {
     old_width : u16,
-    old_height : u16
+    old_height : u16,
+    pub frame_sleep_time: Option<u64>
 }
 
 pub mod shader {
@@ -56,7 +57,7 @@ pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
     _window_title: S,
-    _platform_hints: InitHints,
+    platform_hints: InitHints,
 ) -> crate::Rltk {
     let old_size = size().expect("Unable to get console size");
     println!("Old size: {:?}", old_size);
@@ -69,11 +70,17 @@ pub fn init_raw<S: ToString>(
     execute!(stdout(), crossterm::cursor::Hide).expect("Command fail");
     execute!(stdout(), crossterm::event::EnableMouseCapture).expect("Command fail");
 
+    let fst : Option<u64> = match platform_hints.frame_sleep_time {
+        None => None,
+        Some(f) => Some((f * 1000.0) as u64)
+    };
+
     crate::Rltk {
         backend: super::RltkPlatform {
             platform: PlatformGL {
                 old_width : old_size.0,
-                old_height : old_size.1
+                old_height : old_size.1,
+                frame_sleep_time : fst
             },
         },
         width_pixels,
