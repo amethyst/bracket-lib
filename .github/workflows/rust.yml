@@ -16,8 +16,6 @@ jobs:
     - name: Run tests
       run: 
         cargo test --verbose
-        cargo test --no-default-features --features "curses,parsing"
-        cargo test --no-default-features --features "crossterm,parsing"
     - name: Check benchmarks
       run: cargo check --benches
     - name: Check examples
