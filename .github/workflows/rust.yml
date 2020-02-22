@@ -1,0 +1,25 @@
+name: Rust
+
+on: [push]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
+      run: 
+        cargo test --verbose
+    - name: Check benchmarks
+      run: cargo check --benches
+    - name: Check examples
+      if: matrix.os != 'windows-latest'
+      run: |
+        cargo check --all
+
