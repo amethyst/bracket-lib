@@ -1,0 +1,18 @@
+[package]
+name = "rltk"
+version = "0.7.0"
+authors = ["Herbert Wolverson <herberticus@gmail.com>"]
+edition = "2018"
+publish = true
+description = "A CP437/ASCII terminal library and helpers to make creating roguelike games in Rust easy. Similar to libtcod, but aiming to be Rust-native."
+homepage = "https://github.com/thebracket/rltk_rs"
+repository = "https://github.com/thebracket/rltk_rs"
+readme = "README.md"
+keywords = ["roguelike", "cp437", "ascii", "virtual-terminal", "gamedev"]
+categories = ["game-engines", "graphics"]
+license = "MIT"
+
+[features]
+
+[dependencies]
+bracket-lib = { path = "../" }
