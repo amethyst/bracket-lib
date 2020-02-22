@@ -12,10 +12,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build
-      run: cargo build --verbose
+      run: cargo build --verbose --all
     - name: Run tests
       run: 
-        cargo test --verbose
+        cargo test --verbose --all
     - name: Check benchmarks
       run: cargo check --benches
     - name: Check examples
