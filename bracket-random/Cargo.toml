@@ -1,0 +1,38 @@
+[package]
+name = "bracket-random"
+version = "0.1.0"
+authors = ["Herbert Wolverson <herberticus@gmail.com>"]
+edition = "2018"
+publish = true
+description = "Random number generator (xorshift based), focused on dice rolling. Optionally includes parsing of RPG-style dice strings (e.g. \"3d6+12\"). Part of the bracket-lib family."
+homepage = "https://github.com/thebracket/bracket-random"
+repository = "https://github.com/thebracket/bracket-random"
+readme = "README.md"
+keywords = ["roguelike", "gamedev", "random", "xorshift", "dice"]
+categories = ["game-engines", "random"]
+license = "MIT"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+default = [ "parsing" ]
+parsing = [ "regex", "lazy_static" ]
+
+[dependencies]
+rand_xorshift = "0.2.0"
+regex = { version = "1.3.4", optional = true }
+lazy_static = { version = "1.4.0", optional = true }
+serde = { version = "1.0.104", features = ["derive"], optional = true }
+
+[target.wasm32-unknown-unknown.dependencies]
+rand = { version = "0.7.2", features = ["wasm-bindgen"] }
+
+[target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
+rand = "0.7.2"
+
+[dev-dependencies]
+criterion = "0.3.1"
+
+[[bench]]
+name = "dice"
+harness = false

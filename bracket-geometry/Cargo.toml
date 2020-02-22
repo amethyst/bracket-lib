@@ -1,0 +1,22 @@
+[package]
+name = "bracket-geometry"
+version = "0.1.0"
+authors = ["Herbert Wolverson <herberticus@gmail.com>"]
+edition = "2018"
+publish = true
+description = "Geometry utilities. Rect, lines, circles, distance calculations. Part of the bracket-lib family."
+homepage = "https://github.com/thebracket/bracket-geometry"
+repository = "https://github.com/thebracket/bracket-geometry"
+readme = "README.md"
+keywords = ["geometry", "gamedev", "bresenham", "circle", "distance"]
+categories = ["game-engines", "graphics"]
+license = "MIT"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ultraviolet = "0.4.5"
+serde = { version = "1.0.104", features = ["derive"], optional = true }
+
+[dev-dependencies]
+crossterm = "0.16.0"

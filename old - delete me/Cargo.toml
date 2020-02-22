@@ -1,0 +1,516 @@
+[package]
+name = "rltk"
+version = "0.6.2"
+authors = ["Herbert Wolverson <herberticus@gmail.com>"]
+edition = "2018"
+publish = true
+description = "A CP437/ASCII terminal library and helpers to make creating roguelike games in Rust easy. Similar to libtcod, but aiming to be Rust-native."
+homepage = "https://github.com/thebracket/rltk_rs"
+repository = "https://github.com/thebracket/rltk_rs"
+readme = "README.md"
+keywords = ["roguelike", "cp437", "ascii", "virtual-terminal", "gamedev"]
+categories = ["game-engines", "graphics"]
+license = "MIT"
+maintenance = { status = "actively-developed" }
+exclude = [
+    "webglbuild.bat",
+    "wasm_help/*",
+    "screenshots/*"
+]
+
+[features]
+default = [ "opengl", "parsing" ]
+threaded = ["rayon"]
+opengl = [ "glow", "image", "glutin" ]
+curses = [ "pancurses" ]
+amethyst_engine_vulkan = [ "amethyst/vulkan", "image" ]
+amethyst_engine_metal = [ "amethyst/metal", "image" ]
+parsing = [ "regex" ]
+
+[dependencies]
+glow = { version = "0.4.0", optional = true }
+image = { version = "0.22.4", default-features = false, features = ["jpeg", "png_codec"], optional = true }
+rand_xorshift = "0.2.0"
+serde = { version = "1.0.103", features = ["derive"], optional = true }
+flate2 = "1.0.13"
+byteorder = "1.3.2"
+lazy_static = "1.4.0"
+rayon = { version = "1.2.1", optional = true }
+specs = { version = "0.15.1", optional = true }
+pancurses = { version = "0.16.1", optional = true }
+amethyst = { version = "0.13", features = [ "tiles" ], optional = true }
+ultraviolet = "0.4.5"
+regex = { version = "1.3.1", optional = true }
+object-pool = "0.4"
+crossterm = { version = "0.15.0", optional = true }
+
+[dev-dependencies]
+criterion = "0.3.0"
+
+[target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
+glutin = {version = "0.23.0", optional = true }
+rand = "0.7.2"
+
+[target.wasm32-unknown-unknown.dependencies]
+web-sys = { version = "0.3", features=["console", "Attr", "CanvasRenderingContext2d", "Document", "Element", "Event",
+    "EventTarget", "HtmlCanvasElement", "HtmlElement", "HtmlInputElement", "Node", "Text", "Window", "KeyboardEvent",
+    "MouseEvent"] }
+wasm-bindgen = "0.2"
+wasm-timer = "0.1.0"
+rand = { version = "0.7.2", features = ["wasm-bindgen"] }
+
+[build-dependencies]
+gl_generator = "0.14.0"
+
+
+[[bench]]
+name = "fov_benchmark"
+harness = false
+
+[[bench]]
+name = "geometry_benchmark"
+harness = false
+
+[[bench]]
+name = "batching_benchmark"
+harness = false
+
+[[example]]
+name = "ex01-helloworld"
+path = "examples/ex01-helloworld.rs"
+required-features = [ "opengl" ]
+
+[[example]]
+name = "ex02-sparse"
+path = "examples/ex02-sparse.rs"
+required-features = ["opengl"]
+
+[[example]]
+name = "ex03-walking"
+path = "examples/ex03-walking.rs"
+required-features = ["opengl"]
+
+[[example]]
+name = "ex04-fov"
+path = "examples/ex04-fov.rs"
+required-features = ["opengl"]
+
+[[example]]
+name = "ex05-dijkstra"
+path = "examples/ex05-dijkstra.rs"
+required-features = ["opengl"]
+
+[[example]]
+name = "ex06-astar-mouse"
+path = "examples/ex06-astar-mouse.rs"
+required-features = ["opengl"]
+
+[[example]]
+name = "ex07-tiles"
+path = "examples/ex07-tiles.rs"
+required-features = ["opengl"]
+
+[[example]]
+name = "ex08-rex"
+path = "examples/ex08-rex.rs"
+required-features = ["opengl"]
+
+[[example]]
+name = "ex09-offsets"
+path = "examples/ex09-offsets.rs"
+required-features = ["opengl"]
+
+[[example]]
+name = "ex10-postprocess"
+path = "examples/ex10-postprocess.rs"
+required-features = ["opengl"]
+
+[[example]]
+name = "ex11-random"
+path = "examples/ex11-random.rs"
+required-features = ["opengl"]
+
+[[example]]
+name = "ex12-simplex"
+path = "examples/ex12-simplex.rs"
+required-features = ["opengl"]
+
+[[example]]
+name = "ex13-textblock"
+path = "examples/ex13-textblock.rs"
+required-features = ["opengl"]
+
+[[example]]
+name = "ex14-dwarfmap"
+path = "examples/ex14-dwarfmap.rs"
+required-features = ["opengl"]
+
+[[example]]
+name = "ex15-specs"
+path = "examples/ex15-specs.rs"
+required-features = ["opengl", "specs"]
+
+[[example]]
+name = "ex16-keyboard"
+path = "examples/ex16-keyboard.rs"
+required-features = ["opengl"]
+
+[[example]]
+name = "ex17-wasm-external"
+path = "examples/ex17-wasm-external.rs"
+required-features = ["opengl"]
+
+[[example]]
+name = "ex18-textsprites"
+path = "examples/ex18-textsprites.rs"
+required-features = ["opengl"]
+
+[[example]]
+name = "av01-helloworld"
+path = "examples/ex01-helloworld.rs"
+required-features = [ "amethyst/vulkan" ]
+
+[[example]]
+name = "av02-sparse"
+path = "examples/ex02-sparse.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av03-walking"
+path = "examples/ex03-walking.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av04-fov"
+path = "examples/ex04-fov.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av05-dijkstra"
+path = "examples/ex05-dijkstra.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av06-astar-mouse"
+path = "examples/ex06-astar-mouse.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av07-tiles"
+path = "examples/ex07-tiles.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av08-rex"
+path = "examples/ex08-rex.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av09-offsets"
+path = "examples/ex09-offsets.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av10-postprocess"
+path = "examples/ex10-postprocess.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av11-random"
+path = "examples/ex11-random.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av12-simplex"
+path = "examples/ex12-simplex.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av13-textblock"
+path = "examples/ex13-textblock.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av14-dwarfmap"
+path = "examples/ex14-dwarfmap.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av15-specs"
+path = "examples/ex15-specs.rs"
+required-features = ["amethyst/vulkan", "specs"]
+
+[[example]]
+name = "av16-keyboard"
+path = "examples/ex16-keyboard.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "av18-textsprites"
+path = "examples/ex18-textsprites.rs"
+required-features = ["amethyst/vulkan"]
+
+[[example]]
+name = "am01-helloworld"
+path = "examples/ex01-helloworld.rs"
+required-features = [ "amethyst/metal" ]
+
+[[example]]
+name = "am02-sparse"
+path = "examples/ex02-sparse.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am03-walking"
+path = "examples/ex03-walking.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am04-fov"
+path = "examples/ex04-fov.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am05-dijkstra"
+path = "examples/ex05-dijkstra.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am06-astar-mouse"
+path = "examples/ex06-astar-mouse.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am07-tiles"
+path = "examples/ex07-tiles.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am08-rex"
+path = "examples/ex08-rex.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am09-offsets"
+path = "examples/ex09-offsets.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am10-postprocess"
+path = "examples/ex10-postprocess.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am11-random"
+path = "examples/ex11-random.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am12-simplex"
+path = "examples/ex12-simplex.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am13-textblock"
+path = "examples/ex13-textblock.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am14-dwarfmap"
+path = "examples/ex14-dwarfmap.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am15-specs"
+path = "examples/ex15-specs.rs"
+required-features = ["amethyst/metal", "specs"]
+
+[[example]]
+name = "am16-keyboard"
+path = "examples/ex16-keyboard.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "am18-textsprites"
+path = "examples/ex18-textsprites.rs"
+required-features = ["amethyst/metal"]
+
+[[example]]
+name = "curses01-helloworld"
+path = "examples/ex01-helloworld.rs"
+required-features = [ "curses" ]
+
+[[example]]
+name = "curses02-sparse"
+path = "examples/ex02-sparse.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "curses03-walking"
+path = "examples/ex03-walking.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "curses04-fov"
+path = "examples/ex04-fov.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "curses05-dijkstra"
+path = "examples/ex05-dijkstra.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "curses06-astar-mouse"
+path = "examples/ex06-astar-mouse.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "curses07-tiles"
+path = "examples/ex07-tiles.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "curses08-rex"
+path = "examples/ex08-rex.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "curses09-offsets"
+path = "examples/ex09-offsets.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "curses10-postprocess"
+path = "examples/ex10-postprocess.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "curses11-random"
+path = "examples/ex11-random.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "curses12-simplex"
+path = "examples/ex12-simplex.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "curses13-textblock"
+path = "examples/ex13-textblock.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "curses14-dwarfmap"
+path = "examples/ex14-dwarfmap.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "curses15-specs"
+path = "examples/ex15-specs.rs"
+required-features = ["curses", "specs"]
+
+[[example]]
+name = "curses16-keyboard"
+path = "examples/ex16-keyboard.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "curses17-wasm-external"
+path = "examples/ex17-wasm-external.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "curses18-textsprites"
+path = "examples/ex18-textsprites.rs"
+required-features = ["curses"]
+
+[[example]]
+name = "crossterm01-helloworld"
+path = "examples/ex01-helloworld.rs"
+required-features = [ "crossterm" ]
+
+[[example]]
+name = "crossterm02-sparse"
+path = "examples/ex02-sparse.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm03-walking"
+path = "examples/ex03-walking.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm04-fov"
+path = "examples/ex04-fov.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm05-dijkstra"
+path = "examples/ex05-dijkstra.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm06-astar-mouse"
+path = "examples/ex06-astar-mouse.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm07-tiles"
+path = "examples/ex07-tiles.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm08-rex"
+path = "examples/ex08-rex.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm09-offsets"
+path = "examples/ex09-offsets.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm10-postprocess"
+path = "examples/ex10-postprocess.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm11-random"
+path = "examples/ex11-random.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm12-simplex"
+path = "examples/ex12-simplex.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm13-textblock"
+path = "examples/ex13-textblock.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm14-dwarfmap"
+path = "examples/ex14-dwarfmap.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm15-specs"
+path = "examples/ex15-specs.rs"
+required-features = ["crossterm", "specs"]
+
+[[example]]
+name = "crossterm16-keyboard"
+path = "examples/ex16-keyboard.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm17-wasm-external"
+path = "examples/ex17-wasm-external.rs"
+required-features = ["crossterm"]
+
+[[example]]
+name = "crossterm18-textsprites"
+path = "examples/ex18-textsprites.rs"
+required-features = ["crossterm"]

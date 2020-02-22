@@ -1,0 +1,18 @@
+[package]
+name = "bracket-algorithm-traits"
+version = "0.1.0"
+authors = ["Herbert Wolverson <herberticus@gmail.com>"]
+edition = "2018"
+publish = true
+description = "Traits required for the bracket-* crates. Adapt your maps to the traits with Algorithm2D, Algorithm3D and BaseMap."
+homepage = "https://github.com/thebracket/bracket-algorithm-traits"
+repository = "https://github.com/thebracket/bracket-algorithm-traits"
+readme = "README.md"
+keywords = []
+categories = ["game-engines", "graphics"]
+license = "MIT"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bracket-geometry = "0.1.0"
