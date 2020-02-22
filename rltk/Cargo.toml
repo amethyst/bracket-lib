@@ -14,7 +14,7 @@ license = "MIT"
 
 [features]
 default = [ "opengl" ]
-specs_ecs = [ "specs", "bracket-lib/specs" ]
+specs = [ "bracket-lib/specs" ]
 serde = [ "bracket-lib/serde" ]
 threaded = [ "bracket-lib/threaded" ]
 opengl = [ "bracket-lib/opengl" ]
@@ -25,11 +25,5 @@ amethyst_engine_metal = [ "bracket-lib/amethyst_engine_metal" ]
 
 [dependencies]
 bracket-lib = { path = "../", default-features = false }
-specs = { version = "0.16.1", optional = true }
 
 [dev-dependencies]
-
-[[example]]
-name = "ex15-specs"
-path = "examples/ex15-specs.rs"
-required-features = ["specs_ecs"]
