@@ -1,7 +1,5 @@
 # bracket-geometry
 
-![](https://github.com/thebracket/bracket-geometry/workflows/Rust/badge.svg)
-
 This crate provides geometry support for the overall `bracket-lib` system, and is useful stand-alone. It provides some geometric primitives (`Point`, `Point3D`, `Rect`), support functions and distance calculations. It also includes Bresenham's line algorithm, a vector line algorithm, and Bresenham's Circle algorithm.
 
 It uses UltraViolet for fast processing, and includes conversion functions to/from native UltraViolet types.
@@ -12,7 +10,7 @@ You can include it in your project by adding the following to your `Cargo.toml` 
 
 ```toml
 [dependencies]
-bracket-geometry = "0.1.0"
+bracket-geometry = "0.7.0"
 ```
 
 ## Point2D

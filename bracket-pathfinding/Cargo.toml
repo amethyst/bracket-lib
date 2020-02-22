@@ -1,12 +1,12 @@
 [package]
 name = "bracket-pathfinding"
-version = "0.1.0"
+version = "0.7.0"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = true
 description = "Pathfinding and field-of view utilities. A Star, Dijkstra. Part of the bracket-lib family."
-homepage = "https://github.com/thebracket/bracket-pathfinding"
-repository = "https://github.com/thebracket/bracket-pathfinding"
+homepage = "https://github.com/thebracket/rltk_rs"
+repository = "https://github.com/thebracket/rltk_rs"
 readme = "README.md"
 keywords = ["gamedev", "pathfinding", "astar", "dijkstra", "field-of-view"]
 categories = ["game-engines", "graphics"]

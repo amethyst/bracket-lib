@@ -1,7 +1,5 @@
 # bracket-terminal
 
-![](https://github.com/thebracket/bracket-terminal/workflows/Rust/badge.svg)
-
 `bracket-terminal` is part of the `bracket-lib` family. It provides a virtual ASCII/Codepage-437 terminal (with optional tile graphic support and layers), and a game loop. This frees you up from implementation difficulties, making it easy to write grid-based games (Roguelikes are a great fit, but any grid/tile-based game can work). It also provides assistance with keyboard and mouse input.
 
 Bracket-terminal supports multiple back-ends:

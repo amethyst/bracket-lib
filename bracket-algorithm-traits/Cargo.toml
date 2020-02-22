@@ -1,12 +1,12 @@
 [package]
 name = "bracket-algorithm-traits"
-version = "0.1.0"
+version = "0.7.0"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = true
 description = "Traits required for the bracket-* crates. Adapt your maps to the traits with Algorithm2D, Algorithm3D and BaseMap."
-homepage = "https://github.com/thebracket/bracket-algorithm-traits"
-repository = "https://github.com/thebracket/bracket-algorithm-traits"
+homepage = "https://github.com/thebracket/rltk_rs"
+repository = "https://github.com/thebracket/rltk_rs"
 readme = "README.md"
 keywords = []
 categories = ["game-engines", "graphics"]

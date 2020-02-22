@@ -1,7 +1,5 @@
 # bracket-color
 
-![](https://github.com/thebracket/bracket-color/workflows/Rust/badge.svg)
-
 This crate provides a color system for use in the `bracket-terminal` system. It is part of the overall `bracket-lib` system.
 
 ## Using bracket-color
@@ -10,7 +8,7 @@ To obtain `bracket-color`, include the following in your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-bracket-color = "0.1.0"
+bracket-color = "0.7.0"
 ```
 
 ## RGB

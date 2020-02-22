@@ -1,7 +1,5 @@
 # bracket-algorithm-traits
 
-![](https://github.com/thebracket/bracket-algorithm-traits/workflows/Rust/badge.svg)
-
 This crate provides traits for use in the `bracket-pathfinding` and `bracket-geometry` crates. It is part of the overall `bracket-lib` system.
 
 Using a trait interface means that `bracket-lib` doesn't have to know or care about how you store your data, and can still provide useful geometry and path-finding functions. Defaults are provided, allowing you to get up and running quickly.

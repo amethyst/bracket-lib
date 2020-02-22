@@ -1,12 +1,12 @@
 [package]
 name = "bracket-color"
-version = "0.1.0"
+version = "0.7.0"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = true
 description = "RGB and HSV color handling and utilities, including lerp and W3C named colors. Part of the bracket-lib family."
-homepage = "https://github.com/thebracket/bracket-color"
-repository = "https://github.com/thebracket/bracket-color"
+homepage = "https://github.com/thebracket/rltk_rs"
+repository = "https://github.com/thebracket/rltk_rs"
 readme = "README.md"
 keywords = ["roguelike", "gamedev", "RGB", "HSV", "color"]
 categories = ["game-engines", "graphics"]

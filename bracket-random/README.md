@@ -1,7 +1,5 @@
 # bracket-random
 
-![](https://github.com/thebracket/bracket-random/workflows/Rust/badge.svg)
-
 Part of the `bracket-lib` family, `bracket-random` is focused on providing dice-oriented random numbers. It also (optionally) includes parsing of RPG-style dice strings (e.g. `3d6+12`). It is targeted at games, particularly RPGs. It uses the high-performance `XorShift` algorithm for random number generation.
 
 ## Using bracket-random
@@ -10,7 +8,7 @@ To obtain `bracket-random`, include the following in your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-bracket-random = "0.1.0"
+bracket-random = "0.7.0"
 ```
 
 It will be available as a crate very soon.

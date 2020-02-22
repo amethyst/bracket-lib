@@ -1,12 +1,12 @@
 [package]
 name = "bracket-random"
-version = "0.1.0"
+version = "0.7.0"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = true
 description = "Random number generator (xorshift based), focused on dice rolling. Optionally includes parsing of RPG-style dice strings (e.g. \"3d6+12\"). Part of the bracket-lib family."
-homepage = "https://github.com/thebracket/bracket-random"
-repository = "https://github.com/thebracket/bracket-random"
+homepage = "https://github.com/thebracket/rltk_rs"
+repository = "https://github.com/thebracket/rltk_rs"
 readme = "README.md"
 keywords = ["roguelike", "gamedev", "random", "xorshift", "dice"]
 categories = ["game-engines", "random"]

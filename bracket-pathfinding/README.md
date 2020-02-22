@@ -1,7 +1,5 @@
 # bracket-pathfinding
 
-![](https://github.com/thebracket/bracket-pathfinding/workflows/Rust/badge.svg)
-
 This crate is part of the overall `bracket-lib` system, and (in conjunction with `bracket-algorithm-traits`) provides pathfinding functionality. A-Star (A*) and Dijkstra are supported. It also provides field of view (FOV) functionality.
 
 ## Trait Implementation

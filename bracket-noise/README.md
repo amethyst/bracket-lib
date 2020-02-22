@@ -1,7 +1,5 @@
 # bracket-noise
 
-![](https://github.com/thebracket/bracket-noise/workflows/Rust/badge.svg)
-
 [Auburn's FastNoise](https://github.com/Auburns/FastNoise) library is amazing - it's fast, covers all the commonly used types of noise, and has been ported to many systems. This crate ports much of that functionality (more is being ported in each version) to Rust. It is part of the `bracket-lib` family of crates.
 
 ## Examples

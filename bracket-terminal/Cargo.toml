@@ -1,12 +1,12 @@
 [package]
 name = "bracket-terminal"
-version = "0.1.0"
+version = "0.7.0"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = true
 description = "ASCII/Codepage 437 terminal emulator with a game loop. Defaults to OpenGL, also support Amethyst, Curses and Crossterm for output. Part of the bracket-lib family."
-homepage = "https://github.com/thebracket/bracket-terminal"
-repository = "https://github.com/thebracket/bracket-terminal"
+homepage = "https://github.com/thebracket/rltk_rs"
+repository = "https://github.com/thebracket/rltk_rs"
 readme = "README.md"
 keywords = ["roguelike", "gamedev", "terminal", "ascii", "cp437"]
 categories = ["game-engines"]
@@ -49,7 +49,7 @@ web-sys = { version = "0.3", features=["console", "Attr", "CanvasRenderingContex
     "EventTarget", "HtmlCanvasElement", "HtmlElement", "HtmlInputElement", "Node", "Text", "Window", "KeyboardEvent",
     "MouseEvent"] }
 wasm-bindgen = "0.2"
-wasm-timer = "0.1.0"
+wasm-timer = "0.7.0"
 rand = { version = "0.7.2", features = ["wasm-bindgen"] }
 
 [[bench]]
