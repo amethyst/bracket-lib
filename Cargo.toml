@@ -1,10 +1,10 @@
 [package]
 name = "bracket-lib"
-version = "0.1.0"
+version = "0.7.0"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = false
-description = "Meta-crate holding the entirety of bracket-lib (and exposing it)."
+description = "Meta-crate holding the entirety of bracket-lib (and exposing it). Use this for the full roguelike toolkit experience."
 homepage = "https://github.com/thebracket/bracket-lib"
 repository = "https://github.com/thebracket/bracket-lib"
 readme = "README.md"
@@ -15,7 +15,7 @@ license = "MIT"
 [features]
 default = [ "opengl" ]
 specs = [ "bracket-geometry/specs" ]
-serde = [ "bracket-color/serde", "bracket-geometry/serde" ]
+serde = [ "bracket-color/serde", "bracket-geometry/serde", "bracket-random/serde" ]
 threaded = [ "bracket-pathfinding/threaded" ]
 opengl = [ "bracket-terminal/opengl" ]
 curses = [ "bracket-terminal/curses" ]
@@ -29,7 +29,7 @@ bracket-color = { path = "bracket-color/", features = [ "rex" ] }
 bracket-geometry = { path = "bracket-geometry/" }
 bracket-noise = { path = "bracket-noise/" }
 bracket-pathfinding = { path = "bracket-pathfinding/" }
-bracket-random = { path = "bracket-random/" }
+bracket-random = { path = "bracket-random/", features = "parsing" }
 bracket-terminal = { path = "bracket-terminal/", default-features = false }
 
 [workspace]
