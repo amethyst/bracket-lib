@@ -11,6 +11,16 @@ readme = "README.md"
 keywords = ["roguelike", "gamedev", "terminal", "console", "ascii", "cp437"]
 categories = ["game-engines"]
 license = "MIT"
+exclude = [
+    "bracket-algorithm-traits",
+    "bracket-color",
+    "bracket-geometry",
+    "bracket-noise",
+    "bracket-pathfinding",
+    "bracket-random",
+    "bracket-terminal",
+    "rltk"
+]
 
 [features]
 default = [ "opengl" ]
@@ -32,14 +42,14 @@ bracket-pathfinding = "0.7.0"
 bracket-random = { version = "0.7.0", features = [ "parsing" ] }
 bracket-terminal = { version = "0.7.0", default-features = false }
 
-[workspace]
-members = [
-    "bracket-algorithm-traits",
-    "bracket-color",
-    "bracket-geometry",
-    "bracket-noise",
-    "bracket-pathfinding",
-    "bracket-random",
-    "bracket-terminal",
-    "rltk"
-]
+#[workspace]
+#members = [
+#    "bracket-algorithm-traits",
+#    "bracket-color",
+#    "bracket-geometry",
+#    "bracket-noise",
+#    "bracket-pathfinding",
+#    "bracket-random",
+#    "bracket-terminal",
+#    "rltk"
+#]
