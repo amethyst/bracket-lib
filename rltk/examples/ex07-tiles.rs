@@ -6,9 +6,6 @@
 rltk::add_wasm_support!();
 use rltk::prelude::*;
 
-extern crate rand;
-use crate::rand::Rng;
-
 #[derive(PartialEq, Copy, Clone)]
 enum TileType {
     Wall,
@@ -51,11 +48,11 @@ impl State {
             state.map[xy_idx(WIDTH - 1, y)] = TileType::Wall;
         }
 
-        let mut rng = rand::thread_rng();
+        let mut rng = RandomNumberGenerator::new();
 
         for _ in 0..400 {
-            let x = rng.gen_range(1, WIDTH - 1);
-            let y = rng.gen_range(1, HEIGHT - 1);
+            let x = rng.range(1, WIDTH - 1);
+            let y = rng.range(1, HEIGHT - 1);
             let idx = xy_idx(x, y);
             if state.player_position != idx {
                 state.map[idx] = TileType::Wall;

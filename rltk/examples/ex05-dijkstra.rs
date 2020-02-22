@@ -10,9 +10,6 @@
 use rltk::prelude::*;
 rltk::add_wasm_support!();
 
-extern crate rand;
-use crate::rand::Rng;
-
 use std::f32::MAX;
 
 #[derive(PartialEq, Copy, Clone)]
@@ -64,12 +61,12 @@ impl State {
             state.map.tiles[wall2_pos] = TileType::Wall;
         }
 
-        let mut rng = rand::thread_rng();
+        let mut rng = RandomNumberGenerator::new();
 
         // Lets add more walls to make it harder
         for _ in 0..1600 {
-            let x = rng.gen_range(1, 79);
-            let y = rng.gen_range(1, 49);
+            let x = rng.range(1, 79);
+            let y = rng.range(1, 49);
             let idx = state.map.point2d_to_index(Point::new(x, y));
             if state.player_position != idx {
                 state.map.tiles[idx] = TileType::Wall;

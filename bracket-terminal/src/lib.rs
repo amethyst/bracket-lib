@@ -6,7 +6,7 @@ mod command_buffer;
 mod gui_helpers;
 mod initializer;
 mod multi_tile_sprite;
-mod rex;
+pub mod rex;
 mod simple_console;
 mod sparse_console;
 mod textblock;
@@ -31,9 +31,11 @@ pub mod prelude {
     pub use crate::rex::*;
     pub use crate::gui_helpers::*;
     pub use crate::embedding;
+    pub use crate::embedding::EMBED;
     pub use crate::console;
     pub use bracket_geometry::prelude::*;
     pub use bracket_color::prelude::*;
+    pub use crate::rex;
 
     #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
     pub use glutin::event::VirtualKeyCode;
@@ -85,7 +87,7 @@ macro_rules! embedded_resource {
 #[macro_export]
 macro_rules! link_resource {
     ($resource_name : ident, $filename : expr) => {
-        bracket_terminal::embedding::EMBED
+        EMBED
             .lock()
             .unwrap()
             .add_resource($filename.to_string(), $resource_name);

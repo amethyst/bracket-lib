@@ -15,8 +15,8 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bracket-color = { version = "0.1.0", features = [ "rex" ] }
-bracket-geometry = "0.1.0"
+bracket-color = { path = "../bracket-color/", features = [ "rex" ] }
+bracket-geometry = { path = "../bracket-geometry" }
 flate2 = "1.0.13"
 lazy_static = "1.4.0"
 object-pool = "0.4"
@@ -39,9 +39,9 @@ amethyst_engine_vulkan = [ "amethyst/vulkan", "image" ]
 amethyst_engine_metal = [ "amethyst/metal", "image" ]
 
 [dev-dependencies]
-bracket-random = "0.1.0"
-bracket-pathfinding = "0.1.0"
-bracket-noise = "0.1.0"
+bracket-random = { path = "../bracket-random" }
+bracket-pathfinding = { path = "../bracket-pathfinding" }
+bracket-noise = { path = "../bracket-noise" }
 criterion = "0.3.1"
 
 [target.wasm32-unknown-unknown.dependencies]

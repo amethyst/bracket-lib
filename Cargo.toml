@@ -13,15 +13,24 @@ categories = ["game-engines"]
 license = "MIT"
 
 [features]
+default = [ "opengl" ]
+specs = [ "bracket-geometry/specs" ]
+serde = [ "bracket-color/serde", "bracket-geometry/serde" ]
+threaded = [ "bracket-pathfinding/threaded" ]
+opengl = [ "bracket-terminal/opengl" ]
+curses = [ "bracket-terminal/curses" ]
+crossterm = [ "bracket-terminal/crossterm" ]
+amethyst_engine_vulkan = [ "bracket-terminal/amethyst_engine_vulkan" ]
+amethyst_engine_metal = [ "bracket-terminal/amethyst_engine_metal" ]
 
 [dependencies]
-bracket-algorithm-traits = "0.1.0"
-bracket-color = "0.1.0"
-bracket-geometry = "0.1.0"
-bracket-noise = "0.1.0"
-bracket-pathfinding = "0.1.0"
-bracket-random = "0.1.0"
-bracket-terminal = "0.1.0"
+bracket-algorithm-traits = { path = "bracket-algorithm-traits" }
+bracket-color = { path = "bracket-color/", features = [ "rex" ] }
+bracket-geometry = { path = "bracket-geometry/" }
+bracket-noise = { path = "bracket-noise/" }
+bracket-pathfinding = { path = "bracket-pathfinding/" }
+bracket-random = { path = "bracket-random/" }
+bracket-terminal = { path = "bracket-terminal/", default-features = false }
 
 [workspace]
 members = [
