@@ -1,3 +1,4 @@
+use crate::Result;
 use crate::prelude::Tile;
 use crate::hal::{font::Font, shader::Shader};
 use bracket_color::prelude::RGB;
@@ -263,7 +264,7 @@ impl SimpleConsoleBackend {
         platform: &super::super::BTermPlatform,
         width: u32,
         height: u32,
-    ) {
+    ) -> Result<()> {
         let gl = &platform.platform.gl;
         unsafe {
             // bind Texture
@@ -281,5 +282,6 @@ impl SimpleConsoleBackend {
                 0,
             );
         }
+        Ok(())
     }
 }
