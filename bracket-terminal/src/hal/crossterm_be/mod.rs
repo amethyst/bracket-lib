@@ -1,4 +1,5 @@
 // Dummy platform to let it compile and do nothing. Only useful if you don't want a graphical backend.
+use crate::Result;
 use crossterm::{
     execute,
     terminal::{size, SetSize},
@@ -62,7 +63,7 @@ pub fn init_raw<S: ToString>(
     height_pixels: u32,
     _window_title: S,
     platform_hints: InitHints,
-) -> BTerm {
+) -> Result<BTerm> {
     let old_size = size().expect("Unable to get console size");
     println!("Old size: {:?}", old_size);
     println!("Resizing to {}x{}", 80, 50);
@@ -75,7 +76,7 @@ pub fn init_raw<S: ToString>(
     execute!(stdout(), crossterm::cursor::Hide).expect("Command fail");
     execute!(stdout(), crossterm::event::EnableMouseCapture).expect("Command fail");
 
-    BTerm {
+    let bterm = BTerm {
         backend: super::BTermPlatform {
             platform: PlatformGL {
                 old_width: old_size.0,
@@ -101,7 +102,8 @@ pub fn init_raw<S: ToString>(
         quitting: false,
         post_scanlines: false,
         post_screenburn: false,
-    }
+    };
+    Ok(bterm)
 }
 
 pub struct SparseConsoleBackend {}
@@ -130,7 +132,8 @@ impl SparseConsoleBackend {
         _shader: &shader::Shader,
         _platform: &super::BTermPlatform,
         _tiles: &[crate::sparse_console::SparseTile],
-    ) {
+    ) -> Result<()> {
+        Ok(())
     }
 }
 
