@@ -1,3 +1,4 @@
+use crate::Result;
 use crate::prelude::{GameState, BTerm, VirtualKeyCode};
 use crossterm::event::{poll, read, Event};
 use crossterm::execute;
@@ -6,7 +7,7 @@ use std::io::{stdout, Write};
 use std::time::Duration;
 use std::time::Instant;
 
-pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) {
+pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
     let mut prev_ms = now.elapsed().as_millis();
@@ -38,7 +39,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) {
         bterm.alt = false;
 
         // Input handler goes here
-        while poll(Duration::from_secs(0)).unwrap() {
+        while poll(Duration::from_secs(0))? {
             match read().expect("Uh oh") {
                 Event::Mouse(event) => {
                     //println!("{:?}", event);
@@ -199,4 +200,5 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) {
     )
     .expect("Unable to recolor");
     execute!(stdout(), crossterm::cursor::Show).expect("Command fail");
+    Ok(())
 }
