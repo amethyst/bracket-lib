@@ -47,18 +47,18 @@ impl GameState for State {
 
 rltk::embedded_resource!(NYAN_CAT, "../resources/nyan.xp");
 
-fn main() {
+fn main() -> RltkError {
     rltk::link_resource!(NYAN_CAT, "../resources/nyan.xp");
     let xp = XpFile::from_resource("../resources/nyan.xp").unwrap();
 
     let mut context = RltkBuilder::simple80x50()
         .with_title("RLTK Example 10 - Post-Processing Effects")
-        .build();
+        .build()?;
 
     context.with_post_scanlines(true);
     let gs: State = State {
         nyan: xp,
         burn: true,
     };
-    rltk::main_loop(context, gs);
+    rltk::main_loop(context, gs)
 }

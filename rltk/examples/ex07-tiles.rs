@@ -172,9 +172,9 @@ impl GameState for State {
             2,
         );
 
-        draw_batch.submit(0);
+        draw_batch.submit(0).expect("Batch error");
 
-        render_draw_buffer(ctx);
+        render_draw_buffer(ctx).expect("Render error");
     }
 }
 
@@ -196,7 +196,7 @@ impl Algorithm2D for State {
 
 rltk::embedded_resource!(TILE_FONT, "../resources/example_tiles.png");
 
-fn main() {
+fn main() -> RltkError {
     rltk::link_resource!(TILE_FONT, "resources/example_tiles.png");
 
     // This initialization is a bit more complicated than the previous examples. It uses
@@ -216,8 +216,8 @@ fn main() {
         // We also want a sparse console atop it to handle moving the character
         .with_sparse_console(WIDTH, HEIGHT, "example_tiles.png")
         // And we call the builder function
-        .build();
+        .build()?;
 
     let gs = State::new();
-    rltk::main_loop(context, gs);
+    rltk::main_loop(context, gs)
 }

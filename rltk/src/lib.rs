@@ -2,6 +2,7 @@ pub use bracket_lib::prelude::*;
 pub use bracket_lib::prelude::BTerm as Rltk;
 pub use bracket_lib::prelude::BTermBuilder as RltkBuilder;
 pub use bracket_lib::prelude::rex;
+pub use bracket_lib::prelude::BError as RltkError;
 
 #[macro_export]
 macro_rules! link_resource {

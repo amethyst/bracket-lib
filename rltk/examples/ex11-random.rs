@@ -43,14 +43,14 @@ impl GameState for State {
     }
 }
 
-fn main() {
+fn main() -> RltkError {
     let context = RltkBuilder::vga(80, 23)
         .with_title("Example 11 - Random Numbers")
-        .build();
+        .build()?;
     let gs: State = State {
         rng: RandomNumberGenerator::new(),
         n_rolls: 0,
         rolls: vec![0; 19],
     };
-    rltk::main_loop(context, gs);
+    rltk::main_loop(context, gs)
 }

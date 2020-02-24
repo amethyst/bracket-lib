@@ -39,6 +39,7 @@ pub mod prelude {
     pub use bracket_geometry::prelude::*;
     pub use bracket_color::prelude::*;
     pub use crate::rex;
+    pub type BError = std::result::Result<(), Box<dyn std::error::Error>>;
 
     #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
     pub use glutin::event::VirtualKeyCode;
@@ -96,3 +97,4 @@ macro_rules! link_resource {
             .add_resource($filename.to_string(), $resource_name);
     };
 }
+

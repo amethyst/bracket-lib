@@ -280,10 +280,10 @@ impl Algorithm2D for Map {
     }
 }
 
-fn main() {
+fn main() -> RltkError {
     let context = RltkBuilder::simple80x50()
         .with_title("RLTK Example 5 - Dijkstra")
-        .build();
+        .build()?;
     let gs = State::new();
-    rltk::main_loop(context, gs);
+    rltk::main_loop(context, gs)
 }

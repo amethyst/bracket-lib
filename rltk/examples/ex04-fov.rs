@@ -174,10 +174,10 @@ impl Algorithm2D for State {
     }
 }
 
-fn main() {
+fn main() -> RltkError {
     let context = RltkBuilder::simple80x50()
         .with_title("RLTK Example 4 - Field-Of-View")
-        .build();
+        .build()?;
     let gs = State::new();
-    rltk::main_loop(context, gs);
+    rltk::main_loop(context, gs)
 }

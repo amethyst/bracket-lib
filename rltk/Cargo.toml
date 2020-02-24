@@ -12,6 +12,10 @@ keywords = ["roguelike", "cp437", "ascii", "virtual-terminal", "gamedev"]
 categories = ["game-engines", "graphics"]
 license = "MIT"
 
+# Remove before publish!
+[patch.crates-io]
+bracket-terminal = { path = '../bracket-terminal' }
+
 [features]
 default = [ "opengl" ]
 specs = [ "bracket-lib/specs" ]

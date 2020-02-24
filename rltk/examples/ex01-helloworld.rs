@@ -82,14 +82,14 @@ impl GameState for State {
 }
 
 // Every program needs a main() function!
-fn main() {
+fn main() -> RltkError {
     // RLTK's ConsoleBuilder interface offers a number of helpers to get you up and running quickly.
     // Here, we are using the `simple80x50()` helper, which builds an 80-wide by 50-tall console,
     // with the baked-in 8x8 terminal font.
     let context = RltkBuilder::simple80x50()
         .with_title("Hello RLTK World")
         .with_fps_cap(30.0)
-        .build();
+        .build()?;
 
     // Now we create an empty state object.
     let gs: State = State {
@@ -99,5 +99,5 @@ fn main() {
 
     // Call into RLTK to run the main loop. This handles rendering, and calls back into State's tick
     // function every cycle. The box is needed to work around lifetime handling.
-    rltk::main_loop(context, gs);
+    rltk::main_loop(context, gs)
 }
