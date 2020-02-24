@@ -24,15 +24,17 @@ pub fn init_raw<S: ToString>(
         .with_hardware_acceleration(Some(true))
         .with_vsync(platform_hints.vsync)
         .with_srgb(platform_hints.srgb)
-        .build_windowed(wb, &el)
-        .unwrap();
+        .build_windowed(wb, &el)?;
     let windowed_context = unsafe { windowed_context.make_current().unwrap() };
 
     if platform_hints.fullscreen {
-        let mh = el.available_monitors().nth(0).unwrap();
-        windowed_context
-            .window()
-            .set_fullscreen(Some(glutin::window::Fullscreen::Borderless(mh)));
+        if let Some(mh) = el.available_monitors().nth(0) {
+            windowed_context
+                .window()
+                .set_fullscreen(Some(glutin::window::Fullscreen::Borderless(mh)));
+        } else {
+            return Err("No available monitor found".into());
+        }
     }
 
     let gl = glow::Context::from_loader_function(|ptr| {
