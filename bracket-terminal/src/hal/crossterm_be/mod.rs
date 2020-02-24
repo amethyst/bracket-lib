@@ -43,6 +43,7 @@ pub mod shader {
 }
 
 pub mod font {
+    use crate::Result;
     pub struct Font {
         pub tile_size: (u32, u32),
     }
@@ -52,7 +53,9 @@ pub mod font {
             Font { tile_size: (0, 0) }
         }
 
-        pub fn setup_gl_texture(&mut self, _gl: &crate::hal::BTermPlatform) {}
+        pub fn setup_gl_texture(&mut self, _gl: &crate::hal::BTermPlatform) -> Result<()> {
+            Ok(())
+        }
 
         pub fn bind_texture(&self, _gl: &crate::hal::BTermPlatform) {}
     }

@@ -23,7 +23,9 @@ impl Font {
         }
     }
 
-    pub fn setup_gl_texture(&mut self, _gl: &crate::hal::BTermPlatform) {}
+    pub fn setup_gl_texture(&mut self, _gl: &crate::hal::BTermPlatform) -> Result<()> {
+        Ok(())
+    }
 
     pub fn bind_texture(&self, _gl: &crate::hal::BTermPlatform) {}
 }
