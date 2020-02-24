@@ -1,3 +1,4 @@
+use crate::Result;
 use crate::prelude::{BTermPlatform, to_char};
 use super::find_nearest_color;
 use super::font;
@@ -38,7 +39,7 @@ impl SparseConsoleBackend {
         _shader: &shader::Shader,
         platform: &BTermPlatform,
         tiles: &[crate::sparse_console::SparseTile],
-    ) {
+    ) -> Result<()> {
         let window = &platform.platform.window;
         for t in tiles.iter() {
             let x = t.idx as u32 % self.width;
@@ -54,5 +55,6 @@ impl SparseConsoleBackend {
                 to_char(t.glyph),
             );
         }
+        Ok(())
     }
 }

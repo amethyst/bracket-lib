@@ -1,3 +1,4 @@
+use crate::Result;
 use crate::prelude::{BTermPlatform, to_char, Tile};
 use super::find_nearest_color;
 use super::font;
@@ -37,7 +38,7 @@ impl SimpleConsoleBackend {
         platform: &BTermPlatform,
         width: u32,
         height: u32,
-    ) {
+    ) -> Result<()> {
         let window = &platform.platform.window;
         let mut idx = 0;
         for y in 0..height {
@@ -46,7 +47,7 @@ impl SimpleConsoleBackend {
                 let cp_fg = find_nearest_color(t.fg, &platform.platform.color_map);
                 let cp_bg = find_nearest_color(t.bg, &platform.platform.color_map);
                 let pair = (cp_bg * 16) + cp_fg;
-                window.attrset(pancurses::COLOR_PAIR(pair.try_into().unwrap()));
+                window.attrset(pancurses::COLOR_PAIR(pair.try_into()?));
                 window.mvaddch(
                     height as i32 - (y as i32 + 1),
                     x as i32,
@@ -55,5 +56,6 @@ impl SimpleConsoleBackend {
                 idx += 1;
             }
         }
+        Ok(())
     }
 }
