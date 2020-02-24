@@ -15,7 +15,7 @@ mod bterm;
 pub mod embedding;
 mod gamestate;
 
-pub(crate) type Error = String;
+pub(crate) type Error = Box<dyn std::error::Error>;
 pub(crate) type Result<T> = core::result::Result<T, Error>;
 
 pub mod prelude {
