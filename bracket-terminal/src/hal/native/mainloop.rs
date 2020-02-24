@@ -1,3 +1,4 @@
+use crate::Result;
 use crate::prelude::{Console, GameState, BTerm};
 use crate::hal::*;
 use glow::HasContext;
@@ -6,7 +7,7 @@ use std::time::Instant;
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
-fn on_resize(bterm: &mut BTerm, physical_size: glutin::dpi::PhysicalSize<u32>) {
+fn on_resize(bterm: &mut BTerm, physical_size: glutin::dpi::PhysicalSize<u32>) -> Result<()> {
     bterm.resize_pixels(physical_size.width as u32, physical_size.height as u32);
     unsafe {
         bterm.backend.platform.gl.viewport(
@@ -20,10 +21,11 @@ fn on_resize(bterm: &mut BTerm, physical_size: glutin::dpi::PhysicalSize<u32>) {
         &bterm.backend.platform.gl,
         physical_size.width as i32,
         physical_size.height as i32,
-    );
+    )?;
+    Ok(())
 }
 
-pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) {
+pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
     let mut prev_ms = now.elapsed().as_millis();
@@ -37,7 +39,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) {
     let el = unwrap.el;
     let wc = unwrap.wc;
 
-    on_resize(&mut bterm, wc.window().inner_size()); // Additional resize to handle some X11 cases
+    on_resize(&mut bterm, wc.window().inner_size())?; // Additional resize to handle some X11 cases
 
     el.run(move |event, _, control_flow| {
         *control_flow = TICK_TYPE;
@@ -77,7 +79,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) {
             Event::LoopDestroyed => (),
             Event::WindowEvent { ref event, .. } => match event {
                 WindowEvent::Resized(physical_size) => {
-                    on_resize(&mut bterm, *physical_size);
+                    on_resize(&mut bterm, *physical_size).unwrap();
                 }
                 WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
 
@@ -90,7 +92,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) {
                 }
 
                 WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
-                    on_resize(&mut bterm, **new_inner_size);
+                    on_resize(&mut bterm, **new_inner_size).unwrap();
                 }
 
                 WindowEvent::KeyboardInput {

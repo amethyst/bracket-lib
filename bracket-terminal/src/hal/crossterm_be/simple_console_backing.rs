@@ -1,3 +1,4 @@
+use crate::Result;
 use crate::prelude::{BTermPlatform, to_char, Tile};
 use super::font;
 use super::shader;
@@ -39,7 +40,7 @@ impl SimpleConsoleBackend {
         _platform: &BTermPlatform,
         width: u32,
         height: u32,
-    ) {
+    ) -> Result<()> {
         let mut idx = 0;
         let mut last_bg = RGB::new();
         let mut last_fg = RGB::new();
@@ -76,5 +77,6 @@ impl SimpleConsoleBackend {
                 idx += 1;
             }
         }
+        Ok(())
     }
 }

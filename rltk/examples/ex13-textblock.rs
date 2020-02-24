@@ -34,11 +34,11 @@ impl GameState for State {
     }
 }
 
-fn main() {
+fn main() -> RltkError {
     let gs: State = State {};
 
     let context = RltkBuilder::simple80x50()
         .with_title("RLTK Example 13 - Text Blocks")
-        .build();
-    rltk::main_loop(context, gs);
+        .build()?;
+    rltk::main_loop(context, gs)
 }

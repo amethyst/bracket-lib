@@ -63,22 +63,22 @@ impl GameState for State {
             ColorPair::new(RGB::named(CYAN), RGB::named(BLACK)),
         );
         self.sprite.add_to_batch(&mut draw_batch, Point::new(40, 3));
-        draw_batch.submit(0);
+        draw_batch.submit(0).expect("Batch error");
 
-        render_draw_buffer(ctx);
+        render_draw_buffer(ctx).expect("Render error");
     }
 }
 
 bracket_terminal::embedded_resource!(NYAN_CAT, "../resources/nyan.xp");
 
-fn main() {
+fn main() -> BError {
     bracket_terminal::link_resource!(NYAN_CAT, "../resources/nyan.xp");
 
     let context = BTermBuilder::simple80x50()
         .with_font("vga8x16.png", 8u32, 16u32)
         .with_sparse_console(80u32, 25u32, "vga8x16.png")
         .with_title("Bracket Terminal Example - Text Sprites")
-        .build();
+        .build()?;
 
     let gs = State {
         y: 1,
@@ -100,8 +100,8 @@ fn main() {
             ],
             &vec![RGB::from_f32(0.0, 0.0, 0.0); 9],
         ),
-        nyancat: MultiTileSprite::from_xp(&XpFile::from_resource("../resources/nyan.xp").unwrap()),
+        nyancat: MultiTileSprite::from_xp(&XpFile::from_resource("../resources/nyan.xp")?),
     };
 
-    main_loop(context, gs);
+    main_loop(context, gs)
 }

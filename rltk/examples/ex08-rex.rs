@@ -29,14 +29,14 @@ impl GameState for State {
 // This is a helper macro to embed a file in your binary.
 rltk::embedded_resource!(NYAN_CAT, "../resources/nyan.xp");
 
-fn main() {
+fn main() -> RltkError {
     // This helper macro links the above embedding, allowing it to be accessed as a resource from various parts of the program.
     rltk::link_resource!(NYAN_CAT, "../resources/nyan.xp");
     let xp = XpFile::from_resource("../resources/nyan.xp").unwrap();
 
     let context = RltkBuilder::simple80x50()
         .with_title("RLTK Example 8 - REX Paint, Hello Nyan Cat")
-        .build();
+        .build()?;
     let gs: State = State { nyan: xp };
-    rltk::main_loop(context, gs);
+    rltk::main_loop(context, gs)
 }

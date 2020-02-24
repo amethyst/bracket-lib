@@ -1,3 +1,4 @@
+use crate::Result;
 use bracket_color::prelude::RGB;
 use crate::hal::{font::Font, shader::Shader};
 use crate::sparse_console::SparseTile;
@@ -211,7 +212,7 @@ impl SparseConsoleBackend {
         shader: &Shader,
         platform: &super::super::BTermPlatform,
         tiles: &[SparseTile],
-    ) {
+    ) -> Result<()> {
         let gl = &platform.platform.gl;
         unsafe {
             // bind Texture
@@ -229,5 +230,6 @@ impl SparseConsoleBackend {
                 0,
             );
         }
+        Ok(())
     }
 }

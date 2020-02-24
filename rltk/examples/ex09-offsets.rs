@@ -80,11 +80,11 @@ impl GameState for State {
     }
 }
 
-fn main() {
+fn main() -> RltkError {
     let mut context = RltkBuilder::simple80x50()
         .with_title("RLTK Example 9 - Offsets")
         .with_sparse_console(80, 50, "terminal8x8.png")
-        .build();
+        .build()?;
 
     // We're going to set the second layer's offset to -0.5 to render between tiles
     context.set_active_console(1);
@@ -93,5 +93,5 @@ fn main() {
     // Returning to the default console is a good plan
     context.set_active_console(0);
     let gs: State = State {};
-    rltk::main_loop(context, gs);
+    rltk::main_loop(context, gs)
 }

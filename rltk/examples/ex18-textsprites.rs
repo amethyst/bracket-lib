@@ -12,7 +12,6 @@ extern crate rltk;
 // We're using Rltk (the main context) and GameState (a trait defining what our callback
 // looks like), so we need to use that, too.`
 use rltk::prelude::*;
-use rltk::rex::*;
 
 // This is the structure that will store our game state, typically a state machine pointing to
 // other structures. This demo is realy simple, so we'll just put the minimum to make it work
@@ -83,16 +82,16 @@ impl GameState for State {
             ColorPair::new(RGB::named(rltk::CYAN), RGB::named(rltk::BLACK)),
         );
         self.sprite.add_to_batch(&mut draw_batch, Point::new(40, 3));
-        draw_batch.submit(0);
+        draw_batch.submit(0).expect("Batch error");
 
-        render_draw_buffer(ctx);
+        render_draw_buffer(ctx).expect("Render error");
     }
 }
 
 rltk::embedded_resource!(NYAN_CAT, "../resources/nyan.xp");
 
 // Every program needs a main() function!
-fn main() {
+fn main() -> RltkError {
     rltk::link_resource!(NYAN_CAT, "../resources/nyan.xp");
 
     // We're using the RLTK "builder" system to define what we want. We start with a simple
@@ -105,7 +104,7 @@ fn main() {
         // And a window title
         .with_title("RLTK Example 18 - Text Sprites")
         // And call the build function to actually obtain the context.
-        .build();
+        .build()?;
 
     // Now we create an empty state object.
     let gs = State {
@@ -133,5 +132,5 @@ fn main() {
 
     // Call into RLTK to run the main loop. This handles rendering, and calls back into State's tick
     // function every cycle.
-    rltk::main_loop(context, gs);
+    rltk::main_loop(context, gs)
 }

@@ -325,10 +325,10 @@ impl Algorithm3D for State {
     }
 }
 
-fn main() {
+fn main() -> RltkError {
     let context = RltkBuilder::simple80x50()
         .with_title("RLTK Example 14 - Dwarf Fortress Map Style")
-        .build();
+        .build()?;
     let gs = State::new();
-    rltk::main_loop(context, gs);
+    rltk::main_loop(context, gs)
 }

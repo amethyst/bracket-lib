@@ -47,18 +47,18 @@ impl GameState for State {
 
 bracket_terminal::embedded_resource!(NYAN_CAT, "../resources/nyan.xp");
 
-fn main() {
+fn main() -> BError {
     bracket_terminal::link_resource!(NYAN_CAT, "../resources/nyan.xp");
     let xp = XpFile::from_resource("../resources/nyan.xp").unwrap();
 
     let mut context = BTermBuilder::simple80x50()
         .with_title("Bracket Terminal Example - Post-Processing Effects")
-        .build();
+        .build()?;
 
     context.with_post_scanlines(true);
     let gs: State = State {
         nyan: xp,
         burn: true,
     };
-    main_loop(context, gs);
+    main_loop(context, gs)
 }

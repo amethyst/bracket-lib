@@ -12,7 +12,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             draw_batch.cls();
             draw_batch.print(Point::new(1, 1), "Hello");
             draw_batch.print(Point::new(1, 2), "World");
-            draw_batch.submit(0);
+            draw_batch.submit(0).expect("Batch error");
             clear_command_buffer();
         })
     });
@@ -24,7 +24,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
                 draw_batch.print(Point::new(1, 1), "Hello");
                 draw_batch.print(Point::new(1, 2), "World");
             }
-            draw_batch.submit(0);
+            draw_batch.submit(0).expect("Batch error");
             clear_command_buffer();
         })
     });
@@ -37,7 +37,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
                     draw_batch.print(Point::new(1, 1), "Hello");
                     draw_batch.print(Point::new(1, 2), "World");
                 }
-                draw_batch.submit(j * 1000);
+                draw_batch.submit(j * 1000).expect("Batch error");
             }
             clear_command_buffer();
         })

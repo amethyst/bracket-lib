@@ -2,6 +2,7 @@
 // designed to be used safely from within ECS systems in a potentially
 // multi-threaded environment.
 
+use crate::Result;
 use crate::prelude::{Console, BTerm};
 use object_pool::{Pool, Reusable};
 use std::sync::Arc;
@@ -23,8 +24,9 @@ lazy_static! {
 
 /// Clears the global command buffer. This is called internally by BTerm at the end of each
 /// frame. You really shouldn't need to call this yourself.
-pub fn clear_command_buffer() {
-    COMMAND_BUFFER.lock().unwrap().clear();
+pub fn clear_command_buffer() -> Result<()> {
+    COMMAND_BUFFER.lock()?.clear();
+    Ok(())
 }
 
 /// Represents a buffered drawing command that can be asynconously submitted to the drawing
@@ -114,11 +116,12 @@ impl DrawBatch {
     }
 
     /// Submits a batch to the global drawing buffer, and empties the batch.
-    pub fn submit(&mut self, z_order: usize) {
+    pub fn submit(&mut self, z_order: usize) -> Result<()> {
         self.batch.iter_mut().enumerate().for_each(|(i, (z, _))| {
             *z = z_order + i;
         });
-        COMMAND_BUFFER.lock().unwrap().append(&mut self.batch);
+        COMMAND_BUFFER.lock()?.append(&mut self.batch);
+        Ok(())
     }
 
     /// Adds a CLS (clear screen) to the drawing batch
@@ -283,8 +286,8 @@ impl DrawBatch {
 }
 
 /// Submits the current batch to the BTerm buffer and empties it
-pub fn render_draw_buffer(bterm: &mut BTerm) {
-    let mut buffer = COMMAND_BUFFER.lock().unwrap();
+pub fn render_draw_buffer(bterm: &mut BTerm) -> Result<()> {
+    let mut buffer = COMMAND_BUFFER.lock()?;
     buffer.sort_unstable_by(|a, b| a.0.cmp(&b.0));
     buffer.iter().for_each(|(_, cmd)| match cmd {
         DrawCommand::ClearScreen => bterm.cls(),
@@ -353,4 +356,5 @@ pub fn render_draw_buffer(bterm: &mut BTerm) {
         } => bterm.draw_bar_vertical(pos.x, pos.y, *height, *n, *max, color.fg, color.bg),
     });
     buffer.clear();
+    Ok(())
 }
