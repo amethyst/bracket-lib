@@ -1,7 +1,10 @@
-use crate::prelude::{
-    font::Font, init_raw, Console, InitHints, BTermPlatform,
-    Shader, SimpleConsole, VirtualKeyCode, XpLayer, XpFile,
-    GameState
+use crate::{
+    Result,
+    prelude::{
+        font::Font, init_raw, Console, InitHints, BTermPlatform,
+        Shader, SimpleConsole, VirtualKeyCode, XpLayer, XpFile,
+        GameState
+    },
 };
 use std::any::Any;
 use std::convert::TryInto;
@@ -46,13 +49,18 @@ impl BTerm {
         height_pixels: T,
         window_title: S,
         platform_hints: InitHints,
-    ) -> BTerm
+    ) -> Result<BTerm>
     where
         T: TryInto<u32>,
     {
-        let w: u32 = width_pixels.try_into().ok().unwrap();
-        let h: u32 = height_pixels.try_into().ok().unwrap();
-        init_raw(w, h, window_title, platform_hints)
+        let w = width_pixels.try_into();
+        let h = height_pixels.try_into();
+        let (w, h) = if let (Ok(w), Ok(h)) = (w, h) {
+            (w, h)
+        } else {
+            return Err("Couldn't convert to u32".into());
+        };
+        Ok(init_raw(w, h, window_title, platform_hints))
     }
 
     /// Quick initialization for when you just want an 8x8 font terminal
@@ -72,7 +80,7 @@ impl BTerm {
         let w: u32 = width_chars.try_into().ok().unwrap();
         let h: u32 = height_chars.try_into().ok().unwrap();
         let font_path = format!("{}/terminal8x8.png", &path_to_shaders.to_string());
-        let mut context = BTerm::init_raw(w * 8, h * 8, window_title, InitHints::new());
+        let mut context = BTerm::init_raw(w * 8, h * 8, window_title, InitHints::new()).unwrap();
         let font = context.register_font(Font::load(&font_path.to_string(), (8, 8)));
         context.register_console(SimpleConsole::init(w, h, &context.backend), font);
         context
@@ -95,7 +103,7 @@ impl BTerm {
         let w: u32 = width_chars.try_into().ok().unwrap();
         let h: u32 = height_chars.try_into().ok().unwrap();
         let font_path = format!("{}/vga8x16.png", &path_to_shaders.to_string());
-        let mut context = BTerm::init_raw(w * 8, h * 16, window_title, InitHints::new());
+        let mut context = BTerm::init_raw(w * 8, h * 16, window_title, InitHints::new()).unwrap();
         let font = context.register_font(Font::load(&font_path.to_string(), (8, 16)));
         context.register_console(SimpleConsole::init(w, h, &context.backend), font);
         context
