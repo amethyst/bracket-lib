@@ -63,9 +63,9 @@ impl GameState for State {
             ColorPair::new(RGB::named(CYAN), RGB::named(BLACK)),
         );
         self.sprite.add_to_batch(&mut draw_batch, Point::new(40, 3));
-        draw_batch.submit(0);
+        draw_batch.submit(0).unwrap();
 
-        render_draw_buffer(ctx);
+        render_draw_buffer(ctx).unwrap();
     }
 }
 
@@ -78,7 +78,8 @@ fn main() {
         .with_font("vga8x16.png", 8u32, 16u32)
         .with_sparse_console(80u32, 25u32, "vga8x16.png")
         .with_title("Bracket Terminal Example - Text Sprites")
-        .build();
+        .build()
+        .unwrap();
 
     let gs = State {
         y: 1,
@@ -103,5 +104,5 @@ fn main() {
         nyancat: MultiTileSprite::from_xp(&XpFile::from_resource("../resources/nyan.xp").unwrap()),
     };
 
-    main_loop(context, gs);
+    main_loop(context, gs).unwrap();
 }

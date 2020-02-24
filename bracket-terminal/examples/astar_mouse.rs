@@ -177,8 +177,8 @@ impl GameState for State {
         );
 
         // Submit the rendering
-        draw_batch.submit(0);
-        render_draw_buffer(ctx);
+        draw_batch.submit(0).unwrap();
+        render_draw_buffer(ctx).unwrap();
     }
 }
 
@@ -239,7 +239,8 @@ impl Algorithm2D for State {
 fn main() {
     let context = BTermBuilder::simple80x50()
         .with_title("Bracket Terminal Example - A* Mouse")
-        .build();
+        .build()
+        .unwrap();
     let gs = State::new();
-    main_loop(context, gs);
+    main_loop(context, gs).unwrap();
 }
