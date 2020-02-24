@@ -86,12 +86,12 @@ impl BTermBuilder {
     }
 
     /// Provides an 8x8 terminal font simple console, with the specified dimensions as your starting point.
-    pub fn simple<T>(width: T, height: T) -> Self
+    pub fn simple<T>(width: T, height: T) -> Result<Self>
     where
         T: TryInto<u32>,
     {
-        let w: u32 = width.try_into().ok().expect("Must be convertible to a u32");
-        let h: u32 = height.try_into().ok().expect("Must be convertible to a u32");
+        let w: u32 = width.try_into().or(Err("Must be convertible to a u32"))?;
+        let h: u32 = height.try_into().or(Err("Must be convertible to a u32"))?;
         let mut cb = BTermBuilder {
             width: w,
             height: h,
@@ -112,7 +112,7 @@ impl BTermBuilder {
             height: h,
             font: "terminal8x8.png".to_string(),
         });
-        cb
+        Ok(cb)
     }
 
     /// Provides an 80x50 terminal, in the VGA font as your starting point.
@@ -304,7 +304,7 @@ impl BTermBuilder {
         for font in &self.fonts {
             let font_path = format!("{}/{}", self.resource_path, font.path);
             let font_id = context.register_font(Font::load(font_path.clone(), font.dimensions));
-            font_map.insert(font_path, font_id);
+            font_map.insert(font_path, font_id?);
         }
 
         for console in &self.consoles {

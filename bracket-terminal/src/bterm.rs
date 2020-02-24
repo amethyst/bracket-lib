@@ -82,7 +82,7 @@ impl BTerm {
         let font_path = format!("{}/terminal8x8.png", &path_to_shaders.to_string());
         let mut context = BTerm::init_raw(w * 8, h * 8, window_title, InitHints::new()).unwrap();
         let font = context.register_font(Font::load(&font_path.to_string(), (8, 8)));
-        context.register_console(SimpleConsole::init(w, h, &context.backend), font);
+        context.register_console(SimpleConsole::init(w, h, &context.backend), font.unwrap());
         context
     }
 
@@ -105,16 +105,16 @@ impl BTerm {
         let font_path = format!("{}/vga8x16.png", &path_to_shaders.to_string());
         let mut context = BTerm::init_raw(w * 8, h * 16, window_title, InitHints::new()).unwrap();
         let font = context.register_font(Font::load(&font_path.to_string(), (8, 16)));
-        context.register_console(SimpleConsole::init(w, h, &context.backend), font);
+        context.register_console(SimpleConsole::init(w, h, &context.backend), font.unwrap());
         context
     }
 
     /// Registers a font, and returns its handle number. Also loads it into OpenGL.
-    pub fn register_font(&mut self, mut font: Font) -> usize {
-        font.setup_gl_texture(&self.backend);
+    pub fn register_font(&mut self, mut font: Font) -> Result<usize> {
+        font.setup_gl_texture(&self.backend)?;
         font.bind_texture(&self.backend);
         self.fonts.push(font);
-        self.fonts.len() - 1
+        Ok(self.fonts.len() - 1)
     }
 
     /// Registers a new console terminal for output, and returns its handle number.
