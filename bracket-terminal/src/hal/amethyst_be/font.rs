@@ -1,3 +1,4 @@
+use crate::Result;
 use crate::prelude::BTerm;
 use amethyst::{
     assets::Handle,
@@ -27,7 +28,7 @@ impl Font {
     pub fn bind_texture(&self, _gl: &crate::hal::BTermPlatform) {}
 }
 
-pub fn initialize_fonts(bterm: &mut BTerm, world: &mut World) {
+pub fn initialize_fonts(bterm: &mut BTerm, world: &mut World) -> Result<()> {
     use crate::embedding;
     use amethyst::renderer::rendy::texture::TextureBuilder;
     use amethyst::renderer::types::TextureData;
@@ -43,8 +44,7 @@ pub fn initialize_fonts(bterm: &mut BTerm, world: &mut World) {
 
     for font in bterm.fonts.iter_mut() {
         let resource = embedding::EMBED
-            .lock()
-            .unwrap()
+            .lock()?
             .get_resource(font.filename.to_string());
 
         let handle;
@@ -93,7 +93,7 @@ pub fn initialize_fonts(bterm: &mut BTerm, world: &mut World) {
         } else {
             let filename = app_root.join(font.filename.clone());
             handle = loader.load(
-                filename.to_str().unwrap(),
+                filename.to_str().ok_or("Couldn't convert filename to string")?,
                 ImageFormat::default(),
                 (),
                 &texture_storage,
@@ -134,4 +134,5 @@ pub fn initialize_fonts(bterm: &mut BTerm, world: &mut World) {
         );
         font.ss = Some(ss_handle);
     }
+    Ok(())
 }

@@ -373,8 +373,9 @@ impl Console for BTerm {
 }
 
 /// Runs the BTerm application, calling into the provided gamestate handler every tick.
-pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) {
-    super::hal::main_loop(bterm, gamestate);
+pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> Result<()> {
+    super::hal::main_loop(bterm, gamestate)?;
+    Ok(())
 }
 
 /// For A-Z menus, translates the keys A through Z into 0..25
