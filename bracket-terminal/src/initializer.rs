@@ -1,3 +1,4 @@
+use crate::Result;
 use crate::prelude::{init_raw, BTerm, InitHints, SimpleConsole, SparseConsole, font::Font};
 use std::collections::HashMap;
 use std::convert::TryInto;
@@ -291,13 +292,13 @@ impl BTermBuilder {
     }
 
     /// Combine all of the builder parameters, and return an BTerm context ready to go.
-    pub fn build(self) -> BTerm {
+    pub fn build(self) -> Result<BTerm> {
         let mut context = init_raw(
             self.width * self.tile_width,
             self.height * self.tile_height,
             self.title.unwrap_or("BTerm Window".to_string()),
             self.platform_hints,
-        );
+        )?;
 
         let mut font_map: HashMap<String, usize> = HashMap::new();
         for font in &self.fonts {
@@ -347,6 +348,6 @@ impl BTermBuilder {
             }
         }
 
-        context
+        Ok(context)
     }
 }

@@ -1,3 +1,4 @@
+use crate::Result;
 use crate::prelude::{InitHints, BTerm, BTermPlatform};
 use glutin::{dpi::LogicalSize, event_loop::EventLoop, window::WindowBuilder, ContextBuilder};
 use crate::hal::native::{WrappedContext, PlatformGL, setup_quad, shader::Shader, shader_strings};
@@ -8,7 +9,7 @@ pub fn init_raw<S: ToString>(
     height_pixels: u32,
     window_title: S,
     platform_hints: InitHints,
-) -> BTerm {
+) -> Result<BTerm> {
 
     let el = EventLoop::new();
     let wb = WindowBuilder::new()
@@ -68,12 +69,12 @@ pub fn init_raw<S: ToString>(
         &gl,
         (width_pixels as f64 * initial_dpi_factor) as i32,
         (height_pixels as f64 * initial_dpi_factor) as i32,
-    );
+    )?;
 
     // Build a simple quad rendering vao
     let quad_vao = setup_quad(&gl);
 
-    BTerm {
+    let bterm = BTerm {
         backend: BTermPlatform {
             platform: PlatformGL {
                 gl,
@@ -104,5 +105,6 @@ pub fn init_raw<S: ToString>(
         quitting: false,
         post_scanlines: false,
         post_screenburn: false,
-    }
+    };
+    Ok(bterm)
 }
