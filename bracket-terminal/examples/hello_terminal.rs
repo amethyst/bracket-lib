@@ -88,7 +88,8 @@ fn main() {
     let context = BTermBuilder::simple80x50()
         .with_title("Hello Bracket World")
         .with_fps_cap(30.0)
-        .build();
+        .build()
+        .unwrap();
 
     // Now we create an empty state object.
     let gs: State = State {
@@ -98,5 +99,5 @@ fn main() {
 
     // Call into BTerm to run the main loop. This handles rendering, and calls back into State's tick
     // function every cycle. The box is needed to work around lifetime handling.
-    main_loop(context, gs);
+    main_loop(context, gs).unwrap();
 }

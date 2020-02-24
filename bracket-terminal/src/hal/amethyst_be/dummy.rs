@@ -1,3 +1,4 @@
+use crate::Result;
 use crate::hal::BTermPlatform;
 use super::font::Font;
 use super::shader::Shader;
@@ -29,7 +30,8 @@ impl SimpleConsoleBackend {
         _platform: &BTermPlatform,
         _width: u32,
         _height: u32,
-    ) {
+    ) -> Result<()> {
+        Ok(())
     }
 }
 
@@ -59,6 +61,7 @@ impl SparseConsoleBackend {
         _shader: &Shader,
         _platform: &BTermPlatform,
         _tiles: &[crate::sparse_console::SparseTile],
-    ) {
+    ) -> Result<()> {
+        Ok(())
     }
 }

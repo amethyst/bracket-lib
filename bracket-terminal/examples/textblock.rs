@@ -39,6 +39,7 @@ fn main() {
 
     let context = BTermBuilder::simple80x50()
         .with_title("Bracket Terminal Example - Text Blocks")
-        .build();
-    main_loop(context, gs);
+        .build()
+        .unwrap();
+    main_loop(context, gs).unwrap();
 }

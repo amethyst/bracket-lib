@@ -1,9 +1,10 @@
+use crate::Result;
 use crate::prelude::{Console, GameState, BTerm};
 use crate::hal::VirtualKeyCode;
 use pancurses::{endwin, initscr, noecho, Window};
 use std::time::Instant;
 
-pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) {
+pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
     let mut prev_ms = now.elapsed().as_millis();
@@ -123,4 +124,5 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) {
     }
 
     endwin();
+    Ok(())
 }

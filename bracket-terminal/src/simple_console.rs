@@ -84,7 +84,7 @@ impl Console for SimpleConsole {
     /// Sends the console to OpenGL.
     fn gl_draw(&mut self, font: &Font, shader: &Shader, platform: &BTermPlatform) {
         self.backend
-            .gl_draw(font, shader, platform, self.width, self.height);
+            .gl_draw(font, shader, platform, self.width, self.height).unwrap();
         self.is_dirty = false;
     }
 
