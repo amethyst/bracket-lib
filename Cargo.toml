@@ -43,6 +43,10 @@ bracket-pathfinding = "0.7.0"
 bracket-random = { version = "0.7.0", features = [ "parsing" ] }
 bracket-terminal = { version = "0.7.0", default-features = false }
 
+# Remove before publish!
+[patch.crates-io]
+bracket-terminal = { path = '../bracket-terminal' }
+
 #[workspace]
 #members = [
 #    "bracket-algorithm-traits",
