@@ -45,7 +45,7 @@ bracket-terminal = { version = "0.7.0", default-features = false }
 
 # Remove before publish!
 [patch.crates-io]
-bracket-terminal = { path = '../bracket-terminal' }
+bracket-terminal = { git = "https://github.com/thebracket/bracket-lib/" }
 
 #[workspace]
 #members = [
