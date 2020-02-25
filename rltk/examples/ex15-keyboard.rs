@@ -46,7 +46,7 @@ impl GameState for State {
 }
 
 // Every program needs a main() function!
-fn main() {
+fn main() -> RltkError {
     // RLTK provides a simple initializer for a simple 8x8 font window of a given number of
     // characters. Since that's all we need here, we'll use it!
     // We're specifying that we want an 80x50 console, with a title, and a relative path
@@ -55,7 +55,7 @@ fn main() {
     // work in the repo without duplicating, they are a relative path.
     let context = RltkBuilder::simple80x50()
         .with_title("RLTK Example 16 - Keyboard Input Visualizer")
-        .build();
+        .build()?;
 
     // Now we create an empty state object.
     let gs: State = State {
@@ -64,5 +64,5 @@ fn main() {
 
     // Call into RLTK to run the main loop. This handles rendering, and calls back into State's tick
     // function every cycle. The box is needed to work around lifetime handling.
-    rltk::main_loop(context, gs);
+    rltk::main_loop(context, gs)
 }

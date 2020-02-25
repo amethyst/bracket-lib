@@ -77,14 +77,14 @@ impl GameState for State {
             &format!("Frame Time: {} ms", ctx.frame_time_ms),
             ColorPair::new(RGB::named(rltk::CYAN), RGB::named(rltk::BLACK)),
         );
-        draw_batch.submit(0);
+        draw_batch.submit(0).expect("Batch error");
 
-        render_draw_buffer(ctx);
+        render_draw_buffer(ctx).expect("Render error");
     }
 }
 
 // Every program needs a main() function!
-fn main() {
+fn main() -> RltkError {
     // We're using the RLTK "builder" system to define what we want. We start with a simple
     // 80x50 background layer.
     let context = RltkBuilder::simple80x50()
@@ -95,7 +95,7 @@ fn main() {
         // And a window title
         .with_title("RLTK Example 2 - Sparse Consoles")
         // And call the build function to actually obtain the context.
-        .build();
+        .build()?;
 
     // Now we create an empty state object.
     let gs = State {
@@ -105,5 +105,5 @@ fn main() {
 
     // Call into RLTK to run the main loop. This handles rendering, and calls back into State's tick
     // function every cycle.
-    rltk::main_loop(context, gs);
+    rltk::main_loop(context, gs)
 }

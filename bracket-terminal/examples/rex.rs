@@ -29,14 +29,14 @@ impl GameState for State {
 // This is a helper macro to embed a file in your binary.
 bracket_terminal::embedded_resource!(NYAN_CAT, "../resources/nyan.xp");
 
-fn main() {
+fn main() -> BError {
     // This helper macro links the above embedding, allowing it to be accessed as a resource from various parts of the program.
     bracket_terminal::link_resource!(NYAN_CAT, "../resources/nyan.xp");
-    let xp = XpFile::from_resource("../resources/nyan.xp").unwrap();
+    let xp = XpFile::from_resource("../resources/nyan.xp")?;
 
     let context = BTermBuilder::simple80x50()
         .with_title("Bracket Terminal Example - REX Paint, Hello Nyan Cat")
-        .build();
+        .build()?;
     let gs: State = State { nyan: xp };
-    main_loop(context, gs);
+    main_loop(context, gs)
 }

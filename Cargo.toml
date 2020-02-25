@@ -19,7 +19,8 @@ exclude = [
     "bracket-pathfinding",
     "bracket-random",
     "bracket-terminal",
-    "rltk"
+    "rltk",
+    "screenshots"
 ]
 
 [features]

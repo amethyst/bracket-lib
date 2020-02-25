@@ -29,14 +29,14 @@ impl GameState for State {
     }
 }
 
-fn main() {
+fn main() -> BError {
     let context = BTermBuilder::simple80x50()
         .with_title("RLTK Example 16 - Keyboard Input Visualizer")
-        .build();
+        .build()?;
 
     let gs: State = State {
         display_lines: vec!["Press keys and modifiers to see code combinations.".to_string()],
     };
 
-    main_loop(context, gs);
+    main_loop(context, gs)
 }

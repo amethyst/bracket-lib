@@ -182,8 +182,8 @@ impl GameState for State {
         );
 
         // Submit the rendering
-        draw_batch.submit(0);
-        render_draw_buffer(ctx);
+        draw_batch.submit(0).expect("Batch error");
+        render_draw_buffer(ctx).expect("Render error");
     }
 }
 
@@ -241,10 +241,10 @@ impl Algorithm2D for State {
     }
 }
 
-fn main() {
+fn main() -> RltkError {
     let context = RltkBuilder::simple80x50()
         .with_title("RLTK Example 6 - A* Mouse")
-        .build();
+        .build()?;
     let gs = State::new();
-    rltk::main_loop(context, gs);
+    rltk::main_loop(context, gs)
 }

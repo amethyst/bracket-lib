@@ -82,7 +82,7 @@ impl Console for SparseConsole {
 
     /// Draws the console to OpenGL.
     fn gl_draw(&mut self, font: &Font, shader: &Shader, platform: &BTermPlatform) {
-        self.backend.gl_draw(font, shader, platform, &self.tiles);
+        self.backend.gl_draw(font, shader, platform, &self.tiles).unwrap();
         self.is_dirty = false;
     }
 
