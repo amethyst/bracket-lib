@@ -31,3 +31,71 @@ amethyst_engine_metal = [ "bracket-lib/amethyst_engine_metal" ]
 bracket-lib = { version = "0.7.0", default-features = false }
 
 [dev-dependencies]
+
+[[example]]
+name = "1"
+path = "examples/ex01-helloworld.rs"
+
+[[example]]
+name = "2"
+path = "examples/ex02-sparse.rs"
+
+[[example]]
+name = "3"
+path = "examples/ex03-walking.rs"
+
+[[example]]
+name = "4"
+path = "examples/ex04-fov.rs"
+
+[[example]]
+name = "5"
+path = "examples/ex05-dijkstra.rs"
+
+[[example]]
+name = "6"
+path = "examples/ex06-astar-mouse.rs"
+
+[[example]]
+name = "7"
+path = "examples/ex07-tiles.rs"
+
+[[example]]
+name = "8"
+path = "examples/ex08-rex.rs"
+
+[[example]]
+name = "9"
+path = "examples/ex09-offsets.rs"
+
+[[example]]
+name = "10"
+path = "examples/ex10-postprocess.rs"
+
+[[example]]
+name = "11"
+path = "examples/ex11-random.rs"
+
+[[example]]
+name = "12"
+path = "examples/ex12-simplex.rs"
+
+[[example]]
+name = "13"
+path = "examples/ex13-textblock.rs"
+
+[[example]]
+name = "14"
+path = "examples/ex14-dwarfmap.rs"
+
+[[example]]
+name = "15"
+path = "examples/ex15-keyboard.rs"
+
+[[example]]
+name = "16"
+path = "examples/ex16-wasm-external.rs"
+
+[[example]]
+name = "17"
+path = "examples/ex17-textsprites.rs"
