@@ -76,7 +76,7 @@ fn main() -> BError {
 
     let context = BTermBuilder::simple80x50()
         .with_font("vga8x16.png", 8u32, 16u32)
-        .with_sparse_console(80u32, 25u32, "vga8x16.png")
+        .with_sparse_console_no_bg(80u32, 25u32, "vga8x16.png")
         .with_title("Bracket Terminal Example - Text Sprites")
         .build()?;
 
