@@ -1,5 +1,6 @@
 use crate::prelude::Tile;
 use crate::prelude::{font::Font, Shader};
+use crate::Result;
 use glow::HasContext;
 
 pub struct SimpleConsoleBackend {
@@ -170,7 +171,7 @@ impl SimpleConsoleBackend {
         platform: &super::super::BTermPlatform,
         _width: u32,
         _height: u32,
-    ) {
+    )  -> Result<()> {
         let gl = &platform.platform.gl;
         unsafe {
             gl.active_texture(glow::TEXTURE1);
@@ -192,5 +193,6 @@ impl SimpleConsoleBackend {
             shader.setVec3(gl, "offset", self.offset_x, self.offset_y, 0.0);
             gl.draw_arrays(glow::TRIANGLES, 0, 6);
         }
+        Ok(())
     }
 }

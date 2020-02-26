@@ -1,7 +1,10 @@
-use crate::prelude::{Console, font::Font, Shader, Tile, XpLayer, string_to_cp437, SimpleConsoleBackend, BTermPlatform};
-use std::any::Any;
+use crate::prelude::{
+    font::Font, string_to_cp437, BTermPlatform, Console, Shader, SimpleConsoleBackend, Tile,
+    XpLayer,
+};
 use bracket_color::prelude::*;
 use bracket_geometry::prelude::Rect;
+use std::any::Any;
 
 /// A simple console with background color.
 pub struct SimpleConsole {
@@ -84,7 +87,8 @@ impl Console for SimpleConsole {
     /// Sends the console to OpenGL.
     fn gl_draw(&mut self, font: &Font, shader: &Shader, platform: &BTermPlatform) {
         self.backend
-            .gl_draw(font, shader, platform, self.width, self.height).unwrap();
+            .gl_draw(font, shader, platform, self.width, self.height)
+            .unwrap();
         self.is_dirty = false;
     }
 
