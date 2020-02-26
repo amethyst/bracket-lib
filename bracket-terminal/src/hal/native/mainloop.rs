@@ -142,7 +142,8 @@ fn tock<GS: GameState>(
 
     // Console structure - doesn't really have to be every frame...
     for cons in &mut bterm.consoles {
-        cons.console.rebuild_if_dirty(&bterm.backend);
+        //cons.console.rebuild_if_dirty(&bterm.backend);
+        // TODO: Replace me
     }
 
     // Bind to the backing buffer
@@ -163,7 +164,8 @@ fn tock<GS: GameState>(
     for cons in &mut bterm.consoles {
         let font = &bterm.fonts[cons.font_index];
         let shader = &bterm.shaders[cons.shader_index];
-        cons.console.gl_draw(font, shader, &bterm.backend);
+        //cons.console.gl_draw(font, shader, &bterm.backend);
+        // TODO: Replace me
     }
 
     if bterm.post_scanlines {

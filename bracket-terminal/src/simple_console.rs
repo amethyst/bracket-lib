@@ -1,5 +1,5 @@
 use crate::prelude::{
-    font::Font, string_to_cp437, BTermPlatform, Console, Shader, SimpleConsoleBackend, Tile,
+    string_to_cp437, BTermPlatform, Console, SimpleConsoleBackend, Tile,
     XpLayer,
 };
 use bracket_color::prelude::*;
@@ -19,9 +19,7 @@ pub struct SimpleConsole {
     offset_y: f32,
 
     scale: f32,
-    scale_center: (i32, i32),
-
-    backend: SimpleConsoleBackend,
+    scale_center: (i32, i32)
 }
 
 impl SimpleConsole {
@@ -46,50 +44,20 @@ impl SimpleConsole {
             offset_x: 0.0,
             offset_y: 0.0,
             scale: 1.0,
-            scale_center: (width as i32 / 2, height as i32 / 2),
-            backend: SimpleConsoleBackend::new(platform, width as usize, height as usize),
+            scale_center: (width as i32 / 2, height as i32 / 2)
         };
 
         Box::new(new_console)
     }
-
-    fn rebuild_vertices(&mut self, platform: &BTermPlatform) {
-        self.backend.rebuild_vertices(
-            platform,
-            self.height,
-            self.width,
-            &self.tiles,
-            self.offset_x,
-            self.offset_y,
-            self.scale,
-            self.scale_center,
-        );
-    }
 }
 
 impl Console for SimpleConsole {
-    /// Check if the console has changed, and if it has rebuild the backing buffer.
-    fn rebuild_if_dirty(&mut self, platform: &BTermPlatform) {
-        if self.is_dirty {
-            self.rebuild_vertices(platform);
-            self.is_dirty = false;
-        }
-    }
-
     fn get_char_size(&self) -> (u32, u32) {
         (self.width, self.height)
     }
 
     fn resize_pixels(&mut self, _width: u32, _height: u32) {
         self.is_dirty = true;
-    }
-
-    /// Sends the console to OpenGL.
-    fn gl_draw(&mut self, font: &Font, shader: &Shader, platform: &BTermPlatform) {
-        self.backend
-            .gl_draw(font, shader, platform, self.width, self.height)
-            .unwrap();
-        self.is_dirty = false;
     }
 
     /// Translate an x/y into an array index.

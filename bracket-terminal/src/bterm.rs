@@ -227,16 +227,6 @@ impl BTerm {
 }
 
 impl Console for BTerm {
-    // A couple of ones we'll never use
-    fn rebuild_if_dirty(&mut self, _platform: &super::hal::BTermPlatform) {}
-    fn gl_draw(
-        &mut self,
-        _font: &Font,
-        _shader: &Shader,
-        _platform: &super::hal::BTermPlatform,
-    ) {
-    }
-
     fn get_char_size(&self) -> (u32, u32) {
         self.consoles[self.active_console].console.get_char_size()
     }

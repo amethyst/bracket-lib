@@ -1,4 +1,4 @@
-use crate::prelude::{Console, font::Font, Shader, XpLayer, string_to_cp437, BTermPlatform, SparseConsoleBackend};
+use crate::prelude::{Console, XpLayer, string_to_cp437, BTermPlatform, SparseConsoleBackend};
 use std::any::Any;
 use bracket_color::prelude::{RGB, XpColor};
 use bracket_geometry::prelude::Rect;
@@ -25,9 +25,7 @@ pub struct SparseConsole {
     offset_y: f32,
 
     scale: f32,
-    scale_center: (i32, i32),
-
-    backend: SparseConsoleBackend,
+    scale_center: (i32, i32)
 }
 
 impl SparseConsole {
@@ -42,48 +40,20 @@ impl SparseConsole {
             offset_x: 0.0,
             offset_y: 0.0,
             scale: 1.0,
-            scale_center: (width as i32 / 2, height as i32 / 2),
-            backend: SparseConsoleBackend::new(platform, width as usize, height as usize),
+            scale_center: (width as i32 / 2, height as i32 / 2)
         };
 
         Box::new(new_console)
     }
-
-    fn rebuild_vertices(&mut self, platform: &BTermPlatform) {
-        self.backend.rebuild_vertices(
-            platform,
-            self.height,
-            self.width,
-            self.offset_x,
-            self.offset_y,
-            self.scale,
-            self.scale_center,
-            &self.tiles,
-        );
-    }
 }
 
 impl Console for SparseConsole {
-    /// If the console has changed, rebuild the vertex buffer.
-    fn rebuild_if_dirty(&mut self, platform: &BTermPlatform) {
-        if self.is_dirty {
-            self.rebuild_vertices(platform);
-            self.is_dirty = false;
-        }
-    }
-
     fn get_char_size(&self) -> (u32, u32) {
         (self.width, self.height)
     }
 
     fn resize_pixels(&mut self, _width: u32, _height: u32) {
         self.is_dirty = true;
-    }
-
-    /// Draws the console to OpenGL.
-    fn gl_draw(&mut self, font: &Font, shader: &Shader, platform: &BTermPlatform) {
-        self.backend.gl_draw(font, shader, platform, &self.tiles).unwrap();
-        self.is_dirty = false;
     }
 
     /// Translates x/y to an index entry. Not really useful.
