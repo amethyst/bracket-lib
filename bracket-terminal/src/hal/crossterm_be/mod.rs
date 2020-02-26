@@ -1,7 +1,6 @@
 use std::sync::Mutex;
 
-mod keycodes;
-pub use keycodes::VirtualKeyCode;
+pub use winit::event::VirtualKeyCode;
 
 mod main_loop;
 pub use main_loop::*;
