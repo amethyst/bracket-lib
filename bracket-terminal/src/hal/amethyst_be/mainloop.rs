@@ -1,5 +1,6 @@
 use crate::prelude::{BTerm, GameState};
 use crate::Result;
+use super::*;
 
 use amethyst::{
     core::math::{Point3, Vector3},
@@ -268,7 +269,7 @@ pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> Result<()> {
 
     let mut cfg = amethyst::window::DisplayConfig::default();
     cfg.dimensions = Some((bterm.width_pixels, bterm.height_pixels));
-    cfg.title = bterm.backend.platform.window_title.clone();
+    cfg.title = BACKEND.lock().unwrap().window_title.clone();
 
     let app_root = application_root_dir()?;
 
