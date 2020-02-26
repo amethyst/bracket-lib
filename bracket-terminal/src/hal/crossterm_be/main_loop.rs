@@ -15,7 +15,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
     let dummy_shader = super::shader::Shader {};
 
-    while !bterm.quitting {
+    'main: while !bterm.quitting {
         let now_seconds = now.elapsed().as_secs();
         frames += 1;
 
@@ -58,7 +58,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     if key.code == crossterm::event::KeyCode::Char('c')
                         && key.modifiers == crossterm::event::KeyModifiers::CONTROL
                     {
-                        bterm.quitting = true;
+                        break 'main;
                     }
 
                     use crossterm::event::KeyCode;
