@@ -14,7 +14,7 @@ CALL :StageExample walking, walking
 
 REM Submit to server
 cd wasm_help\staging
-pscp -r * herbert@172.16.10.193:/var/www/bfnightly/wasmtest
+pscp -r * herbert@vps.bracketproductions.com:/var/www/bfnightly/wasmtest
 cd ..\..
 
 REM Finish

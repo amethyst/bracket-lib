@@ -51,6 +51,7 @@ impl error::Error for DiceParseError {
 // Parses a dice string, of the type "1d6+3", "3d8-4" or "1d20".
 #[cfg(feature = "parsing")]
 pub fn parse_dice_string(dice: &str) -> Result<DiceType, DiceParseError> {
+    let dice = &dice.split_whitespace().collect::<Vec<_>>().join("");
     lazy_static! {
         static ref DICE_RE: Regex = Regex::new(r"(\d+)d(\d+)([\+\-]\d+)?").unwrap();
     }
@@ -107,6 +108,13 @@ mod tests {
     #[test]
     fn parse_3d6minus2() {
         assert_eq!(parse_dice_string("3d6-2").unwrap(), DiceType::new(3, 6, -2));
+    }
+
+    #[test]
+    fn parse_whitespace_test() {
+        assert_eq!(parse_dice_string("3d6 - 2").unwrap(), DiceType::new(3, 6, -2));
+        assert_eq!(parse_dice_string(" 3d6- 2").unwrap(), DiceType::new(3, 6, -2));
+        assert_eq!(parse_dice_string("3 d 6- 2").unwrap(), DiceType::new(3, 6, -2));
     }
 
     #[test]

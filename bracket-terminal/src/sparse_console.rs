@@ -149,6 +149,7 @@ impl Console for SparseConsole {
 
     /// Sets a single cell in the console
     fn set(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, glyph: u8) {
+        self.is_dirty = true;
         if let Some(idx) = self.try_at(x, y) {
             self.tiles.push(SparseTile { idx, glyph, fg, bg });
         }
@@ -157,6 +158,7 @@ impl Console for SparseConsole {
     /// Sets a single cell in the console's background
     fn set_bg(&mut self, x: i32, y: i32, bg: RGB) {
         if let Some(idx) = self.try_at(x, y) {
+            self.is_dirty = true;
             self.tiles[idx].bg = bg;
         }
     }
@@ -282,11 +284,13 @@ impl Console for SparseConsole {
     /// draw between tiles. Offsets are specified as a percentage of total
     /// character size; so -0.5 will offset half a character to the left/top.
     fn set_offset(&mut self, x: f32, y: f32) {
+        self.is_dirty = true;
         self.offset_x = x * (2.0 / self.width as f32);
         self.offset_y = y * (2.0 / self.height as f32);
     }
 
     fn set_scale(&mut self, scale: f32, center_x: i32, center_y: i32) {
+        self.is_dirty = true;
         self.scale = scale;
         self.scale_center = (center_x, center_y);
     }

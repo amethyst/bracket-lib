@@ -1,5 +1,6 @@
 use crate::prelude::{font::Font, Shader};
 use crate::sparse_console::SparseTile;
+use crate::Result;
 use glow::HasContext;
 
 pub struct SparseConsoleBackend {
@@ -166,7 +167,7 @@ impl SparseConsoleBackend {
         shader: &Shader,
         platform: &super::super::BTermPlatform,
         _tiles: &Vec<SparseTile>,
-    ) {
+    ) -> Result<()> {
         let gl = &platform.platform.gl;
         unsafe {
             gl.active_texture(glow::TEXTURE1);
@@ -188,5 +189,6 @@ impl SparseConsoleBackend {
             shader.setVec3(gl, "offset", self.offset_x, self.offset_y, 0.0);
             gl.draw_arrays(glow::TRIANGLES, 0, 6);
         }
+        Ok(())
     }
 }

@@ -203,7 +203,7 @@ fn main() -> BError {
         // We want a base simple console for the terrain background
         .with_simple_console(WIDTH as u32, HEIGHT as u32, "example_tiles.png")
         // We also want a sparse console atop it to handle moving the character
-        .with_sparse_console(WIDTH as u32, HEIGHT as u32, "example_tiles.png")
+        .with_sparse_console_no_bg(WIDTH as u32, HEIGHT as u32, "example_tiles.png")
         // And we call the builder function
         .build()?;
 

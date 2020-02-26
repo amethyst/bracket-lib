@@ -100,7 +100,7 @@ fn main() -> RltkError {
         // Then we register the 8x16 VGA font. This is embedded automatically, so you can just use it.
         .with_font("vga8x16.png", 8, 16)
         // Next we want a "sparse" (no background) console, of half the height since its an 8x16 font.
-        .with_sparse_console(80, 25, "vga8x16.png")
+        .with_sparse_console_no_bg(80, 25, "vga8x16.png")
         // And a window title
         .with_title("RLTK Example 18 - Text Sprites")
         // And call the build function to actually obtain the context.

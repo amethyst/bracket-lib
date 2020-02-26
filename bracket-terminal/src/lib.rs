@@ -76,7 +76,7 @@ macro_rules! add_wasm_support {
         #[cfg_attr(target_arch = "wasm32", wasm_bindgen(start))]
         pub fn wasm_main() {
             //panic::set_hook(Box::new(console_error_panic_hook::hook));
-            main();
+            main().expect("Error in main");
         }
     };
 }
