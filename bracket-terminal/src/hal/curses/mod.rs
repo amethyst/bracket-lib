@@ -3,8 +3,7 @@ use crate::prelude::BTerm;
 use crate::Result;
 use std::sync::Mutex;
 
-mod keycodes;
-pub use keycodes::VirtualKeyCode;
+pub use winit::event::VirtualKeyCode;
 
 use pancurses::Window;
 
