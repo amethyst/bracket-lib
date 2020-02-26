@@ -11,12 +11,6 @@ mod wasm;
 #[cfg(all(feature = "opengl", target_arch = "wasm32"))]
 pub use wasm::*;
 
-#[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
-mod framebuffer;
-
-#[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
-pub use framebuffer::Framebuffer;
-
 #[cfg(not(feature = "opengl"))]
 #[cfg(all(not(feature = "opengl"), feature = "curses"))]
 mod curses;

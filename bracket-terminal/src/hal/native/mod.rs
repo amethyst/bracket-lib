@@ -12,6 +12,8 @@ pub use sparse_console_backing::*;
 pub mod font;
 pub mod shader;
 use std::sync::Mutex;
+mod framebuffer;
+pub use framebuffer::Framebuffer;
 
 pub enum ConsoleBacking {
     Simple { backing: SimpleConsoleBackend },
