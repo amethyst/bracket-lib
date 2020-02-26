@@ -11,6 +11,9 @@ readme = "README.md"
 keywords = ["roguelike", "gamedev", "terminal", "ascii", "cp437"]
 categories = ["game-engines"]
 license = "MIT"
+exclude = [
+    "wasm_help"
+]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
