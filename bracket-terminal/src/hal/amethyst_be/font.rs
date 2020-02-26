@@ -1,5 +1,5 @@
-use crate::Result;
 use crate::prelude::BTerm;
+use crate::Result;
 use amethyst::{
     assets::Handle,
     assets::{AssetStorage, Loader},
@@ -95,7 +95,9 @@ pub fn initialize_fonts(bterm: &mut BTerm, world: &mut World) -> Result<()> {
         } else {
             let filename = app_root.join(font.filename.clone());
             handle = loader.load(
-                filename.to_str().ok_or("Couldn't convert filename to string")?,
+                filename
+                    .to_str()
+                    .ok_or("Couldn't convert filename to string")?,
                 ImageFormat::default(),
                 (),
                 &texture_storage,

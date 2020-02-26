@@ -1,6 +1,6 @@
-use crate::Result;
-use crate::prelude::{Console, GameState, BTerm};
 use crate::hal::VirtualKeyCode;
+use crate::prelude::{BTerm, Console, GameState};
+use crate::Result;
 use pancurses::{endwin, initscr, noecho, Window};
 use std::time::Instant;
 

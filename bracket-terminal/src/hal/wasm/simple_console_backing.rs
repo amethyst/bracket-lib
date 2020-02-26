@@ -171,7 +171,7 @@ impl SimpleConsoleBackend {
         platform: &super::super::BTermPlatform,
         _width: u32,
         _height: u32,
-    )  -> Result<()> {
+    ) -> Result<()> {
         let gl = &platform.platform.gl;
         unsafe {
             gl.active_texture(glow::TEXTURE1);

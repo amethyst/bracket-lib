@@ -1,7 +1,7 @@
-use crate::Result;
 use crate::hal::BTermPlatform;
-use crate::prelude::InitHints;
 use crate::prelude::BTerm;
+use crate::prelude::InitHints;
+use crate::Result;
 
 pub struct PlatformGL {
     pub window_title: String,

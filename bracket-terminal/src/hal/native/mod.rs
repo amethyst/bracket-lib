@@ -13,14 +13,23 @@ pub mod font;
 pub mod shader;
 use std::sync::Mutex;
 
+pub enum ConsoleBacking {
+    Simple { backing: SimpleConsoleBackend },
+    Sparse { backing: SparseConsoleBackend },
+}
+
 lazy_static! {
-    static ref BACKEND : Mutex<PlatformGL> = Mutex::new(PlatformGL{
+    static ref BACKEND: Mutex<PlatformGL> = Mutex::new(PlatformGL {
         gl: None,
         quad_vao: None,
         context_wrapper: None,
         backing_buffer: None,
         frame_sleep_time: None
     });
+}
+
+lazy_static! {
+    static ref CONSOLE_BACKING: Mutex<Vec<ConsoleBacking>> = Mutex::new(Vec::new());
 }
 
 pub struct PlatformGL {

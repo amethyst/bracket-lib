@@ -1,7 +1,7 @@
 use crate::prelude::XpLayer;
-use std::any::Any;
-use bracket_geometry::prelude::Rect;
 use bracket_color::prelude::RGB;
+use bracket_geometry::prelude::Rect;
+use std::any::Any;
 
 /// The internal storage type for tiles in a simple console.
 #[derive(PartialEq, Copy, Clone)]

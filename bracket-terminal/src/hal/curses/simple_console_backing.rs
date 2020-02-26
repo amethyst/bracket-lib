@@ -1,8 +1,8 @@
-use crate::Result;
-use crate::prelude::{BTermPlatform, to_char, Tile};
 use super::find_nearest_color;
 use super::font;
 use super::shader;
+use crate::prelude::{to_char, BTermPlatform, Tile};
+use crate::Result;
 use std::convert::TryInto;
 
 pub struct SimpleConsoleBackend {
@@ -48,11 +48,7 @@ impl SimpleConsoleBackend {
                 let cp_bg = find_nearest_color(t.bg, &platform.platform.color_map);
                 let pair = (cp_bg * 16) + cp_fg;
                 window.attrset(pancurses::COLOR_PAIR(pair.try_into()?));
-                window.mvaddch(
-                    height as i32 - (y as i32 + 1),
-                    x as i32,
-                    to_char(t.glyph),
-                );
+                window.mvaddch(height as i32 - (y as i32 + 1), x as i32, to_char(t.glyph));
                 idx += 1;
             }
         }

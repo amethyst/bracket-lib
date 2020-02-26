@@ -1,11 +1,11 @@
 // Dummy platform to let it compile and do nothing. Only useful if you don't want a graphical backend.
+use crate::prelude::BTerm;
 use crate::Result;
 use crossterm::{
     execute,
     terminal::{size, SetSize},
 };
 use std::io::{stdout, Write};
-use crate::prelude::BTerm;
 
 mod keycodes;
 pub use keycodes::VirtualKeyCode;

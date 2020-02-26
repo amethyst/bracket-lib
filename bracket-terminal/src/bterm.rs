@@ -1,15 +1,14 @@
 use crate::{
-    Result,
     prelude::{
-        font::Font, init_raw, Console, InitHints, BTermPlatform,
-        Shader, SimpleConsole, VirtualKeyCode, XpLayer, XpFile,
-        GameState
+        font::Font, init_raw, Console, GameState, InitHints, Shader, SimpleConsole, VirtualKeyCode,
+        XpFile, XpLayer,
     },
+    Result,
 };
-use std::any::Any;
-use std::convert::TryInto;
 use bracket_color::prelude::RGB;
 use bracket_geometry::prelude::{Point, Rect};
+use std::any::Any;
+use std::convert::TryInto;
 
 /// A display console, used internally to provide console render support.
 /// Public in case you want to play with it, or access it directly.
@@ -109,10 +108,7 @@ impl BTerm {
     }
 
     /// Registers a font, and returns its handle number. Also loads it into OpenGL.
-    pub fn register_font(&mut self, mut font: Font) -> Result<usize> {
-        // TODO: Fix me
-        //font.setup_gl_texture(&self.backend)?;
-        //font.bind_texture(&self.backend);
+    pub fn register_font(&mut self, font: Font) -> Result<usize> {
         self.fonts.push(font);
         Ok(self.fonts.len() - 1)
     }

@@ -1,10 +1,10 @@
-use bracket_terminal::prelude::*;
 use bracket_random::prelude::*;
+use bracket_terminal::prelude::*;
 
 bracket_terminal::add_wasm_support!();
 
 struct State {
-    rng : RandomNumberGenerator
+    rng: RandomNumberGenerator,
 }
 
 impl GameState for State {
@@ -16,9 +16,9 @@ impl GameState for State {
             }
         }
 
-        let x = self.rng.range(0,80);
-        let y = self.rng.range(0,50);
-        let chr = self.rng.range(0,255) as u8;
+        let x = self.rng.range(0, 80);
+        let y = self.rng.range(0, 50);
+        let chr = self.rng.range(0, 255) as u8;
         ctx.set(x, y, RGB::named(YELLOW), RGB::named(BLACK), chr);
     }
 }
@@ -29,7 +29,7 @@ fn main() -> BError {
         .build()?;
 
     let gs: State = State {
-        rng : RandomNumberGenerator::new()
+        rng: RandomNumberGenerator::new(),
     };
 
     main_loop(context, gs)

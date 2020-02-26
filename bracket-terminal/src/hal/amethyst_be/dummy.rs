@@ -1,7 +1,7 @@
-use crate::Result;
-use crate::hal::BTermPlatform;
 use super::font::Font;
 use super::shader::Shader;
+use crate::hal::BTermPlatform;
+use crate::Result;
 
 pub struct SimpleConsoleBackend {}
 

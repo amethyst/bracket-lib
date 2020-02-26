@@ -1,5 +1,5 @@
+use crate::prelude::{BTerm, GameState};
 use crate::Result;
-use crate::prelude::{GameState, BTerm};
 
 use amethyst::{
     core::math::{Point3, Vector3},
@@ -90,7 +90,10 @@ impl SimpleState for BTermGemBridge {
             for (map, conlink) in (&mut map_storage, &console_storage).join() {
                 let cons = &mut self.bterm.consoles[conlink.console_index];
                 let size = cons.console.get_char_size();
-                if let Some(concrete) = cons.console.as_any().downcast_ref::<crate::prelude::SimpleConsole>()
+                if let Some(concrete) = cons
+                    .console
+                    .as_any()
+                    .downcast_ref::<crate::prelude::SimpleConsole>()
                 {
                     amethyst::tiles::iters::Region::new(
                         Point3::new(0, 0, 1),
@@ -137,7 +140,10 @@ impl SimpleState for BTermGemBridge {
             for (map, conlink) in (&mut smap_storage, &console_storage).join() {
                 let cons = &mut self.bterm.consoles[conlink.console_index];
                 let size = cons.console.get_char_size();
-                if let Some(concrete) = cons.console.as_any().downcast_ref::<crate::prelude::SparseConsole>()
+                if let Some(concrete) = cons
+                    .console
+                    .as_any()
+                    .downcast_ref::<crate::prelude::SparseConsole>()
                 {
                     amethyst::tiles::iters::Region::new(
                         Point3::new(0, 0, 0),
@@ -194,7 +200,11 @@ impl BTermGemBridge {
     fn initialize_console_objects(&mut self, world: &mut World) {
         for (i, cons) in self.bterm.consoles.iter_mut().enumerate() {
             let size = cons.console.get_char_size();
-            if let Some(_concrete) = cons.console.as_any().downcast_ref::<crate::prelude::SimpleConsole>() {
+            if let Some(_concrete) = cons
+                .console
+                .as_any()
+                .downcast_ref::<crate::prelude::SimpleConsole>()
+            {
                 if let Some(ss) = &self.bterm.fonts[cons.font_index].ss {
                     let font_size = &self.bterm.fonts[cons.font_index].tile_size;
 
@@ -220,7 +230,11 @@ impl BTermGemBridge {
                 }
             }
 
-            if let Some(_concrete) = cons.console.as_any().downcast_ref::<crate::prelude::SparseConsole>() {
+            if let Some(_concrete) = cons
+                .console
+                .as_any()
+                .downcast_ref::<crate::prelude::SparseConsole>()
+            {
                 if let Some(ss) = &self.bterm.fonts[cons.font_index].ss {
                     let font_size = &self.bterm.fonts[cons.font_index].tile_size;
 

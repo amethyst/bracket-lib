@@ -1,7 +1,7 @@
-use crate::prelude::{Console, XpLayer, string_to_cp437, SparseConsoleBackend};
-use std::any::Any;
-use bracket_color::prelude::{RGB, XpColor};
+use crate::prelude::{string_to_cp437, Console, SparseConsoleBackend, XpLayer};
+use bracket_color::prelude::{XpColor, RGB};
 use bracket_geometry::prelude::Rect;
+use std::any::Any;
 
 /// Internal storage structure for sparse tiles.
 pub struct SparseTile {
@@ -21,11 +21,11 @@ pub struct SparseConsole {
     pub is_dirty: bool,
 
     // To handle offset tiles for people who want thin walls between tiles
-    offset_x: f32,
-    offset_y: f32,
+    pub offset_x: f32,
+    pub offset_y: f32,
 
-    scale: f32,
-    scale_center: (i32, i32)
+    pub scale: f32,
+    pub scale_center: (i32, i32),
 }
 
 impl SparseConsole {
@@ -40,7 +40,7 @@ impl SparseConsole {
             offset_x: 0.0,
             offset_y: 0.0,
             scale: 1.0,
-            scale_center: (width as i32 / 2, height as i32 / 2)
+            scale_center: (width as i32 / 2, height as i32 / 2),
         };
 
         Box::new(new_console)

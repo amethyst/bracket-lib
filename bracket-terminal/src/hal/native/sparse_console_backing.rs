@@ -1,10 +1,10 @@
-use crate::Result;
-use bracket_color::prelude::RGB;
+use super::BACKEND;
 use crate::hal::{font::Font, shader::Shader};
 use crate::sparse_console::SparseTile;
+use crate::Result;
+use bracket_color::prelude::RGB;
 use glow::HasContext;
 use std::mem;
-use super::BACKEND;
 
 pub struct SparseConsoleBackend {
     vertex_buffer: Vec<f32>,
@@ -15,12 +15,8 @@ pub struct SparseConsoleBackend {
 }
 
 impl SparseConsoleBackend {
-    pub fn new(
-        platform: &super::super::BTermPlatform,
-        _width: usize,
-        _height: usize,
-    ) -> SparseConsoleBackend {
-        let (vbo, vao, ebo) = SparseConsoleBackend::init_gl_for_console(BACKEND.lock().unwrap().gl.as_ref().unwrap());
+    pub fn new(_width: usize, _height: usize, gl: &glow::Context) -> SparseConsoleBackend {
+        let (vbo, vao, ebo) = SparseConsoleBackend::init_gl_for_console(gl);
         SparseConsoleBackend {
             vertex_buffer: Vec::new(),
             index_buffer: Vec::new(),
@@ -98,7 +94,6 @@ impl SparseConsoleBackend {
     /// Helper to build vertices for the sparse grid.
     pub fn rebuild_vertices(
         &mut self,
-        platform: &super::super::BTermPlatform,
         height: u32,
         width: u32,
         offset_x: f32,
@@ -208,18 +203,12 @@ impl SparseConsoleBackend {
         }
     }
 
-    pub fn gl_draw(
-        &mut self,
-        font: &Font,
-        shader: &Shader,
-        platform: &super::super::BTermPlatform,
-        tiles: &[SparseTile],
-    ) -> Result<()> {
+    pub fn gl_draw(&mut self, font: &Font, shader: &Shader, tiles: &[SparseTile]) -> Result<()> {
         let be = BACKEND.lock().unwrap();
         let gl = be.gl.as_ref().unwrap();
         unsafe {
             // bind Texture
-            font.bind_texture();
+            font.bind_texture(gl);
 
             // render container
             shader.useProgram(gl);

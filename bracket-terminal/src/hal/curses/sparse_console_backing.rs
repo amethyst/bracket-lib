@@ -1,8 +1,8 @@
-use crate::Result;
-use crate::prelude::{BTermPlatform, to_char};
 use super::find_nearest_color;
 use super::font;
 use super::shader;
+use crate::prelude::{to_char, BTermPlatform};
+use crate::Result;
 use std::convert::TryInto;
 
 pub struct SparseConsoleBackend {

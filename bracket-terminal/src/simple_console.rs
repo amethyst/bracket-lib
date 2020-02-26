@@ -1,7 +1,4 @@
-use crate::prelude::{
-    string_to_cp437, Console, SimpleConsoleBackend, Tile,
-    XpLayer,
-};
+use crate::prelude::{string_to_cp437, Console, Tile, XpLayer};
 use bracket_color::prelude::*;
 use bracket_geometry::prelude::Rect;
 use std::any::Any;
@@ -15,11 +12,11 @@ pub struct SimpleConsole {
     pub is_dirty: bool,
 
     // To handle offset tiles for people who want thin walls between tiles
-    offset_x: f32,
-    offset_y: f32,
+    pub offset_x: f32,
+    pub offset_y: f32,
 
-    scale: f32,
-    scale_center: (i32, i32)
+    pub scale: f32,
+    pub scale_center: (i32, i32),
 }
 
 impl SimpleConsole {
@@ -44,7 +41,7 @@ impl SimpleConsole {
             offset_x: 0.0,
             offset_y: 0.0,
             scale: 1.0,
-            scale_center: (width as i32 / 2, height as i32 / 2)
+            scale_center: (width as i32 / 2, height as i32 / 2),
         };
 
         Box::new(new_console)

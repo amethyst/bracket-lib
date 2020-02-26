@@ -1,7 +1,7 @@
 bracket_terminal::add_wasm_support!();
-use bracket_terminal::prelude::*;
-use bracket_random::prelude::*;
 use bracket_pathfinding::prelude::*;
+use bracket_random::prelude::*;
+use bracket_terminal::prelude::*;
 
 #[derive(PartialEq, Copy, Clone)]
 enum TileType {

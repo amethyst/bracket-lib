@@ -1,5 +1,5 @@
+use crate::prelude::{BTerm, GameState, VirtualKeyCode};
 use crate::Result;
-use crate::prelude::{GameState, BTerm, VirtualKeyCode};
 use crossterm::event::{poll, read, Event};
 use crossterm::execute;
 use crossterm::terminal::SetSize;

@@ -1,7 +1,7 @@
-use crate::Result;
-use crate::prelude::{BTermPlatform, to_char, Tile};
 use super::font;
 use super::shader;
+use crate::prelude::{to_char, BTermPlatform, Tile};
+use crate::Result;
 use bracket_color::prelude::*;
 use crossterm::style::Print;
 use crossterm::{cursor, queue};

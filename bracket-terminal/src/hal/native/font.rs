@@ -1,6 +1,6 @@
-use crate::Result;
 use super::BACKEND;
 use crate::prelude::embedding;
+use crate::Result;
 use glow::HasContext;
 use image::{ColorType, GenericImageView};
 
@@ -117,9 +117,8 @@ impl Font {
     }
 
     /// Sets this font file as the active texture
-    pub fn bind_texture(&self) {
-        let be = BACKEND.lock().unwrap();
-        let gl = be.gl.as_ref().unwrap();
+    #[inline]
+    pub fn bind_texture(&self, gl: &glow::Context) {
         unsafe {
             gl.bind_texture(glow::TEXTURE_2D, self.gl_id);
         }

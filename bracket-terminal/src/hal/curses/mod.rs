@@ -1,6 +1,6 @@
 // Dummy platform to let it compile and do nothing. Only useful if you don't want a graphical backend.
+use crate::prelude::{BTerm, GameState};
 use crate::Result;
-use crate::prelude::{GameState, BTerm};
 use bracket_color::prelude::*;
 
 mod keycodes;
