@@ -15,6 +15,11 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
     let dummy_shader = super::shader::Shader {};
 
+    // Panic handler to reset terminal
+    std::panic::set_hook(Box::new(|_| {
+        reset_terminal();
+    }));
+
     while !bterm.quitting {
         let now_seconds = now.elapsed().as_secs();
         frames += 1;
@@ -173,10 +178,6 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         crate::hal::fps_sleep(bterm.backend.platform.frame_sleep_time, &now, prev_ms);
     }
 
-    println!(
-        "Returning size to {}x{}",
-        bterm.backend.platform.old_width, bterm.backend.platform.old_height
-    );
     execute!(
         stdout(),
         SetSize(
@@ -185,20 +186,11 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         )
     )
     .expect("Unable to resize");
-    execute!(
-        stdout(),
-        crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
-            r: 255,
-            g: 255,
-            b: 255
-        })
-    )
-    .expect("Unable to recolor");
-    execute!(
-        stdout(),
-        crossterm::style::SetBackgroundColor(crossterm::style::Color::Rgb { r: 0, g: 0, b: 0 })
-    )
-    .expect("Unable to recolor");
-    execute!(stdout(), crossterm::cursor::Show).expect("Command fail");
+    reset_terminal();
     Ok(())
+}
+
+fn reset_terminal() {
+    execute!(stdout(), crossterm::style::ResetColor).expect("Command fail");
+    execute!(stdout(), crossterm::cursor::Show).expect("Command fail");
 }
