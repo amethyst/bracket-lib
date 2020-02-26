@@ -1,4 +1,4 @@
-use crate::prelude::{string_to_cp437, Console, SparseConsoleBackend, XpLayer};
+use crate::prelude::{string_to_cp437, Console, XpLayer};
 use bracket_color::prelude::{XpColor, RGB};
 use bracket_geometry::prelude::Rect;
 use std::any::Any;
