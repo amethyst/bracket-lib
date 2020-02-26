@@ -170,44 +170,73 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         for cons in &mut bterm.consoles {
             let cons_any = cons.console.as_any();
             if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
-                let mut idx = 0;
-                let mut last_bg = RGB::new();
-                let mut last_fg = RGB::new();
-                for y in 0..st.height {
-                    queue!(stdout(), cursor::MoveTo(0, st.height as u16 - (y as u16 + 1)))
-                        .expect("Command fail");
-                    for _x in 0..st.width {
-                        let t = &st.tiles[idx];
-                        if t.fg != last_fg {
-                            queue!(
-                                stdout(),
-                                crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
-                                    r: (t.fg.r * 255.0) as u8,
-                                    g: (t.fg.g * 255.0) as u8,
-                                    b: (t.fg.b * 255.0) as u8,
-                                })
-                            )
+                if st.is_dirty {
+                    let mut idx = 0;
+                    let mut last_bg = RGB::new();
+                    let mut last_fg = RGB::new();
+                    for y in 0..st.height {
+                        queue!(stdout(), cursor::MoveTo(0, st.height as u16 - (y as u16 + 1)))
                             .expect("Command fail");
-                            last_fg = t.fg;
+                        for _x in 0..st.width {
+                            let t = &st.tiles[idx];
+                            if t.fg != last_fg {
+                                queue!(
+                                    stdout(),
+                                    crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
+                                        r: (t.fg.r * 255.0) as u8,
+                                        g: (t.fg.g * 255.0) as u8,
+                                        b: (t.fg.b * 255.0) as u8,
+                                    })
+                                )
+                                .expect("Command fail");
+                                last_fg = t.fg;
+                            }
+                            if t.bg != last_bg {
+                                queue!(
+                                    stdout(),
+                                    crossterm::style::SetBackgroundColor(crossterm::style::Color::Rgb {
+                                        r: (t.bg.r * 255.0) as u8,
+                                        g: (t.bg.g * 255.0) as u8,
+                                        b: (t.bg.b * 255.0) as u8,
+                                    })
+                                )
+                                .expect("Command fail");
+                                last_bg = t.bg;
+                            }
+                            queue!(stdout(), Print(to_char(t.glyph))).expect("Command fail");
+                            idx += 1;
                         }
-                        if t.bg != last_bg {
-                            queue!(
-                                stdout(),
-                                crossterm::style::SetBackgroundColor(crossterm::style::Color::Rgb {
-                                    r: (t.bg.r * 255.0) as u8,
-                                    g: (t.bg.g * 255.0) as u8,
-                                    b: (t.bg.b * 255.0) as u8,
-                                })
-                            )
-                            .expect("Command fail");
-                            last_bg = t.bg;
-                        }
-                        queue!(stdout(), Print(to_char(t.glyph))).expect("Command fail");
-                        idx += 1;
                     }
                 }
             }
             else if let Some(st) = cons_any.downcast_ref::<SparseConsole>() {
+                if st.is_dirty {
+                    for t in st.tiles.iter() {
+                        let x = t.idx as u32 % st.width;
+                        let y = t.idx as u32 / st.width;
+                        queue!(stdout(), cursor::MoveTo(x as u16, st.height as u16 - (y as u16 + 1) as u16))
+                            .expect("Command fail");
+                        queue!(
+                            stdout(),
+                            crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
+                                r: (t.fg.r * 255.0) as u8,
+                                g: (t.fg.g * 255.0) as u8,
+                                b: (t.fg.b * 255.0) as u8,
+                            })
+                        )
+                        .expect("Command fail");
+                        queue!(
+                            stdout(),
+                            crossterm::style::SetBackgroundColor(crossterm::style::Color::Rgb {
+                                r: (t.bg.r * 255.0) as u8,
+                                g: (t.bg.g * 255.0) as u8,
+                                b: (t.bg.b * 255.0) as u8,
+                            })
+                        )
+                        .expect("Command fail");
+                        queue!(stdout(), Print(to_char(t.glyph))).expect("Command fail");
+                    }
+                }
             }
         }
 
