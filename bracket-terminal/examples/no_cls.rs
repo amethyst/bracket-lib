@@ -1,7 +1,6 @@
+bracket_terminal::add_wasm_support!();
 use bracket_random::prelude::*;
 use bracket_terminal::prelude::*;
-
-bracket_terminal::add_wasm_support!();
 
 struct State {
     rng: RandomNumberGenerator,

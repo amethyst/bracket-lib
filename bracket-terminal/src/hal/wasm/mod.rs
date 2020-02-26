@@ -48,6 +48,15 @@ lazy_static! {
 unsafe impl Send for PlatformGL {}
 unsafe impl Sync for PlatformGL {}
 
+pub enum ConsoleBacking {
+    Simple { backing: SimpleConsoleBackend },
+    Sparse { backing: SparseConsoleBackend },
+}
+
+lazy_static! {
+    static ref CONSOLE_BACKING: Mutex<Vec<ConsoleBacking>> = Mutex::new(Vec::new());
+}
+
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
