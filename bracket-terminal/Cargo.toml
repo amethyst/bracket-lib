@@ -35,7 +35,7 @@ ultraviolet = "0.4.5"
 glutin = {version = "0.23.0", optional = true }
 
 [features]
-default = [ "opengl" ]
+default = [ "curses" ]
 opengl = [ "glow", "image", "glutin" ]
 curses = [ "pancurses" ]
 amethyst_engine_vulkan = [ "amethyst/vulkan", "image" ]

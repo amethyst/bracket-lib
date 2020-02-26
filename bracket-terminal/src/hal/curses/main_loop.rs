@@ -3,6 +3,7 @@ use crate::prelude::{BTerm, Console, GameState};
 use crate::Result;
 use pancurses::{endwin, initscr, noecho, Window};
 use std::time::Instant;
+use super::BACKEND;
 
 pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
     let now = Instant::now();
@@ -34,7 +35,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         bterm.shift = false;
         bterm.control = false;
         bterm.alt = false;
-        let input = bterm.backend.platform.window.getch();
+        let input = BACKEND.lock().unwrap().window.as_ref().unwrap().getch();
         if let Some(input) = input {
             //println!("{:?}", input);
 
@@ -106,21 +107,24 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
         gamestate.tick(&mut bterm);
 
+        let be = BACKEND.lock().unwrap();
+
         for cons in &mut bterm.consoles {
-            cons.console.rebuild_if_dirty(&bterm.backend);
+            // TODO: Fix me
+            //cons.console.rebuild_if_dirty(&bterm.backend);
         }
 
-        bterm.backend.platform.window.clear();
+        be.window.as_ref().unwrap().clear();
 
         // Tell each console to draw itself
         for cons in &mut bterm.consoles {
-            cons.console
-                .gl_draw(&bterm.fonts[cons.font_index], &dummy_shader, &bterm.backend);
+            // TODO: Fix Me
+            // cons.console.gl_draw(&bterm.fonts[cons.font_index], &dummy_shader, &bterm.backend);
         }
 
-        bterm.backend.platform.window.refresh();
+        be.window.as_ref().unwrap().refresh();
 
-        crate::hal::fps_sleep(bterm.backend.platform.frame_sleep_time, &now, prev_ms);
+        crate::hal::fps_sleep(be.frame_sleep_time, &now, prev_ms);
     }
 
     endwin();

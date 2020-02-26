@@ -4,6 +4,7 @@ use super::shader;
 use crate::prelude::{to_char, BTermPlatform, Tile};
 use crate::Result;
 use std::convert::TryInto;
+use pancurses::{initscr, noecho, resize_term, Window};
 
 pub struct SimpleConsoleBackend {
     tiles: Vec<Tile>,
@@ -38,8 +39,8 @@ impl SimpleConsoleBackend {
         platform: &BTermPlatform,
         width: u32,
         height: u32,
+        window: Window
     ) -> Result<()> {
-        let window = &platform.platform.window;
         let mut idx = 0;
         for y in 0..height {
             for x in 0..width {

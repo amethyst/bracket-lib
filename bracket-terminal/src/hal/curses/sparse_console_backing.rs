@@ -4,6 +4,7 @@ use super::shader;
 use crate::prelude::{to_char, BTermPlatform};
 use crate::Result;
 use std::convert::TryInto;
+use pancurses::{initscr, noecho, resize_term, Window};
 
 pub struct SparseConsoleBackend {
     width: u32,
@@ -39,8 +40,8 @@ impl SparseConsoleBackend {
         _shader: &shader::Shader,
         platform: &BTermPlatform,
         tiles: &[crate::sparse_console::SparseTile],
+        window: Window
     ) -> Result<()> {
-        let window = &platform.platform.window;
         for t in tiles.iter() {
             let x = t.idx as u32 % self.width;
             let y = t.idx as u32 / self.width;
