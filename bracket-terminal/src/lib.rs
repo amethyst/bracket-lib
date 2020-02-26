@@ -30,8 +30,7 @@ pub mod prelude {
     pub use crate::gamestate::GameState;
     pub use crate::gui_helpers::*;
     pub use crate::hal::{
-        font, init_raw, BTermPlatform, InitHints, Shader, SimpleConsoleBackend,
-        SparseConsoleBackend,
+        font, init_raw, BTermPlatform, InitHints, Shader
     };
     pub use crate::initializer::*;
     pub use crate::multi_tile_sprite::*;

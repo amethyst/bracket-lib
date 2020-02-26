@@ -1,21 +1,15 @@
 // Dummy platform to let it compile and do nothing. Only useful if you don't want a graphical backend.
-use crate::prelude::{BTerm, GameState};
+use crate::prelude::BTerm;
 use crate::Result;
-use bracket_color::prelude::*;
 use std::sync::Mutex;
 
 mod keycodes;
 pub use keycodes::VirtualKeyCode;
 
-use pancurses::{initscr, noecho, resize_term, Window};
+use pancurses::Window;
 
 mod main_loop;
 pub use main_loop::main_loop;
-
-mod simple_console_backing;
-mod sparse_console_backing;
-pub use simple_console_backing::SimpleConsoleBackend;
-pub use sparse_console_backing::SparseConsoleBackend;
 
 mod init;
 pub mod shader;

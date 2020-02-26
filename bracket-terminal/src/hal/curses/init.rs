@@ -1,4 +1,4 @@
-use pancurses::{initscr, noecho, resize_term, Window};
+use pancurses::{initscr, noecho, resize_term};
 pub use super::*;
 
 pub fn init_raw<S: ToString>(

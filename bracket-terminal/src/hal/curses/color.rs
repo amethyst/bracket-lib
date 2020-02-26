@@ -1,10 +1,6 @@
-use pancurses::{initscr, noecho, resize_term, Window};
 use bracket_color::prelude::*;
 
 pub struct CursesColor {
-    r: i16,
-    g: i16,
-    b: i16,
     rf: f32,
     gf: f32,
     bf: f32,
@@ -13,9 +9,6 @@ pub struct CursesColor {
 impl CursesColor {
     pub fn new(red: i16, green: i16, blue: i16) -> CursesColor {
         CursesColor {
-            r: red,
-            g: green,
-            b: blue,
             rf: red as f32 / 1000.0,
             gf: green as f32 / 1000.0,
             bf: blue as f32 / 1000.0,
