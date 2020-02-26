@@ -283,11 +283,13 @@ impl Console for SimpleConsole {
     /// draw between tiles. Offsets are specified as a percentage of total
     /// character size; so -0.5 will offset half a character to the left/top.
     fn set_offset(&mut self, x: f32, y: f32) {
+        self.is_dirty = true;
         self.offset_x = x * (2.0 / self.width as f32);
         self.offset_y = y * (2.0 / self.height as f32);
     }
 
     fn set_scale(&mut self, scale: f32, center_x: i32, center_y: i32) {
+        self.is_dirty = true;
         self.scale = scale;
         self.scale_center = (center_x, center_y);
     }
