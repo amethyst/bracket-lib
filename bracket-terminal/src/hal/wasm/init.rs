@@ -1,5 +1,6 @@
 use crate::prelude::{BTerm, InitHints};
 use crate::Result;
+use super::*;
 
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
@@ -47,14 +48,11 @@ pub fn init_raw<S: ToString>(
 
     let quad_vao = quadrender::setup_quad(&gl);
 
+    let mut be = BACKEND.lock().unwrap();
+    be.gl = Some(gl);
+    be.quad_vao = Some(quad_vao);
+
     Ok(BTerm {
-        backend: BTermPlatform {
-            platform: PlatformGL {
-                gl,
-                context_wrapper: Some(WrappedContext {}),
-                quad_vao: quad_vao,
-            },
-        },
         width_pixels,
         height_pixels,
         fonts: Vec::new(),

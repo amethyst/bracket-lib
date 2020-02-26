@@ -2,6 +2,7 @@ use super::events::*;
 use crate::prelude::{BTerm, GameState};
 use crate::Result;
 use glow::HasContext;
+use super::BACKEND;
 
 pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
     use glow::HasRenderLoop;
@@ -72,35 +73,37 @@ fn tock<GS: GameState>(
 
     gamestate.tick(bterm);
 
+    let be = BACKEND.lock().unwrap();
+    let gl = be.gl.as_ref().unwrap();
+
     // Console structure - doesn't really have to be every frame...
     for cons in &mut bterm.consoles {
-        cons.console.rebuild_if_dirty(&bterm.backend);
+        //cons.console.rebuild_if_dirty(&bterm.backend);
     }
 
     // Clear the screen
     unsafe {
-        bterm.backend.platform.gl.viewport(
+        gl.viewport(
             0,
             0,
             bterm.width_pixels as i32,
             bterm.height_pixels as i32,
         );
-        bterm.backend.platform.gl.clear_color(0.2, 0.3, 0.3, 1.0);
-        bterm.backend.platform.gl.clear(glow::COLOR_BUFFER_BIT);
+        gl.clear_color(0.2, 0.3, 0.3, 1.0);
+        gl.clear(glow::COLOR_BUFFER_BIT);
     }
 
     // Setup render pass
-    let gl = &bterm.backend.platform.gl;
 
     unsafe {
         bterm.shaders[0].useProgram(gl);
 
         gl.active_texture(glow::TEXTURE0);
-        bterm.fonts[0].bind_texture(&bterm.backend);
+        bterm.fonts[0].bind_texture(gl);
         bterm.shaders[0].setInt(gl, "texture1", 0);
         bterm.shaders[0].setVec3(gl, "font", 8.0, 8.0, 0.0);
 
-        gl.bind_vertex_array(Some(bterm.backend.platform.quad_vao));
+        gl.bind_vertex_array(be.quad_vao);
     }
 
     // Tell each console to draw itself
@@ -109,7 +112,7 @@ fn tock<GS: GameState>(
         let shader = &bterm.shaders[0];
         unsafe {
             gl.active_texture(glow::TEXTURE0);
-            font.bind_texture(&bterm.backend);
+            font.bind_texture(gl);
             shader.setBool(gl, "showScanLines", bterm.post_scanlines);
             shader.setBool(gl, "screenBurn", bterm.post_screenburn);
             shader.setVec3(
@@ -120,6 +123,6 @@ fn tock<GS: GameState>(
                 0.0,
             );
         }
-        cons.console.gl_draw(font, shader, &bterm.backend);
+        //cons.console.gl_draw(font, shader, &bterm.backend);
     }
 }

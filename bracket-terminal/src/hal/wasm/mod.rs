@@ -15,6 +15,7 @@ mod sparse_console_backing;
 pub use sparse_console_backing::*;
 pub mod font;
 pub mod shader;
+use std::sync::Mutex;
 
 pub struct InitHints {
     pub vsync: bool,
@@ -33,12 +34,19 @@ impl InitHints {
 }
 
 pub struct PlatformGL {
-    pub gl: glow::Context,
-    pub context_wrapper: Option<WrappedContext>,
-    pub quad_vao: glow::WebVertexArrayKey,
+    pub gl: Option<glow::Context>,
+    pub quad_vao: Option<glow::WebVertexArrayKey>,
 }
 
-pub struct WrappedContext {}
+lazy_static! {
+    static ref BACKEND: Mutex<PlatformGL> = Mutex::new(PlatformGL {
+        gl: None,
+        quad_vao: None
+    });
+}
+
+unsafe impl Send for PlatformGL {}
+unsafe impl Sync for PlatformGL {}
 
 use wasm_bindgen::prelude::*;
 
