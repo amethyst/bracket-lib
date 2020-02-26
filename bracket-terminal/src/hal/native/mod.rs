@@ -11,14 +11,28 @@ mod sparse_console_backing;
 pub use sparse_console_backing::*;
 pub mod font;
 pub mod shader;
+use std::sync::Mutex;
+
+lazy_static! {
+    static ref BACKEND : Mutex<PlatformGL> = Mutex::new(PlatformGL{
+        gl: None,
+        quad_vao: None,
+        context_wrapper: None,
+        backing_buffer: None,
+        frame_sleep_time: None
+    });
+}
 
 pub struct PlatformGL {
-    pub gl: glow::Context,
-    pub quad_vao: u32,
+    pub gl: Option<glow::Context>,
+    pub quad_vao: Option<u32>,
     pub context_wrapper: Option<WrappedContext>,
-    pub backing_buffer: super::Framebuffer,
+    pub backing_buffer: Option<super::Framebuffer>,
     pub frame_sleep_time: Option<u64>,
 }
+
+unsafe impl Send for PlatformGL {}
+unsafe impl Sync for PlatformGL {}
 
 pub struct WrappedContext {
     pub el: glutin::event_loop::EventLoop<()>,

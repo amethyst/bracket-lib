@@ -4,6 +4,7 @@ use crate::hal::{font::Font, shader::Shader};
 use bracket_color::prelude::RGB;
 use glow::HasContext;
 use std::mem;
+use super::BACKEND;
 
 pub struct SimpleConsoleBackend {
     vertex_buffer: Vec<f32>,
@@ -23,7 +24,7 @@ impl SimpleConsoleBackend {
     ) -> SimpleConsoleBackend {
         let vertex_capacity: usize = (11 * width as usize * height as usize) * 4;
         let index_capacity: usize = 6 * width as usize * height as usize;
-        let (vbo, vao, ebo) = SimpleConsoleBackend::init_gl_for_console(&platform.platform.gl);
+        let (vbo, vao, ebo) = SimpleConsoleBackend::init_gl_for_console(BACKEND.lock().unwrap().gl.as_ref().unwrap());
         let mut result = SimpleConsoleBackend {
             vertex_buffer: Vec::with_capacity(vertex_capacity),
             index_buffer: Vec::with_capacity(index_capacity),
@@ -239,7 +240,8 @@ impl SimpleConsoleBackend {
             screen_y += step_y;
         }
 
-        let gl = &platform.platform.gl;
+        let be = BACKEND.lock().unwrap();
+        let gl = be.gl.as_ref().unwrap();
         unsafe {
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
             gl.buffer_data_u8_slice(
@@ -265,10 +267,11 @@ impl SimpleConsoleBackend {
         width: u32,
         height: u32,
     ) -> Result<()> {
-        let gl = &platform.platform.gl;
+        let be = BACKEND.lock().unwrap();
+        let gl = be.gl.as_ref().unwrap();
         unsafe {
             // bind Texture
-            font.bind_texture(platform);
+            font.bind_texture();
 
             // render container
             shader.useProgram(gl);

@@ -4,6 +4,7 @@ use crate::hal::{font::Font, shader::Shader};
 use crate::sparse_console::SparseTile;
 use glow::HasContext;
 use std::mem;
+use super::BACKEND;
 
 pub struct SparseConsoleBackend {
     vertex_buffer: Vec<f32>,
@@ -19,7 +20,7 @@ impl SparseConsoleBackend {
         _width: usize,
         _height: usize,
     ) -> SparseConsoleBackend {
-        let (vbo, vao, ebo) = SparseConsoleBackend::init_gl_for_console(&platform.platform.gl);
+        let (vbo, vao, ebo) = SparseConsoleBackend::init_gl_for_console(BACKEND.lock().unwrap().gl.as_ref().unwrap());
         SparseConsoleBackend {
             vertex_buffer: Vec::new(),
             index_buffer: Vec::new(),
@@ -188,7 +189,8 @@ impl SparseConsoleBackend {
             index_count += 4;
         }
 
-        let gl = &platform.platform.gl;
+        let be = BACKEND.lock().unwrap();
+        let gl = be.gl.as_ref().unwrap();
         unsafe {
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
             gl.buffer_data_u8_slice(
@@ -213,10 +215,11 @@ impl SparseConsoleBackend {
         platform: &super::super::BTermPlatform,
         tiles: &[SparseTile],
     ) -> Result<()> {
-        let gl = &platform.platform.gl;
+        let be = BACKEND.lock().unwrap();
+        let gl = be.gl.as_ref().unwrap();
         unsafe {
             // bind Texture
-            font.bind_texture(platform);
+            font.bind_texture();
 
             // render container
             shader.useProgram(gl);

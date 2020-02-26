@@ -1,4 +1,4 @@
-use crate::prelude::{Console, XpLayer, string_to_cp437, BTermPlatform, SparseConsoleBackend};
+use crate::prelude::{Console, XpLayer, string_to_cp437, SparseConsoleBackend};
 use std::any::Any;
 use bracket_color::prelude::{RGB, XpColor};
 use bracket_geometry::prelude::Rect;
@@ -30,7 +30,7 @@ pub struct SparseConsole {
 
 impl SparseConsole {
     /// Initializes the console.
-    pub fn init(width: u32, height: u32, platform: &BTermPlatform) -> Box<SparseConsole> {
+    pub fn init(width: u32, height: u32) -> Box<SparseConsole> {
         // Console backing init
         let new_console = SparseConsole {
             width,

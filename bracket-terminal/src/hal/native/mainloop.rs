@@ -1,6 +1,7 @@
 use crate::Result;
 use crate::prelude::{Console, GameState, BTerm};
 use crate::hal::*;
+use super::BACKEND;
 use glow::HasContext;
 use glutin::{event::DeviceEvent, event::Event, event::WindowEvent, event_loop::ControlFlow};
 use std::time::Instant;
@@ -9,19 +10,22 @@ const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
 fn on_resize(bterm: &mut BTerm, physical_size: glutin::dpi::PhysicalSize<u32>) -> Result<()> {
     bterm.resize_pixels(physical_size.width as u32, physical_size.height as u32);
+    let mut be = BACKEND.lock().unwrap();
+    let gl = be.gl.as_ref().unwrap();
     unsafe {
-        bterm.backend.platform.gl.viewport(
+        gl.viewport(
             0,
             0,
             physical_size.width as i32,
             physical_size.height as i32,
         );
     }
-    bterm.backend.platform.backing_buffer = Framebuffer::build_fbo(
-        &bterm.backend.platform.gl,
+    let new_fb = Framebuffer::build_fbo(
+        gl,
         physical_size.width as i32,
         physical_size.height as i32,
     )?;
+    be.backing_buffer = Some(new_fb);
     Ok(())
 }
 
@@ -33,7 +37,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
     // We're doing a little dance here to get around lifetime/borrow checking.
     // Removing the context data from BTerm in an atomic swap, so it isn't borrowed after move.
-    let wrap = std::mem::replace(&mut bterm.backend.platform.context_wrapper, None);
+    let wrap = std::mem::replace(&mut BACKEND.lock().unwrap().context_wrapper, None);
     let unwrap = wrap.unwrap();
 
     let el = unwrap.el;
@@ -66,7 +70,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     &now,
                 );
                 wc.swap_buffers().unwrap();
-                crate::hal::fps_sleep(bterm.backend.platform.frame_sleep_time, &now, prev_ms);
+                crate::hal::fps_sleep(BACKEND.lock().unwrap().frame_sleep_time, &now, prev_ms);
             }
             Event::DeviceEvent {
                 event: DeviceEvent::ModifiersChanged(modifiers),
@@ -148,16 +152,19 @@ fn tock<GS: GameState>(
 
     // Bind to the backing buffer
     if bterm.post_scanlines {
-        bterm.backend
-            .platform
+        let be = BACKEND.lock().unwrap();
+        be
             .backing_buffer
-            .bind(&bterm.backend.platform.gl);
+            .as_ref()
+            .unwrap()
+            .bind(be.gl.as_ref().unwrap());
     }
 
     // Clear the screen
     unsafe {
-        bterm.backend.platform.gl.clear_color(0.0, 0.0, 0.0, 1.0);
-        bterm.backend.platform.gl.clear(glow::COLOR_BUFFER_BIT);
+        let be = BACKEND.lock().unwrap();
+        be.gl.as_ref().unwrap().clear_color(0.0, 0.0, 0.0, 1.0);
+        be.gl.as_ref().unwrap().clear(glow::COLOR_BUFFER_BIT);
     }
 
     // Tell each console to draw itself
@@ -170,37 +177,40 @@ fn tock<GS: GameState>(
 
     if bterm.post_scanlines {
         // Now we return to the primary screen
-        bterm.backend
-            .platform
+        let be = BACKEND.lock().unwrap();
+        be
             .backing_buffer
-            .default(&bterm.backend.platform.gl);
+            .as_ref()
+            .unwrap()
+            .default(be.gl.as_ref().unwrap());
         unsafe {
             if bterm.post_scanlines {
-                bterm.shaders[3].useProgram(&bterm.backend.platform.gl);
+                bterm.shaders[3].useProgram(be.gl.as_ref().unwrap());
                 bterm.shaders[3].setVec3(
-                    &bterm.backend.platform.gl,
+                    be.gl.as_ref().unwrap(),
                     "screenSize",
                     bterm.width_pixels as f32,
                     bterm.height_pixels as f32,
                     0.0,
                 );
                 bterm.shaders[3].setBool(
-                    &bterm.backend.platform.gl,
+                    be.gl.as_ref().unwrap(),
                     "screenBurn",
                     bterm.post_screenburn,
                 );
             } else {
-                bterm.shaders[2].useProgram(&bterm.backend.platform.gl);
+                bterm.shaders[2].useProgram(be.gl.as_ref().unwrap());
             }
-            bterm.backend
-                .platform
+            be
                 .gl
-                .bind_vertex_array(Some(bterm.backend.platform.quad_vao));
-                bterm.backend.platform.gl.bind_texture(
+                .as_ref()
+                .unwrap()
+                .bind_vertex_array(Some(be.quad_vao.unwrap()));
+                be.gl.as_ref().unwrap().bind_texture(
                 glow::TEXTURE_2D,
-                Some(bterm.backend.platform.backing_buffer.texture),
+                Some(be.backing_buffer.as_ref().unwrap().texture),
             );
-            bterm.backend.platform.gl.draw_arrays(glow::TRIANGLES, 0, 6);
+            be.gl.as_ref().unwrap().draw_arrays(glow::TRIANGLES, 0, 6);
         }
     }
 }

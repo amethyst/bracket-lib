@@ -1,5 +1,5 @@
 use crate::prelude::{
-    string_to_cp437, BTermPlatform, Console, SimpleConsoleBackend, Tile,
+    string_to_cp437, Console, SimpleConsoleBackend, Tile,
     XpLayer,
 };
 use bracket_color::prelude::*;
@@ -24,7 +24,7 @@ pub struct SimpleConsole {
 
 impl SimpleConsole {
     /// Initializes a console, ready to add to BTerm's console list.
-    pub fn init(width: u32, height: u32, platform: &BTermPlatform) -> Box<SimpleConsole> {
+    pub fn init(width: u32, height: u32) -> Box<SimpleConsole> {
         // Console backing init
         let num_tiles: usize = (width * height) as usize;
         let mut tiles: Vec<Tile> = Vec::with_capacity(num_tiles);

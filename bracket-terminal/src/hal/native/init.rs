@@ -3,6 +3,7 @@ use crate::prelude::{InitHints, BTerm, BTermPlatform};
 use glutin::{dpi::LogicalSize, event_loop::EventLoop, window::WindowBuilder, ContextBuilder};
 use crate::hal::native::{WrappedContext, PlatformGL, setup_quad, shader::Shader, shader_strings};
 use crate::hal::Framebuffer;
+use super::BACKEND;
 
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
@@ -76,19 +77,17 @@ pub fn init_raw<S: ToString>(
     // Build a simple quad rendering vao
     let quad_vao = setup_quad(&gl);
 
+    let mut be = BACKEND.lock().unwrap();
+    be.gl = Some(gl);
+    be.quad_vao = Some(quad_vao);
+    be.context_wrapper = Some(WrappedContext{
+        el,
+        wc: windowed_context
+    });
+    be.backing_buffer = Some(backing_fbo);
+    be.frame_sleep_time = crate::hal::convert_fps_to_wait(platform_hints.frame_sleep_time);
+
     let bterm = BTerm {
-        backend: BTermPlatform {
-            platform: PlatformGL {
-                gl,
-                quad_vao,
-                context_wrapper: Some(WrappedContext {
-                    el,
-                    wc: windowed_context,
-                }),
-                backing_buffer: backing_fbo,
-                frame_sleep_time: crate::hal::convert_fps_to_wait(platform_hints.frame_sleep_time),
-            },
-        },
         width_pixels,
         height_pixels,
         fonts: Vec::new(),

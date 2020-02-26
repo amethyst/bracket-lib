@@ -1,4 +1,4 @@
-use crate::prelude::{font::Font, Shader, XpLayer, BTermPlatform};
+use crate::prelude::XpLayer;
 use std::any::Any;
 use bracket_geometry::prelude::Rect;
 use bracket_color::prelude::RGB;

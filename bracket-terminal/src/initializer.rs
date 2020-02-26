@@ -317,7 +317,7 @@ impl BTermBuilder {
                     let font_path = format!("{}/{}", self.resource_path, font);
                     let font_id = font_map[&font_path];
                     context.register_console(
-                        SimpleConsole::init(*width, *height, &context.backend),
+                        SimpleConsole::init(*width, *height),
                         font_id,
                     );
                 }
@@ -329,7 +329,7 @@ impl BTermBuilder {
                     let font_path = format!("{}/{}", self.resource_path, font);
                     let font_id = font_map[&font_path];
                     context.register_console(
-                        SparseConsole::init(*width, *height, &context.backend),
+                        SparseConsole::init(*width, *height),
                         font_id,
                     );
                 }
@@ -341,7 +341,7 @@ impl BTermBuilder {
                     let font_path = format!("{}/{}", self.resource_path, font);
                     let font_id = font_map[&font_path];
                     context.register_console_no_bg(
-                        SparseConsole::init(*width, *height, &context.backend),
+                        SparseConsole::init(*width, *height),
                         font_id,
                     );
                 }
