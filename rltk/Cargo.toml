@@ -12,10 +12,6 @@ keywords = ["roguelike", "cp437", "ascii", "virtual-terminal", "gamedev"]
 categories = ["game-engines", "graphics"]
 license = "MIT"
 
-# Remove before publish!
-[patch.crates-io]
-bracket-terminal = { git = "https://github.com/thebracket/bracket-lib/" }
-
 [features]
 default = [ "opengl" ]
 specs = [ "bracket-lib/specs" ]
@@ -28,7 +24,7 @@ amethyst_engine_vulkan = [ "bracket-lib/amethyst_engine_vulkan" ]
 amethyst_engine_metal = [ "bracket-lib/amethyst_engine_metal" ]
 
 [dependencies]
-bracket-lib = { version = "0.7.0", default-features = false }
+bracket-lib = { path = "../", default-features = false }
 
 [dev-dependencies]
 

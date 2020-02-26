@@ -35,26 +35,22 @@ amethyst_engine_vulkan = [ "bracket-terminal/amethyst_engine_vulkan" ]
 amethyst_engine_metal = [ "bracket-terminal/amethyst_engine_metal" ]
 
 [dependencies]
-bracket-algorithm-traits = "0.7.0"
-bracket-color = { version = "0.7.0", features = [ "rex" ] }
-bracket-geometry = "0.7.0"
-bracket-noise = "0.7.0"
-bracket-pathfinding = "0.7.0"
-bracket-random = { version = "0.7.0", features = [ "parsing" ] }
-bracket-terminal = { version = "0.7.0", default-features = false }
+bracket-algorithm-traits = { path = "bracket-algorithm-traits/" }
+bracket-color = { path = "bracket-color/", features = [ "rex" ] }
+bracket-geometry = { path = "bracket-geometry/" }
+bracket-noise = { path = "bracket-noise/" }
+bracket-pathfinding = { path = "bracket-pathfinding/" }
+bracket-random = { path = "bracket-random/", features = [ "parsing" ] }
+bracket-terminal = { path = "bracket-terminal/", default-features = false }
 
-# Remove before publish!
-[patch.crates-io]
-bracket-terminal = { git = "https://github.com/thebracket/bracket-lib/" }
-
-#[workspace]
-#members = [
-#    "bracket-algorithm-traits",
-#    "bracket-color",
-#    "bracket-geometry",
-#    "bracket-noise",
-#    "bracket-pathfinding",
-#    "bracket-random",
-#    "bracket-terminal",
-#    "rltk"
-#]
+[workspace]
+members = [
+    "bracket-algorithm-traits",
+    "bracket-color",
+    "bracket-geometry",
+    "bracket-noise",
+    "bracket-pathfinding",
+    "bracket-random",
+    "bracket-terminal",
+    "rltk"
+]
