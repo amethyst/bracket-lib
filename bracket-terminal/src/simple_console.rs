@@ -147,6 +147,7 @@ impl Console for SimpleConsole {
 
     /// Sets a single cell in the console
     fn set(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, glyph: u8) {
+        self.is_dirty = true;
         if let Some(idx) = self.try_at(x, y) {
             self.tiles[idx].glyph = glyph;
             self.tiles[idx].fg = fg;
@@ -156,6 +157,7 @@ impl Console for SimpleConsole {
 
     /// Sets a single cell in the console's background
     fn set_bg(&mut self, x: i32, y: i32, bg: RGB) {
+        self.is_dirty = true;
         if let Some(idx) = self.try_at(x, y) {
             self.tiles[idx].bg = bg;
         }

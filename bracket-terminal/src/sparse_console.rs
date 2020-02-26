@@ -149,6 +149,7 @@ impl Console for SparseConsole {
 
     /// Sets a single cell in the console
     fn set(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, glyph: u8) {
+        self.is_dirty = true;
         if let Some(idx) = self.try_at(x, y) {
             self.tiles.push(SparseTile { idx, glyph, fg, bg });
         }
@@ -157,6 +158,7 @@ impl Console for SparseConsole {
     /// Sets a single cell in the console's background
     fn set_bg(&mut self, x: i32, y: i32, bg: RGB) {
         if let Some(idx) = self.try_at(x, y) {
+            self.is_dirty = true;
             self.tiles[idx].bg = bg;
         }
     }
