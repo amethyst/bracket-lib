@@ -221,6 +221,12 @@ impl BTerm {
         self.post_scanlines = true;
         self.post_screenburn = with_burn;
     }
+
+    /// Internal: mark a key press
+    pub(crate) fn on_key_down(&mut self, key : VirtualKeyCode) {
+        self.input.on_key_down(key);
+        self.key = Some(key);
+    }
 }
 
 impl Console for BTerm {

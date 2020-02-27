@@ -108,7 +108,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                         },
                     ..
                 } => {
-                    bterm.key = Some(*virtual_keycode);
+                    bterm.on_key_down(*virtual_keycode);
                 }
 
                 _ => (),
