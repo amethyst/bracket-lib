@@ -1,16 +1,16 @@
-REM @ECHO OFF
+@ECHO OFF
 REM Build the actual WASM files and helpers
-REM CALL :StageExample hello_minimal, hello_minimal
-REM CALL :StageExample hello_terminal, hello_terminal
-REM CALL :StageExample astar_mouse, astar_mouse
-REM CALL :StageExample dwarfmap, dwarfmap
-REM CALL :StageExample postprocess, postprocess
-REM CALL :StageExample rex, rex
-REM CALL :StageExample sparse, sparse
-REM CALL :StageExample textblock, textblock
-REM CALL :StageExample textsprites, textsprites
-REM CALL :StageExample tiles, tiles
-REM CALL :StageExample walking, walking
+CALL :StageExample hello_minimal, hello_minimal
+CALL :StageExample hello_terminal, hello_terminal
+CALL :StageExample astar_mouse, astar_mouse
+CALL :StageExample dwarfmap, dwarfmap
+CALL :StageExample postprocess, postprocess
+CALL :StageExample rex, rex
+CALL :StageExample sparse, sparse
+CALL :StageExample textblock, textblock
+CALL :StageExample textsprites, textsprites
+CALL :StageExample tiles, tiles
+CALL :StageExample walking, walking
 CALL :StageExample no_cls, no_cls
 
 REM Submit to server
