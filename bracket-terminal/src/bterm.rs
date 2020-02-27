@@ -235,6 +235,12 @@ impl BTerm {
             self.left_click = true;
         }
     }
+
+    pub (crate) fn on_mouse_position(&mut self, x:f64, y:f64) {
+        self.mouse_pos = (x as i32, y as i32);
+        self.input.on_mouse_pixel_position(x, y);
+        // TODO: Console cascade!
+    }
 }
 
 impl Console for BTerm {

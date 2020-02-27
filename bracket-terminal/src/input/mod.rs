@@ -1,5 +1,6 @@
 use crate::prelude::{BTerm, VirtualKeyCode};
 use std::collections::HashSet;
+use bracket_geometry::prelude::Point;
 
 #[inline]
 pub fn clear_input_state(term: &mut BTerm) {
@@ -18,7 +19,8 @@ pub fn clear_input_state(term: &mut BTerm) {
 pub struct Input {
     keys_down : HashSet<VirtualKeyCode>,
     scancodes : HashSet<u32>,
-    mouse_buttons : HashSet<usize>
+    mouse_buttons : HashSet<usize>,
+    mouse_pixel : (f64, f64)
 }
 
 impl Input {
@@ -26,7 +28,8 @@ impl Input {
         Self{
             keys_down : HashSet::new(),
             scancodes : HashSet::new(),
-            mouse_buttons : HashSet::new()
+            mouse_buttons : HashSet::new(),
+            mouse_pixel : (0.0, 0.0)
         }
     }
 
@@ -42,6 +45,20 @@ impl Input {
         self.mouse_buttons.contains(&button_num)
     }
 
+    pub fn mouse_tile_pos(&self, console: usize) -> (i32, i32) {
+        (0,0)
+    }
+
+    pub fn mouse_tile(&self, console: usize) -> Point {
+        Point::new(0,0)
+    }
+
+    // NOTE: Do these really need to be 64-bit? That's slow on some platforms, and it's unlikely
+    // that you have more than 3.4E+38 pixels.
+    pub fn mouse_pixel_pos(&self) -> (f64, f64) {
+        (self.mouse_pixel.0, self.mouse_pixel.1)
+    }
+
     pub(crate) fn on_key_down(&mut self, key : VirtualKeyCode, scan_code : u32) {
         self.keys_down.insert(key);
         self.scancodes.insert(scan_code);
@@ -49,5 +66,9 @@ impl Input {
 
     pub(crate) fn on_mouse_button(&mut self, button_num: usize) {
         self.mouse_buttons.insert(button_num);
+    }
+
+    pub(crate) fn on_mouse_pixel_position(&mut self, x:f64, y:f64) {
+        self.mouse_pixel = (x,y);
     }
 }

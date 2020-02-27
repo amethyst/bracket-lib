@@ -88,7 +88,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                 WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
 
                 WindowEvent::CursorMoved { position: pos, .. } => {
-                    bterm.mouse_pos = (pos.x as i32, pos.y as i32);
+                    bterm.on_mouse_position(pos.x, pos.y);
                 }
 
                 WindowEvent::MouseInput { button,.. } => {
