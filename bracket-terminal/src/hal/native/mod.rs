@@ -14,6 +14,9 @@ pub mod shader;
 use std::sync::Mutex;
 mod framebuffer;
 pub use framebuffer::Framebuffer;
+use std::any::Any;
+
+pub type GlCallback = fn(&mut dyn Any, &glow::Context);
 
 pub enum ConsoleBacking {
     Simple { backing: SimpleConsoleBackend },
@@ -21,12 +24,13 @@ pub enum ConsoleBacking {
 }
 
 lazy_static! {
-    static ref BACKEND: Mutex<PlatformGL> = Mutex::new(PlatformGL {
+    pub static ref BACKEND: Mutex<PlatformGL> = Mutex::new(PlatformGL {
         gl: None,
         quad_vao: None,
         context_wrapper: None,
         backing_buffer: None,
-        frame_sleep_time: None
+        frame_sleep_time: None,
+        gl_callback : None
     });
 }
 
@@ -40,6 +44,7 @@ pub struct PlatformGL {
     pub context_wrapper: Option<WrappedContext>,
     pub backing_buffer: Option<super::Framebuffer>,
     pub frame_sleep_time: Option<u64>,
+    pub gl_callback: Option<GlCallback>
 }
 
 unsafe impl Send for PlatformGL {}

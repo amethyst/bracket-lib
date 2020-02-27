@@ -61,3 +61,8 @@ winit = { version = "0.21.0", features = [ "web-sys" ] }
 [[bench]]
 name = "batching_benchmark"
 harness = false
+
+[[example]]
+name = "native_gl"
+path = "examples/native_gl.rs"
+features = [ "opengl" ]

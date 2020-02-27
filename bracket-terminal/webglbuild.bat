@@ -12,6 +12,7 @@ CALL :StageExample textsprites, textsprites
 CALL :StageExample tiles, tiles
 CALL :StageExample walking, walking
 CALL :StageExample no_cls, no_cls
+CALL :StageExample native_gl, native_gl
 
 REM Submit to server
 cd wasm_help\staging

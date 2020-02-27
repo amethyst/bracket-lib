@@ -15,6 +15,9 @@ pub use sparse_console_backing::*;
 pub mod font;
 pub mod shader;
 use std::sync::Mutex;
+use std::any::Any;
+
+pub type GlCallback = fn(&mut dyn Any, &glow::Context);
 
 pub struct InitHints {
     pub vsync: bool,
@@ -35,12 +38,14 @@ impl InitHints {
 pub struct PlatformGL {
     pub gl: Option<glow::Context>,
     pub quad_vao: Option<glow::WebVertexArrayKey>,
+    pub gl_callback: Option<GlCallback>
 }
 
 lazy_static! {
-    static ref BACKEND: Mutex<PlatformGL> = Mutex::new(PlatformGL {
+    pub static ref BACKEND: Mutex<PlatformGL> = Mutex::new(PlatformGL {
         gl: None,
-        quad_vao: None
+        quad_vao: None,
+        gl_callback : None
     });
 }
 

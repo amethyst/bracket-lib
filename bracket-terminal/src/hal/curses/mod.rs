@@ -40,7 +40,7 @@ pub struct PlatformGL {
 }
 
 lazy_static! {
-    static ref BACKEND: Mutex<PlatformGL> = Mutex::new(PlatformGL {
+    pub static ref BACKEND: Mutex<PlatformGL> = Mutex::new(PlatformGL {
         window: None,
         color_map: Vec::new(),
         frame_sleep_time: None

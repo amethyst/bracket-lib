@@ -253,4 +253,13 @@ fn tock<GS: GameState>(
 
     // Tell each console to draw itself
     render_consoles(bterm).unwrap();
+
+    // If there is a GL callback, call it now
+    {
+        let be = BACKEND.lock().unwrap();
+        if let Some(callback) = be.gl_callback.as_ref() {
+            let gl = be.gl.as_ref().unwrap();
+            callback(gamestate, gl);
+        }
+    }
 }

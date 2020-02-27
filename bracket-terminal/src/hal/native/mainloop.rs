@@ -248,8 +248,6 @@ fn tock<GS: GameState>(
         *prev_ms = now_ms;
     }
 
-    gamestate.tick(bterm);
-
     // Console structure - doesn't really have to be every frame...
     rebuild_consoles(bterm);
 
@@ -269,8 +267,20 @@ fn tock<GS: GameState>(
         be.gl.as_ref().unwrap().clear(glow::COLOR_BUFFER_BIT);
     }
 
+    // Run the main loop
+    gamestate.tick(bterm);
+
     // Tell each console to draw itself
     render_consoles(bterm).unwrap();
+
+    // If there is a GL callback, call it now
+    {
+        let be = BACKEND.lock().unwrap();
+        if let Some(callback) = be.gl_callback.as_ref() {
+            let gl = be.gl.as_ref().unwrap();
+            callback(gamestate, gl);
+        }
+    }
 
     if bterm.post_scanlines {
         // Now we return to the primary screen

@@ -30,7 +30,7 @@ pub mod prelude {
     pub use crate::gamestate::GameState;
     pub use crate::gui_helpers::*;
     pub use crate::hal::{
-        font, init_raw, BTermPlatform, InitHints, Shader
+        font, init_raw, BTermPlatform, InitHints, Shader, BACKEND
     };
     pub use crate::initializer::*;
     pub use crate::multi_tile_sprite::*;
@@ -45,6 +45,9 @@ pub mod prelude {
 
     #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
     pub use glutin::event::VirtualKeyCode;
+
+    #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
+    pub use crate::hal::GlCallback;
 
     #[cfg(all(
         not(feature = "opengl"),
