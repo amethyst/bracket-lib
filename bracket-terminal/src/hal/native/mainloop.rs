@@ -3,7 +3,7 @@ use crate::hal::*;
 use crate::prelude::{BTerm, Console, GameState, SimpleConsole, SparseConsole};
 use crate::{Result, clear_input_state};
 use glow::HasContext;
-use glutin::{event::DeviceEvent, event::Event, event::WindowEvent, event_loop::ControlFlow};
+use glutin::{event::DeviceEvent, event::Event, event::WindowEvent, event_loop::ControlFlow, event::MouseButton};
 use std::time::Instant;
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
@@ -91,8 +91,15 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     bterm.mouse_pos = (pos.x as i32, pos.y as i32);
                 }
 
-                WindowEvent::MouseInput { .. } => {
-                    bterm.left_click = true;
+                WindowEvent::MouseInput { button,.. } => {
+                    bterm.on_mouse_button(
+                        match button {
+                            MouseButton::Left => 0,
+                            MouseButton::Right => 1,
+                            MouseButton::Middle => 2,
+                            MouseButton::Other(num) => 3 + *num as usize,
+                        }
+                    );
                 }
 
                 WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {

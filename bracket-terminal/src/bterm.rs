@@ -227,6 +227,14 @@ impl BTerm {
         self.input.on_key_down(key, scan_code);
         self.key = Some(key);
     }
+
+    /// Internal: mark a mouse press
+    pub (crate) fn on_mouse_button(&mut self, button_num: usize) {
+        self.input.on_mouse_button(button_num);
+        if button_num == 0 {
+            self.left_click = true;
+        }
+    }
 }
 
 impl Console for BTerm {
