@@ -9,6 +9,14 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
     std::panic::set_hook(Box::new(console_error_panic_hook::hook));
 
+    {
+        let be = BACKEND.lock().unwrap();
+        let gl = be.gl.as_ref().unwrap();
+        for f in bterm.fonts.iter_mut() {
+            f.setup_gl_texture(gl)?;
+        }
+    }
+
     let now = wasm_timer::Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
     let mut prev_ms = now.elapsed().as_millis();
@@ -88,6 +96,7 @@ fn rebuild_consoles(bterm: &mut BTerm) {
         let font = &bterm.fonts[bterm.consoles[i].font_index];
         let shader = &bterm.shaders[0];
         unsafe {
+            bterm.shaders[0].useProgram(gl);
             gl.active_texture(glow::TEXTURE0);
             font.bind_texture(gl);
             shader.setBool(gl, "showScanLines", bterm.post_scanlines);
@@ -151,7 +160,7 @@ fn render_consoles(bterm: &mut BTerm) -> Result<()> {
     for (i, c) in consoles.iter_mut().enumerate() {
         let cons = &bterm.consoles[i];
         let font = &bterm.fonts[cons.font_index];
-        let shader = &bterm.shaders[0];
+        let shader = &bterm.shaders[cons.shader_index];
         match c {
             ConsoleBacking::Simple { backing } => {
                 unsafe {
@@ -162,7 +171,7 @@ fn render_consoles(bterm: &mut BTerm) -> Result<()> {
                     .as_any()
                     .downcast_ref::<SimpleConsole>()
                     .unwrap();
-                backing.gl_draw(font, shader, gl, sc.height, sc.width)?;
+                backing.gl_draw(font, shader, gl, sc.width, sc.height)?;
             }
             ConsoleBacking::Sparse { backing } => {
                 unsafe {
@@ -214,6 +223,7 @@ fn tock<GS: GameState>(
     {
         let be = BACKEND.lock().unwrap();
         let gl = be.gl.as_ref().unwrap();
+
 
         // Clear the screen
         unsafe {
