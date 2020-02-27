@@ -1,10 +1,11 @@
 use super::{BACKEND, CONSOLE_BACKING};
 use crate::hal::*;
-use crate::prelude::{BTerm, Console, GameState, SimpleConsole, SparseConsole};
+use crate::prelude::{BTerm, Console, GameState, SimpleConsole, SparseConsole, BEvent};
 use crate::{Result, clear_input_state};
 use glow::HasContext;
 use glutin::{event::DeviceEvent, event::Event, event::WindowEvent, event_loop::ControlFlow, event::MouseButton};
 use std::time::Instant;
+use bracket_geometry::prelude::Point;
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
@@ -23,6 +24,7 @@ fn on_resize(bterm: &mut BTerm, physical_size: glutin::dpi::PhysicalSize<u32>) -
     let new_fb =
         Framebuffer::build_fbo(gl, physical_size.width as i32, physical_size.height as i32)?;
     be.backing_buffer = Some(new_fb);
+    bterm.input.push_event(BEvent::Resized{ new_size : Point::new(physical_size.width, physical_size.height) });
     Ok(())
 }
 
@@ -82,14 +84,31 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
             }
             Event::LoopDestroyed => (),
             Event::WindowEvent { ref event, .. } => match event {
+                WindowEvent::Moved(physical_position) => {
+                    bterm.input.push_event(BEvent::Moved{new_position : Point::new(physical_position.x, physical_position.y)});
+                }
                 WindowEvent::Resized(physical_size) => {
                     on_resize(&mut bterm, *physical_size).unwrap();
                 }
-                WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
-
+                WindowEvent::CloseRequested => {
+                    // If not using events, just close. Otherwise, push the event
+                    if !bterm.input.use_events {
+                        *control_flow = ControlFlow::Exit;
+                    } else {
+                        bterm.input.push_event(BEvent::CloseRequested);
+                    }
+                }
+                WindowEvent::ReceivedCharacter(char) => {
+                    bterm.input.push_event(BEvent::Character{c: *char});
+                }
+                WindowEvent::Focused(focused) => {
+                    bterm.input.push_event(BEvent::Focused{focused: *focused});
+                }
                 WindowEvent::CursorMoved { position: pos, .. } => {
                     bterm.on_mouse_position(pos.x, pos.y);
                 }
+                WindowEvent::CursorEntered{..} => bterm.input.push_event(BEvent::CursorEntered),
+                WindowEvent::CursorLeft{..} => bterm.input.push_event(BEvent::CursorLeft),
 
                 WindowEvent::MouseInput { button,.. } => {
                     bterm.on_mouse_button(

@@ -1,6 +1,7 @@
 use crate::prelude::{BTerm, VirtualKeyCode};
-use std::collections::HashSet;
+use std::collections::{ HashSet, VecDeque };
 use bracket_geometry::prelude::Point;
+use super::BEvent;
 
 #[inline]
 pub fn clear_input_state(term: &mut BTerm) {
@@ -21,7 +22,9 @@ pub struct Input {
     scancodes : HashSet<u32>,
     mouse_buttons : HashSet<usize>,
     mouse_pixel : (f64, f64),
-    mouse_tile : Vec<(i32, i32)>
+    mouse_tile : Vec<(i32, i32)>,
+    pub(crate) use_events : bool,
+    event_queue : VecDeque<BEvent>
 }
 
 impl Input {
@@ -31,7 +34,9 @@ impl Input {
             scancodes : HashSet::new(),
             mouse_buttons : HashSet::new(),
             mouse_pixel : (0.0, 0.0),
-            mouse_tile : Vec::new()
+            mouse_tile : Vec::new(),
+            event_queue : VecDeque::new(),
+            use_events : false // Not enabled by default so that systems not using it don't fill up RAM for no reason
         }
     }
 
@@ -63,10 +68,16 @@ impl Input {
         }
     }
 
-    // NOTE: Do these really need to be 64-bit? That's slow on some platforms, and it's unlikely
-    // that you have more than 3.4E+38 pixels.
     pub fn mouse_pixel_pos(&self) -> (f64, f64) {
         (self.mouse_pixel.0, self.mouse_pixel.1)
+    }
+
+    pub fn activate_event_queue(&mut self) {
+        self.use_events = true;
+    }
+
+    pub fn pop(&mut self) -> Option<BEvent> {
+        self.event_queue.pop_back()
     }
 
     pub(crate) fn on_key_down(&mut self, key : VirtualKeyCode, scan_code : u32) {
@@ -87,5 +98,11 @@ impl Input {
             self.mouse_tile.push((0,0));
         }
         self.mouse_tile[console] = (x, y);
+    }
+
+    pub(crate) fn push_event(&mut self, event : BEvent) {
+        if self.use_events {
+            self.event_queue.push_front(event);
+        }
     }
 }

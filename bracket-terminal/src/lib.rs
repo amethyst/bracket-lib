@@ -22,7 +22,7 @@ pub(crate) use input::clear_input_state;
 
 pub mod prelude {
 
-    pub use crate::input::Input;
+    pub use crate::input::{Input, BEvent};
     pub use crate::bterm::*;
     pub use crate::codepage437::*;
     pub use crate::command_buffer::*;
