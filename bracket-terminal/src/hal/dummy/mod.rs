@@ -70,6 +70,7 @@ pub fn init_raw<S: ToString>(
         quitting: false,
         post_scanlines: false,
         post_screenburn: false,
+        input : crate::prelude::Input::new()
     }
 }
 

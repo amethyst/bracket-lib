@@ -1,7 +1,7 @@
 use crate::{
     prelude::{
         font::Font, init_raw, Console, GameState, InitHints, Shader, SimpleConsole, VirtualKeyCode,
-        XpFile, XpLayer,
+        XpFile, XpLayer, Input
     },
     Result,
 };
@@ -38,6 +38,7 @@ pub struct BTerm {
     pub quitting: bool,
     pub post_scanlines: bool,
     pub post_screenburn: bool,
+    pub input: Input
 }
 
 impl BTerm {

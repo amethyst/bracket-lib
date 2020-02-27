@@ -9,3 +9,13 @@ pub fn clear_input_state(term: &mut BTerm) {
     term.alt = false;
     term.web_button = None;
 }
+
+pub struct Input {
+
+}
+
+impl Input {
+    pub fn new() -> Self {
+        Self{}
+    }
+}
