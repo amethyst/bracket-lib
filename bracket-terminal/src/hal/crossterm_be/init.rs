@@ -1,32 +1,32 @@
 use crate::prelude::BTerm;
-use crate::prelude::InitHints;
 use crate::Result;
-use std::sync::Mutex;
-
-pub struct PlatformGL {
-    pub window_title: String,
-    pub platform_hints: InitHints,
-}
-
-lazy_static! {
-    pub static ref BACKEND: Mutex<PlatformGL> = Mutex::new(PlatformGL {
-        window_title: "".to_string(),
-        platform_hints: InitHints::new()
-    });
-}
-
-unsafe impl Send for PlatformGL {}
-unsafe impl Sync for PlatformGL {}
+use crossterm::{
+    execute,
+    terminal::{size, SetSize},
+};
+use std::io::{stdout, Write};
+use super::{BACKEND, InitHints};
 
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
-    window_title: S,
+    _window_title: S,
     platform_hints: InitHints,
 ) -> Result<BTerm> {
+    let old_size = size().expect("Unable to get console size");
+    execute!(
+        stdout(),
+        SetSize(width_pixels as u16 / 8, height_pixels as u16 / 8),
+    )
+    .expect("Console command fail");
+
+    execute!(stdout(), crossterm::cursor::Hide).expect("Command fail");
+    execute!(stdout(), crossterm::event::EnableMouseCapture).expect("Command fail");
+
     let mut be = BACKEND.lock().unwrap();
-    be.window_title = window_title.to_string();
-    be.platform_hints = platform_hints;
+    be.old_width = old_size.0;
+    be.old_height = old_size.1;
+    be.frame_sleep_time = crate::hal::convert_fps_to_wait(platform_hints.frame_sleep_time);
 
     let bterm = BTerm {
         width_pixels,

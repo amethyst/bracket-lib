@@ -2,13 +2,13 @@
 // designed to be used safely from within ECS systems in a potentially
 // multi-threaded environment.
 
+use crate::prelude::{BTerm, Console};
 use crate::Result;
-use crate::prelude::{Console, BTerm};
+use bracket_color::prelude::{ColorPair, RGB};
+use bracket_geometry::prelude::{Point, Rect};
 use object_pool::{Pool, Reusable};
 use std::sync::Arc;
 use std::sync::Mutex;
-use bracket_color::prelude::{RGB, ColorPair};
-use bracket_geometry::prelude::{Point, Rect};
 
 lazy_static! {
     static ref COMMAND_BUFFER: Mutex<Vec<(usize, DrawCommand)>> =

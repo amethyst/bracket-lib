@@ -1,19 +1,21 @@
+use crate::prelude::{BTerm, GameState, VirtualKeyCode, SimpleConsole, SparseConsole, to_char};
 use crate::Result;
-use crate::prelude::{GameState, BTerm, VirtualKeyCode};
 use crossterm::event::{poll, read, Event};
 use crossterm::execute;
 use crossterm::terminal::SetSize;
+use crossterm::style::Print;
+use crossterm::{cursor, queue};
 use std::io::{stdout, Write};
 use std::time::Duration;
 use std::time::Instant;
+use super::BACKEND;
+use bracket_color::prelude::*;
 
 pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
     let mut prev_ms = now.elapsed().as_millis();
     let mut frames = 0;
-
-    let dummy_shader = super::shader::Shader {};
 
     // Panic handler to reset terminal
     std::panic::set_hook(Box::new(|_| {
@@ -162,27 +164,94 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
         gamestate.tick(&mut bterm);
 
-        for cons in &mut bterm.consoles {
-            cons.console.rebuild_if_dirty(&bterm.backend);
-        }
+        let be = BACKEND.lock().unwrap();
 
         // Tell each console to draw itself
         for cons in &mut bterm.consoles {
-            cons.console
-                .gl_draw(&bterm.fonts[cons.font_index], &dummy_shader, &bterm.backend);
+            let cons_any = cons.console.as_any();
+            if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
+                if st.is_dirty {
+                    let mut idx = 0;
+                    let mut last_bg = RGB::new();
+                    let mut last_fg = RGB::new();
+                    for y in 0..st.height {
+                        queue!(stdout(), cursor::MoveTo(0, st.height as u16 - (y as u16 + 1)))
+                            .expect("Command fail");
+                        for _x in 0..st.width {
+                            let t = &st.tiles[idx];
+                            if t.fg != last_fg {
+                                queue!(
+                                    stdout(),
+                                    crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
+                                        r: (t.fg.r * 255.0) as u8,
+                                        g: (t.fg.g * 255.0) as u8,
+                                        b: (t.fg.b * 255.0) as u8,
+                                    })
+                                )
+                                .expect("Command fail");
+                                last_fg = t.fg;
+                            }
+                            if t.bg != last_bg {
+                                queue!(
+                                    stdout(),
+                                    crossterm::style::SetBackgroundColor(crossterm::style::Color::Rgb {
+                                        r: (t.bg.r * 255.0) as u8,
+                                        g: (t.bg.g * 255.0) as u8,
+                                        b: (t.bg.b * 255.0) as u8,
+                                    })
+                                )
+                                .expect("Command fail");
+                                last_bg = t.bg;
+                            }
+                            queue!(stdout(), Print(to_char(t.glyph))).expect("Command fail");
+                            idx += 1;
+                        }
+                    }
+                }
+            }
+            else if let Some(st) = cons_any.downcast_ref::<SparseConsole>() {
+                if st.is_dirty {
+                    for t in st.tiles.iter() {
+                        let x = t.idx as u32 % st.width;
+                        let y = t.idx as u32 / st.width;
+                        queue!(stdout(), cursor::MoveTo(x as u16, st.height as u16 - (y as u16 + 1) as u16))
+                            .expect("Command fail");
+                        queue!(
+                            stdout(),
+                            crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
+                                r: (t.fg.r * 255.0) as u8,
+                                g: (t.fg.g * 255.0) as u8,
+                                b: (t.fg.b * 255.0) as u8,
+                            })
+                        )
+                        .expect("Command fail");
+                        queue!(
+                            stdout(),
+                            crossterm::style::SetBackgroundColor(crossterm::style::Color::Rgb {
+                                r: (t.bg.r * 255.0) as u8,
+                                g: (t.bg.g * 255.0) as u8,
+                                b: (t.bg.b * 255.0) as u8,
+                            })
+                        )
+                        .expect("Command fail");
+                        queue!(stdout(), Print(to_char(t.glyph))).expect("Command fail");
+                    }
+                }
+            }
         }
 
         //bterm.backend.platform.window.refresh();
         stdout().flush().expect("Command fail");
 
-        crate::hal::fps_sleep(bterm.backend.platform.frame_sleep_time, &now, prev_ms);
+        crate::hal::fps_sleep(be.frame_sleep_time, &now, prev_ms);
     }
 
+    let be = BACKEND.lock().unwrap();
     execute!(
         stdout(),
         SetSize(
-            bterm.backend.platform.old_width,
-            bterm.backend.platform.old_height
+            be.old_width,
+            be.old_height
         )
     )
     .expect("Unable to resize");

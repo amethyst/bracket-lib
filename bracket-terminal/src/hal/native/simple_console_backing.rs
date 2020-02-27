@@ -1,6 +1,7 @@
-use crate::Result;
-use crate::prelude::Tile;
+use super::BACKEND;
 use crate::hal::{font::Font, shader::Shader};
+use crate::prelude::Tile;
+use crate::Result;
 use bracket_color::prelude::RGB;
 use glow::HasContext;
 use std::mem;
@@ -16,14 +17,10 @@ pub struct SimpleConsoleBackend {
 }
 
 impl SimpleConsoleBackend {
-    pub fn new(
-        platform: &super::super::BTermPlatform,
-        width: usize,
-        height: usize,
-    ) -> SimpleConsoleBackend {
+    pub fn new(width: usize, height: usize, gl: &glow::Context) -> SimpleConsoleBackend {
         let vertex_capacity: usize = (11 * width as usize * height as usize) * 4;
         let index_capacity: usize = 6 * width as usize * height as usize;
-        let (vbo, vao, ebo) = SimpleConsoleBackend::init_gl_for_console(&platform.platform.gl);
+        let (vbo, vao, ebo) = SimpleConsoleBackend::init_gl_for_console(gl);
         let mut result = SimpleConsoleBackend {
             vertex_buffer: Vec::with_capacity(vertex_capacity),
             index_buffer: Vec::with_capacity(index_capacity),
@@ -149,7 +146,6 @@ impl SimpleConsoleBackend {
     /// Rebuilds the OpenGL backing buffer.
     pub fn rebuild_vertices(
         &mut self,
-        platform: &super::super::BTermPlatform,
         height: u32,
         width: u32,
         tiles: &[Tile],
@@ -239,7 +235,8 @@ impl SimpleConsoleBackend {
             screen_y += step_y;
         }
 
-        let gl = &platform.platform.gl;
+        let be = BACKEND.lock().unwrap();
+        let gl = be.gl.as_ref().unwrap();
         unsafe {
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
             gl.buffer_data_u8_slice(
@@ -257,18 +254,12 @@ impl SimpleConsoleBackend {
         }
     }
 
-    pub fn gl_draw(
-        &mut self,
-        font: &Font,
-        shader: &Shader,
-        platform: &super::super::BTermPlatform,
-        width: u32,
-        height: u32,
-    ) -> Result<()> {
-        let gl = &platform.platform.gl;
+    pub fn gl_draw(&mut self, font: &Font, shader: &Shader, width: u32, height: u32) -> Result<()> {
+        let be = BACKEND.lock().unwrap();
+        let gl = be.gl.as_ref().unwrap();
         unsafe {
             // bind Texture
-            font.bind_texture(platform);
+            font.bind_texture(gl);
 
             // render container
             shader.useProgram(gl);

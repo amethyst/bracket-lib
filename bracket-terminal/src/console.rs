@@ -1,7 +1,7 @@
-use crate::prelude::{font::Font, Shader, XpLayer, BTermPlatform};
-use std::any::Any;
-use bracket_geometry::prelude::Rect;
+use crate::prelude::XpLayer;
 use bracket_color::prelude::RGB;
+use bracket_geometry::prelude::Rect;
+use std::any::Any;
 
 /// The internal storage type for tiles in a simple console.
 #[derive(PartialEq, Copy, Clone)]
@@ -13,17 +13,11 @@ pub struct Tile {
 
 /// Trait that must be implemented by console types.
 pub trait Console {
-    /// Check to see if the internal OpenGL representation needs to be rebuilt, and do so if required.
-    fn rebuild_if_dirty(&mut self, platform: &BTermPlatform);
-
     /// Gets the dimensions of the console in characters
     fn get_char_size(&self) -> (u32, u32);
 
     // Resizes the viewport
     fn resize_pixels(&mut self, width: u32, height: u32);
-
-    /// Tells the console to draw itself via OpenGL.
-    fn gl_draw(&mut self, font: &Font, shader: &Shader, platform: &BTermPlatform);
 
     /// Converts an x/y coordinate to a console index number.
     fn at(&self, x: i32, y: i32) -> usize;

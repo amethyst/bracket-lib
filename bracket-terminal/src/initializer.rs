@@ -1,5 +1,5 @@
+use crate::prelude::{font::Font, init_raw, BTerm, InitHints, SimpleConsole, SparseConsole};
 use crate::Result;
-use crate::prelude::{init_raw, BTerm, InitHints, SimpleConsole, SparseConsole, font::Font};
 use std::collections::HashMap;
 use std::convert::TryInto;
 
@@ -146,7 +146,10 @@ impl BTermBuilder {
         T: TryInto<u32>,
     {
         let w: u32 = width.try_into().ok().expect("Must be convertible to a u32");
-        let h: u32 = height.try_into().ok().expect("Must be convertible to a u32");
+        let h: u32 = height
+            .try_into()
+            .ok()
+            .expect("Must be convertible to a u32");
         let mut cb = BTermBuilder {
             width: w,
             height: h,
@@ -176,7 +179,10 @@ impl BTermBuilder {
         T: TryInto<u32>,
     {
         self.width = width.try_into().ok().expect("Must be convertible to a u32");
-        self.height = height.try_into().ok().expect("Must be convertible to a u32");
+        self.height = height
+            .try_into()
+            .ok()
+            .expect("Must be convertible to a u32");
         self
     }
 
@@ -186,7 +192,10 @@ impl BTermBuilder {
         T: TryInto<u32>,
     {
         self.tile_width = width.try_into().ok().expect("Must be convertible to a u32");
-        self.tile_height = height.try_into().ok().expect("Must be convertible to a u32");
+        self.tile_height = height
+            .try_into()
+            .ok()
+            .expect("Must be convertible to a u32");
         self
     }
 
@@ -212,7 +221,10 @@ impl BTermBuilder {
             path: font_path.to_string(),
             dimensions: (
                 width.try_into().ok().expect("Must be convertible to a u32"),
-                height.try_into().ok().expect("Must be convertible to a u32"),
+                height
+                    .try_into()
+                    .ok()
+                    .expect("Must be convertible to a u32"),
             ),
         });
         self
@@ -225,7 +237,10 @@ impl BTermBuilder {
     {
         self.consoles.push(ConsoleType::SimpleConsole {
             width: width.try_into().ok().expect("Must be convertible to a u32"),
-            height: height.try_into().ok().expect("Must be convertible to a u32"),
+            height: height
+                .try_into()
+                .ok()
+                .expect("Must be convertible to a u32"),
             font: font.to_string(),
         });
         self
@@ -248,7 +263,10 @@ impl BTermBuilder {
     {
         self.consoles.push(ConsoleType::SparseConsole {
             width: width.try_into().ok().expect("Must be convertible to a u32"),
-            height: height.try_into().ok().expect("Must be convertible to a u32"),
+            height: height
+                .try_into()
+                .ok()
+                .expect("Must be convertible to a u32"),
             font: font.to_string(),
         });
         self
@@ -261,7 +279,10 @@ impl BTermBuilder {
     {
         self.consoles.push(ConsoleType::SparseConsoleNoBg {
             width: width.try_into().ok().expect("Must be convertible to a u32"),
-            height: height.try_into().ok().expect("Must be convertible to a u32"),
+            height: height
+                .try_into()
+                .ok()
+                .expect("Must be convertible to a u32"),
             font: font.to_string(),
         });
         self
@@ -316,10 +337,7 @@ impl BTermBuilder {
                 } => {
                     let font_path = format!("{}/{}", self.resource_path, font);
                     let font_id = font_map[&font_path];
-                    context.register_console(
-                        SimpleConsole::init(*width, *height, &context.backend),
-                        font_id,
-                    );
+                    context.register_console(SimpleConsole::init(*width, *height), font_id);
                 }
                 ConsoleType::SparseConsole {
                     width,
@@ -328,10 +346,7 @@ impl BTermBuilder {
                 } => {
                     let font_path = format!("{}/{}", self.resource_path, font);
                     let font_id = font_map[&font_path];
-                    context.register_console(
-                        SparseConsole::init(*width, *height, &context.backend),
-                        font_id,
-                    );
+                    context.register_console(SparseConsole::init(*width, *height), font_id);
                 }
                 ConsoleType::SparseConsoleNoBg {
                     width,
@@ -340,10 +355,7 @@ impl BTermBuilder {
                 } => {
                     let font_path = format!("{}/{}", self.resource_path, font);
                     let font_id = font_map[&font_path];
-                    context.register_console_no_bg(
-                        SparseConsole::init(*width, *height, &context.backend),
-                        font_id,
-                    );
+                    context.register_console_no_bg(SparseConsole::init(*width, *height), font_id);
                 }
             }
         }

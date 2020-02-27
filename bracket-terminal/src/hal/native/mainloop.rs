@@ -1,6 +1,7 @@
-use crate::Result;
-use crate::prelude::{Console, GameState, BTerm};
+use super::{BACKEND, CONSOLE_BACKING};
 use crate::hal::*;
+use crate::prelude::{BTerm, Console, GameState, SimpleConsole, SparseConsole};
+use crate::Result;
 use glow::HasContext;
 use glutin::{event::DeviceEvent, event::Event, event::WindowEvent, event_loop::ControlFlow};
 use std::time::Instant;
@@ -9,19 +10,19 @@ const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
 fn on_resize(bterm: &mut BTerm, physical_size: glutin::dpi::PhysicalSize<u32>) -> Result<()> {
     bterm.resize_pixels(physical_size.width as u32, physical_size.height as u32);
+    let mut be = BACKEND.lock().unwrap();
+    let gl = be.gl.as_ref().unwrap();
     unsafe {
-        bterm.backend.platform.gl.viewport(
+        gl.viewport(
             0,
             0,
             physical_size.width as i32,
             physical_size.height as i32,
         );
     }
-    bterm.backend.platform.backing_buffer = Framebuffer::build_fbo(
-        &bterm.backend.platform.gl,
-        physical_size.width as i32,
-        physical_size.height as i32,
-    )?;
+    let new_fb =
+        Framebuffer::build_fbo(gl, physical_size.width as i32, physical_size.height as i32)?;
+    be.backing_buffer = Some(new_fb);
     Ok(())
 }
 
@@ -31,9 +32,13 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     let mut prev_ms = now.elapsed().as_millis();
     let mut frames = 0;
 
+    for f in bterm.fonts.iter_mut() {
+        f.setup_gl_texture()?;
+    }
+
     // We're doing a little dance here to get around lifetime/borrow checking.
     // Removing the context data from BTerm in an atomic swap, so it isn't borrowed after move.
-    let wrap = std::mem::replace(&mut bterm.backend.platform.context_wrapper, None);
+    let wrap = { std::mem::replace(&mut BACKEND.lock().unwrap().context_wrapper, None) };
     let unwrap = wrap.unwrap();
 
     let el = unwrap.el;
@@ -66,7 +71,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     &now,
                 );
                 wc.swap_buffers().unwrap();
-                crate::hal::fps_sleep(bterm.backend.platform.frame_sleep_time, &now, prev_ms);
+                crate::hal::fps_sleep(BACKEND.lock().unwrap().frame_sleep_time, &now, prev_ms);
             }
             Event::DeviceEvent {
                 event: DeviceEvent::ModifiersChanged(modifiers),
@@ -114,6 +119,108 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     });
 }
 
+fn check_console_backing(bterm: &mut BTerm) {
+    let mut be = BACKEND.lock().unwrap();
+    let mut consoles = CONSOLE_BACKING.lock().unwrap();
+    if consoles.is_empty() {
+        // Easy case: there are no consoles so we need to make them all.
+        for cons in &bterm.consoles {
+            let cons_any = cons.console.as_any();
+            if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
+                consoles.push(ConsoleBacking::Simple {
+                    backing: SimpleConsoleBackend::new(
+                        st.width as usize,
+                        st.height as usize,
+                        be.gl.as_mut().unwrap(),
+                    ),
+                });
+            } else if let Some(sp) = cons_any.downcast_ref::<SparseConsole>() {
+                consoles.push(ConsoleBacking::Sparse {
+                    backing: SparseConsoleBackend::new(
+                        sp.width as usize,
+                        sp.height as usize,
+                        be.gl.as_ref().unwrap(),
+                    ),
+                });
+            } else {
+                panic!("Unknown console type.");
+            }
+        }
+    }
+}
+
+fn rebuild_consoles(bterm: &mut BTerm) {
+    let mut consoles = CONSOLE_BACKING.lock().unwrap();
+    for (i, c) in consoles.iter_mut().enumerate() {
+        match c {
+            ConsoleBacking::Simple { backing } => {
+                let sc = bterm.consoles[i]
+                    .console
+                    .as_any()
+                    .downcast_ref::<SimpleConsole>()
+                    .unwrap();
+                if sc.is_dirty {
+                    backing.rebuild_vertices(
+                        sc.height,
+                        sc.width,
+                        &sc.tiles,
+                        sc.offset_x,
+                        sc.offset_y,
+                        sc.scale,
+                        sc.scale_center,
+                    );
+                }
+            }
+            ConsoleBacking::Sparse { backing } => {
+                let sc = bterm.consoles[i]
+                    .console
+                    .as_any()
+                    .downcast_ref::<SparseConsole>()
+                    .unwrap();
+                if sc.is_dirty {
+                    backing.rebuild_vertices(
+                        sc.height,
+                        sc.width,
+                        sc.offset_x,
+                        sc.offset_y,
+                        sc.scale,
+                        sc.scale_center,
+                        &sc.tiles,
+                    );
+                }
+            }
+        }
+    }
+}
+
+fn render_consoles(bterm: &mut BTerm) -> Result<()> {
+    let mut consoles = CONSOLE_BACKING.lock().unwrap();
+    for (i, c) in consoles.iter_mut().enumerate() {
+        let cons = &bterm.consoles[i];
+        let font = &bterm.fonts[cons.font_index];
+        let shader = &bterm.shaders[cons.shader_index];
+        match c {
+            ConsoleBacking::Simple { backing } => {
+                let sc = bterm.consoles[i]
+                    .console
+                    .as_any()
+                    .downcast_ref::<SimpleConsole>()
+                    .unwrap();
+                backing.gl_draw(font, shader, sc.height, sc.width)?;
+            }
+            ConsoleBacking::Sparse { backing } => {
+                let sc = bterm.consoles[i]
+                    .console
+                    .as_any()
+                    .downcast_ref::<SparseConsole>()
+                    .unwrap();
+                backing.gl_draw(font, shader, &sc.tiles)?;
+            }
+        }
+    }
+    Ok(())
+}
+
 /// Internal handling of the main loop.
 fn tock<GS: GameState>(
     bterm: &mut BTerm,
@@ -123,6 +230,9 @@ fn tock<GS: GameState>(
     prev_ms: &mut u128,
     now: &Instant,
 ) {
+    // Check that the console backings match our actual consoles
+    check_console_backing(bterm);
+
     let now_seconds = now.elapsed().as_secs();
     *frames += 1;
 
@@ -138,67 +248,74 @@ fn tock<GS: GameState>(
         *prev_ms = now_ms;
     }
 
-    gamestate.tick(bterm);
-
     // Console structure - doesn't really have to be every frame...
-    for cons in &mut bterm.consoles {
-        cons.console.rebuild_if_dirty(&bterm.backend);
-    }
+    rebuild_consoles(bterm);
 
     // Bind to the backing buffer
     if bterm.post_scanlines {
-        bterm.backend
-            .platform
-            .backing_buffer
-            .bind(&bterm.backend.platform.gl);
+        let be = BACKEND.lock().unwrap();
+        be.backing_buffer
+            .as_ref()
+            .unwrap()
+            .bind(be.gl.as_ref().unwrap());
     }
 
     // Clear the screen
     unsafe {
-        bterm.backend.platform.gl.clear_color(0.0, 0.0, 0.0, 1.0);
-        bterm.backend.platform.gl.clear(glow::COLOR_BUFFER_BIT);
+        let be = BACKEND.lock().unwrap();
+        be.gl.as_ref().unwrap().clear_color(0.0, 0.0, 0.0, 1.0);
+        be.gl.as_ref().unwrap().clear(glow::COLOR_BUFFER_BIT);
     }
 
+    // Run the main loop
+    gamestate.tick(bterm);
+
     // Tell each console to draw itself
-    for cons in &mut bterm.consoles {
-        let font = &bterm.fonts[cons.font_index];
-        let shader = &bterm.shaders[cons.shader_index];
-        cons.console.gl_draw(font, shader, &bterm.backend);
+    render_consoles(bterm).unwrap();
+
+    // If there is a GL callback, call it now
+    {
+        let be = BACKEND.lock().unwrap();
+        if let Some(callback) = be.gl_callback.as_ref() {
+            let gl = be.gl.as_ref().unwrap();
+            callback(gamestate, gl);
+        }
     }
 
     if bterm.post_scanlines {
         // Now we return to the primary screen
-        bterm.backend
-            .platform
-            .backing_buffer
-            .default(&bterm.backend.platform.gl);
+        let be = BACKEND.lock().unwrap();
+        be.backing_buffer
+            .as_ref()
+            .unwrap()
+            .default(be.gl.as_ref().unwrap());
         unsafe {
             if bterm.post_scanlines {
-                bterm.shaders[3].useProgram(&bterm.backend.platform.gl);
+                bterm.shaders[3].useProgram(be.gl.as_ref().unwrap());
                 bterm.shaders[3].setVec3(
-                    &bterm.backend.platform.gl,
+                    be.gl.as_ref().unwrap(),
                     "screenSize",
                     bterm.width_pixels as f32,
                     bterm.height_pixels as f32,
                     0.0,
                 );
                 bterm.shaders[3].setBool(
-                    &bterm.backend.platform.gl,
+                    be.gl.as_ref().unwrap(),
                     "screenBurn",
                     bterm.post_screenburn,
                 );
             } else {
-                bterm.shaders[2].useProgram(&bterm.backend.platform.gl);
+                bterm.shaders[2].useProgram(be.gl.as_ref().unwrap());
             }
-            bterm.backend
-                .platform
-                .gl
-                .bind_vertex_array(Some(bterm.backend.platform.quad_vao));
-                bterm.backend.platform.gl.bind_texture(
+            be.gl
+                .as_ref()
+                .unwrap()
+                .bind_vertex_array(Some(be.quad_vao.unwrap()));
+            be.gl.as_ref().unwrap().bind_texture(
                 glow::TEXTURE_2D,
-                Some(bterm.backend.platform.backing_buffer.texture),
+                Some(be.backing_buffer.as_ref().unwrap().texture),
             );
-            bterm.backend.platform.gl.draw_arrays(glow::TRIANGLES, 0, 6);
+            be.gl.as_ref().unwrap().draw_arrays(glow::TRIANGLES, 0, 6);
         }
     }
 }

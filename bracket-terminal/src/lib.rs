@@ -1,48 +1,53 @@
 #[macro_use]
 extern crate lazy_static;
+mod bterm;
 mod codepage437;
-pub mod console;
 mod command_buffer;
+pub mod console;
+pub mod embedding;
+mod gamestate;
 mod gui_helpers;
+mod hal;
 mod initializer;
 mod multi_tile_sprite;
 pub mod rex;
 mod simple_console;
 mod sparse_console;
 mod textblock;
-mod hal;
-mod bterm;
-pub mod embedding;
-mod gamestate;
 
 pub(crate) type Error = Box<dyn std::error::Error>;
 pub(crate) type Result<T> = core::result::Result<T, Error>;
 
 pub mod prelude {
 
-    pub use crate::hal::{Shader, font, InitHints, init_raw, BTermPlatform, SimpleConsoleBackend, SparseConsoleBackend};
-    pub use crate::simple_console::SimpleConsole;
-    pub use crate::sparse_console::SparseConsole;
-    pub use crate::console::{Console, Tile};
     pub use crate::bterm::*;
     pub use crate::codepage437::*;
     pub use crate::command_buffer::*;
-    pub use crate::textblock::*;
-    pub use crate::multi_tile_sprite::*;
-    pub use crate::initializer::*;
-    pub use crate::gamestate::GameState;
-    pub use crate::rex::*;
-    pub use crate::gui_helpers::*;
+    pub use crate::console;
+    pub use crate::console::{Console, Tile};
     pub use crate::embedding;
     pub use crate::embedding::EMBED;
-    pub use crate::console;
-    pub use bracket_geometry::prelude::*;
-    pub use bracket_color::prelude::*;
+    pub use crate::gamestate::GameState;
+    pub use crate::gui_helpers::*;
+    pub use crate::hal::{
+        font, init_raw, BTermPlatform, InitHints, Shader, BACKEND
+    };
+    pub use crate::initializer::*;
+    pub use crate::multi_tile_sprite::*;
     pub use crate::rex;
+    pub use crate::rex::*;
+    pub use crate::simple_console::SimpleConsole;
+    pub use crate::sparse_console::SparseConsole;
+    pub use crate::textblock::*;
+    pub use bracket_color::prelude::*;
+    pub use bracket_geometry::prelude::*;
     pub type BError = std::result::Result<(), Box<dyn std::error::Error>>;
 
     #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
     pub use glutin::event::VirtualKeyCode;
+
+    #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
+    pub use crate::hal::GlCallback;
 
     #[cfg(all(
         not(feature = "opengl"),
@@ -97,4 +102,3 @@ macro_rules! link_resource {
             .add_resource($filename.to_string(), $resource_name);
     };
 }
-

@@ -1,16 +1,16 @@
-use crate::Result;
-use crate::prelude::{Console, GameState, BTerm};
 use crate::hal::VirtualKeyCode;
-use pancurses::{endwin, initscr, noecho, Window};
+use crate::prelude::{BTerm, GameState, to_char, SimpleConsole, SparseConsole};
+use crate::Result;
+use pancurses::endwin;
 use std::time::Instant;
+use std::convert::TryInto;
+use super::*;
 
 pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
     let mut prev_ms = now.elapsed().as_millis();
     let mut frames = 0;
-
-    let dummy_shader = super::shader::Shader {};
 
     while !bterm.quitting {
         let now_seconds = now.elapsed().as_secs();
@@ -34,7 +34,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         bterm.shift = false;
         bterm.control = false;
         bterm.alt = false;
-        let input = bterm.backend.platform.window.getch();
+        let input = BACKEND.lock().unwrap().window.as_ref().unwrap().getch();
         if let Some(input) = input {
             //println!("{:?}", input);
 
@@ -106,21 +106,48 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
         gamestate.tick(&mut bterm);
 
-        for cons in &mut bterm.consoles {
-            cons.console.rebuild_if_dirty(&bterm.backend);
-        }
+        let be = BACKEND.lock().unwrap();
+        let window = be.window.as_ref().unwrap();
 
-        bterm.backend.platform.window.clear();
+        window.clear();
 
         // Tell each console to draw itself
         for cons in &mut bterm.consoles {
-            cons.console
-                .gl_draw(&bterm.fonts[cons.font_index], &dummy_shader, &bterm.backend);
+            let cons_any = cons.console.as_any();
+            if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
+                let mut idx = 0;
+                for y in 0..st.height {
+                    for x in 0..st.width {
+                        let t = &st.tiles[idx];
+                        let cp_fg = find_nearest_color(t.fg, &be.color_map);
+                        let cp_bg = find_nearest_color(t.bg, &be.color_map);
+                        let pair = (cp_bg * 16) + cp_fg;
+                        window.attrset(pancurses::COLOR_PAIR(pair.try_into()?));
+                        window.mvaddch(st.height as i32 - (y as i32 + 1), x as i32, to_char(t.glyph));
+                        idx += 1;
+                    }
+                }
+            }
+            else if let Some(st) = cons_any.downcast_ref::<SparseConsole>() {
+                for t in st.tiles.iter() {
+                    let x = t.idx as u32 % st.width;
+                    let y = t.idx as u32 / st.width;
+                    let cp_fg = find_nearest_color(t.fg, &be.color_map);
+                    let cp_bg = find_nearest_color(t.bg, &be.color_map);
+                    let pair = (cp_bg * 16) + cp_fg;
+                    window.attrset(pancurses::COLOR_PAIR(pair.try_into()?));
+                    window.mvaddch(
+                        st.height as i32 - (y as i32 + 1),
+                        x as i32,
+                        to_char(t.glyph),
+                    );
+                }
+            }
         }
 
-        bterm.backend.platform.window.refresh();
+        window.refresh();
 
-        crate::hal::fps_sleep(bterm.backend.platform.frame_sleep_time, &now, prev_ms);
+        crate::hal::fps_sleep(be.frame_sleep_time, &now, prev_ms);
     }
 
     endwin();
