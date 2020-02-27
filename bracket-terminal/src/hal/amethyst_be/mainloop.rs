@@ -1,5 +1,5 @@
 use crate::prelude::{BTerm, GameState};
-use crate::Result;
+use crate::{Result, clear_input_state};
 use super::*;
 
 use amethyst::{
@@ -44,11 +44,7 @@ impl SimpleState for BTermGemBridge {
         std::mem::drop(timer);
 
         // Handle Input
-        self.bterm.left_click = false;
-        self.bterm.key = None;
-        self.bterm.shift = false;
-        self.bterm.control = false;
-        self.bterm.alt = false;
+        clear_input_state(&mut bterm);
         let inputs = data.world.fetch::<InputHandler<StringBindings>>();
         if self.key_delay > 75.0 {
             self.key_delay = 0.0;

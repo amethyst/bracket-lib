@@ -1,5 +1,5 @@
 use crate::prelude::{BTerm, GameState, VirtualKeyCode, SimpleConsole, SparseConsole, to_char};
-use crate::Result;
+use crate::{Result, clear_input_state};
 use crossterm::event::{poll, read, Event};
 use crossterm::execute;
 use crossterm::terminal::SetSize;
@@ -39,11 +39,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         }
 
         // Input
-        bterm.left_click = false;
-        bterm.key = None;
-        bterm.shift = false;
-        bterm.control = false;
-        bterm.alt = false;
+        clear_input_state(&mut bterm);
 
         // Input handler goes here
         while poll(Duration::from_secs(0))? {

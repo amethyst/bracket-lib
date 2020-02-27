@@ -1,6 +1,6 @@
 use crate::hal::VirtualKeyCode;
 use crate::prelude::{BTerm, GameState, to_char, SimpleConsole, SparseConsole};
-use crate::Result;
+use crate::{Result, clear_input_state};
 use pancurses::endwin;
 use std::time::Instant;
 use std::convert::TryInto;
@@ -29,11 +29,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         }
 
         // Input
-        bterm.left_click = false;
-        bterm.key = None;
-        bterm.shift = false;
-        bterm.control = false;
-        bterm.alt = false;
+        clear_input_state(&mut bterm);
         let input = BACKEND.lock().unwrap().window.as_ref().unwrap().getch();
         if let Some(input) = input {
             //println!("{:?}", input);

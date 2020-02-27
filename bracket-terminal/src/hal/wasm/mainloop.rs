@@ -1,6 +1,6 @@
 use super::events::*;
 use crate::prelude::{BTerm, GameState, SimpleConsole, SparseConsole};
-use crate::Result;
+use crate::{Result, clear_input_state};
 use glow::HasContext;
 use super::*;
 
@@ -46,8 +46,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         );
 
         // Clear any input
-        bterm.left_click = false;
-        bterm.key = None;
+        clear_input_state(&mut bterm);
         unsafe {
             GLOBAL_KEY = None;
             GLOBAL_MODIFIERS = (false, false, false);
