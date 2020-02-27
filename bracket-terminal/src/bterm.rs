@@ -223,8 +223,8 @@ impl BTerm {
     }
 
     /// Internal: mark a key press
-    pub(crate) fn on_key_down(&mut self, key : VirtualKeyCode) {
-        self.input.on_key_down(key);
+    pub(crate) fn on_key_down(&mut self, key : VirtualKeyCode, scan_code: u32) {
+        self.input.on_key_down(key, scan_code);
         self.key = Some(key);
     }
 }

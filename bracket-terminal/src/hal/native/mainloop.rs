@@ -104,11 +104,12 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                         glutin::event::KeyboardInput {
                             virtual_keycode: Some(virtual_keycode),
                             state: glutin::event::ElementState::Pressed,
+                            scancode,
                             ..
                         },
                     ..
                 } => {
-                    bterm.on_key_down(*virtual_keycode);
+                    bterm.on_key_down(*virtual_keycode, *scancode);
                 }
 
                 _ => (),

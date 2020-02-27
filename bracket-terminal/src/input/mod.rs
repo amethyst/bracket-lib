@@ -10,17 +10,20 @@ pub fn clear_input_state(term: &mut BTerm) {
     term.alt = false;
     term.web_button = None;
     term.input.keys_down.clear();
+    term.input.scancodes.clear();
 }
 
 #[derive(Clone, Debug)]
 pub struct Input {
-    keys_down : HashSet<VirtualKeyCode>
+    keys_down : HashSet<VirtualKeyCode>,
+    scancodes : HashSet<u32>
 }
 
 impl Input {
     pub(crate) fn new() -> Self {
         Self{
-            keys_down : HashSet::new()
+            keys_down : HashSet::new(),
+            scancodes : HashSet::new()
         }
     }
 
@@ -28,7 +31,12 @@ impl Input {
         self.keys_down.contains(&key)
     }
 
-    pub(crate) fn on_key_down(&mut self, key : VirtualKeyCode) {
+    pub fn is_scancode_pressed(&self, scan_code : u32) -> bool {
+        self.scancodes.contains(&scan_code)
+    }
+
+    pub(crate) fn on_key_down(&mut self, key : VirtualKeyCode, scan_code : u32) {
         self.keys_down.insert(key);
+        self.scancodes.insert(scan_code);
     }
 }
