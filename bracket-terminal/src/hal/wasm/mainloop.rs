@@ -159,7 +159,7 @@ fn render_consoles(bterm: &mut BTerm) -> Result<()> {
     for (i, c) in consoles.iter_mut().enumerate() {
         let cons = &bterm.consoles[i];
         let font = &bterm.fonts[cons.font_index];
-        let shader = &bterm.shaders[cons.shader_index];
+        let shader = &bterm.shaders[0];
         match c {
             ConsoleBacking::Simple { backing } => {
                 unsafe {
