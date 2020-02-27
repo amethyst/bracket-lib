@@ -118,7 +118,7 @@ impl SparseConsoleBackend {
     ) {
         unsafe {
             let mut data = vec![0u8; width as usize * height as usize * 4];
-            let data2 = vec![0u8; width as usize * height as usize * 4];
+            let mut data2 = vec![0u8; width as usize * height as usize * 4];
 
             for t in tiles.iter() {
                 let i = t.idx;
@@ -126,6 +126,10 @@ impl SparseConsoleBackend {
                 data[(i * 4) + 1] = (t.fg.r * 255.0) as u8;
                 data[(i * 4) + 2] = (t.fg.g * 255.0) as u8;
                 data[(i * 4) + 3] = (t.fg.b * 255.0) as u8;
+
+                data2[(i * 4)] = (t.bg.r * 255.0) as u8;
+                data2[(i * 4) + 1] = (t.bg.g * 255.0) as u8;
+                data2[(i * 4) + 2] = (t.bg.b * 255.0) as u8;
             }
 
             gl.bind_texture(glow::TEXTURE_2D, Some(self.charbuffer));
