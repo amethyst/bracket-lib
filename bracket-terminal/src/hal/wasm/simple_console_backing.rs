@@ -59,7 +59,7 @@ impl SimpleConsoleBackend {
         let texture2;
         unsafe {
             texture2 = gl.create_texture().unwrap();
-            gl.bind_texture(glow::TEXTURE_2D, Some(texture));
+            gl.bind_texture(glow::TEXTURE_2D, Some(texture2));
             gl.tex_parameter_i32(
                 glow::TEXTURE_2D,
                 glow::TEXTURE_WRAP_S,

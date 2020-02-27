@@ -18,7 +18,19 @@ impl GameState for State {
         let x = self.rng.range(0, 80);
         let y = self.rng.range(0, 50);
         let chr = self.rng.range(0, 255) as u8;
-        ctx.set(x, y, RGB::named(YELLOW), RGB::named(BLACK), chr);
+
+        let fg = RGB::from_u8(
+            self.rng.range::<u8>(0, 254),
+            self.rng.range::<u8>(0, 254),
+            self.rng.range::<u8>(0, 254),
+        );
+        let bg = RGB::from_u8(
+            self.rng.range::<u8>(0, 254),
+            self.rng.range::<u8>(0, 254),
+            self.rng.range::<u8>(0, 254),
+        );
+
+        ctx.set(x, y, fg, bg, chr);
     }
 }
 

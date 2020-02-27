@@ -55,12 +55,12 @@ void main(){
     fontcoords.g = (glyphY - (1.0f - spriteY)) * glyphSizeY;
 
     vec3 color = texture(texture1, fontcoords).rgb * rgb;
+    vec3 bg = texture(bgBuffer, TexCoords).rgb;
 
     // Set the background color
     bool applyScan = true;
     if (color.r < 0.1 && color.g < 0.1 && color.b < 0.1) {
         if (!hasBackground) discard;
-        vec3 bg = texture(bgBuffer, TexCoords).rgb;
         if (bg.r < 0.1 && bg.g < 0.1 && bg.b < 0.1) {
             if (screenBurn) {
                 float dist = (1.0 - distance(vec2(gl_FragCoord.x / screenSize.x, gl_FragCoord.y / screenSize.y), vec2(0.5,0.5))) * 0.2;
