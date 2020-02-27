@@ -1,5 +1,4 @@
-mod keycodes;
-pub use keycodes::*;
+pub use winit::event::VirtualKeyCode;
 mod quadrender;
 pub use quadrender::*;
 mod init;

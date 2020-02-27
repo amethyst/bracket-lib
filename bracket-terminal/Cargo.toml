@@ -56,6 +56,7 @@ wasm-bindgen = "0.2"
 wasm-timer = "0.1.0"
 rand = { version = "0.7.2", features = ["wasm-bindgen"] }
 console_error_panic_hook = "0.1.6"
+winit = { version = "0.21.0", features = [ "web-sys" ] }
 
 [[bench]]
 name = "batching_benchmark"
