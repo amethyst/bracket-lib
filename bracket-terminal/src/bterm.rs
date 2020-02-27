@@ -240,6 +240,23 @@ impl BTerm {
         self.mouse_pos = (x as i32, y as i32);
         self.input.on_mouse_pixel_position(x, y);
         // TODO: Console cascade!
+        for (i,cons) in self.consoles.iter().enumerate() {
+            let max_sizes = cons.console.get_char_size();
+
+            self.input.on_mouse_tile_position(
+                i,
+                iclamp(
+                    self.mouse_pos.0 * max_sizes.0 as i32 / i32::max(1, self.width_pixels as i32),
+                    0,
+                    max_sizes.0 as i32 - 1,
+                ),
+                iclamp(
+                    self.mouse_pos.1 * max_sizes.1 as i32 / i32::max(1, self.height_pixels as i32),
+                    0,
+                    max_sizes.1 as i32 - 1,
+                )
+            );
+        }
     }
 }
 

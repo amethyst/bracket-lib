@@ -20,7 +20,8 @@ pub struct Input {
     keys_down : HashSet<VirtualKeyCode>,
     scancodes : HashSet<u32>,
     mouse_buttons : HashSet<usize>,
-    mouse_pixel : (f64, f64)
+    mouse_pixel : (f64, f64),
+    mouse_tile : Vec<(i32, i32)>
 }
 
 impl Input {
@@ -29,7 +30,8 @@ impl Input {
             keys_down : HashSet::new(),
             scancodes : HashSet::new(),
             mouse_buttons : HashSet::new(),
-            mouse_pixel : (0.0, 0.0)
+            mouse_pixel : (0.0, 0.0),
+            mouse_tile : Vec::new()
         }
     }
 
@@ -46,11 +48,19 @@ impl Input {
     }
 
     pub fn mouse_tile_pos(&self, console: usize) -> (i32, i32) {
-        (0,0)
+        if console < self.mouse_tile.len() {
+            self.mouse_tile[console]
+        } else {
+            (0,0)
+        }
     }
 
     pub fn mouse_tile(&self, console: usize) -> Point {
-        Point::new(0,0)
+        if console < self.mouse_tile.len() {
+            Point::from_tuple(self.mouse_tile[console])
+        } else {
+            Point::zero()
+        }
     }
 
     // NOTE: Do these really need to be 64-bit? That's slow on some platforms, and it's unlikely
@@ -70,5 +80,12 @@ impl Input {
 
     pub(crate) fn on_mouse_pixel_position(&mut self, x:f64, y:f64) {
         self.mouse_pixel = (x,y);
+    }
+
+    pub(crate) fn on_mouse_tile_position(&mut self, console: usize, x:i32, y:i32) {
+        while self.mouse_tile.len() < console+1 {
+            self.mouse_tile.push((0,0));
+        }
+        self.mouse_tile[console] = (x, y);
     }
 }
