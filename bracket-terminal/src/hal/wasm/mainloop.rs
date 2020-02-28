@@ -1,5 +1,5 @@
 use super::events::*;
-use crate::prelude::{BTerm, GameState, SimpleConsole, SparseConsole};
+use crate::prelude::{BTerm, GameState, SimpleConsole, SparseConsole, BEvent};
 use crate::{Result, clear_input_state};
 use glow::HasContext;
 use super::*;
@@ -33,6 +33,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
             bterm.control = GLOBAL_MODIFIERS.1;
             bterm.alt = GLOBAL_MODIFIERS.2;
             bterm.web_button = GLOBAL_BUTTON.clone();
+            bterm.on_mouse_position(GLOBAL_MOUSE_POS.0 as f64, GLOBAL_MOUSE_POS.1 as f64);
         }
 
         // Call the tock function

@@ -14,7 +14,7 @@ impl GameState for State {
         ctx.print(1, 3, &format!("FPS: {}", ctx.fps));
 
         input.for_each_message(|event| {
-            println!("{:#?}", event);
+            bracket_terminal::console::log(&format!("{:#?}", event));
             if event == BEvent::CloseRequested {
                 ctx.quitting = true;
             }
