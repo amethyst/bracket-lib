@@ -1,4 +1,4 @@
-use crate::prelude::{BTerm, InitHints};
+use crate::prelude::{BTerm, InitHints, BACKEND_INTERNAL};
 use crate::Result;
 
 pub fn init_raw<S: ToString>(
@@ -51,12 +51,11 @@ pub fn init_raw<S: ToString>(
     be.gl = Some(gl);
     be.quad_vao = Some(quad_vao);
 
+    BACKEND_INTERNAL.lock().unwrap().shaders = shaders;
+
     Ok(BTerm {
         width_pixels,
         height_pixels,
-        fonts: Vec::new(),
-        consoles: Vec::new(),
-        shaders,
         fps: 0.0,
         frame_time_ms: 0.0,
         active_console: 0,

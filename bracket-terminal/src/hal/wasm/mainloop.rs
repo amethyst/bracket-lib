@@ -1,5 +1,5 @@
 use super::events::*;
-use crate::prelude::{BTerm, GameState, SimpleConsole, SparseConsole, BEvent};
+use crate::prelude::{BTerm, GameState, SimpleConsole, SparseConsole, BEvent, BACKEND_INTERNAL};
 use crate::{Result, clear_input_state};
 use glow::HasContext;
 use super::*;
@@ -12,7 +12,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     {
         let be = BACKEND.lock().unwrap();
         let gl = be.gl.as_ref().unwrap();
-        for f in bterm.fonts.iter_mut() {
+        for f in BACKEND_INTERNAL.lock().unwrap().fonts.iter_mut() {
             f.setup_gl_texture(gl)?;
         }
     }
@@ -58,12 +58,13 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     Ok(())
 }
 
-fn check_console_backing(bterm: &mut BTerm) {
+fn check_console_backing() {
+    let bi = BACKEND_INTERNAL.lock().unwrap();
     let mut be = BACKEND.lock().unwrap();
     let mut consoles = CONSOLE_BACKING.lock().unwrap();
     if consoles.is_empty() {
         // Easy case: there are no consoles so we need to make them all.
-        for cons in &bterm.consoles {
+        for cons in &bi.consoles {
             let cons_any = cons.console.as_any();
             if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
                 consoles.push(ConsoleBacking::Simple {
@@ -88,15 +89,16 @@ fn check_console_backing(bterm: &mut BTerm) {
     }
 }
 
-fn rebuild_consoles(bterm: &mut BTerm) {
+fn rebuild_consoles(bterm: &BTerm) {
+    let bi = BACKEND_INTERNAL.lock().unwrap();
     let be = BACKEND.lock().unwrap();
     let gl = be.gl.as_ref().unwrap();
     let mut consoles = CONSOLE_BACKING.lock().unwrap();
     for (i, c) in consoles.iter_mut().enumerate() {
-        let font = &bterm.fonts[bterm.consoles[i].font_index];
-        let shader = &bterm.shaders[0];
+        let font = &bi.fonts[bi.consoles[i].font_index];
+        let shader = &bi.shaders[0];
         unsafe {
-            bterm.shaders[0].useProgram(gl);
+            bi.shaders[0].useProgram(gl);
             gl.active_texture(glow::TEXTURE0);
             font.bind_texture(gl);
             shader.setBool(gl, "showScanLines", bterm.post_scanlines);
@@ -112,7 +114,7 @@ fn rebuild_consoles(bterm: &mut BTerm) {
 
         match c {
             ConsoleBacking::Simple { backing } => {
-                let sc = bterm.consoles[i]
+                let sc = bi.consoles[i]
                     .console
                     .as_any()
                     .downcast_ref::<SimpleConsole>()
@@ -131,7 +133,7 @@ fn rebuild_consoles(bterm: &mut BTerm) {
                 }
             }
             ConsoleBacking::Sparse { backing } => {
-                let sc = bterm.consoles[i]
+                let sc = bi.consoles[i]
                     .console
                     .as_any()
                     .downcast_ref::<SparseConsole>()
@@ -153,20 +155,21 @@ fn rebuild_consoles(bterm: &mut BTerm) {
     }
 }
 
-fn render_consoles(bterm: &mut BTerm) -> Result<()> {
+fn render_consoles() -> Result<()> {
+    let bi = BACKEND_INTERNAL.lock().unwrap();
     let be = BACKEND.lock().unwrap();
     let gl = be.gl.as_ref().unwrap();
     let mut consoles = CONSOLE_BACKING.lock().unwrap();
     for (i, c) in consoles.iter_mut().enumerate() {
-        let cons = &bterm.consoles[i];
-        let font = &bterm.fonts[cons.font_index];
-        let shader = &bterm.shaders[0];
+        let cons = &bi.consoles[i];
+        let font = &bi.fonts[cons.font_index];
+        let shader = &bi.shaders[0];
         match c {
             ConsoleBacking::Simple { backing } => {
                 unsafe {
-                    bterm.shaders[0].useProgram(gl);
+                    bi.shaders[0].useProgram(gl);
                 }
-                let sc = bterm.consoles[i]
+                let sc = bi.consoles[i]
                     .console
                     .as_any()
                     .downcast_ref::<SimpleConsole>()
@@ -175,9 +178,9 @@ fn render_consoles(bterm: &mut BTerm) -> Result<()> {
             }
             ConsoleBacking::Sparse { backing } => {
                 unsafe {
-                    bterm.shaders[0].useProgram(gl);
+                    bi.shaders[0].useProgram(gl);
                 }
-                let sc = bterm.consoles[i]
+                let sc = bi.consoles[i]
                     .console
                     .as_any()
                     .downcast_ref::<SparseConsole>()
@@ -198,7 +201,7 @@ fn tock<GS: GameState>(
     now: &wasm_timer::Instant,
 ) {
     // Check that the console backings match our actual consoles
-    check_console_backing(bterm);
+    check_console_backing();
 
     let now_seconds = now.elapsed().as_secs();
     *frames += 1;
@@ -240,19 +243,20 @@ fn tock<GS: GameState>(
         // Setup render pass
 
         unsafe {
-            bterm.shaders[0].useProgram(gl);
+            let bi = BACKEND_INTERNAL.lock().unwrap();
+            bi.shaders[0].useProgram(gl);
 
             gl.active_texture(glow::TEXTURE0);
-            bterm.fonts[0].bind_texture(gl);
-            bterm.shaders[0].setInt(gl, "texture1", 0);
-            bterm.shaders[0].setVec3(gl, "font", 8.0, 8.0, 0.0);
+            bi.fonts[0].bind_texture(gl);
+            bi.shaders[0].setInt(gl, "texture1", 0);
+            bi.shaders[0].setVec3(gl, "font", 8.0, 8.0, 0.0);
 
             gl.bind_vertex_array(be.quad_vao);
         }
     }
 
     // Tell each console to draw itself
-    render_consoles(bterm).unwrap();
+    render_consoles().unwrap();
 
     // If there is a GL callback, call it now
     {
