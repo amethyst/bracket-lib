@@ -1,5 +1,5 @@
 use crate::hal::VirtualKeyCode;
-use crate::prelude::{BTerm, GameState, to_char, SimpleConsole, SparseConsole};
+use crate::prelude::{BTerm, GameState, to_char, SimpleConsole, SparseConsole, INPUT, BEvent};
 use crate::{Result, clear_input_state};
 use pancurses::endwin;
 use std::time::Instant;
@@ -32,71 +32,35 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         clear_input_state(&mut bterm);
         let input = BACKEND.lock().unwrap().window.as_ref().unwrap().getch();
         if let Some(input) = input {
-            //println!("{:?}", input);
-
             match input {
-                pancurses::Input::KeyLeft => bterm.key = Some(VirtualKeyCode::Left),
-                pancurses::Input::KeyRight => bterm.key = Some(VirtualKeyCode::Right),
-                pancurses::Input::KeyUp => bterm.key = Some(VirtualKeyCode::Up),
-                pancurses::Input::KeyDown => bterm.key = Some(VirtualKeyCode::Down),
-                pancurses::Input::KeyHome => bterm.key = Some(VirtualKeyCode::Home),
+                pancurses::Input::Character(c) => {
+                    bterm.on_event(BEvent::Character{c});
+                    if let Some(key) = char_to_keycode(c) {
+                        bterm.on_key_down(key, 0); // How do I get the scancode?
+                    }
+                }
+                pancurses::Input::KeyLeft => bterm.on_key_down(VirtualKeyCode::Left, 0),
+                pancurses::Input::KeyRight => bterm.on_key_down(VirtualKeyCode::Right, 0),
+                pancurses::Input::KeyUp => bterm.on_key_down(VirtualKeyCode::Up, 0),
+                pancurses::Input::KeyDown => bterm.on_key_down(VirtualKeyCode::Down, 0),
+                pancurses::Input::KeyHome => bterm.on_key_down(VirtualKeyCode::Home, 0),
                 pancurses::Input::KeyMouse => {
                     if let Ok(mouse_event) = pancurses::getmouse() {
                         if mouse_event.bstate & pancurses::BUTTON1_CLICKED > 0 {
-                            bterm.left_click = true;
+                            bterm.on_mouse_button(0);
                         }
-                        bterm.mouse_pos = (mouse_event.x, mouse_event.y);
+                        if mouse_event.bstate & pancurses::BUTTON2_CLICKED > 0 {
+                            bterm.on_mouse_button(2);
+                        }
+                        if mouse_event.bstate & pancurses::BUTTON3_CLICKED > 0 {
+                            bterm.on_mouse_button(1);
+                        }
+                        bterm.on_mouse_position(mouse_event.x as f64 * 8.0, mouse_event.y as f64 * 8.0);
                     }
                 }
-                pancurses::Input::Character(c) => match c {
-                    '`' => bterm.key = Some(VirtualKeyCode::Grave),
-                    '1' => bterm.key = Some(VirtualKeyCode::Key1),
-                    '2' => bterm.key = Some(VirtualKeyCode::Key2),
-                    '3' => bterm.key = Some(VirtualKeyCode::Key3),
-                    '4' => bterm.key = Some(VirtualKeyCode::Key4),
-                    '5' => bterm.key = Some(VirtualKeyCode::Key5),
-                    '6' => bterm.key = Some(VirtualKeyCode::Key6),
-                    '7' => bterm.key = Some(VirtualKeyCode::Key7),
-                    '8' => bterm.key = Some(VirtualKeyCode::Key8),
-                    '9' => bterm.key = Some(VirtualKeyCode::Key9),
-                    '0' => bterm.key = Some(VirtualKeyCode::Key0),
-                    'a' => bterm.key = Some(VirtualKeyCode::A),
-                    'b' => bterm.key = Some(VirtualKeyCode::B),
-                    'c' => bterm.key = Some(VirtualKeyCode::C),
-                    'd' => bterm.key = Some(VirtualKeyCode::D),
-                    'e' => bterm.key = Some(VirtualKeyCode::E),
-                    'f' => bterm.key = Some(VirtualKeyCode::F),
-                    'g' => bterm.key = Some(VirtualKeyCode::G),
-                    'h' => bterm.key = Some(VirtualKeyCode::H),
-                    'i' => bterm.key = Some(VirtualKeyCode::I),
-                    'j' => bterm.key = Some(VirtualKeyCode::J),
-                    'k' => bterm.key = Some(VirtualKeyCode::K),
-                    'l' => bterm.key = Some(VirtualKeyCode::L),
-                    'm' => bterm.key = Some(VirtualKeyCode::M),
-                    'n' => bterm.key = Some(VirtualKeyCode::N),
-                    'o' => bterm.key = Some(VirtualKeyCode::O),
-                    'p' => bterm.key = Some(VirtualKeyCode::P),
-                    'q' => bterm.key = Some(VirtualKeyCode::Q),
-                    'r' => bterm.key = Some(VirtualKeyCode::R),
-                    's' => bterm.key = Some(VirtualKeyCode::S),
-                    't' => bterm.key = Some(VirtualKeyCode::T),
-                    'u' => bterm.key = Some(VirtualKeyCode::U),
-                    'v' => bterm.key = Some(VirtualKeyCode::V),
-                    'w' => bterm.key = Some(VirtualKeyCode::W),
-                    'x' => bterm.key = Some(VirtualKeyCode::X),
-                    'y' => bterm.key = Some(VirtualKeyCode::Y),
-                    'z' => bterm.key = Some(VirtualKeyCode::Z),
-                    '\t' => bterm.key = Some(VirtualKeyCode::Tab),
-                    '\n' => bterm.key = Some(VirtualKeyCode::Return),
-                    ',' => bterm.key = Some(VirtualKeyCode::Comma),
-                    '.' => bterm.key = Some(VirtualKeyCode::Period),
-                    '/' => bterm.key = Some(VirtualKeyCode::Slash),
-                    '[' => bterm.key = Some(VirtualKeyCode::LBracket),
-                    ']' => bterm.key = Some(VirtualKeyCode::RBracket),
-                    '\\' => bterm.key = Some(VirtualKeyCode::Backslash),
-                    _ => {}
-                },
-                _ => {}
+                _ => {
+                    println!("{:#?}", input);
+                }
             }
         }
 
@@ -148,4 +112,55 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
     endwin();
     Ok(())
+}
+
+fn char_to_keycode(c: char) -> Option<VirtualKeyCode> {
+    match c {
+        '`' => Some(VirtualKeyCode::Grave),
+        '1' => Some(VirtualKeyCode::Key1),
+        '2' => Some(VirtualKeyCode::Key2),
+        '3' => Some(VirtualKeyCode::Key3),
+        '4' => Some(VirtualKeyCode::Key4),
+        '5' => Some(VirtualKeyCode::Key5),
+        '6' => Some(VirtualKeyCode::Key6),
+        '7' => Some(VirtualKeyCode::Key7),
+        '8' => Some(VirtualKeyCode::Key8),
+        '9' => Some(VirtualKeyCode::Key9),
+        '0' => Some(VirtualKeyCode::Key0),
+        'a' => Some(VirtualKeyCode::A),
+        'b' => Some(VirtualKeyCode::B),
+        'c' => Some(VirtualKeyCode::C),
+        'd' => Some(VirtualKeyCode::D),
+        'e' => Some(VirtualKeyCode::E),
+        'f' => Some(VirtualKeyCode::F),
+        'g' => Some(VirtualKeyCode::G),
+        'h' => Some(VirtualKeyCode::H),
+        'i' => Some(VirtualKeyCode::I),
+        'j' => Some(VirtualKeyCode::J),
+        'k' => Some(VirtualKeyCode::K),
+        'l' => Some(VirtualKeyCode::L),
+        'm' => Some(VirtualKeyCode::M),
+        'n' => Some(VirtualKeyCode::N),
+        'o' => Some(VirtualKeyCode::O),
+        'p' => Some(VirtualKeyCode::P),
+        'q' => Some(VirtualKeyCode::Q),
+        'r' => Some(VirtualKeyCode::R),
+        's' => Some(VirtualKeyCode::S),
+        't' => Some(VirtualKeyCode::T),
+        'u' => Some(VirtualKeyCode::U),
+        'v' => Some(VirtualKeyCode::V),
+        'w' => Some(VirtualKeyCode::W),
+        'x' => Some(VirtualKeyCode::X),
+        'y' => Some(VirtualKeyCode::Y),
+        'z' => Some(VirtualKeyCode::Z),
+        '\t' => Some(VirtualKeyCode::Tab),
+        '\n' => Some(VirtualKeyCode::Return),
+        ',' => Some(VirtualKeyCode::Comma),
+        '.' => Some(VirtualKeyCode::Period),
+        '/' => Some(VirtualKeyCode::Slash),
+        '[' => Some(VirtualKeyCode::LBracket),
+        ']' => Some(VirtualKeyCode::RBracket),
+        '\\' => Some(VirtualKeyCode::Backslash),
+        _ => None
+    }
 }
