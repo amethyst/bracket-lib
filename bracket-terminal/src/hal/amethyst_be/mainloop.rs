@@ -1,4 +1,4 @@
-use crate::prelude::{BTerm, GameState, INPUT};
+use crate::prelude::{BTerm, GameState, BACKEND_INTERNAL};
 use crate::{Result, clear_input_state};
 use super::*;
 
@@ -87,12 +87,13 @@ impl SimpleState for BTermGemBridge {
         }
 
         {
+            let mut bi = BACKEND_INTERNAL.lock().unwrap();
             let mut map_storage = data
                 .world
                 .write_storage::<TileMap<SimpleConsoleTile, FlatEncoder>>();
             let console_storage = data.world.read_storage::<SimpleConsoleLink>();
             for (map, conlink) in (&mut map_storage, &console_storage).join() {
-                let cons = &mut self.bterm.consoles[conlink.console_index];
+                let cons = &mut bi.consoles[conlink.console_index];
                 let size = cons.console.get_char_size();
                 if let Some(concrete) = cons
                     .console
@@ -142,7 +143,7 @@ impl SimpleState for BTermGemBridge {
                 .world
                 .write_storage::<TileMap<SparseConsoleTile, FlatEncoder>>();
             for (map, conlink) in (&mut smap_storage, &console_storage).join() {
-                let cons = &mut self.bterm.consoles[conlink.console_index];
+                let cons = &mut bi.consoles[conlink.console_index];
                 let size = cons.console.get_char_size();
                 if let Some(concrete) = cons
                     .console
@@ -202,15 +203,16 @@ impl BTermGemBridge {
     }
 
     fn initialize_console_objects(&mut self, world: &mut World) {
-        for (i, cons) in self.bterm.consoles.iter_mut().enumerate() {
+        let mut bi = BACKEND_INTERNAL.lock().unwrap();
+        for (i, cons) in bi.consoles.iter().enumerate() {
             let size = cons.console.get_char_size();
             if let Some(_concrete) = cons
                 .console
                 .as_any()
                 .downcast_ref::<crate::prelude::SimpleConsole>()
             {
-                if let Some(ss) = &self.bterm.fonts[cons.font_index].ss {
-                    let font_size = &self.bterm.fonts[cons.font_index].tile_size;
+                if let Some(ss) = &bi.fonts[cons.font_index].ss {
+                    let font_size = &bi.fonts[cons.font_index].tile_size;
 
                     let mut transform = Transform::default();
                     transform.set_translation_xyz(
@@ -239,8 +241,8 @@ impl BTermGemBridge {
                 .as_any()
                 .downcast_ref::<crate::prelude::SparseConsole>()
             {
-                if let Some(ss) = &self.bterm.fonts[cons.font_index].ss {
-                    let font_size = &self.bterm.fonts[cons.font_index].tile_size;
+                if let Some(ss) = &bi.fonts[cons.font_index].ss {
+                    let font_size = &bi.fonts[cons.font_index].tile_size;
 
                     let mut transform = Transform::default();
                     transform.set_translation_xyz(

@@ -1,4 +1,4 @@
-use crate::prelude::BTerm;
+use crate::prelude::{BTerm, BACKEND_INTERNAL};
 use crate::Result;
 use amethyst::{
     assets::Handle,
@@ -44,7 +44,7 @@ pub fn initialize_fonts(bterm: &mut BTerm, world: &mut World) -> Result<()> {
     use amethyst::renderer::rendy::*;
     use image::GenericImageView;
 
-    for font in bterm.fonts.iter_mut() {
+    for font in BACKEND_INTERNAL.lock().unwrap().fonts.iter_mut() {
         let resource = embedding::EMBED
             .lock()?
             .get_resource(font.filename.to_string());
