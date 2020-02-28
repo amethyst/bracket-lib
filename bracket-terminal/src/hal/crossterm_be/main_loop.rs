@@ -1,4 +1,4 @@
-use crate::prelude::{BTerm, GameState, VirtualKeyCode, SimpleConsole, SparseConsole, to_char, BEvent};
+use crate::prelude::{BTerm, GameState, VirtualKeyCode, SimpleConsole, SparseConsole, to_char, BEvent, BACKEND_INTERNAL};
 use crate::{Result, clear_input_state};
 use crossterm::event::{poll, read, Event};
 use crossterm::execute;
@@ -90,9 +90,10 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         gamestate.tick(&mut bterm);
 
         let be = BACKEND.lock().unwrap();
+        let mut bi = BACKEND_INTERNAL.lock().unwrap();
 
         // Tell each console to draw itself
-        for cons in &mut bterm.consoles {
+        for cons in &mut bi.consoles {
             let cons_any = cons.console.as_any();
             if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
                 if st.is_dirty {
