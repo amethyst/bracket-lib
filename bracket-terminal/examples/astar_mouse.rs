@@ -134,7 +134,7 @@ impl GameState for State {
         // Either render the proposed path or run along it
         if self.mode == Mode::Waiting {
             // Render a mouse cursor
-            let mouse_pos = ctx.input.mouse_tile(0);
+            let mouse_pos = INPUT.lock().unwrap().mouse_tile(0);
             let mouse_idx = self.point2d_to_index(mouse_pos);
             draw_batch.print_color(
                 mouse_pos,
@@ -154,7 +154,7 @@ impl GameState for State {
                         );
                     }
 
-                    if ctx.input.is_mouse_button_pressed(0) {
+                    if INPUT.lock().unwrap().is_mouse_button_pressed(0) {
                         self.mode = Mode::Moving;
                         self.path = path.clone();
                     }

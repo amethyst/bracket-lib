@@ -102,8 +102,9 @@ impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
         // New: handle keyboard inputs.
         let mut delta = (0,0);
+        let input = INPUT.lock().unwrap();
         self.keymap.iter().for_each(|(key,key_delta)| {
-            if ctx.input.is_key_pressed(*key) {
+            if input.is_key_pressed(*key) {
                 delta = *key_delta;
             }
         });
