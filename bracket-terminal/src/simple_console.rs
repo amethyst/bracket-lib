@@ -58,7 +58,6 @@ impl Console for SimpleConsole {
     }
 
     /// Translate an x/y into an array index.
-    #[inline]
     fn at(&self, x: i32, y: i32) -> usize {
         (((self.height - 1 - y as u32) * self.width) + x as u32) as usize
     }

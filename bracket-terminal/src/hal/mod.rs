@@ -71,7 +71,6 @@ fn convert_fps_to_wait(frame_sleep_time: Option<f32>) -> Option<u64> {
 }
 
 #[allow(dead_code)]
-#[inline(always)]
 fn fps_sleep(frame_sleep_time: Option<u64>, now: &std::time::Instant, prev_ms: u128) {
     if let Some(wait_time) = frame_sleep_time {
         let execute_ms = now.elapsed().as_millis() as u64 - prev_ms as u64;

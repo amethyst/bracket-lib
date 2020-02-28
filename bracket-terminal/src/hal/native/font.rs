@@ -117,7 +117,6 @@ impl Font {
     }
 
     /// Sets this font file as the active texture
-    #[inline]
     pub fn bind_texture(&self, gl: &glow::Context) {
         unsafe {
             gl.bind_texture(glow::TEXTURE_2D, self.gl_id);

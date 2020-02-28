@@ -108,13 +108,11 @@ pub trait Console {
     fn as_any(&self) -> &dyn Any;
 
     // Returns true if an x/y coordinate is within the console bounds
-    #[inline]
     fn in_bounds(&self, x: i32, y: i32) -> bool {
         let bounds = self.get_char_size();
         x >= 0 && x < bounds.0 as i32 && y >= 0 && y < bounds.1 as i32
     }
 
-    #[inline]
     fn try_at(&self, x: i32, y: i32) -> Option<usize> {
         if self.in_bounds(x, y) {
             Some(self.at(x, y))

@@ -3,7 +3,6 @@ use std::collections::{ HashSet, VecDeque };
 use bracket_geometry::prelude::Point;
 use super::{BEvent, INPUT};
 
-#[inline]
 pub fn clear_input_state(term: &mut BTerm) {
     term.key = None;
     term.left_click = false;
