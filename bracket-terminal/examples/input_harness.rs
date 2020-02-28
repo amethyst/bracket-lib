@@ -13,17 +13,12 @@ impl GameState for State {
         ctx.print(1, 2, &format!("Mouse tile position: {}, {}", mouse_tile.x, mouse_tile.y));
         ctx.print(1, 3, &format!("FPS: {}", ctx.fps));
 
-        loop {
-            let event = input.pop();
-            if let Some(event) = event {
-                println!("{:#?}", event);
-                if event == BEvent::CloseRequested {
-                    ctx.quitting = true;
-                }
-            } else {
-                break;
+        input.for_each_message(|event| {
+            println!("{:#?}", event);
+            if event == BEvent::CloseRequested {
+                ctx.quitting = true;
             }
-        }
+         });
     }
 }
 
