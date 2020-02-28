@@ -44,7 +44,7 @@ impl SimpleState for BTermGemBridge {
         std::mem::drop(timer);
 
         // Handle Input
-        clear_input_state(&mut bterm);
+        clear_input_state(&mut self.bterm);
         let inputs = data.world.fetch::<InputHandler<StringBindings>>();
         if self.key_delay > 75.0 {
             self.key_delay = 0.0;
@@ -65,15 +65,15 @@ impl SimpleState for BTermGemBridge {
             }
         }
         if let Some(pos) = inputs.mouse_position() {
-            self.bterm.on_mouse_position(pos.0, pos.1);
+            self.bterm.on_mouse_position(pos.0 as f64, pos.1 as f64);
         }
-        if inputs.button_is_down(Button::Mouse(button)) {
-            //self.bterm.left_click = true;
-            match button {
-                Button::Mouse(Left) => self.bterm.on_mouse_button(0),
-                Button::Mouse(Right) => self.bterm.on_mouse_button(1),
-                Button::Mouse(Middle) => self.bterm.on_mouse_button(2),
-                Button::Mouse(Other(n)) => self.bterm.on_mouse_button(3 + n),
+        for btn in inputs.buttons_that_are_down() {
+            match btn {
+                Button::Mouse(MouseButton::Left) => self.bterm.on_mouse_button(0),
+                Button::Mouse(MouseButton::Right) => self.bterm.on_mouse_button(1),
+                Button::Mouse(MouseButton::Middle) => self.bterm.on_mouse_button(2),
+                Button::Mouse(MouseButton::Other(num)) => self.bterm.on_mouse_button(3 + num as usize),
+                _ => {}
             }
         }
         std::mem::drop(inputs);

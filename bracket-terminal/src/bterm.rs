@@ -234,7 +234,9 @@ impl BTerm {
         if button_num == 0 {
             self.left_click = true;
         }
-        INPUT.lock().unwrap().on_mouse_button(button_num);
+        let mut input = INPUT.lock().unwrap();
+        input.on_mouse_button(button_num);
+        input.push_event(BEvent::MouseClick{button: button_num});
     }
 
     /// Internal: mark mouse position changes

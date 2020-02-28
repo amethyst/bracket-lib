@@ -124,6 +124,7 @@ impl Input {
     /// Internal - do not use
     pub(crate) fn on_mouse_pixel_position(&mut self, x:f64, y:f64) {
         self.mouse_pixel = (x,y);
+        self.push_event(BEvent::CursorMoved{position: Point::new(x as i32, y as i32)});
     }
 
     /// Internal - do not use

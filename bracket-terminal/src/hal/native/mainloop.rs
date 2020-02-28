@@ -105,7 +105,6 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     bterm.on_event(BEvent::Focused{focused: *focused});
                 }
                 WindowEvent::CursorMoved { position: pos, .. } => {
-                    bterm.on_event(BEvent::CursorMoved{position: Point::new(pos.x as i32, pos.y as i32)});
                     bterm.on_mouse_position(pos.x, pos.y);
                 }
                 WindowEvent::CursorEntered{..} => bterm.on_event(BEvent::CursorEntered),
@@ -119,7 +118,6 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                         MouseButton::Other(num) => 3 + *num as usize,
                     };
                     bterm.on_mouse_button(button);
-                    bterm.on_event(BEvent::MouseClick{button});
                 }
 
                 WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
