@@ -1,4 +1,4 @@
-use crate::prelude::{BTerm, GameState};
+use crate::prelude::{BTerm, GameState, INPUT};
 use crate::{Result, clear_input_state};
 use super::*;
 
@@ -48,7 +48,7 @@ impl SimpleState for BTermGemBridge {
         let inputs = data.world.fetch::<InputHandler<StringBindings>>();
         if self.key_delay > 75.0 {
             self.key_delay = 0.0;
-            for key in inputs.keys_that_are_down() {
+            for (key, scan_code) in inputs.keys_that_are_down().zip(inputs.scan_codes_that_are_down()) {
                 use crate::prelude::VirtualKeyCode;
                 match key {
                     VirtualKeyCode::LShift => self.bterm.shift = true,
@@ -61,13 +61,20 @@ impl SimpleState for BTermGemBridge {
                         self.bterm.key = Some(key);
                     }
                 }
+                self.bterm.on_key_down(key, scan_code);
             }
         }
         if let Some(pos) = inputs.mouse_position() {
-            self.bterm.mouse_pos = (pos.0 as i32, pos.1 as i32);
+            self.bterm.on_mouse_position(pos.0, pos.1);
         }
-        if inputs.button_is_down(Button::Mouse(MouseButton::Left)) {
-            self.bterm.left_click = true;
+        if inputs.button_is_down(Button::Mouse(button)) {
+            //self.bterm.left_click = true;
+            match button {
+                Button::Mouse(Left) => self.bterm.on_mouse_button(0),
+                Button::Mouse(Right) => self.bterm.on_mouse_button(1),
+                Button::Mouse(Middle) => self.bterm.on_mouse_button(2),
+                Button::Mouse(Other(n)) => self.bterm.on_mouse_button(3 + n),
+            }
         }
         std::mem::drop(inputs);
 
