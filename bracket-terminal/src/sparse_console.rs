@@ -1,4 +1,4 @@
-use crate::prelude::{string_to_cp437, Console, XpLayer};
+use crate::prelude::{string_to_cp437, Console, XpLayer, to_cp437};
 use bracket_color::prelude::{XpColor, RGB};
 use bracket_geometry::prelude::Rect;
 use std::any::Any;
@@ -129,7 +129,11 @@ impl Console for SparseConsole {
     fn set_bg(&mut self, x: i32, y: i32, bg: RGB) {
         if let Some(idx) = self.try_at(x, y) {
             self.is_dirty = true;
-            self.tiles[idx].bg = bg;
+            let mut found_tile = false;
+            self.tiles.iter_mut().filter(|t| t.idx == idx).for_each(|t| { t.bg = bg; found_tile = true; });
+            if !found_tile {
+                self.tiles.push(SparseTile{ idx, glyph: to_cp437(' '), fg: RGB::from_u8(0,0,0), bg });
+            }
         }
     }
 
