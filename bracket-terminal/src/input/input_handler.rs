@@ -1,7 +1,7 @@
 use crate::prelude::{BTerm, VirtualKeyCode};
 use std::collections::{ HashSet, VecDeque };
 use bracket_geometry::prelude::Point;
-use super::BEvent;
+use super::{BEvent, INPUT};
 
 #[inline]
 pub fn clear_input_state(term: &mut BTerm) {
@@ -11,9 +11,10 @@ pub fn clear_input_state(term: &mut BTerm) {
     term.control = false;
     term.alt = false;
     term.web_button = None;
-    term.input.keys_down.clear();
-    term.input.scancodes.clear();
-    term.input.mouse_buttons.clear();
+    let mut input = INPUT.lock().unwrap();
+    input.keys_down.clear();
+    input.scancodes.clear();
+    input.mouse_buttons.clear();
 }
 
 #[derive(Clone, Debug)]

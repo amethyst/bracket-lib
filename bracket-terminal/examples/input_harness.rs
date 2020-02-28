@@ -6,13 +6,15 @@ struct State {}
 
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
-        let mouse_pixels = ctx.input.mouse_pixel_pos();
+        let mut input = INPUT.lock().unwrap();
+        let mouse_pixels = input.mouse_pixel_pos();
         ctx.print(1, 1, &format!("Mouse pixel position: {}, {}", mouse_pixels.0, mouse_pixels.1));
-        let mouse_tile = ctx.input.mouse_tile(0);
+        let mouse_tile = input.mouse_tile(0);
         ctx.print(1, 2, &format!("Mouse tile position: {}, {}", mouse_tile.x, mouse_tile.y));
+        ctx.print(1, 3, &format!("FPS: {}", ctx.fps));
 
         loop {
-            let event = ctx.input.pop();
+            let event = input.pop();
             if let Some(event) = event {
                 println!("{:#?}", event);
                 if event == BEvent::CloseRequested {
@@ -26,10 +28,11 @@ impl GameState for State {
 }
 
 fn main() -> BError {
-    let mut context = BTermBuilder::simple80x50()
+    let context = BTermBuilder::simple80x50()
         .with_title("Input Harness - Check Your STDOUT")
+        .with_vsync(false)
         .build()?;
-    context.input.activate_event_queue();
+    INPUT.lock().unwrap().activate_event_queue();
 
     let gs: State = State {};
 

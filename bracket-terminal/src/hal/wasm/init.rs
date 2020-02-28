@@ -69,7 +69,6 @@ pub fn init_raw<S: ToString>(
         web_button: None,
         quitting: false,
         post_scanlines: false,
-        post_screenburn: false,
-        input : crate::prelude::Input::new()
+        post_screenburn: false
     })
 }

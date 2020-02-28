@@ -1,9 +1,9 @@
 use crate::{
     prelude::{
         font::Font, init_raw, Console, GameState, InitHints, Shader, SimpleConsole, VirtualKeyCode,
-        XpFile, XpLayer, Input
+        XpFile, XpLayer, BEvent, INPUT
     },
-    Result,
+    Result
 };
 use bracket_color::prelude::RGB;
 use bracket_geometry::prelude::{Point, Rect};
@@ -38,7 +38,6 @@ pub struct BTerm {
     pub quitting: bool,
     pub post_scanlines: bool,
     pub post_screenburn: bool,
-    pub input: Input
 }
 
 impl BTerm {
@@ -224,26 +223,27 @@ impl BTerm {
 
     /// Internal: mark a key press
     pub(crate) fn on_key_down(&mut self, key : VirtualKeyCode, scan_code: u32) {
-        self.input.on_key_down(key, scan_code);
         self.key = Some(key);
+        INPUT.lock().unwrap().on_key_down(key, scan_code);
     }
 
     /// Internal: mark a mouse press
     pub (crate) fn on_mouse_button(&mut self, button_num: usize) {
-        self.input.on_mouse_button(button_num);
         if button_num == 0 {
             self.left_click = true;
         }
+        INPUT.lock().unwrap().on_mouse_button(button_num);
     }
 
     pub (crate) fn on_mouse_position(&mut self, x:f64, y:f64) {
         self.mouse_pos = (x as i32, y as i32);
-        self.input.on_mouse_pixel_position(x, y);
+        let mut input = INPUT.lock().unwrap();
+        input.on_mouse_pixel_position(x, y);
         // TODO: Console cascade!
         for (i,cons) in self.consoles.iter().enumerate() {
             let max_sizes = cons.console.get_char_size();
 
-            self.input.on_mouse_tile_position(
+            input.on_mouse_tile_position(
                 i,
                 iclamp(
                     self.mouse_pos.0 * max_sizes.0 as i32 / i32::max(1, self.width_pixels as i32),
@@ -257,6 +257,10 @@ impl BTerm {
                 )
             );
         }
+    }
+
+    pub (crate) fn on_event(&mut self, event : BEvent) {
+        INPUT.lock().unwrap().push_event(event);
     }
 }
 

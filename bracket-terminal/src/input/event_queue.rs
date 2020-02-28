@@ -8,5 +8,7 @@ pub enum BEvent {
     Character{c : char},
     Focused{focused : bool},
     CursorEntered,
-    CursorLeft
+    CursorLeft,
+    CursorMoved{position: Point},
+    MouseClick{button: usize}
 }
