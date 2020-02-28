@@ -124,6 +124,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
                 WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
                     on_resize(&mut bterm, **new_inner_size).unwrap();
+                    bterm.on_event(BEvent::ScaleFactorChanged{ new_size: Point::new(new_inner_size.width, new_inner_size.height) })
                 }
 
                 WindowEvent::KeyboardInput {

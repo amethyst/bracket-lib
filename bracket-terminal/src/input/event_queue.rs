@@ -1,4 +1,5 @@
 pub use bracket_geometry::prelude::Point;
+pub use crate::prelude::VirtualKeyCode;
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum BEvent {
@@ -10,5 +11,7 @@ pub enum BEvent {
     CursorEntered,
     CursorLeft,
     CursorMoved{position: Point},
-    MouseClick{button: usize}
+    MouseClick{button: usize},
+    KeyboardInput{key: VirtualKeyCode, scan_code : u32},
+    ScaleFactorChanged{new_size : Point},
 }

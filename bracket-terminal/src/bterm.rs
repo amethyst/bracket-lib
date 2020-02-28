@@ -224,7 +224,9 @@ impl BTerm {
     /// Internal: mark a key press
     pub(crate) fn on_key_down(&mut self, key : VirtualKeyCode, scan_code: u32) {
         self.key = Some(key);
-        INPUT.lock().unwrap().on_key_down(key, scan_code);
+        let mut input = INPUT.lock().unwrap();
+        input.on_key_down(key, scan_code);
+        input.push_event(BEvent::KeyboardInput{key, scan_code});
     }
 
     /// Internal: mark a mouse press
@@ -235,6 +237,7 @@ impl BTerm {
         INPUT.lock().unwrap().on_mouse_button(button_num);
     }
 
+    /// Internal: mark mouse position changes
     pub (crate) fn on_mouse_position(&mut self, x:f64, y:f64) {
         self.mouse_pos = (x as i32, y as i32);
         let mut input = INPUT.lock().unwrap();
@@ -259,6 +262,7 @@ impl BTerm {
         }
     }
 
+    /// Internal: record an event from the HAL back-end
     pub (crate) fn on_event(&mut self, event : BEvent) {
         INPUT.lock().unwrap().push_event(event);
     }
