@@ -1,5 +1,5 @@
 use crate::hal::VirtualKeyCode;
-use crate::prelude::{BTerm, GameState, to_char, SimpleConsole, SparseConsole, INPUT, BEvent};
+use crate::prelude::{BTerm, GameState, to_char, SimpleConsole, SparseConsole, BEvent, BACKEND_INTERNAL};
 use crate::{Result, clear_input_state};
 use pancurses::endwin;
 use std::time::Instant;
@@ -72,7 +72,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         window.clear();
 
         // Tell each console to draw itself
-        for cons in &mut bterm.consoles {
+        for cons in &mut BACKEND_INTERNAL.lock().unwrap().consoles {
             let cons_any = cons.console.as_any();
             if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
                 let mut idx = 0;
