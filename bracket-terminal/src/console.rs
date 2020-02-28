@@ -57,9 +57,6 @@ pub trait Console {
     /// Fills a rectangle-defined region with a given glyph
     fn fill_region(&mut self, target: Rect, glyph: u8, fg: RGB, bg: RGB);
 
-    /// Retrieve a given cell in the console, if present
-    fn get(&self, x: i32, y: i32) -> Option<(&u8, &RGB, &RGB)>;
-
     /// Draws a horizontal progress bar.
     #[allow(clippy::too_many_arguments)]
     fn draw_bar_horizontal(

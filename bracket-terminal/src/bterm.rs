@@ -9,6 +9,7 @@ use bracket_color::prelude::RGB;
 use bracket_geometry::prelude::{Point, Rect};
 use std::any::Any;
 use std::convert::TryInto;
+use std::sync::Mutex;
 
 /// A display console, used internally to provide console render support.
 /// Public in case you want to play with it, or access it directly.
@@ -18,13 +19,34 @@ pub struct DisplayConsole {
     pub font_index: usize,
 }
 
-/// A BTerm context.
-pub struct BTerm {
-    pub width_pixels: u32,
-    pub height_pixels: u32,
+pub struct BTermInternal {
     pub fonts: Vec<Font>,
     pub shaders: Vec<Shader>,
     pub consoles: Vec<DisplayConsole>,
+}
+
+impl BTermInternal {
+    pub fn new() -> Self {
+        Self {
+            fonts: Vec::new(),
+            shaders: Vec::new(),
+            consoles: Vec::new()
+        }
+    }
+}
+
+unsafe impl Send for BTermInternal {}
+unsafe impl Sync for BTermInternal {}
+
+lazy_static! {
+    pub(crate) static ref BACKEND_INTERNAL: Mutex<BTermInternal> = Mutex::new(BTermInternal::new());
+}
+
+/// A BTerm context.
+#[derive(Clone, Debug)]
+pub struct BTerm {
+    pub width_pixels: u32,
+    pub height_pixels: u32,
     pub fps: f32,
     pub frame_time_ms: f32,
     pub active_console: usize,
@@ -109,18 +131,20 @@ impl BTerm {
 
     /// Registers a font, and returns its handle number. Also loads it into OpenGL.
     pub fn register_font(&mut self, font: Font) -> Result<usize> {
-        self.fonts.push(font);
-        Ok(self.fonts.len() - 1)
+        let mut bi = BACKEND_INTERNAL.lock().unwrap();
+        bi.fonts.push(font);
+        Ok(bi.fonts.len() - 1)
     }
 
     /// Registers a new console terminal for output, and returns its handle number.
     pub fn register_console(&mut self, new_console: Box<dyn Console>, font_index: usize) -> usize {
-        self.consoles.push(DisplayConsole {
+        let mut bi = BACKEND_INTERNAL.lock().unwrap();
+        bi.consoles.push(DisplayConsole {
             console: new_console,
             font_index,
             shader_index: 0,
         });
-        self.consoles.len() - 1
+        bi.consoles.len() - 1
     }
 
     /// Registers a new console terminal for output, and returns its handle number. This variant requests
@@ -130,12 +154,13 @@ impl BTerm {
         new_console: Box<dyn Console>,
         font_index: usize,
     ) -> usize {
-        self.consoles.push(DisplayConsole {
+        let mut bi = BACKEND_INTERNAL.lock().unwrap();
+        bi.consoles.push(DisplayConsole {
             console: new_console,
             font_index,
             shader_index: 1,
         });
-        self.consoles.len() - 1
+        bi.consoles.len() - 1
     }
 
     /// Sets the currently active console number.
@@ -152,7 +177,8 @@ impl BTerm {
     /// Applies the current physical mouse position to the active console, and translates the coordinates into that console's coordinate space.
     #[cfg(not(feature = "curses"))]
     pub fn mouse_pos(&self) -> (i32, i32) {
-        let max_sizes = self.consoles[self.active_console].console.get_char_size();
+        let bi = BACKEND_INTERNAL.lock().unwrap();
+        let max_sizes = bi.consoles[self.active_console].console.get_char_size();
 
         (
             iclamp(
@@ -170,7 +196,8 @@ impl BTerm {
 
     /// Applies the current physical mouse position to the active console, and translates the coordinates into that console's coordinate space.
     pub fn mouse_point(&self) -> Point {
-        let max_sizes = self.consoles[self.active_console].console.get_char_size();
+        let bi = BACKEND_INTERNAL.lock().unwrap();
+        let max_sizes = bi.consoles[self.active_console].console.get_char_size();
         Point::new(
             iclamp(
                 self.mouse_pos.0 * max_sizes.0 as i32 / self.width_pixels as i32,
@@ -194,20 +221,22 @@ impl BTerm {
     /// The sprite will be offset by offset_x and offset_y.
     /// Transparent cells will not be rendered.
     pub fn render_xp_sprite(&mut self, xp: &super::rex::XpFile, x: i32, y: i32) {
-        super::rex::xp_to_console(xp, &mut self.consoles[self.active_console].console, x, y);
+        let mut bi = BACKEND_INTERNAL.lock().unwrap();
+        super::rex::xp_to_console(xp, &mut bi.consoles[self.active_console].console, x, y);
     }
 
     /// Saves the entire console stack to a REX Paint xp file. If your consoles are of
     /// varying sizes, the file format supports it - but REX doesn't. So you may want to
     /// avoid that. You can also get individual layers with to_xp_layer.
     pub fn to_xp_file(&self, width: usize, height: usize) -> XpFile {
+        let bi = BACKEND_INTERNAL.lock().unwrap();
         let mut xp = XpFile::new(width, height);
 
         xp.layers
-            .push(self.consoles[self.active_console].console.to_xp_layer());
+            .push(bi.consoles[self.active_console].console.to_xp_layer());
 
-        if self.consoles.len() > 1 {
-            for layer in self.consoles.iter().skip(1) {
+        if bi.consoles.len() > 1 {
+            for layer in bi.consoles.iter().skip(1) {
                 xp.layers.push(layer.console.to_xp_layer());
             }
         }
@@ -241,11 +270,12 @@ impl BTerm {
 
     /// Internal: mark mouse position changes
     pub (crate) fn on_mouse_position(&mut self, x:f64, y:f64) {
+        let bi = BACKEND_INTERNAL.lock().unwrap();
         self.mouse_pos = (x as i32, y as i32);
         let mut input = INPUT.lock().unwrap();
         input.on_mouse_pixel_position(x, y);
         // TODO: Console cascade!
-        for (i,cons) in self.consoles.iter().enumerate() {
+        for (i,cons) in bi.consoles.iter().enumerate() {
             let max_sizes = cons.console.get_char_size();
 
             input.on_mouse_tile_position(
@@ -272,14 +302,16 @@ impl BTerm {
 
 impl Console for BTerm {
     fn get_char_size(&self) -> (u32, u32) {
-        self.consoles[self.active_console].console.get_char_size()
+        let bi = BACKEND_INTERNAL.lock().unwrap();
+        bi.consoles[self.active_console].console.get_char_size()
     }
 
     fn resize_pixels(&mut self, width: u32, height: u32) {
         self.width_pixels = width;
         self.height_pixels = height;
 
-        for c in self.consoles.iter_mut() {
+        let mut bi = BACKEND_INTERNAL.lock().unwrap();
+        for c in bi.consoles.iter_mut() {
             c.console.resize_pixels(width, height);
         }
     }
@@ -287,46 +319,46 @@ impl Console for BTerm {
     // Implement pass-through to active console
 
     fn at(&self, x: i32, y: i32) -> usize {
-        self.consoles[self.active_console].console.at(x, y)
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console].console.at(x, y)
     }
     fn cls(&mut self) {
-        self.consoles[self.active_console].console.cls();
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console].console.cls();
     }
     fn cls_bg(&mut self, background: RGB) {
-        self.consoles[self.active_console]
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .cls_bg(background);
     }
     fn print(&mut self, x: i32, y: i32, output: &str) {
-        self.consoles[self.active_console]
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .print(x, y, output);
     }
     fn print_color(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, output: &str) {
-        self.consoles[self.active_console]
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .print_color(x, y, fg, bg, output);
     }
     fn set(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, glyph: u8) {
-        self.consoles[self.active_console]
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .set(x, y, fg, bg, glyph);
     }
     fn set_bg(&mut self, x: i32, y: i32, bg: RGB) {
-        self.consoles[self.active_console].console.set_bg(x, y, bg);
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console].console.set_bg(x, y, bg);
     }
     fn draw_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB) {
-        self.consoles[self.active_console]
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .draw_box(x, y, width, height, fg, bg);
     }
     fn draw_box_double(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB) {
-        self.consoles[self.active_console]
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .draw_box_double(x, y, width, height, fg, bg);
     }
     fn draw_hollow_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB) {
-        self.consoles[self.active_console]
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .draw_hollow_box(x, y, width, height, fg, bg);
     }
@@ -339,7 +371,7 @@ impl Console for BTerm {
         fg: RGB,
         bg: RGB,
     ) {
-        self.consoles[self.active_console]
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .draw_hollow_box_double(x, y, width, height, fg, bg);
     }
@@ -353,7 +385,7 @@ impl Console for BTerm {
         fg: RGB,
         bg: RGB,
     ) {
-        self.consoles[self.active_console]
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .draw_bar_horizontal(x, y, width, n, max, fg, bg);
     }
@@ -367,36 +399,33 @@ impl Console for BTerm {
         fg: RGB,
         bg: RGB,
     ) {
-        self.consoles[self.active_console]
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .draw_bar_vertical(x, y, height, n, max, fg, bg);
     }
     fn fill_region(&mut self, target: Rect, glyph: u8, fg: RGB, bg: RGB) {
-        self.consoles[self.active_console]
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .fill_region(target, glyph, fg, bg);
     }
-    fn get(&self, x: i32, y: i32) -> Option<(&u8, &RGB, &RGB)> {
-        self.consoles[self.active_console].console.get(x, y)
-    }
     fn print_centered(&mut self, y: i32, text: &str) {
-        self.consoles[self.active_console]
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .print_centered(y, text);
     }
     fn print_color_centered(&mut self, y: i32, fg: RGB, bg: RGB, text: &str) {
-        self.consoles[self.active_console]
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .print_color_centered(y, fg, bg, text);
     }
     fn to_xp_layer(&self) -> XpLayer {
-        self.consoles[self.active_console].console.to_xp_layer()
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console].console.to_xp_layer()
     }
     fn set_offset(&mut self, x: f32, y: f32) {
-        self.consoles[self.active_console].console.set_offset(x, y);
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console].console.set_offset(x, y);
     }
     fn set_scale(&mut self, scale: f32, center_x: i32, center_y: i32) {
-        self.consoles[self.active_console]
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .set_scale(scale, center_x, center_y);
     }

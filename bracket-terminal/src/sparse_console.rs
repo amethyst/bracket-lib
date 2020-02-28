@@ -172,14 +172,6 @@ impl Console for SparseConsole {
         });
     }
 
-    fn get(&self, x: i32, y: i32) -> Option<(&u8, &RGB, &RGB)> {
-        let idx = self.at(x, y);
-        for t in self.tiles.iter().filter(|t| t.idx == idx) {
-            return Some((&t.glyph, &t.fg, &t.bg));
-        }
-        None
-    }
-
     /// Draws a horizontal progress bar
     fn draw_bar_horizontal(
         &mut self,

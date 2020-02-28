@@ -162,20 +162,6 @@ impl Console for SimpleConsole {
         });
     }
 
-    /// Gets the content of a cell
-    fn get(&self, x: i32, y: i32) -> Option<(&u8, &RGB, &RGB)> {
-        if self.in_bounds(x, y) {
-            let idx = self.at(x, y);
-            Some((
-                &self.tiles[idx].glyph,
-                &self.tiles[idx].fg,
-                &self.tiles[idx].bg,
-            ))
-        } else {
-            None
-        }
-    }
-
     /// Draws a horizontal progress bar
     fn draw_bar_horizontal(
         &mut self,
