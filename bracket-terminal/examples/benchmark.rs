@@ -49,7 +49,7 @@ impl GameState for State {
             RGB::from_u8(255, 255, 255),
             RGB::from_u8(0, 0, 0),
         );
-        ctx.print_centered(22, &format!("{} fps", ctx.fps));
+        ctx.print_centered(22, &format!("{} fps", ctx.fps as u32));
     }
 }
 
