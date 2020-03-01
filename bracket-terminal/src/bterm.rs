@@ -1,9 +1,9 @@
 use crate::{
     prelude::{
-        font::Font, init_raw, Console, GameState, InitHints, Shader, SimpleConsole, VirtualKeyCode,
-        XpFile, XpLayer, BEvent, INPUT
+        font::Font, init_raw, BEvent, Console, GameState, InitHints, Shader, SimpleConsole,
+        VirtualKeyCode, XpFile, XpLayer, INPUT,
     },
-    Result
+    Result,
 };
 use bracket_color::prelude::RGB;
 use bracket_geometry::prelude::{Point, Rect};
@@ -30,7 +30,7 @@ impl BTermInternal {
         Self {
             fonts: Vec::new(),
             shaders: Vec::new(),
-            consoles: Vec::new()
+            consoles: Vec::new(),
         }
     }
 }
@@ -251,31 +251,46 @@ impl BTerm {
     }
 
     /// Internal: mark a key press
-    pub(crate) fn on_key_down(&mut self, key : VirtualKeyCode, scan_code: u32) {
+    pub(crate) fn on_key(&mut self, key: VirtualKeyCode, scan_code: u32, pressed: bool) {
         self.key = Some(key);
         let mut input = INPUT.lock().unwrap();
-        input.on_key_down(key, scan_code);
-        input.push_event(BEvent::KeyboardInput{key, scan_code});
+        if pressed {
+            input.on_key_down(key, scan_code);
+        } else {
+            input.on_key_up(key, scan_code);
+        }
+        input.push_event(BEvent::KeyboardInput {
+            key,
+            scan_code,
+            pressed,
+        });
     }
 
     /// Internal: mark a mouse press
-    pub (crate) fn on_mouse_button(&mut self, button_num: usize) {
+    pub(crate) fn on_mouse_button(&mut self, button_num: usize, pressed: bool) {
         if button_num == 0 {
             self.left_click = true;
         }
         let mut input = INPUT.lock().unwrap();
-        input.on_mouse_button(button_num);
-        input.push_event(BEvent::MouseClick{button: button_num});
+        if pressed {
+            input.on_mouse_button_down(button_num);
+        } else {
+            input.on_mouse_button_up(button_num);
+        }
+        input.push_event(BEvent::MouseClick {
+            button: button_num,
+            pressed,
+        });
     }
 
     /// Internal: mark mouse position changes
-    pub (crate) fn on_mouse_position(&mut self, x:f64, y:f64) {
+    pub(crate) fn on_mouse_position(&mut self, x: f64, y: f64) {
         let bi = BACKEND_INTERNAL.lock().unwrap();
         self.mouse_pos = (x as i32, y as i32);
         let mut input = INPUT.lock().unwrap();
         input.on_mouse_pixel_position(x, y);
         // TODO: Console cascade!
-        for (i,cons) in bi.consoles.iter().enumerate() {
+        for (i, cons) in bi.consoles.iter().enumerate() {
             let max_sizes = cons.console.get_char_size();
 
             input.on_mouse_tile_position(
@@ -289,13 +304,13 @@ impl BTerm {
                     self.mouse_pos.1 * max_sizes.1 as i32 / i32::max(1, self.height_pixels as i32),
                     0,
                     max_sizes.1 as i32 - 1,
-                )
+                ),
             );
         }
     }
 
     /// Internal: record an event from the HAL back-end
-    pub (crate) fn on_event(&mut self, event : BEvent) {
+    pub(crate) fn on_event(&mut self, event: BEvent) {
         INPUT.lock().unwrap().push_event(event);
     }
 }
@@ -319,10 +334,14 @@ impl Console for BTerm {
     // Implement pass-through to active console
 
     fn at(&self, x: i32, y: i32) -> usize {
-        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console].console.at(x, y)
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .at(x, y)
     }
     fn cls(&mut self) {
-        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console].console.cls();
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .cls();
     }
     fn cls_bg(&mut self, background: RGB) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
@@ -345,7 +364,9 @@ impl Console for BTerm {
             .set(x, y, fg, bg, glyph);
     }
     fn set_bg(&mut self, x: i32, y: i32, bg: RGB) {
-        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console].console.set_bg(x, y, bg);
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .set_bg(x, y, bg);
     }
     fn draw_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
@@ -419,10 +440,14 @@ impl Console for BTerm {
             .print_color_centered(y, fg, bg, text);
     }
     fn to_xp_layer(&self) -> XpLayer {
-        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console].console.to_xp_layer()
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .to_xp_layer()
     }
     fn set_offset(&mut self, x: f32, y: f32) {
-        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console].console.set_offset(x, y);
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .set_offset(x, y);
     }
     fn set_scale(&mut self, scale: f32, center_x: i32, center_y: i32) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
