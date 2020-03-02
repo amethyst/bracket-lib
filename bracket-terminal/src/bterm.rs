@@ -200,12 +200,12 @@ impl BTerm {
         let max_sizes = bi.consoles[self.active_console].console.get_char_size();
         Point::new(
             iclamp(
-                self.mouse_pos.0 * max_sizes.0 as i32 / self.width_pixels as i32,
+                self.mouse_pos.0 * max_sizes.0 as i32 / self.width_pixels.max(1) as i32,
                 0,
                 max_sizes.0 as i32 - 1,
             ),
             iclamp(
-                self.mouse_pos.1 * max_sizes.1 as i32 / self.height_pixels as i32,
+                self.mouse_pos.1 * max_sizes.1 as i32 / self.height_pixels.max(1) as i32,
                 0,
                 max_sizes.1 as i32 - 1,
             ),
