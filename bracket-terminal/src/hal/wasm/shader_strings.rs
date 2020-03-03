@@ -54,12 +54,13 @@ void main(){
     fontcoords.r = (glyphX + spriteX) * glyphSizeX;
     fontcoords.g = (glyphY - (1.0f - spriteY)) * glyphSizeY;
 
-    vec3 color = texture(texture1, fontcoords).rgb * rgb;
+    vec3 raw_color = texture(texture1, fontcoords).rgb;
+    vec3 color = raw_color * rgb;
     vec3 bg = texture(bgBuffer, TexCoords).rgb;
 
     // Set the background color
     bool applyScan = true;
-    if (color.r < 0.1 && color.g < 0.1 && color.b < 0.1) {
+    if (raw_color.r < 0.1 && raw_color.g < 0.1 && raw_color.b < 0.1) {
         if (!hasBackground) discard;
         if (bg.r < 0.1 && bg.g < 0.1 && bg.b < 0.1) {
             if (screenBurn) {
