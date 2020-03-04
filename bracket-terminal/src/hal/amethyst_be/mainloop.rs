@@ -61,7 +61,7 @@ impl SimpleState for BTermGemBridge {
                         self.bterm.key = Some(key);
                     }
                 }
-                self.bterm.on_key_down(key, scan_code);
+                self.bterm.on_key(key, scan_code, true);
             }
         }
         if let Some(pos) = inputs.mouse_position() {
@@ -69,10 +69,10 @@ impl SimpleState for BTermGemBridge {
         }
         for btn in inputs.buttons_that_are_down() {
             match btn {
-                Button::Mouse(MouseButton::Left) => self.bterm.on_mouse_button(0),
-                Button::Mouse(MouseButton::Right) => self.bterm.on_mouse_button(1),
-                Button::Mouse(MouseButton::Middle) => self.bterm.on_mouse_button(2),
-                Button::Mouse(MouseButton::Other(num)) => self.bterm.on_mouse_button(3 + num as usize),
+                Button::Mouse(MouseButton::Left) => self.bterm.on_mouse_button(0, true),
+                Button::Mouse(MouseButton::Right) => self.bterm.on_mouse_button(1, true),
+                Button::Mouse(MouseButton::Middle) => self.bterm.on_mouse_button(2, true),
+                Button::Mouse(MouseButton::Other(num)) => self.bterm.on_mouse_button(3 + num as usize, true),
                 _ => {}
             }
         }
@@ -121,12 +121,13 @@ impl SimpleState for BTermGemBridge {
 
                     amethyst::tiles::iters::Region::new(
                         Point3::new(0, 0, 0),
-                        Point3::new(size.0, size.1, 0),
+                        Point3::new(size.0, size.1-1, 0),
                     )
                     .iter()
                     .for_each(|coord| {
                         if let Some(bg) = map.get_mut(&coord) {
-                            let idx = ((coord.y * size.0) + coord.x) as usize;
+                            let flipped_y = (size.1 - 1) - coord.y;
+                            let idx = ((flipped_y * size.0) + coord.x) as usize;
                             if idx < concrete.tiles.len() {
                                 let tile = &concrete.tiles[idx];
                                 bg.glyph = 219;
