@@ -13,6 +13,7 @@ use crossterm::{cursor, queue};
 use std::io::{stdout, Write};
 use std::time::Duration;
 use std::time::Instant;
+use std::collections::HashSet;
 
 pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
     let now = Instant::now();
@@ -24,6 +25,9 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     std::panic::set_hook(Box::new(|_| {
         reset_terminal();
     }));
+
+    let mut key_map : HashSet<crossterm::event::KeyCode> = HashSet::new();
+    let mut keys_this_frame : HashSet<crossterm::event::KeyCode> = HashSet::new();
 
     'main: while !bterm.quitting {
         let now_seconds = now.elapsed().as_secs();
@@ -45,6 +49,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         clear_input_state(&mut bterm);
 
         // Input handler goes here
+        keys_this_frame.clear();
         while poll(Duration::from_secs(0))? {
             match read().expect("Uh oh") {
                 Event::Mouse(event) => {
@@ -76,8 +81,12 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     {
                         break 'main;
                     }
-                    if let Some(key) = keycode_to_key(key.code) {
-                        bterm.on_key(key, 0, true); // How do I get the scancode?
+                    keys_this_frame.insert(key.code);
+                    if !key_map.contains(&key.code) {
+                        key_map.insert(key.code);
+                        if let Some(key) = keycode_to_key(key.code) {
+                            bterm.on_key(key, 0, true); // How do I get the scancode?
+                        }
                     }
 
                     // Modifier handling
@@ -95,6 +104,18 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     bterm.on_event(BEvent::Resized{new_size : bracket_geometry::prelude::Point::new(x,y)});
                 }
                 _ => {}
+            }
+        }
+
+        let keys_released = key_map
+            .iter()
+            .filter(|k| !keys_this_frame.contains(k))
+            .map(|k| *k)
+            .collect::<Vec<crossterm::event::KeyCode>>();
+        for key in keys_released {
+            key_map.remove(&key);
+            if let Some(key) = keycode_to_key(key) {
+                bterm.on_key(key, 0, false);
             }
         }
 
