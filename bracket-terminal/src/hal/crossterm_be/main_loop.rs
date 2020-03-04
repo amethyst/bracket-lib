@@ -53,7 +53,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                             bterm.left_click = true;
                             bterm.mouse_pos = (x as i32 * 8, y as i32 * 8);
                             bterm.on_mouse_position(x as f64 * 8.0, y as f64 * 8.0);
-                            bterm.on_mouse_button(0);
+                            bterm.on_mouse_button(0, true);
                         }
                         _ => {
                             eprintln!("{:?}", event);
@@ -69,7 +69,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                         break 'main;
                     }
                     if let Some(key) = keycode_to_key(key.code) {
-                        bterm.on_key_down(key, 0); // How do I get the scancode?
+                        bterm.on_key(key, 0, true); // How do I get the scancode?
                     }
 
                     // Modifier handling
