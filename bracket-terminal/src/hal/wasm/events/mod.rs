@@ -17,6 +17,12 @@ pub fn bind_wasm_events(canvas: &web_sys::HtmlCanvasElement) {
     document.set_onkeydown(Some(key_callback.as_ref().unchecked_ref()));
     key_callback.forget();
 
+    let keyup_callback = Closure::wrap(Box::new(|e: web_sys::KeyboardEvent| {
+        on_key_up(e.clone());
+    }) as Box<dyn FnMut(_)>);
+    document.set_onkeyup(Some(keyup_callback.as_ref().unchecked_ref()));
+    keyup_callback.forget();
+
     // Handle mouse moving
     let mousemove_callback = Closure::wrap(Box::new(|e: web_sys::MouseEvent| {
         on_mouse_move(e.clone());
@@ -32,4 +38,12 @@ pub fn bind_wasm_events(canvas: &web_sys::HtmlCanvasElement) {
 
     canvas.set_onmousedown(Some(mouseclick_callback.as_ref().unchecked_ref()));
     mouseclick_callback.forget();
+
+    // Handle mouse release
+    let mouseunclick_callback = Closure::wrap(Box::new(|e: web_sys::MouseEvent| {
+        on_mouse_up(e.clone());
+    }) as Box<dyn FnMut(_)>);
+
+    canvas.set_onmouseup(Some(mouseunclick_callback.as_ref().unchecked_ref()));
+    mouseunclick_callback.forget();
 }

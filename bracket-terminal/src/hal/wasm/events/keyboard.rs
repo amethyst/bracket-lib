@@ -12,8 +12,6 @@ pub static mut GLOBAL_MODIFIERS: (bool, bool, bool) = (false, false, false);
 /// Handler for on_key events from the browser. Sets the global variables, which are then
 /// referenced by the main loop.
 pub fn on_key(key: web_sys::KeyboardEvent) {
-    //super::console::log("Key Event");
-
     let mut input = INPUT.lock().unwrap();
     input.push_event(BEvent::Character {
         c: std::char::from_u32(key.char_code()).unwrap(),
@@ -36,6 +34,17 @@ pub fn on_key(key: web_sys::KeyboardEvent) {
         if key.get_modifier_state("Alt") {
             GLOBAL_MODIFIERS.2 = true;
         }
+    }
+}
+
+pub fn on_key_up(key: web_sys::KeyboardEvent) {
+    let mut input = INPUT.lock().unwrap();
+    input.push_event(BEvent::Character {
+        c: std::char::from_u32(key.char_code()).unwrap(),
+    });
+    let scan_code = key.key_code();
+    if let Some(key) = virtual_key_code(&key) {
+        input.on_key_up(key, scan_code);
     }
 }
 
