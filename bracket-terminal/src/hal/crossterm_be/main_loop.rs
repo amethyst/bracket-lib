@@ -52,14 +52,20 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     // Button capture goes here
                     // Mouse doesn't seem to support cursor position? That's going to cause issues.
                     match event {
-                        crossterm::event::MouseEvent::Down(_button, x, y, _modifiers) => {
+                        crossterm::event::MouseEvent::Down(button, x, y, _modifiers) => {
                             bterm.left_click = true;
                             bterm.mouse_pos = (x as i32 * 8, y as i32 * 8);
                             bterm.on_mouse_position(x as f64 * 8.0, y as f64 * 8.0);
-                            bterm.on_mouse_button(0, true);
+                            bterm.on_mouse_button(button as usize, true);
+                        }
+                        crossterm::event::MouseEvent::Up(button, _x, _y, _modifiers) => {
+                            bterm.on_mouse_button(button as usize, false);
+                        }
+                        crossterm::event::MouseEvent::Drag(_button, x, y, _modifiers) => {
+                            bterm.on_mouse_position(x as f64 * 8.0, y as f64 * 8.0);
                         }
                         _ => {
-                            eprintln!("{:?}", event);
+                            //eprintln!("{:?}", event);
                         }
                     }
                 }
@@ -84,6 +90,9 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     if key.modifiers == crossterm::event::KeyModifiers::ALT {
                         bterm.alt = true;
                     }
+                }
+                Event::Resize(x, y) => {
+                    bterm.on_event(BEvent::Resized{new_size : bracket_geometry::prelude::Point::new(x,y)});
                 }
                 _ => {}
             }
