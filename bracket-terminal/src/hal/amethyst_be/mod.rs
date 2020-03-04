@@ -5,6 +5,8 @@ pub mod shader;
 pub use init::*;
 mod mainloop;
 pub use mainloop::*;
+mod input_helpers;
+pub(crate) use input_helpers::*;
 
 pub struct InitHints {
     pub vsync: bool,

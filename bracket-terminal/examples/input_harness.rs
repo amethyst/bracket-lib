@@ -6,12 +6,17 @@ struct State {}
 
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
+        ctx.cls();
         let mut input = INPUT.lock().unwrap();
         let mouse_pixels = input.mouse_pixel_pos();
         ctx.print(1, 1, &format!("Mouse pixel position: {}, {}", mouse_pixels.0, mouse_pixels.1));
         let mouse_tile = input.mouse_tile(0);
         ctx.print(1, 2, &format!("Mouse tile position: {}, {}", mouse_tile.x, mouse_tile.y));
         ctx.print(1, 3, &format!("FPS: {}", ctx.fps));
+
+        for (i,btn) in input.mouse_button_pressed_set().iter().enumerate() {
+            ctx.print(1, 5+i as i32, &format!("Mouse Button {} is pressed", btn));
+        }
 
         input.for_each_message(|event| {
             bracket_terminal::console::log(&format!("{:#?}", event));

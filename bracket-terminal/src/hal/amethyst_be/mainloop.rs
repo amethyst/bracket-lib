@@ -1,6 +1,7 @@
-use crate::prelude::{BTerm, GameState, BACKEND_INTERNAL};
+use crate::prelude::{BTerm, GameState, BACKEND_INTERNAL, INPUT};
 use crate::{Result, clear_input_state};
 use super::*;
+use std::collections::HashSet;
 
 use amethyst::{
     core::math::{Point3, Vector3},
@@ -67,14 +68,14 @@ impl SimpleState for BTermGemBridge {
         if let Some(pos) = inputs.mouse_position() {
             self.bterm.on_mouse_position(pos.0 as f64, pos.1 as f64);
         }
-        for btn in inputs.buttons_that_are_down() {
-            match btn {
-                Button::Mouse(MouseButton::Left) => self.bterm.on_mouse_button(0, true),
-                Button::Mouse(MouseButton::Right) => self.bterm.on_mouse_button(1, true),
-                Button::Mouse(MouseButton::Middle) => self.bterm.on_mouse_button(2, true),
-                Button::Mouse(MouseButton::Other(num)) => self.bterm.on_mouse_button(3 + num as usize, true),
-                _ => {}
-            }
+
+        // Set magic for mouse buttons
+        let (newly_pressed_buttons, newly_released_buttons) = button_state_map(&inputs);
+        for btn in newly_pressed_buttons {
+            self.bterm.on_mouse_button(btn, true);
+        }
+        for btn in newly_released_buttons {
+            self.bterm.on_mouse_button(btn, false);
         }
         std::mem::drop(inputs);
 

@@ -56,6 +56,11 @@ impl Input {
         self.mouse_buttons.contains(&button_num)
     }
 
+    /// HashSet of pressed mouse buttons
+    pub fn mouse_button_pressed_set(&self) -> &HashSet<usize> {
+        &self.mouse_buttons
+    }
+
     /// Returns the current mouse position (0,0 if there isn't one yet), in TILE coordinates for the specified
     /// console layer.
     pub fn mouse_tile_pos(&self, console: usize) -> (i32, i32) {
