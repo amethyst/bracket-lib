@@ -16,6 +16,8 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     let mut frames = 0;
 
     let mut button_map : HashSet<usize> = HashSet::new();
+    let mut key_map : HashSet<char> = HashSet::new();
+    let mut keys_this_frame : HashSet<char> = HashSet::new();
 
     while !bterm.quitting {
         let now_seconds = now.elapsed().as_secs();
@@ -36,58 +38,78 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         // Input
         clear_input_state(&mut bterm);
         let mut buttons_this_frame = (false, false, false);
-        let input = BACKEND.lock().unwrap().window.as_ref().unwrap().getch();
-        if let Some(input) = input {
-            match input {
-                pancurses::Input::Character(c) => {
-                    bterm.on_event(BEvent::Character { c });
-                    if let Some(key) = char_to_keycode(c) {
-                        bterm.on_key(key, 0, true); // How do I get the scancode?
+        keys_this_frame.clear();
+        loop {
+            let input = BACKEND.lock().unwrap().window.as_ref().unwrap().getch();
+            if let Some(input) = input {
+                match input {
+                    pancurses::Input::Character(c) => {
+                        keys_this_frame.insert(c);
+                        if !key_map.contains(&c) {
+                            bterm.on_event(BEvent::Character { c });
+                            if let Some(key) = char_to_keycode(c) {
+                                bterm.on_key(key, 0, true); // How do I get the scancode?
+                                key_map.insert(c);
+                            }
+                        }
+                    }
+                    pancurses::Input::KeyLeft => bterm.on_key(VirtualKeyCode::Left, 0, true),
+                    pancurses::Input::KeyRight => bterm.on_key(VirtualKeyCode::Right, 0, true),
+                    pancurses::Input::KeyUp => bterm.on_key(VirtualKeyCode::Up, 0, true),
+                    pancurses::Input::KeyDown => bterm.on_key(VirtualKeyCode::Down, 0, true),
+                    pancurses::Input::KeyHome => bterm.on_key(VirtualKeyCode::Home, 0, true),
+                    pancurses::Input::KeyMouse => {
+                        if let Ok(mouse_event) = pancurses::getmouse() {
+                            if mouse_event.bstate & pancurses::BUTTON1_CLICKED > 0 {
+                                if !button_map.contains(&0) {
+                                    bterm.on_mouse_button(0, true);
+                                    button_map.insert(0);
+                                    buttons_this_frame.0 = true;
+                                }
+                            }
+                            if mouse_event.bstate & pancurses::BUTTON2_CLICKED > 0 {
+                                if !button_map.contains(&2) {
+                                    bterm.on_mouse_button(2, true);
+                                    button_map.insert(2);
+                                    buttons_this_frame.2 = true;
+                                }
+                            }
+                            if mouse_event.bstate & pancurses::BUTTON3_CLICKED > 0 {
+                                if !button_map.contains(&1) {
+                                    bterm.on_mouse_button(1, true);
+                                    button_map.insert(1);
+                                    buttons_this_frame.1 = true;
+                                }
+                            }
+                            bterm.on_mouse_position(
+                                mouse_event.x as f64 * 8.0,
+                                mouse_event.y as f64 * 8.0,
+                            );
+                        }
+                    }
+                    _ => {
+                        println!("{:#?}", input);
                     }
                 }
-                pancurses::Input::KeyLeft => bterm.on_key(VirtualKeyCode::Left, 0, true),
-                pancurses::Input::KeyRight => bterm.on_key(VirtualKeyCode::Right, 0, true),
-                pancurses::Input::KeyUp => bterm.on_key(VirtualKeyCode::Up, 0, true),
-                pancurses::Input::KeyDown => bterm.on_key(VirtualKeyCode::Down, 0, true),
-                pancurses::Input::KeyHome => bterm.on_key(VirtualKeyCode::Home, 0, true),
-                pancurses::Input::KeyMouse => {
-                    if let Ok(mouse_event) = pancurses::getmouse() {
-                        if mouse_event.bstate & pancurses::BUTTON1_CLICKED > 0 {
-                            if !button_map.contains(&0) {
-                                bterm.on_mouse_button(0, true);
-                                button_map.insert(0);
-                                buttons_this_frame.0 = true;
-                            }
-                        }
-                        if mouse_event.bstate & pancurses::BUTTON2_CLICKED > 0 {
-                            if !button_map.contains(&2) {
-                                bterm.on_mouse_button(2, true);
-                                button_map.insert(2);
-                                buttons_this_frame.2 = true;
-                            }
-                        }
-                        if mouse_event.bstate & pancurses::BUTTON3_CLICKED > 0 {
-                            if !button_map.contains(&1) {
-                                bterm.on_mouse_button(1, true);
-                                button_map.insert(1);
-                                buttons_this_frame.1 = true;
-                            }
-                        }
-                        bterm.on_mouse_position(
-                            mouse_event.x as f64 * 8.0,
-                            mouse_event.y as f64 * 8.0,
-                        );
-                    }
-                }
-                _ => {
-                    println!("{:#?}", input);
-                }
+            } else {
+                break;
             }
         }
 
         if !buttons_this_frame.0 && button_map.contains(&0) {
             button_map.remove(&0);
             bterm.on_mouse_button(0, false);
+        }
+        let keys_released = key_map
+            .iter()
+            .filter(|k| !keys_this_frame.contains(k))
+            .map(|k| *k)
+            .collect::<Vec<char>>();
+        for key in keys_released {
+            key_map.remove(&key);
+            if let Some(key) = char_to_keycode(key) {
+                bterm.on_key(key, 0, false);
+            }
         }
 
         gamestate.tick(&mut bterm);
