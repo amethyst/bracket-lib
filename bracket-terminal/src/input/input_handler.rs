@@ -1,4 +1,4 @@
-use super::{BEvent, INPUT};
+use super::BEvent;
 use crate::prelude::{BTerm, VirtualKeyCode};
 use bracket_geometry::prelude::Point;
 use std::collections::{HashSet, VecDeque};
