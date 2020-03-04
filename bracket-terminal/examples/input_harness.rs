@@ -26,8 +26,8 @@ fn main() -> BError {
     let context = BTermBuilder::simple80x50()
         .with_title("Input Harness - Check Your STDOUT")
         .with_vsync(false)
+        .with_advanced_input(true)
         .build()?;
-    INPUT.lock().unwrap().activate_event_queue();
 
     let gs: State = State {};
 

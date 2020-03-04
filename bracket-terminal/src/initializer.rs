@@ -1,4 +1,4 @@
-use crate::prelude::{font::Font, init_raw, BTerm, InitHints, SimpleConsole, SparseConsole};
+use crate::prelude::{font::Font, init_raw, BTerm, InitHints, SimpleConsole, SparseConsole, INPUT};
 use crate::Result;
 use std::collections::HashMap;
 use std::convert::TryInto;
@@ -41,6 +41,7 @@ pub struct BTermBuilder {
     tile_width: u32,
     tile_height: u32,
     platform_hints: InitHints,
+    advanced_input: bool
 }
 
 impl BTermBuilder {
@@ -57,6 +58,7 @@ impl BTermBuilder {
             tile_height: 8,
             tile_width: 8,
             platform_hints: InitHints::new(),
+            advanced_input: false
         }
     }
 
@@ -72,6 +74,7 @@ impl BTermBuilder {
             tile_height: 8,
             tile_width: 8,
             platform_hints: InitHints::new(),
+            advanced_input: false
         };
         cb.fonts.push(BuilderFont {
             path: "terminal8x8.png".to_string(),
@@ -102,6 +105,7 @@ impl BTermBuilder {
             tile_height: 8,
             tile_width: 8,
             platform_hints: InitHints::new(),
+            advanced_input: false
         };
         cb.fonts.push(BuilderFont {
             path: "terminal8x8.png".to_string(),
@@ -127,6 +131,7 @@ impl BTermBuilder {
             tile_height: 16,
             tile_width: 8,
             platform_hints: InitHints::new(),
+            advanced_input: false
         };
         cb.fonts.push(BuilderFont {
             path: "vga8x16.png".to_string(),
@@ -160,6 +165,7 @@ impl BTermBuilder {
             tile_height: 16,
             tile_width: 8,
             platform_hints: InitHints::new(),
+            advanced_input: false
         };
         cb.fonts.push(BuilderFont {
             path: "vga8x16.png".to_string(),
@@ -312,6 +318,12 @@ impl BTermBuilder {
         self
     }
 
+    /// Enables input event queue
+    pub fn with_advanced_input(mut self, advanced_input: bool) -> Self {
+        self.advanced_input = advanced_input;
+        self
+    }
+
     /// Combine all of the builder parameters, and return an BTerm context ready to go.
     pub fn build(self) -> Result<BTerm> {
         let mut context = init_raw(
@@ -358,6 +370,10 @@ impl BTermBuilder {
                     context.register_console_no_bg(SparseConsole::init(*width, *height), font_id);
                 }
             }
+        }
+
+        if self.advanced_input {
+            INPUT.lock().unwrap().activate_event_queue();
         }
 
         Ok(context)
