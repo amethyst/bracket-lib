@@ -9,12 +9,12 @@ mod gamestate;
 mod gui_helpers;
 mod hal;
 mod initializer;
+mod input;
 mod multi_tile_sprite;
 pub mod rex;
 mod simple_console;
 mod sparse_console;
 mod textblock;
-mod input;
 
 pub(crate) type Error = Box<dyn std::error::Error>;
 pub(crate) type Result<T> = core::result::Result<T, Error>;
@@ -22,7 +22,6 @@ pub(crate) use input::clear_input_state;
 
 pub mod prelude {
 
-    pub use crate::input::{Input, BEvent, INPUT};
     pub use crate::bterm::*;
     pub use crate::codepage437::*;
     pub use crate::command_buffer::*;
@@ -32,10 +31,9 @@ pub mod prelude {
     pub use crate::embedding::EMBED;
     pub use crate::gamestate::GameState;
     pub use crate::gui_helpers::*;
-    pub use crate::hal::{
-        font, init_raw, BTermPlatform, InitHints, Shader, BACKEND
-    };
+    pub use crate::hal::{font, init_raw, BTermPlatform, InitHints, Shader, BACKEND};
     pub use crate::initializer::*;
+    pub use crate::input::{BEvent, Input, INPUT};
     pub use crate::multi_tile_sprite::*;
     pub use crate::rex;
     pub use crate::rex::*;

@@ -1,6 +1,6 @@
-use crate::prelude::{BTerm, GameState, BACKEND_INTERNAL};
-use crate::{Result, clear_input_state};
 use super::*;
+use crate::prelude::{BTerm, GameState, BACKEND_INTERNAL};
+use crate::{clear_input_state, Result};
 use std::collections::HashSet;
 
 use amethyst::{
@@ -18,13 +18,13 @@ use amethyst::{
     },
     tiles::{FlatEncoder, MapStorage, RenderTiles2D, Tile, TileMap},
     utils::application_root_dir,
-    winit::VirtualKeyCode
+    winit::VirtualKeyCode,
 };
 
 pub struct BTermGemBridge {
     bterm: BTerm,
     state: Box<dyn GameState>,
-    keys_down : HashSet<(VirtualKeyCode, u32)>
+    keys_down: HashSet<(VirtualKeyCode, u32)>,
 }
 
 impl SimpleState for BTermGemBridge {
@@ -128,7 +128,7 @@ impl SimpleState for BTermGemBridge {
 
                     amethyst::tiles::iters::Region::new(
                         Point3::new(0, 0, 0),
-                        Point3::new(size.0, size.1-1, 0),
+                        Point3::new(size.0, size.1 - 1, 0),
                     )
                     .iter()
                     .for_each(|coord| {
@@ -309,7 +309,7 @@ pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> Result<()> {
         BTermGemBridge {
             bterm,
             state: Box::new(gamestate),
-            keys_down: HashSet::new()
+            keys_down: HashSet::new(),
         },
         game_data,
     )

@@ -11,11 +11,7 @@ pub struct SparseConsoleBackend {
 }
 
 impl SparseConsoleBackend {
-    pub fn new(
-        gl: &glow::Context,
-        width: usize,
-        height: usize,
-    ) -> SparseConsoleBackend {
+    pub fn new(gl: &glow::Context, width: usize, height: usize) -> SparseConsoleBackend {
         let texture;
         unsafe {
             texture = gl.create_texture().unwrap();

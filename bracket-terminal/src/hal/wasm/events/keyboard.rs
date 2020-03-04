@@ -1,5 +1,5 @@
 use super::super::VirtualKeyCode;
-use crate::prelude::{INPUT, BEvent};
+use crate::prelude::{BEvent, INPUT};
 
 /// Provides a global variable for keyboard events to be written to. I'm not really
 /// a fan of using globals, but it was hard to find an alternative given the separation
@@ -15,7 +15,9 @@ pub fn on_key(key: web_sys::KeyboardEvent) {
     //super::console::log("Key Event");
 
     let mut input = INPUT.lock().unwrap();
-    input.push_event(BEvent::Character{ c : std::char::from_u32(key.char_code()).unwrap() });
+    input.push_event(BEvent::Character {
+        c: std::char::from_u32(key.char_code()).unwrap(),
+    });
     let scan_code = key.key_code();
     if let Some(key) = virtual_key_code(&key) {
         unsafe {

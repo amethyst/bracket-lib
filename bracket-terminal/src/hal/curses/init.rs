@@ -1,5 +1,5 @@
-use pancurses::{initscr, noecho, resize_term};
 pub use super::*;
+use pancurses::{initscr, noecho, resize_term};
 
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
@@ -53,7 +53,7 @@ pub fn init_raw<S: ToString>(
         web_button: None,
         quitting: false,
         post_scanlines: false,
-        post_screenburn: false
+        post_screenburn: false,
     };
     Ok(bterm)
 }

@@ -30,7 +30,7 @@ lazy_static! {
         context_wrapper: None,
         backing_buffer: None,
         frame_sleep_time: None,
-        gl_callback : None
+        gl_callback: None
     });
 }
 
@@ -44,7 +44,7 @@ pub struct PlatformGL {
     pub context_wrapper: Option<WrappedContext>,
     pub backing_buffer: Option<super::Framebuffer>,
     pub frame_sleep_time: Option<u64>,
-    pub gl_callback: Option<GlCallback>
+    pub gl_callback: Option<GlCallback>,
 }
 
 unsafe impl Send for PlatformGL {}

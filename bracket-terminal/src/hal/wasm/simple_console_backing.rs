@@ -11,11 +11,7 @@ pub struct SimpleConsoleBackend {
 }
 
 impl SimpleConsoleBackend {
-    pub fn new(
-        gl: &glow::Context,
-        width: usize,
-        height: usize,
-    ) -> SimpleConsoleBackend {
+    pub fn new(gl: &glow::Context, width: usize, height: usize) -> SimpleConsoleBackend {
         let texture;
         unsafe {
             texture = gl.create_texture().unwrap();

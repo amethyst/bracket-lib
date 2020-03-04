@@ -15,7 +15,7 @@ enum TileType {
 struct State {
     map: Vec<TileType>,
     player_position: usize,
-    keymap : HashMap<VirtualKeyCode, (i32, i32)>
+    keymap: HashMap<VirtualKeyCode, (i32, i32)>,
 }
 
 // We're storing all the tiles in one big array, so we need a way to map an X,Y coordinate to
@@ -38,7 +38,7 @@ impl State {
         let mut state = State {
             map: vec![TileType::Floor; 80 * 50],
             player_position: xy_idx(40, 25),
-            keymap: HashMap::new()
+            keymap: HashMap::new(),
         };
 
         // Make the keyboard mappings
@@ -101,9 +101,9 @@ impl State {
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
         // New: handle keyboard inputs.
-        let mut delta = (0,0);
+        let mut delta = (0, 0);
         let input = INPUT.lock().unwrap();
-        self.keymap.iter().for_each(|(key,key_delta)| {
+        self.keymap.iter().for_each(|(key, key_delta)| {
             if input.is_key_pressed(*key) {
                 delta = *key_delta;
             }

@@ -40,15 +40,17 @@ const FRAGMENT_SHADER_SOURCE: &str = r#"#version 300 es
     }
 "#;
 
-fn gl_setup(gl : &glow::Context, state : &mut State) {
-    state.my_shader = Some(
-        Shader::new(gl, VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE)
-    );
+fn gl_setup(gl: &glow::Context, state: &mut State) {
+    state.my_shader = Some(Shader::new(
+        gl,
+        VERTEX_SHADER_SOURCE,
+        FRAGMENT_SHADER_SOURCE,
+    ));
 
     let vertices: [f32; 9] = [
         -0.5, -0.5, 0.0, // left
-         0.5, -0.5, 0.0, // right
-         0.0,  0.5, 0.0  // top
+        0.5, -0.5, 0.0, // right
+        0.0, 0.5, 0.0, // top
     ];
     unsafe {
         let vao = gl.create_vertex_array().unwrap();
@@ -74,7 +76,7 @@ fn gl_setup(gl : &glow::Context, state : &mut State) {
     }
 }
 
-fn gl_render(gs : &mut dyn std::any::Any, gl : &glow::Context) {
+fn gl_render(gs: &mut dyn std::any::Any, gl: &glow::Context) {
     let state = gs.downcast_ref::<State>().unwrap();
     unsafe {
         state.my_shader.as_ref().unwrap().useProgram(gl);
@@ -86,18 +88,18 @@ fn gl_render(gs : &mut dyn std::any::Any, gl : &glow::Context) {
 
 #[cfg(not(target_arch = "wasm32"))]
 struct State {
-    setup_gl : bool,
-    my_shader : Option<Shader>,
-    vao : Option<u32>,
-    vbo : Option<u32>
+    setup_gl: bool,
+    my_shader: Option<Shader>,
+    vao: Option<u32>,
+    vbo: Option<u32>,
 }
 
 #[cfg(target_arch = "wasm32")]
 struct State {
-    setup_gl : bool,
-    my_shader : Option<Shader>,
-    vao : Option<glow::WebVertexArrayKey>,
-    vbo : Option<glow::WebBufferKey>
+    setup_gl: bool,
+    my_shader: Option<Shader>,
+    vao: Option<glow::WebVertexArrayKey>,
+    vbo: Option<glow::WebBufferKey>,
 }
 
 impl GameState for State {
@@ -105,13 +107,13 @@ impl GameState for State {
         if !self.setup_gl {
             let mut be = BACKEND.lock().unwrap();
             let gl = be.gl.as_ref().unwrap();
-                self.setup_gl = true;
+            self.setup_gl = true;
 
             gl_setup(gl, self);
             be.gl_callback = Some(gl_render);
         }
 
-        ctx.print(1,1,"Hello, the triangle is a native OpenGL call.");
+        ctx.print(1, 1, "Hello, the triangle is a native OpenGL call.");
     }
 }
 
@@ -121,10 +123,10 @@ fn main() -> BError {
         .build()?;
 
     let gs: State = State {
-        setup_gl : false,
-        my_shader : None,
-        vao : None,
-        vbo : None
+        setup_gl: false,
+        my_shader: None,
+        vao: None,
+        vbo: None,
     };
 
     main_loop(context, gs)

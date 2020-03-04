@@ -10,9 +10,9 @@ use pancurses::Window;
 mod main_loop;
 pub use main_loop::main_loop;
 
+pub mod font;
 mod init;
 pub mod shader;
-pub mod font;
 pub use init::init_raw;
 mod color;
 pub use color::*;

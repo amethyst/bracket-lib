@@ -103,7 +103,7 @@ pub fn init_raw<S: ToString>(
         web_button: None,
         quitting: false,
         post_scanlines: false,
-        post_screenburn: false
+        post_screenburn: false,
     };
     Ok(bterm)
 }

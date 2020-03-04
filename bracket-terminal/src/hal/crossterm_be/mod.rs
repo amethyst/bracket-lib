@@ -6,8 +6,8 @@ mod main_loop;
 pub use main_loop::*;
 
 pub mod font;
-pub mod shader;
 mod init;
+pub mod shader;
 pub use init::*;
 
 pub struct InitHints {

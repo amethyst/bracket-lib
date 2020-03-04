@@ -41,7 +41,7 @@ pub struct BTermBuilder {
     tile_width: u32,
     tile_height: u32,
     platform_hints: InitHints,
-    advanced_input: bool
+    advanced_input: bool,
 }
 
 impl BTermBuilder {
@@ -58,7 +58,7 @@ impl BTermBuilder {
             tile_height: 8,
             tile_width: 8,
             platform_hints: InitHints::new(),
-            advanced_input: false
+            advanced_input: false,
         }
     }
 
@@ -74,7 +74,7 @@ impl BTermBuilder {
             tile_height: 8,
             tile_width: 8,
             platform_hints: InitHints::new(),
-            advanced_input: false
+            advanced_input: false,
         };
         cb.fonts.push(BuilderFont {
             path: "terminal8x8.png".to_string(),
@@ -105,7 +105,7 @@ impl BTermBuilder {
             tile_height: 8,
             tile_width: 8,
             platform_hints: InitHints::new(),
-            advanced_input: false
+            advanced_input: false,
         };
         cb.fonts.push(BuilderFont {
             path: "terminal8x8.png".to_string(),
@@ -131,7 +131,7 @@ impl BTermBuilder {
             tile_height: 16,
             tile_width: 8,
             platform_hints: InitHints::new(),
-            advanced_input: false
+            advanced_input: false,
         };
         cb.fonts.push(BuilderFont {
             path: "vga8x16.png".to_string(),
@@ -165,7 +165,7 @@ impl BTermBuilder {
             tile_height: 16,
             tile_width: 8,
             platform_hints: InitHints::new(),
-            advanced_input: false
+            advanced_input: false,
         };
         cb.fonts.push(BuilderFont {
             path: "vga8x16.png".to_string(),

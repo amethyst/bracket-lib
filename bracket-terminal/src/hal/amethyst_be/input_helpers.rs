@@ -1,9 +1,10 @@
-use std::collections::HashSet;
 use crate::prelude::INPUT;
 use amethyst::{
     input::{Button, InputHandler, StringBindings},
-    winit::MouseButton, winit::VirtualKeyCode
+    winit::MouseButton,
+    winit::VirtualKeyCode,
 };
+use std::collections::HashSet;
 
 #[inline(always)]
 pub(crate) fn button_state_map(inputs: &InputHandler<StringBindings>) -> (Vec<usize>, Vec<usize>) {
@@ -12,14 +13,12 @@ pub(crate) fn button_state_map(inputs: &InputHandler<StringBindings>) -> (Vec<us
 
     let amethyst_button_state = inputs
         .buttons_that_are_down()
-        .map(|b| {
-            match b {
-                Button::Mouse(MouseButton::Left) => 0,
-                Button::Mouse(MouseButton::Right) => 1,
-                Button::Mouse(MouseButton::Middle) => 2,
-                Button::Mouse(MouseButton::Other(num)) => 3 + num as usize,
-                _ => 65536
-            }
+        .map(|b| match b {
+            Button::Mouse(MouseButton::Left) => 0,
+            Button::Mouse(MouseButton::Right) => 1,
+            Button::Mouse(MouseButton::Middle) => 2,
+            Button::Mouse(MouseButton::Other(num)) => 3 + num as usize,
+            _ => 65536,
         })
         .collect::<HashSet<usize>>();
 
@@ -31,23 +30,24 @@ pub(crate) fn button_state_map(inputs: &InputHandler<StringBindings>) -> (Vec<us
 
     let newly_pressed_buttons = inputs
         .buttons_that_are_down()
-        .map(|b| {
-            match b {
-                Button::Mouse(MouseButton::Left) => 0,
-                Button::Mouse(MouseButton::Right) => 1,
-                Button::Mouse(MouseButton::Middle) => 2,
-                Button::Mouse(MouseButton::Other(num)) => 3 + num as usize,
-                _ => 65536
-            }
+        .map(|b| match b {
+            Button::Mouse(MouseButton::Left) => 0,
+            Button::Mouse(MouseButton::Right) => 1,
+            Button::Mouse(MouseButton::Middle) => 2,
+            Button::Mouse(MouseButton::Other(num)) => 3 + num as usize,
+            _ => 65536,
         })
         .filter(|b| *b != 65536 && !bterm_pressed_buttons.contains(b))
         .collect::<Vec<usize>>();
 
-        (newly_pressed_buttons, newly_released_buttons)
+    (newly_pressed_buttons, newly_released_buttons)
 }
 
 #[inline(always)]
-pub(crate) fn key_state_map(inputs: &InputHandler<StringBindings>, keys_down : &HashSet<(VirtualKeyCode, u32)>) -> (Vec<(VirtualKeyCode, u32)>, Vec<(VirtualKeyCode, u32)>) {
+pub(crate) fn key_state_map(
+    inputs: &InputHandler<StringBindings>,
+    keys_down: &HashSet<(VirtualKeyCode, u32)>,
+) -> (Vec<(VirtualKeyCode, u32)>, Vec<(VirtualKeyCode, u32)>) {
     let binput = INPUT.lock().unwrap();
     let binput_pressed_scan_codes = binput.scan_code_pressed_set();
 

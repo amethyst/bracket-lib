@@ -1,8 +1,8 @@
 use super::events::*;
-use crate::prelude::{BTerm, GameState, SimpleConsole, SparseConsole, BEvent, BACKEND_INTERNAL};
-use crate::{Result, clear_input_state};
-use glow::HasContext;
 use super::*;
+use crate::prelude::{BEvent, BTerm, GameState, SimpleConsole, SparseConsole, BACKEND_INTERNAL};
+use crate::{clear_input_state, Result};
+use glow::HasContext;
 
 pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
     use glow::HasRenderLoop;
@@ -227,15 +227,9 @@ fn tock<GS: GameState>(
         let be = BACKEND.lock().unwrap();
         let gl = be.gl.as_ref().unwrap();
 
-
         // Clear the screen
         unsafe {
-            gl.viewport(
-                0,
-                0,
-                bterm.width_pixels as i32,
-                bterm.height_pixels as i32,
-            );
+            gl.viewport(0, 0, bterm.width_pixels as i32, bterm.height_pixels as i32);
             gl.clear_color(0.2, 0.3, 0.3, 1.0);
             gl.clear(glow::COLOR_BUFFER_BIT);
         }

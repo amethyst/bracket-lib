@@ -1,3 +1,4 @@
+use super::{InitHints, BACKEND};
 use crate::prelude::BTerm;
 use crate::Result;
 use crossterm::{
@@ -5,7 +6,6 @@ use crossterm::{
     terminal::{size, SetSize},
 };
 use std::io::{stdout, Write};
-use super::{BACKEND, InitHints};
 
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
@@ -43,7 +43,7 @@ pub fn init_raw<S: ToString>(
         web_button: None,
         quitting: false,
         post_scanlines: false,
-        post_screenburn: false
+        post_screenburn: false,
     };
     Ok(bterm)
 }

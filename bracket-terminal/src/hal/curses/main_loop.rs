@@ -1,10 +1,12 @@
-use crate::hal::VirtualKeyCode;
-use crate::prelude::{BTerm, GameState, to_char, SimpleConsole, SparseConsole, BEvent, BACKEND_INTERNAL};
-use crate::{Result, clear_input_state};
-use pancurses::endwin;
-use std::time::Instant;
-use std::convert::TryInto;
 use super::*;
+use crate::hal::VirtualKeyCode;
+use crate::prelude::{
+    to_char, BEvent, BTerm, GameState, SimpleConsole, SparseConsole, BACKEND_INTERNAL,
+};
+use crate::{clear_input_state, Result};
+use pancurses::endwin;
+use std::convert::TryInto;
+use std::time::Instant;
 
 pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
     let now = Instant::now();
@@ -34,7 +36,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         if let Some(input) = input {
             match input {
                 pancurses::Input::Character(c) => {
-                    bterm.on_event(BEvent::Character{c});
+                    bterm.on_event(BEvent::Character { c });
                     if let Some(key) = char_to_keycode(c) {
                         bterm.on_key(key, 0, true); // How do I get the scancode?
                     }
@@ -55,7 +57,10 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                         if mouse_event.bstate & pancurses::BUTTON3_CLICKED > 0 {
                             bterm.on_mouse_button(1, true);
                         }
-                        bterm.on_mouse_position(mouse_event.x as f64 * 8.0, mouse_event.y as f64 * 8.0);
+                        bterm.on_mouse_position(
+                            mouse_event.x as f64 * 8.0,
+                            mouse_event.y as f64 * 8.0,
+                        );
                     }
                 }
                 _ => {
@@ -83,12 +88,15 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                         let cp_bg = find_nearest_color(t.bg, &be.color_map);
                         let pair = (cp_bg * 16) + cp_fg;
                         window.attrset(pancurses::COLOR_PAIR(pair.try_into()?));
-                        window.mvaddch(st.height as i32 - (y as i32 + 1), x as i32, to_char(t.glyph));
+                        window.mvaddch(
+                            st.height as i32 - (y as i32 + 1),
+                            x as i32,
+                            to_char(t.glyph),
+                        );
                         idx += 1;
                     }
                 }
-            }
-            else if let Some(st) = cons_any.downcast_ref::<SparseConsole>() {
+            } else if let Some(st) = cons_any.downcast_ref::<SparseConsole>() {
                 for t in st.tiles.iter() {
                     let x = t.idx as u32 % st.width;
                     let y = t.idx as u32 / st.width;
@@ -161,6 +169,6 @@ fn char_to_keycode(c: char) -> Option<VirtualKeyCode> {
         '[' => Some(VirtualKeyCode::LBracket),
         ']' => Some(VirtualKeyCode::RBracket),
         '\\' => Some(VirtualKeyCode::Backslash),
-        _ => None
+        _ => None,
     }
 }

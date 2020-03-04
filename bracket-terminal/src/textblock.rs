@@ -1,8 +1,8 @@
+use super::command_buffer::DrawBatch;
+use super::prelude::ColorPair;
+use super::prelude::Point;
 use crate::prelude::{string_to_cp437, Console, Tile};
 use bracket_color::prelude::RGB;
-use super::command_buffer::DrawBatch;
-use super::prelude::Point;
-use super::prelude::ColorPair;
 
 pub struct TextBlock {
     x: i32,
@@ -68,10 +68,7 @@ impl TextBlock {
             for x in 0..self.width {
                 draw_batch.set(
                     Point::new(x + self.x, y + self.y),
-                    ColorPair::new(
-                        self.buffer[self.at(x, y)].fg,
-                        self.buffer[self.at(x, y)].bg,
-                    ),
+                    ColorPair::new(self.buffer[self.at(x, y)].fg, self.buffer[self.at(x, y)].bg),
                     self.buffer[self.at(x, y)].glyph,
                 );
             }

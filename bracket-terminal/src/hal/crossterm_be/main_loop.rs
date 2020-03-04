@@ -1,15 +1,18 @@
-use crate::prelude::{BTerm, GameState, VirtualKeyCode, SimpleConsole, SparseConsole, to_char, BEvent, BACKEND_INTERNAL};
-use crate::{Result, clear_input_state};
+use super::BACKEND;
+use crate::prelude::{
+    to_char, BEvent, BTerm, GameState, SimpleConsole, SparseConsole, VirtualKeyCode,
+    BACKEND_INTERNAL,
+};
+use crate::{clear_input_state, Result};
+use bracket_color::prelude::*;
 use crossterm::event::{poll, read, Event};
 use crossterm::execute;
-use crossterm::terminal::SetSize;
 use crossterm::style::Print;
+use crossterm::terminal::SetSize;
 use crossterm::{cursor, queue};
 use std::io::{stdout, Write};
 use std::time::Duration;
 use std::time::Instant;
-use super::BACKEND;
-use bracket_color::prelude::*;
 
 pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
     let now = Instant::now();
@@ -61,7 +64,6 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     }
                 }
                 Event::Key(key) => {
-
                     // Including because it eats my ctrl-C to quit!
                     if key.code == crossterm::event::KeyCode::Char('c')
                         && key.modifiers == crossterm::event::KeyModifiers::CONTROL
@@ -101,18 +103,23 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     let mut last_bg = RGB::new();
                     let mut last_fg = RGB::new();
                     for y in 0..st.height {
-                        queue!(stdout(), cursor::MoveTo(0, st.height as u16 - (y as u16 + 1)))
-                            .expect("Command fail");
+                        queue!(
+                            stdout(),
+                            cursor::MoveTo(0, st.height as u16 - (y as u16 + 1))
+                        )
+                        .expect("Command fail");
                         for _x in 0..st.width {
                             let t = &st.tiles[idx];
                             if t.fg != last_fg {
                                 queue!(
                                     stdout(),
-                                    crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
-                                        r: (t.fg.r * 255.0) as u8,
-                                        g: (t.fg.g * 255.0) as u8,
-                                        b: (t.fg.b * 255.0) as u8,
-                                    })
+                                    crossterm::style::SetForegroundColor(
+                                        crossterm::style::Color::Rgb {
+                                            r: (t.fg.r * 255.0) as u8,
+                                            g: (t.fg.g * 255.0) as u8,
+                                            b: (t.fg.b * 255.0) as u8,
+                                        }
+                                    )
                                 )
                                 .expect("Command fail");
                                 last_fg = t.fg;
@@ -120,11 +127,13 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                             if t.bg != last_bg {
                                 queue!(
                                     stdout(),
-                                    crossterm::style::SetBackgroundColor(crossterm::style::Color::Rgb {
-                                        r: (t.bg.r * 255.0) as u8,
-                                        g: (t.bg.g * 255.0) as u8,
-                                        b: (t.bg.b * 255.0) as u8,
-                                    })
+                                    crossterm::style::SetBackgroundColor(
+                                        crossterm::style::Color::Rgb {
+                                            r: (t.bg.r * 255.0) as u8,
+                                            g: (t.bg.g * 255.0) as u8,
+                                            b: (t.bg.b * 255.0) as u8,
+                                        }
+                                    )
                                 )
                                 .expect("Command fail");
                                 last_bg = t.bg;
@@ -134,14 +143,16 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                         }
                     }
                 }
-            }
-            else if let Some(st) = cons_any.downcast_ref::<SparseConsole>() {
+            } else if let Some(st) = cons_any.downcast_ref::<SparseConsole>() {
                 if st.is_dirty {
                     for t in st.tiles.iter() {
                         let x = t.idx as u32 % st.width;
                         let y = t.idx as u32 / st.width;
-                        queue!(stdout(), cursor::MoveTo(x as u16, st.height as u16 - (y as u16 + 1) as u16))
-                            .expect("Command fail");
+                        queue!(
+                            stdout(),
+                            cursor::MoveTo(x as u16, st.height as u16 - (y as u16 + 1) as u16)
+                        )
+                        .expect("Command fail");
                         queue!(
                             stdout(),
                             crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
@@ -173,14 +184,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     }
 
     let be = BACKEND.lock().unwrap();
-    execute!(
-        stdout(),
-        SetSize(
-            be.old_width,
-            be.old_height
-        )
-    )
-    .expect("Unable to resize");
+    execute!(stdout(), SetSize(be.old_width, be.old_height)).expect("Unable to resize");
     reset_terminal();
     Ok(())
 }
@@ -267,6 +271,6 @@ fn keycode_to_key(c: crossterm::event::KeyCode) -> Option<VirtualKeyCode> {
         KeyCode::Char('.') => Some(VirtualKeyCode::Period),
         KeyCode::Char('/') => Some(VirtualKeyCode::Slash),
 
-        _ => None
+        _ => None,
     }
 }
