@@ -61,6 +61,16 @@ impl Input {
         &self.mouse_buttons
     }
 
+    /// HashSet of pressed keyboard scan codes
+    pub fn scan_code_pressed_set(&self) -> &HashSet<u32> {
+        &self.scancodes
+    }
+
+    /// HashSet of pressed keyboard scan codes
+    pub fn key_pressed_set(&self) -> &HashSet<VirtualKeyCode> {
+        &self.keys_down
+    }
+
     /// Returns the current mouse position (0,0 if there isn't one yet), in TILE coordinates for the specified
     /// console layer.
     pub fn mouse_tile_pos(&self, console: usize) -> (i32, i32) {

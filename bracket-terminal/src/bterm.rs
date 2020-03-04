@@ -310,6 +310,7 @@ impl BTerm {
     }
 
     /// Internal: record an event from the HAL back-end
+    #[allow(dead_code)]
     pub(crate) fn on_event(&mut self, event: BEvent) {
         INPUT.lock().unwrap().push_event(event);
     }

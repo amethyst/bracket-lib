@@ -18,6 +18,14 @@ impl GameState for State {
             ctx.print(1, 5+i as i32, &format!("Mouse Button {} is pressed", btn));
         }
 
+        for (i,key) in input.scan_code_pressed_set().iter().enumerate() {
+            ctx.print(50, 5+i as i32, &format!("Key code: {}", key));
+        }
+
+        for (i,key) in input.key_pressed_set().iter().enumerate() {
+            ctx.print(50, 25+i as i32, &format!("Key code: {:?}", key));
+        }
+
         input.for_each_message(|event| {
             bracket_terminal::console::log(&format!("{:#?}", event));
             if event == BEvent::CloseRequested {

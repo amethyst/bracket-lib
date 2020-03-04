@@ -1,4 +1,4 @@
-use crate::prelude::{BTerm, GameState, BACKEND_INTERNAL, INPUT};
+use crate::prelude::{BTerm, GameState, BACKEND_INTERNAL};
 use crate::{Result, clear_input_state};
 use super::*;
 use std::collections::HashSet;
@@ -8,7 +8,7 @@ use amethyst::{
     core::transform::Transform,
     core::TransformBundle,
     ecs::prelude::*,
-    input::{Bindings, Button, InputBundle, InputHandler, StringBindings},
+    input::{Bindings, InputBundle, InputHandler, StringBindings},
     prelude::*,
     renderer::{camera::Projection, palette::Srgba, Camera},
     renderer::{
@@ -18,13 +18,13 @@ use amethyst::{
     },
     tiles::{FlatEncoder, MapStorage, RenderTiles2D, Tile, TileMap},
     utils::application_root_dir,
-    winit::MouseButton,
+    winit::VirtualKeyCode
 };
 
 pub struct BTermGemBridge {
     bterm: BTerm,
     state: Box<dyn GameState>,
-    key_delay: f32,
+    keys_down : HashSet<(VirtualKeyCode, u32)>
 }
 
 impl SimpleState for BTermGemBridge {
@@ -32,7 +32,7 @@ impl SimpleState for BTermGemBridge {
         let world = data.world;
         world.register::<SimpleConsoleLink>();
         self.make_camera(world);
-        super::font::initialize_fonts(&mut self.bterm, world).unwrap();
+        super::font::initialize_fonts(world).unwrap();
         self.initialize_console_objects(world);
     }
 
@@ -41,30 +41,36 @@ impl SimpleState for BTermGemBridge {
         let timer = data.world.fetch::<amethyst::core::Time>();
         self.bterm.frame_time_ms = timer.delta_time().as_millis() as f32;
         self.bterm.fps = 1.0 / timer.delta_seconds();
-        self.key_delay += self.bterm.frame_time_ms;
         std::mem::drop(timer);
 
         // Handle Input
         clear_input_state(&mut self.bterm);
         let inputs = data.world.fetch::<InputHandler<StringBindings>>();
-        if self.key_delay > 75.0 {
-            self.key_delay = 0.0;
-            for (key, scan_code) in inputs.keys_that_are_down().zip(inputs.scan_codes_that_are_down()) {
-                use crate::prelude::VirtualKeyCode;
-                match key {
-                    VirtualKeyCode::LShift => self.bterm.shift = true,
-                    VirtualKeyCode::RShift => self.bterm.shift = true,
-                    VirtualKeyCode::LAlt => self.bterm.alt = true,
-                    VirtualKeyCode::RAlt => self.bterm.alt = true,
-                    VirtualKeyCode::LControl => self.bterm.control = true,
-                    VirtualKeyCode::RControl => self.bterm.control = true,
-                    _ => {
-                        self.bterm.key = Some(key);
-                    }
+
+        let (newly_pressed_keys, newly_released_keys) = key_state_map(&inputs, &self.keys_down);
+        for key in newly_pressed_keys {
+            self.bterm.on_key(key.0, key.1, true);
+            self.keys_down.insert(key);
+        }
+        for key in newly_released_keys {
+            self.bterm.on_key(key.0, key.1, false);
+            self.keys_down.remove(&key);
+        }
+
+        for key in inputs.keys_that_are_down() {
+            match key {
+                VirtualKeyCode::LShift => self.bterm.shift = true,
+                VirtualKeyCode::RShift => self.bterm.shift = true,
+                VirtualKeyCode::LAlt => self.bterm.alt = true,
+                VirtualKeyCode::RAlt => self.bterm.alt = true,
+                VirtualKeyCode::LControl => self.bterm.control = true,
+                VirtualKeyCode::RControl => self.bterm.control = true,
+                _ => {
+                    self.bterm.key = Some(key);
                 }
-                self.bterm.on_key(key, scan_code, true);
             }
         }
+
         if let Some(pos) = inputs.mouse_position() {
             self.bterm.on_mouse_position(pos.0 as f64, pos.1 as f64);
         }
@@ -205,7 +211,7 @@ impl BTermGemBridge {
     }
 
     fn initialize_console_objects(&mut self, world: &mut World) {
-        let mut bi = BACKEND_INTERNAL.lock().unwrap();
+        let bi = BACKEND_INTERNAL.lock().unwrap();
         for (i, cons) in bi.consoles.iter().enumerate() {
             let size = cons.console.get_char_size();
             if let Some(_concrete) = cons
@@ -303,7 +309,7 @@ pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> Result<()> {
         BTermGemBridge {
             bterm,
             state: Box::new(gamestate),
-            key_delay: 0.0,
+            keys_down: HashSet::new()
         },
         game_data,
     )

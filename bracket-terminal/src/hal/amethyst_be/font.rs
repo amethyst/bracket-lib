@@ -1,4 +1,4 @@
-use crate::prelude::{BTerm, BACKEND_INTERNAL};
+use crate::prelude::BACKEND_INTERNAL;
 use crate::Result;
 use amethyst::{
     assets::Handle,
@@ -30,7 +30,7 @@ impl Font {
     pub fn bind_texture(&self, _gl: &crate::hal::BTermPlatform) {}
 }
 
-pub fn initialize_fonts(bterm: &mut BTerm, world: &mut World) -> Result<()> {
+pub fn initialize_fonts(world: &mut World) -> Result<()> {
     use crate::embedding;
     use amethyst::renderer::rendy::texture::TextureBuilder;
     use amethyst::renderer::types::TextureData;
