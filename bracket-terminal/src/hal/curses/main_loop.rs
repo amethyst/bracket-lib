@@ -36,24 +36,24 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                 pancurses::Input::Character(c) => {
                     bterm.on_event(BEvent::Character{c});
                     if let Some(key) = char_to_keycode(c) {
-                        bterm.on_key_down(key, 0); // How do I get the scancode?
+                        bterm.on_key(key, 0, true); // How do I get the scancode?
                     }
                 }
-                pancurses::Input::KeyLeft => bterm.on_key_down(VirtualKeyCode::Left, 0),
-                pancurses::Input::KeyRight => bterm.on_key_down(VirtualKeyCode::Right, 0),
-                pancurses::Input::KeyUp => bterm.on_key_down(VirtualKeyCode::Up, 0),
-                pancurses::Input::KeyDown => bterm.on_key_down(VirtualKeyCode::Down, 0),
-                pancurses::Input::KeyHome => bterm.on_key_down(VirtualKeyCode::Home, 0),
+                pancurses::Input::KeyLeft => bterm.on_key(VirtualKeyCode::Left, 0, true),
+                pancurses::Input::KeyRight => bterm.on_key(VirtualKeyCode::Right, 0, true),
+                pancurses::Input::KeyUp => bterm.on_key(VirtualKeyCode::Up, 0, true),
+                pancurses::Input::KeyDown => bterm.on_key(VirtualKeyCode::Down, 0, true),
+                pancurses::Input::KeyHome => bterm.on_key(VirtualKeyCode::Home, 0, true),
                 pancurses::Input::KeyMouse => {
                     if let Ok(mouse_event) = pancurses::getmouse() {
                         if mouse_event.bstate & pancurses::BUTTON1_CLICKED > 0 {
-                            bterm.on_mouse_button(0);
+                            bterm.on_mouse_button(0, true);
                         }
                         if mouse_event.bstate & pancurses::BUTTON2_CLICKED > 0 {
-                            bterm.on_mouse_button(2);
+                            bterm.on_mouse_button(2, true);
                         }
                         if mouse_event.bstate & pancurses::BUTTON3_CLICKED > 0 {
-                            bterm.on_mouse_button(1);
+                            bterm.on_mouse_button(1, true);
                         }
                         bterm.on_mouse_position(mouse_event.x as f64 * 8.0, mouse_event.y as f64 * 8.0);
                     }
