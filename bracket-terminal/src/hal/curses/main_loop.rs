@@ -7,12 +7,15 @@ use crate::{clear_input_state, Result};
 use pancurses::endwin;
 use std::convert::TryInto;
 use std::time::Instant;
+use std::collections::HashSet;
 
 pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
     let mut prev_ms = now.elapsed().as_millis();
     let mut frames = 0;
+
+    let mut button_map : HashSet<usize> = HashSet::new();
 
     while !bterm.quitting {
         let now_seconds = now.elapsed().as_secs();
@@ -32,6 +35,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
         // Input
         clear_input_state(&mut bterm);
+        let mut buttons_this_frame = (false, false, false);
         let input = BACKEND.lock().unwrap().window.as_ref().unwrap().getch();
         if let Some(input) = input {
             match input {
@@ -49,13 +53,25 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                 pancurses::Input::KeyMouse => {
                     if let Ok(mouse_event) = pancurses::getmouse() {
                         if mouse_event.bstate & pancurses::BUTTON1_CLICKED > 0 {
-                            bterm.on_mouse_button(0, true);
+                            if !button_map.contains(&0) {
+                                bterm.on_mouse_button(0, true);
+                                button_map.insert(0);
+                                buttons_this_frame.0 = true;
+                            }
                         }
                         if mouse_event.bstate & pancurses::BUTTON2_CLICKED > 0 {
-                            bterm.on_mouse_button(2, true);
+                            if !button_map.contains(&2) {
+                                bterm.on_mouse_button(2, true);
+                                button_map.insert(2);
+                                buttons_this_frame.2 = true;
+                            }
                         }
                         if mouse_event.bstate & pancurses::BUTTON3_CLICKED > 0 {
-                            bterm.on_mouse_button(1, true);
+                            if !button_map.contains(&1) {
+                                bterm.on_mouse_button(1, true);
+                                button_map.insert(1);
+                                buttons_this_frame.1 = true;
+                            }
                         }
                         bterm.on_mouse_position(
                             mouse_event.x as f64 * 8.0,
@@ -67,6 +83,11 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     println!("{:#?}", input);
                 }
             }
+        }
+
+        if !buttons_this_frame.0 && button_map.contains(&0) {
+            button_map.remove(&0);
+            bterm.on_mouse_button(0, false);
         }
 
         gamestate.tick(&mut bterm);
