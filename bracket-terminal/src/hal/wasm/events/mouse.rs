@@ -18,7 +18,7 @@ pub static mut GLOBAL_LEFT_CLICK: bool = false;
 
 /// Event called via the web interface to indicate mouse clicking
 pub fn on_mouse_down(mouse: web_sys::MouseEvent) {
-    INPUT.lock().unwrap().on_mouse_button(mouse.buttons() as usize);
+    INPUT.lock().unwrap().on_mouse_button_down(mouse.buttons() as usize);
     unsafe {
         GLOBAL_LEFT_CLICK = true;
     }
