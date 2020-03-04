@@ -1,4 +1,4 @@
-use std::convert::{TryInto, From};
+use std::convert::{From, TryInto};
 use std::ops;
 use ultraviolet::{Vec2, Vec2i};
 
@@ -18,18 +18,19 @@ impl specs::prelude::Component for Point {
 impl Point {
     /// Create a new point from an x/y coordinate.
     #[inline]
-    #[must_use] pub fn new<T>(x: T, y: T) -> Point
+    #[must_use]
+    pub fn new<T>(x: T, y: T) -> Point
     where
         T: TryInto<i32>,
     {
         Point {
-            x: x.try_into().ok().unwrap(),
-            y: y.try_into().ok().unwrap(),
+            x: x.try_into().ok().unwrap_or(0),
+            y: y.try_into().ok().unwrap_or(0),
         }
     }
 
     /// Create a new point from i32, this can be constant
-    pub const fn constant(x : i32, y : i32) -> Self {
+    pub const fn constant(x: i32, y: i32) -> Self {
         Point { x, y }
     }
 
@@ -84,7 +85,7 @@ impl Point {
     }
 
     /// Creates a point from an UltraViolet vec2
-    pub fn from_vec2(v : Vec2) -> Self {
+    pub fn from_vec2(v: Vec2) -> Self {
         Self::new(v.x as i32, v.y as i32)
     }
 
@@ -94,27 +95,39 @@ impl Point {
     }
 }
 
-impl From<(i32,i32)> for Point {
+impl From<(i32, i32)> for Point {
     fn from(item: (i32, i32)) -> Self {
-        Self{ x: item.0, y: item.1 }
+        Self {
+            x: item.0,
+            y: item.1,
+        }
     }
 }
 
-impl From<(f32,f32)> for Point {
+impl From<(f32, f32)> for Point {
     fn from(item: (f32, f32)) -> Self {
-        Self{ x: item.0 as i32, y: item.1 as i32 }
+        Self {
+            x: item.0 as i32,
+            y: item.1 as i32,
+        }
     }
 }
 
 impl From<Vec2> for Point {
     fn from(item: Vec2) -> Self {
-        Self{ x: item.x as i32, y: item.y as i32 }
+        Self {
+            x: item.x as i32,
+            y: item.y as i32,
+        }
     }
 }
 
 impl From<Vec2i> for Point {
     fn from(item: Vec2i) -> Self {
-        Self{ x: item.x, y: item.y }
+        Self {
+            x: item.x,
+            y: item.y,
+        }
     }
 }
 

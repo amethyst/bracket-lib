@@ -1,7 +1,7 @@
-use crate::prelude::{BTerm, VirtualKeyCode};
-use std::collections::{ HashSet, VecDeque };
-use bracket_geometry::prelude::Point;
 use super::{BEvent, INPUT};
+use crate::prelude::{BTerm, VirtualKeyCode};
+use bracket_geometry::prelude::Point;
+use std::collections::{HashSet, VecDeque};
 
 /// Internal: clears the current frame's input state. Used by HAL backends to indicate the start of a new frame
 /// for input.
@@ -12,45 +12,41 @@ pub(crate) fn clear_input_state(term: &mut BTerm) {
     term.control = false;
     term.alt = false;
     term.web_button = None;
-    let mut input = INPUT.lock().unwrap();
-    input.keys_down.clear();
-    input.scancodes.clear();
-    input.mouse_buttons.clear();
 }
 
 /// Represents the current input state. The old key/mouse fields remain available for compatibility.
 #[derive(Clone, Debug)]
 pub struct Input {
-    keys_down : HashSet<VirtualKeyCode>,
-    scancodes : HashSet<u32>,
-    mouse_buttons : HashSet<usize>,
-    mouse_pixel : (f64, f64),
-    mouse_tile : Vec<(i32, i32)>,
-    pub(crate) use_events : bool,
-    event_queue : VecDeque<BEvent>
+    keys_down: HashSet<VirtualKeyCode>,
+    scancodes: HashSet<u32>,
+    mouse_buttons: HashSet<usize>,
+    mouse_pixel: (f64, f64),
+    mouse_tile: Vec<(i32, i32)>,
+    pub(crate) use_events: bool,
+    event_queue: VecDeque<BEvent>,
 }
 
 impl Input {
     /// Internal - instantiates a new Input object.
     pub(crate) fn new() -> Self {
-        Self{
-            keys_down : HashSet::new(),
-            scancodes : HashSet::new(),
-            mouse_buttons : HashSet::new(),
-            mouse_pixel : (0.0, 0.0),
-            mouse_tile : Vec::new(),
-            event_queue : VecDeque::new(),
-            use_events : false // Not enabled by default so that systems not using it don't fill up RAM for no reason
+        Self {
+            keys_down: HashSet::new(),
+            scancodes: HashSet::new(),
+            mouse_buttons: HashSet::new(),
+            mouse_pixel: (0.0, 0.0),
+            mouse_tile: Vec::new(),
+            event_queue: VecDeque::new(),
+            use_events: false, // Not enabled by default so that systems not using it don't fill up RAM for no reason
         }
     }
 
     /// Checks to see if a key is pressed. True if it is, false otherwise.
-    pub fn is_key_pressed(&self, key : VirtualKeyCode) -> bool {
+    pub fn is_key_pressed(&self, key: VirtualKeyCode) -> bool {
         self.keys_down.contains(&key)
     }
 
     /// Checks to see if a key is pressed by scancode. True if it is, false if it isn't.
-    pub fn is_scancode_pressed(&self, scan_code : u32) -> bool {
+    pub fn is_scancode_pressed(&self, scan_code: u32) -> bool {
         self.scancodes.contains(&scan_code)
     }
 
@@ -66,7 +62,7 @@ impl Input {
         if console < self.mouse_tile.len() {
             self.mouse_tile[console]
         } else {
-            (0,0)
+            (0, 0)
         }
     }
 
@@ -97,8 +93,9 @@ impl Input {
     }
 
     /// Provides a for_each function for all messages in the queue.
-    pub fn for_each_message<F>(&mut self, mut action : F) 
-        where F : FnMut(BEvent)
+    pub fn for_each_message<F>(&mut self, mut action: F)
+    where
+        F: FnMut(BEvent),
     {
         loop {
             let e = self.event_queue.pop_back();
@@ -111,32 +108,45 @@ impl Input {
     }
 
     /// Internal - do not use
-    pub(crate) fn on_key_down(&mut self, key : VirtualKeyCode, scan_code : u32) {
+    pub(crate) fn on_key_down(&mut self, key: VirtualKeyCode, scan_code: u32) {
         self.keys_down.insert(key);
         self.scancodes.insert(scan_code);
     }
 
     /// Internal - do not use
-    pub(crate) fn on_mouse_button(&mut self, button_num: usize) {
+    pub(crate) fn on_key_up(&mut self, key: VirtualKeyCode, scan_code: u32) {
+        self.keys_down.remove(&key);
+        self.scancodes.remove(&scan_code);
+    }
+
+    /// Internal - do not use
+    pub(crate) fn on_mouse_button_down(&mut self, button_num: usize) {
         self.mouse_buttons.insert(button_num);
     }
 
     /// Internal - do not use
-    pub(crate) fn on_mouse_pixel_position(&mut self, x:f64, y:f64) {
-        self.mouse_pixel = (x,y);
-        self.push_event(BEvent::CursorMoved{position: Point::new(x as i32, y as i32)});
+    pub(crate) fn on_mouse_button_up(&mut self, button_num: usize) {
+        self.mouse_buttons.remove(&button_num);
     }
 
     /// Internal - do not use
-    pub(crate) fn on_mouse_tile_position(&mut self, console: usize, x:i32, y:i32) {
-        while self.mouse_tile.len() < console+1 {
-            self.mouse_tile.push((0,0));
+    pub(crate) fn on_mouse_pixel_position(&mut self, x: f64, y: f64) {
+        self.mouse_pixel = (x, y);
+        self.push_event(BEvent::CursorMoved {
+            position: Point::new(x as i32, y as i32),
+        });
+    }
+
+    /// Internal - do not use
+    pub(crate) fn on_mouse_tile_position(&mut self, console: usize, x: i32, y: i32) {
+        while self.mouse_tile.len() < console + 1 {
+            self.mouse_tile.push((0, 0));
         }
         self.mouse_tile[console] = (x, y);
     }
 
     /// Internal - do not use
-    pub(crate) fn push_event(&mut self, event : BEvent) {
+    pub(crate) fn push_event(&mut self, event: BEvent) {
         if self.use_events {
             self.event_queue.push_front(event);
         }

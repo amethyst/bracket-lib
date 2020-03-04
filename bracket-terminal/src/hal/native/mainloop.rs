@@ -1,11 +1,16 @@
 use super::{BACKEND, CONSOLE_BACKING};
 use crate::hal::*;
-use crate::prelude::{BTerm, Console, GameState, SimpleConsole, SparseConsole, BEvent, INPUT, BACKEND_INTERNAL};
-use crate::{Result, clear_input_state};
-use glow::HasContext;
-use glutin::{event::DeviceEvent, event::Event, event::WindowEvent, event_loop::ControlFlow, event::MouseButton};
-use std::time::Instant;
+use crate::prelude::{
+    BEvent, BTerm, Console, GameState, SimpleConsole, SparseConsole, BACKEND_INTERNAL, INPUT,
+};
+use crate::{clear_input_state, Result};
 use bracket_geometry::prelude::Point;
+use glow::HasContext;
+use glutin::{
+    event::DeviceEvent, event::Event, event::MouseButton, event::WindowEvent,
+    event_loop::ControlFlow,
+};
+use std::time::Instant;
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
@@ -24,7 +29,9 @@ fn on_resize(bterm: &mut BTerm, physical_size: glutin::dpi::PhysicalSize<u32>) -
     let new_fb =
         Framebuffer::build_fbo(gl, physical_size.width as i32, physical_size.height as i32)?;
     be.backing_buffer = Some(new_fb);
-    bterm.on_event(BEvent::Resized{ new_size : Point::new(physical_size.width, physical_size.height) });
+    bterm.on_event(BEvent::Resized {
+        new_size: Point::new(physical_size.width, physical_size.height),
+    });
     Ok(())
 }
 
@@ -85,7 +92,9 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
             Event::LoopDestroyed => (),
             Event::WindowEvent { ref event, .. } => match event {
                 WindowEvent::Moved(physical_position) => {
-                    bterm.on_event(BEvent::Moved{new_position : Point::new(physical_position.x, physical_position.y)});
+                    bterm.on_event(BEvent::Moved {
+                        new_position: Point::new(physical_position.x, physical_position.y),
+                    });
                 }
                 WindowEvent::Resized(physical_size) => {
                     on_resize(&mut bterm, *physical_size).unwrap();
@@ -99,45 +108,48 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     }
                 }
                 WindowEvent::ReceivedCharacter(char) => {
-                    bterm.on_event(BEvent::Character{c: *char});
+                    bterm.on_event(BEvent::Character { c: *char });
                 }
                 WindowEvent::Focused(focused) => {
-                    bterm.on_event(BEvent::Focused{focused: *focused});
+                    bterm.on_event(BEvent::Focused { focused: *focused });
                 }
                 WindowEvent::CursorMoved { position: pos, .. } => {
                     bterm.on_mouse_position(pos.x, pos.y);
                 }
-                WindowEvent::CursorEntered{..} => bterm.on_event(BEvent::CursorEntered),
-                WindowEvent::CursorLeft{..} => bterm.on_event(BEvent::CursorLeft),
+                WindowEvent::CursorEntered { .. } => bterm.on_event(BEvent::CursorEntered),
+                WindowEvent::CursorLeft { .. } => bterm.on_event(BEvent::CursorLeft),
 
-                WindowEvent::MouseInput { button,.. } => {
+                WindowEvent::MouseInput { button, state, .. } => {
                     let button = match button {
                         MouseButton::Left => 0,
                         MouseButton::Right => 1,
                         MouseButton::Middle => 2,
                         MouseButton::Other(num) => 3 + *num as usize,
                     };
-                    bterm.on_mouse_button(button);
+                    bterm.on_mouse_button(button, *state == glutin::event::ElementState::Pressed);
                 }
 
                 WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
                     on_resize(&mut bterm, **new_inner_size).unwrap();
-                    bterm.on_event(BEvent::ScaleFactorChanged{ new_size: Point::new(new_inner_size.width, new_inner_size.height) })
+                    bterm.on_event(BEvent::ScaleFactorChanged {
+                        new_size: Point::new(new_inner_size.width, new_inner_size.height),
+                    })
                 }
 
                 WindowEvent::KeyboardInput {
                     input:
                         glutin::event::KeyboardInput {
                             virtual_keycode: Some(virtual_keycode),
-                            state: glutin::event::ElementState::Pressed,
+                            state,
                             scancode,
                             ..
                         },
                     ..
-                } => {
-                    bterm.on_key_down(*virtual_keycode, *scancode);
-                }
-
+                } => bterm.on_key(
+                    *virtual_keycode,
+                    *scancode,
+                    *state == glutin::event::ElementState::Pressed,
+                ),
                 _ => (),
             },
             _ => (),
@@ -328,11 +340,7 @@ fn tock<GS: GameState>(
                     bterm.height_pixels as f32,
                     0.0,
                 );
-                bi.shaders[3].setBool(
-                    be.gl.as_ref().unwrap(),
-                    "screenBurn",
-                    bterm.post_screenburn,
-                );
+                bi.shaders[3].setBool(be.gl.as_ref().unwrap(), "screenBurn", bterm.post_screenburn);
             } else {
                 bi.shaders[2].useProgram(be.gl.as_ref().unwrap());
             }
