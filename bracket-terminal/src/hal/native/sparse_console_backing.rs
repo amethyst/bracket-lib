@@ -92,6 +92,7 @@ impl SparseConsoleBackend {
     }
 
     /// Helper to build vertices for the sparse grid.
+    #[allow(clippy::too_many_arguments)]
     pub fn rebuild_vertices(
         &mut self,
         height: u32,

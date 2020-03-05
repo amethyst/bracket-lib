@@ -35,6 +35,16 @@ impl BTermInternal {
     }
 }
 
+impl Default for BTermInternal {
+    fn default() -> Self {
+        Self {
+            fonts: Vec::new(),
+            shaders: Vec::new(),
+            consoles: Vec::new(),
+        }
+    }
+}
+
 unsafe impl Send for BTermInternal {}
 unsafe impl Sync for BTermInternal {}
 

@@ -144,6 +144,7 @@ impl SimpleConsoleBackend {
     }
 
     /// Rebuilds the OpenGL backing buffer.
+    #[allow(clippy::too_many_arguments)]
     pub fn rebuild_vertices(
         &mut self,
         height: u32,

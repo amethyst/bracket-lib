@@ -79,6 +79,20 @@ impl InitHints {
     }
 }
 
+impl Default for InitHints {
+    fn default() -> Self {
+        Self {
+            vsync: true,
+            fullscreen: false,
+            gl_version: glutin::GlRequest::Latest,
+            gl_profile: glutin::GlProfile::Core,
+            hardware_acceleration: true,
+            srgb: true,
+            frame_sleep_time: None,
+        }
+    }
+}
+
 pub fn log(s: &str) {
     println!("{}", s);
 }
