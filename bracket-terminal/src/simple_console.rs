@@ -212,6 +212,28 @@ impl Console for SimpleConsole {
         );
     }
 
+    /// Prints text, centered to the whole console width, at vertical location y.
+    fn print_centered_at(&mut self, x: i32, y: i32, text: &str) {
+        self.is_dirty = true;
+        self.print(
+            x - (text.to_string().len() as i32 / 2),
+            y,
+            text,
+        );
+    }
+
+    /// Prints text in color, centered to the whole console width, at vertical location y.
+    fn print_color_centered_at(&mut self, x:i32, y: i32, fg: RGB, bg: RGB, text: &str) {
+        self.is_dirty = true;
+        self.print_color(
+            x - (text.to_string().len() as i32 / 2),
+            y,
+            fg,
+            bg,
+            text,
+        );
+    }
+
     /// Prints text right-aligned
     fn print_right(&mut self, x: i32, y: i32, text: &str) {
         let len = text.len() as i32;

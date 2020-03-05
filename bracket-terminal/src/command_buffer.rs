@@ -58,10 +58,6 @@ pub enum DrawCommand {
         text: String,
         color: ColorPair,
     },
-    PrintCentered {
-        y: i32,
-        text: String,
-    },
     PrintRight {
         pos: Point,
         text: String
@@ -71,8 +67,21 @@ pub enum DrawCommand {
         text: String,
         color: ColorPair
     },
+    PrintCentered {
+        y: i32,
+        text: String,
+    },
     PrintColorCentered {
         y: i32,
+        text: String,
+        color: ColorPair,
+    },
+    PrintCenteredAt {
+        pos: Point,
+        text: String,
+    },
+    PrintColorCenteredAt {
+        pos: Point,
         text: String,
         color: ColorPair,
     },
@@ -216,6 +225,36 @@ impl DrawBatch {
         ));
         self
     }
+
+    /// Prints text, centered to the whole console width, at vertical location y.
+    pub fn print_centered_at<S: ToString>(&mut self, pos: Point, text: S) -> &mut Self {
+        self.batch.push((
+            0,
+            DrawCommand::PrintCenteredAt{
+                pos,
+                text: text.to_string(),
+            },
+        ));
+        self
+    }
+    /// Prints text, centered to the whole console width, at vertical location y.
+    pub fn print_color_centered_at<S: ToString>(
+        &mut self,
+        pos: Point,
+        text: S,
+        color: ColorPair,
+    ) -> &mut Self {
+        self.batch.push((
+            0,
+            DrawCommand::PrintColorCenteredAt {
+                pos,
+                text: text.to_string(),
+                color,
+            },
+        ));
+        self
+    }
+
     /// Prints right aligned text
     pub fn print_right<S: ToString>(
         &mut self,
@@ -346,6 +385,10 @@ pub fn render_draw_buffer(bterm: &mut BTerm) -> Result<()> {
         DrawCommand::PrintCentered { y, text } => bterm.print_centered(*y, &text),
         DrawCommand::PrintColorCentered { y, text, color } => {
             bterm.print_color_centered(*y, color.fg, color.bg, &text)
+        }
+        DrawCommand::PrintCenteredAt { pos, text } => bterm.print_centered_at(pos.x, pos.y, &text),
+        DrawCommand::PrintColorCenteredAt { pos, text, color } => {
+            bterm.print_color_centered_at(pos.x, pos.y, color.fg, color.bg, &text)
         }
         DrawCommand::PrintRight {pos, text } => bterm.print_right(pos.x, pos.y, text),
         DrawCommand::PrintColorRight { pos, text, color } => {

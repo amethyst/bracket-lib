@@ -89,6 +89,12 @@ pub trait Console {
     /// Prints text in color, centered to the whole console width, at vertical location y.
     fn print_color_centered(&mut self, y: i32, fg: RGB, bg: RGB, text: &str);
 
+    /// Prints text, centered on an arbitrary point
+    fn print_centered_at(&mut self, x: i32, y: i32, text: &str);
+
+    /// Prints colored text, centered on an arbitrary point
+    fn print_color_centered_at(&mut self, x: i32, y: i32, fg:RGB, bg: RGB, text: &str);
+
     /// Prints text right-aligned
     fn print_right(&mut self, x: i32, y: i32, text: &str);
 

@@ -450,6 +450,19 @@ impl Console for BTerm {
             .console
             .print_color_centered(y, fg, bg, text);
     }
+    /// Prints text, centered on an arbitrary point
+    fn print_centered_at(&mut self, x: i32, y: i32, text: &str) {
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .print_centered_at(x, y, text);
+    }
+
+    /// Prints colored text, centered on an arbitrary point
+    fn print_color_centered_at(&mut self, x: i32, y: i32, fg:RGB, bg: RGB, text: &str) {
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .print_color_centered_at(x, y, fg, bg, text);
+    }
     fn print_right(&mut self, x: i32, y: i32, text: &str) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
