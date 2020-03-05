@@ -450,6 +450,16 @@ impl Console for BTerm {
             .console
             .print_color_centered(y, fg, bg, text);
     }
+    fn print_right(&mut self, x: i32, y: i32, text: &str) {
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .print_right(x, y, text);
+    }
+    fn print_color_right(&mut self, x: i32, y:i32, fg: RGB, bg: RGB, text: &str) {
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .print_color_right(x, y, fg, bg, text);
+    }
     fn to_xp_layer(&self) -> XpLayer {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console

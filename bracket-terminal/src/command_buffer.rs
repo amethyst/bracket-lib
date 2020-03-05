@@ -62,6 +62,15 @@ pub enum DrawCommand {
         y: i32,
         text: String,
     },
+    PrintRight {
+        pos: Point,
+        text: String
+    },
+    PrintColorRight {
+        pos: Point,
+        text: String,
+        color: ColorPair
+    },
     PrintColorCentered {
         y: i32,
         text: String,
@@ -207,6 +216,39 @@ impl DrawBatch {
         ));
         self
     }
+    /// Prints right aligned text
+    pub fn print_right<S: ToString>(
+        &mut self,
+        pos: Point,
+        text : S
+    ) -> &mut Self {
+        self.batch.push((
+            0,
+            DrawCommand::PrintRight {
+                pos,
+                text: text.to_string()
+            }
+        ));
+        self
+    }
+
+    /// Prints right aligned text
+    pub fn print_color_right<S: ToString>(
+        &mut self,
+        pos: Point,
+        text : S,
+        color: ColorPair,
+    ) -> &mut Self {
+        self.batch.push((
+            0,
+            DrawCommand::PrintColorRight {
+                pos,
+                text: text.to_string(),
+                color
+            }
+        ));
+        self
+    }
 
     /// Draws a box, starting at x/y with the extents width/height using CP437 line characters
     pub fn draw_box(&mut self, pos: Rect, color: ColorPair) -> &mut Self {
@@ -304,6 +346,10 @@ pub fn render_draw_buffer(bterm: &mut BTerm) -> Result<()> {
         DrawCommand::PrintCentered { y, text } => bterm.print_centered(*y, &text),
         DrawCommand::PrintColorCentered { y, text, color } => {
             bterm.print_color_centered(*y, color.fg, color.bg, &text)
+        }
+        DrawCommand::PrintRight {pos, text } => bterm.print_right(pos.x, pos.y, text),
+        DrawCommand::PrintColorRight { pos, text, color } => {
+            bterm.print_color_right(pos.x, pos.y, color.fg, color.bg, text)
         }
         DrawCommand::Box { pos, color } => bterm.draw_box(
             pos.x1,

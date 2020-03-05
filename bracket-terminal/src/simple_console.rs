@@ -212,6 +212,20 @@ impl Console for SimpleConsole {
         );
     }
 
+    /// Prints text right-aligned
+    fn print_right(&mut self, x: i32, y: i32, text: &str) {
+        let len = text.len() as i32;
+        let actual_x = x - len;
+        self.print(actual_x, y, text);
+    }
+
+    /// Prints colored text right-aligned
+    fn print_color_right(&mut self, x: i32, y:i32, fg: RGB, bg: RGB, text: &str) {
+        let len = text.len() as i32;
+        let actual_x = x - len;
+        self.print_color(actual_x, y, fg, bg, text);
+    }
+
     /// Saves the layer to an XpFile structure
     fn to_xp_layer(&self) -> XpLayer {
         let mut layer = XpLayer::new(self.width as usize, self.height as usize);

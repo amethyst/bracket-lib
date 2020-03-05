@@ -89,6 +89,12 @@ pub trait Console {
     /// Prints text in color, centered to the whole console width, at vertical location y.
     fn print_color_centered(&mut self, y: i32, fg: RGB, bg: RGB, text: &str);
 
+    /// Prints text right-aligned
+    fn print_right(&mut self, x: i32, y: i32, text: &str);
+
+    /// Prints colored text right-aligned
+    fn print_color_right(&mut self, x: i32, y:i32, fg: RGB, bg: RGB, text: &str);
+
     /// Serializes the console layer to an XpFile
     fn to_xp_layer(&self) -> XpLayer;
 
