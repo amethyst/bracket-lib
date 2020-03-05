@@ -92,7 +92,9 @@ impl VirtualConsole {
                 let source_x = x + source.x1 - dest.x1;
                 if let Some(idx) = self.try_at(source_x, source_y) {
                     let t = self.tiles[idx];
-                    target.set(x, y, t.fg, t.bg, t.glyph);
+                    if t.glyph > 0 {
+                        target.set(x, y, t.fg, t.bg, t.glyph);
+                    }
                 }
             }
         }
@@ -114,7 +116,9 @@ impl VirtualConsole {
                 let source_x = x + source.x1 - dest.x1;
                 if let Some(idx) = self.try_at(source_x, source_y) {
                     let t = self.tiles[idx];
-                    target.set(Point::new(x, y), ColorPair::new(t.fg, t.bg), t.glyph);
+                    if t.glyph > 0 {
+                        target.set(Point::new(x, y), ColorPair::new(t.fg, t.bg), t.glyph);
+                    }
                 }
             }
         }
