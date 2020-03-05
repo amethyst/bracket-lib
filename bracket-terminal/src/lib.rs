@@ -15,6 +15,7 @@ mod multi_tile_sprite;
 pub mod rex;
 mod simple_console;
 mod sparse_console;
+mod virtual_console;
 mod textblock;
 
 pub(crate) type Error = Box<dyn std::error::Error>;
@@ -40,6 +41,7 @@ pub mod prelude {
     pub use crate::rex::*;
     pub use crate::simple_console::SimpleConsole;
     pub use crate::sparse_console::SparseConsole;
+    pub use crate::virtual_console::VirtualConsole;
     pub use crate::textblock::*;
     pub use bracket_color::prelude::*;
     pub use bracket_geometry::prelude::*;

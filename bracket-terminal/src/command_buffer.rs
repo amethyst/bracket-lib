@@ -126,6 +126,7 @@ pub enum DrawCommand {
         max: i32,
         color: ColorPair,
     },
+    SetClipping{ clip: Option<Rect> }
 }
 
 /// Represents a batch of drawing commands, designed to be submitted together.
@@ -387,6 +388,14 @@ impl DrawBatch {
         ));
         self
     }
+
+    pub fn set_clipping(&mut self, clip: Option<Rect>) -> &mut Self {
+        self.batch.push((
+            0,
+            DrawCommand::SetClipping{ clip }
+        ));
+        self
+    }
 }
 
 /// Submits the current batch to the BTerm buffer and empties it
@@ -472,6 +481,7 @@ pub fn render_draw_buffer(bterm: &mut BTerm) -> Result<()> {
             max,
             color,
         } => bterm.draw_bar_vertical(pos.x, pos.y, *height, *n, *max, color.fg, color.bg),
+        DrawCommand::SetClipping { clip } => bterm.set_clipping(*clip),
     });
     buffer.clear();
     Ok(())
