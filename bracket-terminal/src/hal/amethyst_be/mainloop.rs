@@ -1,7 +1,6 @@
 use super::*;
-use crate::prelude::{BTerm, GameState, BACKEND_INTERNAL};
+use crate::prelude::{BTerm, GameState, BACKEND_INTERNAL, BEvent};
 use crate::{clear_input_state, Result};
-use std::collections::HashSet;
 
 use amethyst::{
     core::math::{Point3, Vector3},
@@ -9,7 +8,7 @@ use amethyst::{
     core::TransformBundle,
     //core::frame_limiter::{FrameLimiter, FrameRateLimitStrategy},
     ecs::prelude::*,
-    input::{Bindings, InputBundle, InputHandler, StringBindings},
+    input::{Bindings, InputBundle, StringBindings, InputHandler},
     prelude::*,
     renderer::{camera::Projection, palette::Srgba, Camera},
     renderer::{
@@ -19,13 +18,13 @@ use amethyst::{
     },
     tiles::{FlatEncoder, MapStorage, RenderTiles2D, Tile, TileMap},
     utils::application_root_dir,
-    winit::VirtualKeyCode,
+    winit::MouseButton,
 };
 
 pub struct BTermGemBridge {
     bterm: BTerm,
     state: Box<dyn GameState>,
-    keys_down: HashSet<(VirtualKeyCode, u32)>,
+    input_reader: Option<amethyst::shrev::ReaderId<amethyst::input::InputEvent<StringBindings>>>
 }
 
 impl SimpleState for BTermGemBridge {
@@ -50,45 +49,50 @@ impl SimpleState for BTermGemBridge {
         // Handle Input
         clear_input_state(&mut self.bterm);
 
-        let inputs = data.world.fetch::<InputHandler<StringBindings>>();
-
-        let (newly_pressed_keys, newly_released_keys) = key_state_map(&inputs, &self.keys_down);
-        for key in newly_pressed_keys {
-            self.bterm.on_key(key.0, key.1, true);
-            self.keys_down.insert(key);
-        }
-        for key in newly_released_keys {
-            self.bterm.on_key(key.0, key.1, false);
-            self.keys_down.remove(&key);
-        }
-
-        for key in inputs.keys_that_are_down() {
-            match key {
-                VirtualKeyCode::LShift => self.bterm.shift = true,
-                VirtualKeyCode::RShift => self.bterm.shift = true,
-                VirtualKeyCode::LAlt => self.bterm.alt = true,
-                VirtualKeyCode::RAlt => self.bterm.alt = true,
-                VirtualKeyCode::LControl => self.bterm.control = true,
-                VirtualKeyCode::RControl => self.bterm.control = true,
-                _ => {
-                    self.bterm.key = Some(key);
+        use amethyst::shrev::EventChannel;
+        use amethyst::input::InputEvent;
+        let mut channel = data.world.fetch_mut::<EventChannel<InputEvent<StringBindings>>>();
+        if let Some(mut reader) = self.input_reader.as_mut() {
+            for event in channel.read(&mut reader) {
+                match event {
+                    InputEvent::CursorMoved{..} => {
+                        // We don't want delta..
+                        let inputs = data.world.fetch::<InputHandler<StringBindings>>();
+                        if let Some(pos) = inputs.mouse_position() {
+                            self.bterm.on_mouse_position(pos.0 as f64, pos.1 as f64);
+                        }
+                    },
+                    InputEvent::MouseButtonPressed(button) => {
+                        self.bterm.on_mouse_button(match button {
+                            MouseButton::Left => 0,
+                            MouseButton::Right => 1,
+                            MouseButton::Middle => 2,
+                            MouseButton::Other(num) => 3 + *num as usize,
+                        }, true);
+                    }
+                    InputEvent::MouseButtonReleased(button) => {
+                        self.bterm.on_mouse_button(match button {
+                            MouseButton::Left => 0,
+                            MouseButton::Right => 1,
+                            MouseButton::Middle => 2,
+                            MouseButton::Other(num) => 3 + *num as usize,
+                        }, false);
+                    }
+                    InputEvent::KeyPressed{key_code, scancode} => {
+                        self.bterm.on_key(*key_code, *scancode, true);
+                    }
+                    InputEvent::KeyReleased{key_code, scancode} => {
+                        self.bterm.on_key(*key_code, *scancode, true);
+                    }
+                    InputEvent::KeyTyped(c) => self.bterm.on_event(BEvent::Character{ c: *c }),
+                    InputEvent::ButtonPressed{..} => {},
+                    InputEvent::ButtonReleased{..} => {}
+                    _ => {}
                 }
             }
+        } else {
+            self.input_reader = Some(channel.register_reader());
         }
-
-        if let Some(pos) = inputs.mouse_position() {
-            self.bterm.on_mouse_position(pos.0 as f64, pos.1 as f64);
-        }
-
-        // Set magic for mouse buttons
-        let (newly_pressed_buttons, newly_released_buttons) = button_state_map(&inputs);
-        for btn in newly_pressed_buttons {
-            self.bterm.on_mouse_button(btn, true);
-        }
-        for btn in newly_released_buttons {
-            self.bterm.on_mouse_button(btn, false);
-        }
-        std::mem::drop(inputs);
 
         // Tick the game's state
         self.state.tick(&mut self.bterm);
@@ -314,7 +318,7 @@ pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> Result<()> {
         BTermGemBridge {
             bterm,
             state: Box::new(gamestate),
-            keys_down: HashSet::new(),
+            input_reader: None
         },
         game_data,
     )
