@@ -16,6 +16,8 @@ pub mod shader;
 pub use init::init_raw;
 mod color;
 pub use color::*;
+mod scancode_helper;
+pub use scancode_helper::virtual_key_code_to_scan;
 
 pub struct InitHints {
     pub vsync: bool,

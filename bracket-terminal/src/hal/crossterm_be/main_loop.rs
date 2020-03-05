@@ -1,4 +1,4 @@
-use super::BACKEND;
+use super::{BACKEND, virtual_key_code_to_scan};
 use crate::prelude::{
     to_char, BEvent, BTerm, GameState, SimpleConsole, SparseConsole, VirtualKeyCode,
     BACKEND_INTERNAL,
@@ -85,7 +85,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     if !key_map.contains(&key.code) {
                         key_map.insert(key.code);
                         if let Some(key) = keycode_to_key(key.code) {
-                            bterm.on_key(key, 0, true); // How do I get the scancode?
+                            bterm.on_key(key, virtual_key_code_to_scan(key), true); // How do I get the scancode?
                         }
                     }
 
@@ -115,7 +115,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         for key in keys_released {
             key_map.remove(&key);
             if let Some(key) = keycode_to_key(key) {
-                bterm.on_key(key, 0, false);
+                bterm.on_key(key, virtual_key_code_to_scan(key), false);
             }
         }
 

@@ -9,6 +9,8 @@ pub mod font;
 mod init;
 pub mod shader;
 pub use init::*;
+mod scancode_helper;
+pub use scancode_helper::virtual_key_code_to_scan;
 
 pub struct InitHints {
     pub vsync: bool,

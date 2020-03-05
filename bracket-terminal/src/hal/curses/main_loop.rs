@@ -48,7 +48,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                         if !key_map.contains(&c) {
                             bterm.on_event(BEvent::Character { c });
                             if let Some(key) = char_to_keycode(c) {
-                                bterm.on_key(key, 0, true); // How do I get the scancode?
+                                bterm.on_key(key, virtual_key_code_to_scan(key), true); // How do I get the scancode?
                                 key_map.insert(c);
                             }
                         }
@@ -108,7 +108,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         for key in keys_released {
             key_map.remove(&key);
             if let Some(key) = char_to_keycode(key) {
-                bterm.on_key(key, 0, false);
+                bterm.on_key(key, virtual_key_code_to_scan(key), false);
             }
         }
 
