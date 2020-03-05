@@ -1,6 +1,6 @@
 use crate::prelude::XpLayer;
 use bracket_color::prelude::RGB;
-use bracket_geometry::prelude::Rect;
+use bracket_geometry::prelude::{Rect, Point};
 use std::any::Any;
 
 /// The internal storage type for tiles in a simple console.
@@ -129,12 +129,21 @@ pub trait Console {
     /// natively.
     fn as_any(&self) -> &dyn Any;
 
+    /// Permits the creation of an arbitrary clipping rectangle. It's a really good idea
+    /// to make sure that this rectangle is entirely valid.
+    fn set_clipping(&mut self, clipping: Option<Rect>);
 
+    /// Returns the current arbitrary clipping rectangle, None if there isn't one.
+    fn get_clipping(&self) -> Option<Rect>;
 
     /// Returns true if an x/y coordinate is within the console bounds
     fn in_bounds(&self, x: i32, y: i32) -> bool {
-        let bounds = self.get_char_size();
-        x >= 0 && x < bounds.0 as i32 && y >= 0 && y < bounds.1 as i32
+        if let Some(clip) = self.get_clipping() {
+            clip.point_in_rect(Point::new(x, y))
+        } else {
+            let bounds = self.get_char_size();
+            x >= 0 && x < bounds.0 as i32 && y >= 0 && y < bounds.1 as i32
+        }
     }
 
     /// Try to use a coordinate: return Some(the coordinate) if it is valid,

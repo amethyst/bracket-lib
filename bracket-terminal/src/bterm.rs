@@ -503,6 +503,21 @@ impl Console for BTerm {
     fn as_any(&self) -> &dyn Any {
         self
     }
+
+    /// Permits the creation of an arbitrary clipping rectangle. It's a really good idea
+    /// to make sure that this rectangle is entirely valid.
+    fn set_clipping(&mut self, clipping: Option<Rect>) {
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .set_clipping(clipping);
+    }
+
+    /// Returns the current arbitrary clipping rectangle, None if there isn't one.
+    fn get_clipping(&self) -> Option<Rect> {
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .get_clipping()
+    }
 }
 
 /// Runs the BTerm application, calling into the provided gamestate handler every tick.

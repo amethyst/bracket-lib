@@ -17,6 +17,8 @@ pub struct SimpleConsole {
 
     pub scale: f32,
     pub scale_center: (i32, i32),
+
+    pub extra_clipping: Option<Rect>
 }
 
 impl SimpleConsole {
@@ -42,6 +44,7 @@ impl SimpleConsole {
             offset_y: 0.0,
             scale: 1.0,
             scale_center: (width as i32 / 2, height as i32 / 2),
+            extra_clipping: None
         };
 
         Box::new(new_console)
@@ -299,5 +302,16 @@ impl Console for SimpleConsole {
 
     fn as_any(&self) -> &dyn Any {
         self
+    }
+
+    /// Permits the creation of an arbitrary clipping rectangle. It's a really good idea
+    /// to make sure that this rectangle is entirely valid.
+    fn set_clipping(&mut self, clipping: Option<Rect>) {
+        self.extra_clipping = clipping;
+    }
+
+    /// Returns the current arbitrary clipping rectangle, None if there isn't one.
+    fn get_clipping(&self) -> Option<Rect> {
+        self.extra_clipping
     }
 }
