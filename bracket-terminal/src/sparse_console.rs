@@ -1,4 +1,4 @@
-use crate::prelude::{string_to_cp437, to_cp437, Console, XpLayer};
+use crate::prelude::{string_to_cp437, to_cp437, Console, XpLayer, TextAlign, ColoredTextSpans};
 use bracket_color::prelude::{XpColor, RGB};
 use bracket_geometry::prelude::Rect;
 use std::any::Any;
@@ -267,6 +267,33 @@ impl Console for SparseConsole {
         let len = text.len() as i32;
         let actual_x = x - len;
         self.print_color(actual_x, y, fg, bg, text);
+    }
+
+    /// Print a colorized string with the color encoding defined inline.
+    /// For example: printer(1, 1, "#[blue]This blue text contains a #[pink]pink#[] word")
+    /// You can get the same effect with a TextBlock, but this can be easier.
+    /// Thanks to doryen_rs for the idea.
+    fn printer(&mut self, x:i32, y:i32, output: &str, align: TextAlign, background: Option<RGB>) {
+        let bg = if let Some(bg) = background {
+            bg
+        } else {
+            RGB::from_u8(0, 0, 0)
+        };
+
+        let split_text = ColoredTextSpans::new(output);
+
+        let mut tx = match align {
+            TextAlign::Left => x,
+            TextAlign::Center => x - (split_text.length as i32 / 2),
+            TextAlign::Right => x - split_text.length as i32
+        };
+        for span in split_text.spans.iter() {
+            let fg = span.0;
+            for ch in span.1.chars() {
+                self.set(tx, y, fg, bg, crate::codepage437::to_cp437(ch));
+                tx += 1;
+            }
+        }
     }
 
     /// Saves the layer to an XpFile structure

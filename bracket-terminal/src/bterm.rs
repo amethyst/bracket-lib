@@ -1,7 +1,7 @@
 use crate::{
     prelude::{
         font::Font, init_raw, BEvent, Console, GameState, InitHints, Shader, SimpleConsole,
-        VirtualKeyCode, XpFile, XpLayer, INPUT,
+        VirtualKeyCode, XpFile, XpLayer, INPUT, TextAlign
     },
     Result,
 };
@@ -473,6 +473,17 @@ impl Console for BTerm {
             .console
             .print_color_right(x, y, fg, bg, text);
     }
+
+    /// Print a colorized string with the color encoding defined inline.
+    /// For example: printer(1, 1, "#[blue]This blue text contains a #[pink]pink#[] word")
+    /// You can get the same effect with a TextBlock, but this can be easier.
+    /// Thanks to doryen_rs for the idea.
+    fn printer(&mut self, x:i32, y:i32, output: &str, align: TextAlign, background: Option<RGB>) {
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .printer(x, y, output, align, background);
+    }
+
     fn to_xp_layer(&self) -> XpLayer {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console

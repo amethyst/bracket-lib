@@ -18,7 +18,7 @@ exclude = [
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bracket-color = { path = "../bracket-color", features = [ "rex" ] }
+bracket-color = { path = "../bracket-color", features = [ "rex", "palette" ] }
 bracket-geometry = { path = "../bracket-geometry" }
 flate2 = "1.0.13"
 lazy_static = "1.4.0"

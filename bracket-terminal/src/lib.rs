@@ -15,6 +15,7 @@ pub mod rex;
 mod simple_console;
 mod sparse_console;
 mod textblock;
+mod format_string;
 
 pub(crate) type Error = Box<dyn std::error::Error>;
 pub(crate) type Result<T> = core::result::Result<T, Error>;
@@ -26,7 +27,7 @@ pub mod prelude {
     pub use crate::codepage437::*;
     pub use crate::command_buffer::*;
     pub use crate::console;
-    pub use crate::console::{Console, Tile};
+    pub use crate::console::{Console, Tile, TextAlign};
     pub use crate::embedding;
     pub use crate::embedding::EMBED;
     pub use crate::gamestate::GameState;
@@ -43,6 +44,7 @@ pub mod prelude {
     pub use bracket_color::prelude::*;
     pub use bracket_geometry::prelude::*;
     pub type BError = std::result::Result<(), Box<dyn std::error::Error>>;
+    pub(crate) use crate::format_string::*;
 
     #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
     pub use glutin::event::VirtualKeyCode;

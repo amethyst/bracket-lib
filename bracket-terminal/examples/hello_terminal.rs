@@ -31,6 +31,8 @@ impl GameState for State {
         let fg = col1.lerp(col2, percent);
 
         ctx.cls();
+        ctx.printer(40, 49, "#[blue]Hello #[pink]Bracket#[] world.", TextAlign::Center, Some(RGB::from_u8(200, 200, 200)));
+
         // Notice that unicode conversion is active, so we can cut/paste characters from
         // a CP437 reference such as http://dwarffortresswiki.org/index.php/Character_table
         ctx.print_color(
@@ -80,7 +82,7 @@ fn main() -> BError {
     // with the baked-in 8x8 terminal font.
     let context = BTermBuilder::simple80x50()
         .with_title("Hello Bracket World")
-        .with_fps_cap(30.0)
+        //.with_fps_cap(30.0)
         .build()?;
 
     // Now we create an empty state object.
@@ -88,6 +90,10 @@ fn main() -> BError {
         y: 1,
         going_down: true,
     };
+
+    // Register some named palette colors for the formatted string
+    register_palette_color("blue", RGB::named(BLUE));
+    register_palette_color("pink", RGB::named(MAGENTA));
 
     // Call into BTerm to run the main loop. This handles rendering, and calls back into State's tick
     // function every cycle. The box is needed to work around lifetime handling.

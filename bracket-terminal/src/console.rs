@@ -4,12 +4,15 @@ use bracket_geometry::prelude::Rect;
 use std::any::Any;
 
 /// The internal storage type for tiles in a simple console.
-#[derive(PartialEq, Copy, Clone)]
+#[derive(PartialEq, Copy, Clone, Debug)]
 pub struct Tile {
     pub glyph: u8,
     pub fg: RGB,
     pub bg: RGB,
 }
+
+#[derive(PartialEq, Copy, Clone, Debug)]
+pub enum TextAlign { Left, Center, Right }
 
 /// Trait that must be implemented by console types.
 pub trait Console {
@@ -33,6 +36,12 @@ pub trait Console {
 
     /// Print a string in color at the specified x/y coordinate, with specified foreground and background.
     fn print_color(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, output: &str);
+
+    /// Print a colorized string with the color encoding defined inline.
+    /// For example: printer(1, 1, "#[blue]This blue text contains a #[pink]pink#[] word")
+    /// You can get the same effect with a TextBlock, but this can be easier.
+    /// Thanks to doryen_rs for the idea.
+    fn printer(&mut self, x:i32, y:i32, output: &str, align: TextAlign, background: Option<RGB>);
 
     /// Sets a single cell to a color/glyph combination.
     fn set(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, glyph: u8);

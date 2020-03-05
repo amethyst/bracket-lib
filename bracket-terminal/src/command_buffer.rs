@@ -2,7 +2,7 @@
 // designed to be used safely from within ECS systems in a potentially
 // multi-threaded environment.
 
-use crate::prelude::{BTerm, Console};
+use crate::prelude::{BTerm, Console, TextAlign};
 use crate::Result;
 use bracket_color::prelude::{ColorPair, RGB};
 use bracket_geometry::prelude::{Point, Rect};
@@ -84,6 +84,12 @@ pub enum DrawCommand {
         pos: Point,
         text: String,
         color: ColorPair,
+    },
+    Printer {
+        pos: Point,
+        text: String,
+        align: TextAlign,
+        background: Option<RGB>
     },
     Box {
         pos: Rect,
@@ -169,6 +175,21 @@ impl DrawBatch {
     /// Sets an individual cell glyph
     pub fn set_bg(&mut self, pos: Point, bg: RGB) -> &mut Self {
         self.batch.push((0, DrawCommand::SetBackground { pos, bg }));
+        self
+    }
+
+    /// Prints formatted text, using the doryen_rs convention. For example:
+    /// "#[blue]This blue text contains a #[pink]pink#[] word"
+    pub fn printer<S: ToString>(&mut self, pos: Point, text: S, align: TextAlign, background: Option<RGB>) -> &mut Self {
+        self.batch.push((
+            0,
+            DrawCommand::Printer{
+                pos,
+                text: text.to_string(),
+                align,
+                background
+            }
+        ));
         self
     }
 
@@ -393,6 +414,9 @@ pub fn render_draw_buffer(bterm: &mut BTerm) -> Result<()> {
         DrawCommand::PrintRight {pos, text } => bterm.print_right(pos.x, pos.y, text),
         DrawCommand::PrintColorRight { pos, text, color } => {
             bterm.print_color_right(pos.x, pos.y, color.fg, color.bg, text)
+        }
+        DrawCommand::Printer{pos, text, align, background } => {
+            bterm.printer(pos.x, pos.y, text, *align, *background)
         }
         DrawCommand::Box { pos, color } => bterm.draw_box(
             pos.x1,
