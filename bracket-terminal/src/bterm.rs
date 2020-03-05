@@ -1,7 +1,7 @@
 use crate::{
     prelude::{
         font::Font, init_raw, BEvent, Console, GameState, InitHints, Shader, SimpleConsole,
-        VirtualKeyCode, XpFile, XpLayer, INPUT, TextAlign
+        TextAlign, VirtualKeyCode, XpFile, XpLayer, INPUT,
     },
     Result,
 };
@@ -458,7 +458,7 @@ impl Console for BTerm {
     }
 
     /// Prints colored text, centered on an arbitrary point
-    fn print_color_centered_at(&mut self, x: i32, y: i32, fg:RGB, bg: RGB, text: &str) {
+    fn print_color_centered_at(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, text: &str) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .print_color_centered_at(x, y, fg, bg, text);
@@ -468,7 +468,7 @@ impl Console for BTerm {
             .console
             .print_right(x, y, text);
     }
-    fn print_color_right(&mut self, x: i32, y:i32, fg: RGB, bg: RGB, text: &str) {
+    fn print_color_right(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, text: &str) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .print_color_right(x, y, fg, bg, text);
@@ -478,7 +478,7 @@ impl Console for BTerm {
     /// For example: printer(1, 1, "#[blue]This blue text contains a #[pink]pink#[] word")
     /// You can get the same effect with a TextBlock, but this can be easier.
     /// Thanks to doryen_rs for the idea.
-    fn printer(&mut self, x:i32, y:i32, output: &str, align: TextAlign, background: Option<RGB>) {
+    fn printer(&mut self, x: i32, y: i32, output: &str, align: TextAlign, background: Option<RGB>) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .printer(x, y, output, align, background);

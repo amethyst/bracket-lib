@@ -60,12 +60,12 @@ pub enum DrawCommand {
     },
     PrintRight {
         pos: Point,
-        text: String
+        text: String,
     },
     PrintColorRight {
         pos: Point,
         text: String,
-        color: ColorPair
+        color: ColorPair,
     },
     PrintCentered {
         y: i32,
@@ -89,7 +89,7 @@ pub enum DrawCommand {
         pos: Point,
         text: String,
         align: TextAlign,
-        background: Option<RGB>
+        background: Option<RGB>,
     },
     Box {
         pos: Rect,
@@ -180,15 +180,21 @@ impl DrawBatch {
 
     /// Prints formatted text, using the doryen_rs convention. For example:
     /// "#[blue]This blue text contains a #[pink]pink#[] word"
-    pub fn printer<S: ToString>(&mut self, pos: Point, text: S, align: TextAlign, background: Option<RGB>) -> &mut Self {
+    pub fn printer<S: ToString>(
+        &mut self,
+        pos: Point,
+        text: S,
+        align: TextAlign,
+        background: Option<RGB>,
+    ) -> &mut Self {
         self.batch.push((
             0,
-            DrawCommand::Printer{
+            DrawCommand::Printer {
                 pos,
                 text: text.to_string(),
                 align,
-                background
-            }
+                background,
+            },
         ));
         self
     }
@@ -251,7 +257,7 @@ impl DrawBatch {
     pub fn print_centered_at<S: ToString>(&mut self, pos: Point, text: S) -> &mut Self {
         self.batch.push((
             0,
-            DrawCommand::PrintCenteredAt{
+            DrawCommand::PrintCenteredAt {
                 pos,
                 text: text.to_string(),
             },
@@ -277,17 +283,13 @@ impl DrawBatch {
     }
 
     /// Prints right aligned text
-    pub fn print_right<S: ToString>(
-        &mut self,
-        pos: Point,
-        text : S
-    ) -> &mut Self {
+    pub fn print_right<S: ToString>(&mut self, pos: Point, text: S) -> &mut Self {
         self.batch.push((
             0,
             DrawCommand::PrintRight {
                 pos,
-                text: text.to_string()
-            }
+                text: text.to_string(),
+            },
         ));
         self
     }
@@ -296,7 +298,7 @@ impl DrawBatch {
     pub fn print_color_right<S: ToString>(
         &mut self,
         pos: Point,
-        text : S,
+        text: S,
         color: ColorPair,
     ) -> &mut Self {
         self.batch.push((
@@ -304,8 +306,8 @@ impl DrawBatch {
             DrawCommand::PrintColorRight {
                 pos,
                 text: text.to_string(),
-                color
-            }
+                color,
+            },
         ));
         self
     }
@@ -411,13 +413,16 @@ pub fn render_draw_buffer(bterm: &mut BTerm) -> Result<()> {
         DrawCommand::PrintColorCenteredAt { pos, text, color } => {
             bterm.print_color_centered_at(pos.x, pos.y, color.fg, color.bg, &text)
         }
-        DrawCommand::PrintRight {pos, text } => bterm.print_right(pos.x, pos.y, text),
+        DrawCommand::PrintRight { pos, text } => bterm.print_right(pos.x, pos.y, text),
         DrawCommand::PrintColorRight { pos, text, color } => {
             bterm.print_color_right(pos.x, pos.y, color.fg, color.bg, text)
         }
-        DrawCommand::Printer{pos, text, align, background } => {
-            bterm.printer(pos.x, pos.y, text, *align, *background)
-        }
+        DrawCommand::Printer {
+            pos,
+            text,
+            align,
+            background,
+        } => bterm.printer(pos.x, pos.y, text, *align, *background),
         DrawCommand::Box { pos, color } => bterm.draw_box(
             pos.x1,
             pos.y1,

@@ -12,7 +12,11 @@ pub struct Tile {
 }
 
 #[derive(PartialEq, Copy, Clone, Debug)]
-pub enum TextAlign { Left, Center, Right }
+pub enum TextAlign {
+    Left,
+    Center,
+    Right,
+}
 
 /// Trait that must be implemented by console types.
 pub trait Console {
@@ -41,7 +45,7 @@ pub trait Console {
     /// For example: printer(1, 1, "#[blue]This blue text contains a #[pink]pink#[] word")
     /// You can get the same effect with a TextBlock, but this can be easier.
     /// Thanks to doryen_rs for the idea.
-    fn printer(&mut self, x:i32, y:i32, output: &str, align: TextAlign, background: Option<RGB>);
+    fn printer(&mut self, x: i32, y: i32, output: &str, align: TextAlign, background: Option<RGB>);
 
     /// Sets a single cell to a color/glyph combination.
     fn set(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, glyph: u8);
@@ -102,13 +106,13 @@ pub trait Console {
     fn print_centered_at(&mut self, x: i32, y: i32, text: &str);
 
     /// Prints colored text, centered on an arbitrary point
-    fn print_color_centered_at(&mut self, x: i32, y: i32, fg:RGB, bg: RGB, text: &str);
+    fn print_color_centered_at(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, text: &str);
 
     /// Prints text right-aligned
     fn print_right(&mut self, x: i32, y: i32, text: &str);
 
     /// Prints colored text right-aligned
-    fn print_color_right(&mut self, x: i32, y:i32, fg: RGB, bg: RGB, text: &str);
+    fn print_color_right(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, text: &str);
 
     /// Serializes the console layer to an XpFile
     fn to_xp_layer(&self) -> XpLayer;

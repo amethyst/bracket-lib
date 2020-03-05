@@ -5,6 +5,7 @@ mod codepage437;
 mod command_buffer;
 pub mod console;
 pub mod embedding;
+mod format_string;
 mod gamestate;
 mod gui_helpers;
 mod hal;
@@ -15,7 +16,6 @@ pub mod rex;
 mod simple_console;
 mod sparse_console;
 mod textblock;
-mod format_string;
 
 pub(crate) type Error = Box<dyn std::error::Error>;
 pub(crate) type Result<T> = core::result::Result<T, Error>;
@@ -27,7 +27,7 @@ pub mod prelude {
     pub use crate::codepage437::*;
     pub use crate::command_buffer::*;
     pub use crate::console;
-    pub use crate::console::{Console, Tile, TextAlign};
+    pub use crate::console::{Console, TextAlign, Tile};
     pub use crate::embedding;
     pub use crate::embedding::EMBED;
     pub use crate::gamestate::GameState;

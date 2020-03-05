@@ -31,7 +31,13 @@ impl GameState for State {
         let fg = col1.lerp(col2, percent);
 
         ctx.cls();
-        ctx.printer(40, 49, "#[blue]Hello #[pink]Bracket#[] world.", TextAlign::Center, Some(RGB::from_u8(200, 200, 200)));
+        ctx.printer(
+            40,
+            49,
+            "#[blue]Hello #[pink]Bracket#[] world.",
+            TextAlign::Center,
+            Some(RGB::from_u8(200, 200, 200)),
+        );
 
         // Notice that unicode conversion is active, so we can cut/paste characters from
         // a CP437 reference such as http://dwarffortresswiki.org/index.php/Character_table

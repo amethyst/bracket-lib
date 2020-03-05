@@ -1,4 +1,4 @@
-use crate::prelude::{string_to_cp437, to_cp437, Console, XpLayer, TextAlign, ColoredTextSpans};
+use crate::prelude::{string_to_cp437, to_cp437, ColoredTextSpans, Console, TextAlign, XpLayer};
 use bracket_color::prelude::{XpColor, RGB};
 use bracket_geometry::prelude::Rect;
 use std::any::Any;
@@ -236,23 +236,13 @@ impl Console for SparseConsole {
     /// Prints text, centered to the whole console width, at vertical location y.
     fn print_centered_at(&mut self, x: i32, y: i32, text: &str) {
         self.is_dirty = true;
-        self.print(
-            x - (text.to_string().len() as i32 / 2),
-            y,
-            text,
-        );
+        self.print(x - (text.to_string().len() as i32 / 2), y, text);
     }
 
     /// Prints text in color, centered to the whole console width, at vertical location y.
-    fn print_color_centered_at(&mut self, x:i32, y: i32, fg: RGB, bg: RGB, text: &str) {
+    fn print_color_centered_at(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, text: &str) {
         self.is_dirty = true;
-        self.print_color(
-            x - (text.to_string().len() as i32 / 2),
-            y,
-            fg,
-            bg,
-            text,
-        );
+        self.print_color(x - (text.to_string().len() as i32 / 2), y, fg, bg, text);
     }
 
     /// Prints text right-aligned
@@ -263,7 +253,7 @@ impl Console for SparseConsole {
     }
 
     /// Prints colored text right-aligned
-    fn print_color_right(&mut self, x: i32, y:i32, fg: RGB, bg: RGB, text: &str) {
+    fn print_color_right(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, text: &str) {
         let len = text.len() as i32;
         let actual_x = x - len;
         self.print_color(actual_x, y, fg, bg, text);
@@ -273,7 +263,7 @@ impl Console for SparseConsole {
     /// For example: printer(1, 1, "#[blue]This blue text contains a #[pink]pink#[] word")
     /// You can get the same effect with a TextBlock, but this can be easier.
     /// Thanks to doryen_rs for the idea.
-    fn printer(&mut self, x:i32, y:i32, output: &str, align: TextAlign, background: Option<RGB>) {
+    fn printer(&mut self, x: i32, y: i32, output: &str, align: TextAlign, background: Option<RGB>) {
         let bg = if let Some(bg) = background {
             bg
         } else {
@@ -285,7 +275,7 @@ impl Console for SparseConsole {
         let mut tx = match align {
             TextAlign::Left => x,
             TextAlign::Center => x - (split_text.length as i32 / 2),
-            TextAlign::Right => x - split_text.length as i32
+            TextAlign::Right => x - split_text.length as i32,
         };
         for span in split_text.spans.iter() {
             let fg = span.0;

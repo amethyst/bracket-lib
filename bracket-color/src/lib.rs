@@ -38,11 +38,11 @@ mod hsv;
 mod lerpit;
 /// Import library of named colors
 mod named;
-/// Import RGB color support
-mod rgb;
 /// Import Palette support
 #[cfg(feature = "palette")]
 mod palette;
+/// Import RGB color support
+mod rgb;
 /// Import REX Paint Support
 #[cfg(feature = "rex")]
 mod xpcolor;
@@ -53,9 +53,9 @@ pub mod prelude {
     pub use crate::hsv::*;
     pub use crate::lerpit::*;
     pub use crate::named::*;
+    #[cfg(feature = "palette")]
+    pub use crate::palette::*;
     pub use crate::rgb::*;
     #[cfg(feature = "rex")]
     pub use crate::xpcolor::*;
-    #[cfg(feature = "palette")]
-    pub use crate::palette::*;
 }
