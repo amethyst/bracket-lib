@@ -7,7 +7,7 @@ use amethyst::{
     core::math::{Point3, Vector3},
     core::transform::Transform,
     core::TransformBundle,
-    core::frame_limiter::{FrameLimiter, FrameRateLimitStrategy},
+    //core::frame_limiter::{FrameLimiter, FrameRateLimitStrategy},
     ecs::prelude::*,
     input::{Bindings, InputBundle, InputHandler, StringBindings},
     prelude::*,
@@ -49,6 +49,7 @@ impl SimpleState for BTermGemBridge {
 
         // Handle Input
         clear_input_state(&mut self.bterm);
+
         let inputs = data.world.fetch::<InputHandler<StringBindings>>();
 
         let (newly_pressed_keys, newly_released_keys) = key_state_map(&inputs, &self.keys_down);
