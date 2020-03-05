@@ -43,6 +43,8 @@ mod named;
 mod palette;
 /// Import RGB color support
 mod rgb;
+/// Import RGBA color support
+mod rgba;
 /// Import REX Paint Support
 #[cfg(feature = "rex")]
 mod xpcolor;
@@ -56,6 +58,7 @@ pub mod prelude {
     #[cfg(feature = "palette")]
     pub use crate::palette::*;
     pub use crate::rgb::*;
+    pub use crate::rgba::*;
     #[cfg(feature = "rex")]
     pub use crate::xpcolor::*;
 }
