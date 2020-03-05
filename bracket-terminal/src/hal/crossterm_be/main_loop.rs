@@ -1,4 +1,4 @@
-use super::{BACKEND, virtual_key_code_to_scan};
+use super::{virtual_key_code_to_scan, BACKEND};
 use crate::prelude::{
     to_char, BEvent, BTerm, GameState, SimpleConsole, SparseConsole, VirtualKeyCode,
     BACKEND_INTERNAL,
@@ -10,10 +10,10 @@ use crossterm::execute;
 use crossterm::style::Print;
 use crossterm::terminal::SetSize;
 use crossterm::{cursor, queue};
+use std::collections::HashSet;
 use std::io::{stdout, Write};
 use std::time::Duration;
 use std::time::Instant;
-use std::collections::HashSet;
 
 pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
     let now = Instant::now();
@@ -26,8 +26,8 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         reset_terminal();
     }));
 
-    let mut key_map : HashSet<crossterm::event::KeyCode> = HashSet::new();
-    let mut keys_this_frame : HashSet<crossterm::event::KeyCode> = HashSet::new();
+    let mut key_map: HashSet<crossterm::event::KeyCode> = HashSet::new();
+    let mut keys_this_frame: HashSet<crossterm::event::KeyCode> = HashSet::new();
 
     'main: while !bterm.quitting {
         let now_seconds = now.elapsed().as_secs();
@@ -85,7 +85,8 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     if !key_map.contains(&key.code) {
                         key_map.insert(key.code);
                         if let Some(key) = keycode_to_key(key.code) {
-                            bterm.on_key(key, virtual_key_code_to_scan(key), true); // How do I get the scancode?
+                            bterm.on_key(key, virtual_key_code_to_scan(key), true);
+                            // How do I get the scancode?
                         }
                     }
 
@@ -101,7 +102,9 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     }
                 }
                 Event::Resize(x, y) => {
-                    bterm.on_event(BEvent::Resized{new_size : bracket_geometry::prelude::Point::new(x,y)});
+                    bterm.on_event(BEvent::Resized {
+                        new_size: bracket_geometry::prelude::Point::new(x, y),
+                    });
                 }
                 _ => {}
             }

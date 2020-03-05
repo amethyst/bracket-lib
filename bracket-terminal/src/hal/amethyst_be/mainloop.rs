@@ -1,5 +1,5 @@
 use super::*;
-use crate::prelude::{BTerm, GameState, BACKEND_INTERNAL, BEvent};
+use crate::prelude::{BEvent, BTerm, GameState, BACKEND_INTERNAL};
 use crate::{clear_input_state, Result};
 
 use amethyst::{
@@ -8,7 +8,7 @@ use amethyst::{
     core::TransformBundle,
     //core::frame_limiter::{FrameLimiter, FrameRateLimitStrategy},
     ecs::prelude::*,
-    input::{Bindings, InputBundle, StringBindings, InputHandler},
+    input::{Bindings, InputBundle, InputHandler, StringBindings},
     prelude::*,
     renderer::{camera::Projection, palette::Srgba, Camera},
     renderer::{
@@ -24,7 +24,7 @@ use amethyst::{
 pub struct BTermGemBridge {
     bterm: BTerm,
     state: Box<dyn GameState>,
-    input_reader: Option<amethyst::shrev::ReaderId<amethyst::input::InputEvent<StringBindings>>>
+    input_reader: Option<amethyst::shrev::ReaderId<amethyst::input::InputEvent<StringBindings>>>,
 }
 
 impl SimpleState for BTermGemBridge {
@@ -49,44 +49,52 @@ impl SimpleState for BTermGemBridge {
         // Handle Input
         clear_input_state(&mut self.bterm);
 
-        use amethyst::shrev::EventChannel;
         use amethyst::input::InputEvent;
-        let mut channel = data.world.fetch_mut::<EventChannel<InputEvent<StringBindings>>>();
+        use amethyst::shrev::EventChannel;
+        let mut channel = data
+            .world
+            .fetch_mut::<EventChannel<InputEvent<StringBindings>>>();
         if let Some(mut reader) = self.input_reader.as_mut() {
             for event in channel.read(&mut reader) {
                 match event {
-                    InputEvent::CursorMoved{..} => {
+                    InputEvent::CursorMoved { .. } => {
                         // We don't want delta..
                         let inputs = data.world.fetch::<InputHandler<StringBindings>>();
                         if let Some(pos) = inputs.mouse_position() {
                             self.bterm.on_mouse_position(pos.0 as f64, pos.1 as f64);
                         }
-                    },
+                    }
                     InputEvent::MouseButtonPressed(button) => {
-                        self.bterm.on_mouse_button(match button {
-                            MouseButton::Left => 0,
-                            MouseButton::Right => 1,
-                            MouseButton::Middle => 2,
-                            MouseButton::Other(num) => 3 + *num as usize,
-                        }, true);
+                        self.bterm.on_mouse_button(
+                            match button {
+                                MouseButton::Left => 0,
+                                MouseButton::Right => 1,
+                                MouseButton::Middle => 2,
+                                MouseButton::Other(num) => 3 + *num as usize,
+                            },
+                            true,
+                        );
                     }
                     InputEvent::MouseButtonReleased(button) => {
-                        self.bterm.on_mouse_button(match button {
-                            MouseButton::Left => 0,
-                            MouseButton::Right => 1,
-                            MouseButton::Middle => 2,
-                            MouseButton::Other(num) => 3 + *num as usize,
-                        }, false);
+                        self.bterm.on_mouse_button(
+                            match button {
+                                MouseButton::Left => 0,
+                                MouseButton::Right => 1,
+                                MouseButton::Middle => 2,
+                                MouseButton::Other(num) => 3 + *num as usize,
+                            },
+                            false,
+                        );
                     }
-                    InputEvent::KeyPressed{key_code, scancode} => {
+                    InputEvent::KeyPressed { key_code, scancode } => {
                         self.bterm.on_key(*key_code, *scancode, true);
                     }
-                    InputEvent::KeyReleased{key_code, scancode} => {
+                    InputEvent::KeyReleased { key_code, scancode } => {
                         self.bterm.on_key(*key_code, *scancode, true);
                     }
-                    InputEvent::KeyTyped(c) => self.bterm.on_event(BEvent::Character{ c: *c }),
-                    InputEvent::ButtonPressed{..} => {},
-                    InputEvent::ButtonReleased{..} => {}
+                    InputEvent::KeyTyped(c) => self.bterm.on_event(BEvent::Character { c: *c }),
+                    InputEvent::ButtonPressed { .. } => {}
+                    InputEvent::ButtonReleased { .. } => {}
                     _ => {}
                 }
             }
@@ -310,7 +318,7 @@ pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> Result<()> {
                 .with_plugin(RenderFlat2D::default())
                 .with_plugin(RenderTiles2D::<SimpleConsoleTile, FlatEncoder>::default())
                 .with_plugin(RenderTiles2D::<SparseConsoleTile, FlatEncoder>::default()),
-            )
+        )
         .expect("Game data fail");
     let assets_dir = app_root;
     let mut game = Application::new(
@@ -318,7 +326,7 @@ pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> Result<()> {
         BTermGemBridge {
             bterm,
             state: Box::new(gamestate),
-            input_reader: None
+            input_reader: None,
         },
         game_data,
     )

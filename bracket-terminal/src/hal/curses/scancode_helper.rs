@@ -1,6 +1,6 @@
 use winit::event::VirtualKeyCode;
 
-pub fn virtual_key_code_to_scan(key : VirtualKeyCode) -> u32 {
+pub fn virtual_key_code_to_scan(key: VirtualKeyCode) -> u32 {
     match key {
         VirtualKeyCode::Escape => 1,
         VirtualKeyCode::F1 => 59,
@@ -103,6 +103,6 @@ pub fn virtual_key_code_to_scan(key : VirtualKeyCode) -> u32 {
         VirtualKeyCode::Right => 77,
         VirtualKeyCode::Numpad0 => 82,
         VirtualKeyCode::Decimal => 83,
-        _ => 0
+        _ => 0,
     }
 }

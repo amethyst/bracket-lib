@@ -5,9 +5,9 @@ use crate::prelude::{
 };
 use crate::{clear_input_state, Result};
 use pancurses::endwin;
+use std::collections::HashSet;
 use std::convert::TryInto;
 use std::time::Instant;
-use std::collections::HashSet;
 
 pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
     let now = Instant::now();
@@ -15,9 +15,9 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     let mut prev_ms = now.elapsed().as_millis();
     let mut frames = 0;
 
-    let mut button_map : HashSet<usize> = HashSet::new();
-    let mut key_map : HashSet<char> = HashSet::new();
-    let mut keys_this_frame : HashSet<char> = HashSet::new();
+    let mut button_map: HashSet<usize> = HashSet::new();
+    let mut key_map: HashSet<char> = HashSet::new();
+    let mut keys_this_frame: HashSet<char> = HashSet::new();
 
     while !bterm.quitting {
         let now_seconds = now.elapsed().as_secs();

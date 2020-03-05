@@ -1,6 +1,6 @@
 use crate::prelude::BaseMap;
-use std::convert::TryInto;
 use bracket_geometry::prelude::Point;
+use std::convert::TryInto;
 
 /// Implement these for handling conversion to/from 2D coordinates (they are separate, because you might
 /// want Dwarf Fortress style 3D!)
@@ -45,57 +45,57 @@ mod tests {
     // Tests that we make an RGB triplet at defaults and it is black.
     #[should_panic]
     fn test_unimplemented_dimensions() {
-        struct TestMap{};
+        struct TestMap {};
         impl BaseMap for TestMap {}
-        impl Algorithm2D for TestMap{}
+        impl Algorithm2D for TestMap {}
 
-        let map = TestMap{};
-        assert!(map.in_bounds(Point::new(1,1)));
+        let map = TestMap {};
+        assert!(map.in_bounds(Point::new(1, 1)));
     }
 
     #[test]
     fn test_in_bounds() {
-        struct TestMap{};
+        struct TestMap {};
         impl BaseMap for TestMap {}
-        impl Algorithm2D for TestMap{
+        impl Algorithm2D for TestMap {
             fn dimensions(&self) -> Point {
                 Point::new(2, 2)
             }
         }
 
-        let map = TestMap{};
-        assert!(map.in_bounds(Point::new(1,1)));
-        assert!(!map.in_bounds(Point::new(3,3)));
+        let map = TestMap {};
+        assert!(map.in_bounds(Point::new(1, 1)));
+        assert!(!map.in_bounds(Point::new(3, 3)));
     }
 
     #[test]
     fn test_point2d_to_index() {
-        struct TestMap{};
+        struct TestMap {};
         impl BaseMap for TestMap {}
-        impl Algorithm2D for TestMap{
+        impl Algorithm2D for TestMap {
             fn dimensions(&self) -> Point {
                 Point::new(10, 10)
             }
         }
 
-        let map = TestMap{};
-        assert!(map.point2d_to_index(Point::new(0,0)) == 0);
-        assert!(map.point2d_to_index(Point::new(1,0)) == 1);
-        assert!(map.point2d_to_index(Point::new(0,1)) == 10);
-        assert!(map.point2d_to_index(Point::new(9,9)) == 99);
+        let map = TestMap {};
+        assert!(map.point2d_to_index(Point::new(0, 0)) == 0);
+        assert!(map.point2d_to_index(Point::new(1, 0)) == 1);
+        assert!(map.point2d_to_index(Point::new(0, 1)) == 10);
+        assert!(map.point2d_to_index(Point::new(9, 9)) == 99);
     }
 
     #[test]
     fn test_index_to_point2d() {
-        struct TestMap{};
+        struct TestMap {};
         impl BaseMap for TestMap {}
-        impl Algorithm2D for TestMap{
+        impl Algorithm2D for TestMap {
             fn dimensions(&self) -> Point {
                 Point::new(10, 10)
             }
         }
 
-        let map = TestMap{};
+        let map = TestMap {};
         let mut x = 0;
         let mut y = 0;
         for i in 0..100 {

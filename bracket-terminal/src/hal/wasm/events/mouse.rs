@@ -24,10 +24,7 @@ pub static mut GLOBAL_LEFT_CLICK: bool = false;
 /// Event called via the web interface to indicate mouse clicking
 pub fn on_mouse_down(mouse: web_sys::MouseEvent) {
     //super::super::log(&format!("Mouse click {}", mouse.buttons()));
-    INPUT
-        .lock()
-        .unwrap()
-        .on_mouse_button_down(0);
+    INPUT.lock().unwrap().on_mouse_button_down(0);
     unsafe {
         GLOBAL_LEFT_CLICK = true;
     }
@@ -36,10 +33,7 @@ pub fn on_mouse_down(mouse: web_sys::MouseEvent) {
 /// Event called via the web interface to indicate mouse clicking
 pub fn on_mouse_up(mouse: web_sys::MouseEvent) {
     //super::super::log(&format!("Mouse unclick {}", mouse.button()));
-    INPUT
-        .lock()
-        .unwrap()
-        .on_mouse_button_up(0);
+    INPUT.lock().unwrap().on_mouse_button_up(0);
     unsafe {
         GLOBAL_LEFT_CLICK = false;
     }

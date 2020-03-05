@@ -1,7 +1,7 @@
 mod common;
-use common::*;
-use bracket_pathfinding::prelude::*;
 use bracket_color::prelude::*;
+use bracket_pathfinding::prelude::*;
+use common::*;
 
 fn main() {
     let mut map = Map::new();
@@ -10,7 +10,7 @@ fn main() {
     let path = a_star_search(
         map.point2d_to_index(START_POINT),
         map.point2d_to_index(END_POINT),
-        &map
+        &map,
     );
     if path.success {
         for loc in &path.steps {
@@ -22,7 +22,7 @@ fn main() {
     for y in 0..MAP_HEIGHT {
         let idx = map.point2d_to_index(Point::new(0, y));
         for x in 0..MAP_WIDTH {
-            match map.tiles[idx+x] {
+            match map.tiles[idx + x] {
                 '#' => print_color(RGB::named(YELLOW), "#"),
                 '*' => print_color(RGB::named(RED), "*"),
                 _ => print_color(RGB::named(CHOCOLATE), "."),

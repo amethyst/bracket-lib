@@ -1,5 +1,5 @@
-use bracket_noise::prelude::*;
 use bracket_color::prelude::*;
+use bracket_noise::prelude::*;
 use bracket_random::prelude::*;
 
 use crossterm::queue;

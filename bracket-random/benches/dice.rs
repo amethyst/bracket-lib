@@ -46,7 +46,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         })
     });
 
-    let options = [ "Cat", "Dog", "Gerbil", "Hamster", "Dragon" ];
+    let options = ["Cat", "Dog", "Gerbil", "Hamster", "Dragon"];
     c.bench_function("random_slice_entry", |b| {
         let mut rng = RandomNumberGenerator::new();
         b.iter(|| {

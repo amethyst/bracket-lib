@@ -48,9 +48,9 @@
 //!     println!("{:?}", point);
 //! }
 //! ```
-//! 
+//!
 //! Distance examples:
-//! 
+//!
 //! ```rust
 //! use bracket_geometry::prelude::*;
 //! println!("{:?}", DistanceAlg::Pythagoras.distance2d(Point::new(0,0), Point::new(5,5)));
@@ -59,24 +59,24 @@
 //! println!("{:?}", DistanceAlg::Chebyshev.distance2d(Point::new(0,0), Point::new(5,5)));
 //! ```
 
+mod angles;
+mod circle_bresenham;
+mod distance;
 mod line_bresenham;
+mod line_vector;
 mod lines;
 mod point;
 mod point3;
-mod line_vector;
-mod circle_bresenham;
 mod rect;
-mod distance;
-mod angles;
 
 pub mod prelude {
     pub use crate::angles::*;
-    pub use crate::point::*;
-    pub use crate::point3::*;
-    pub use crate::lines::*;
+    pub use crate::circle_bresenham::*;
+    pub use crate::distance::*;
     pub use crate::line_bresenham::*;
     pub use crate::line_vector::*;
-    pub use crate::circle_bresenham::*;
+    pub use crate::lines::*;
+    pub use crate::point::*;
+    pub use crate::point3::*;
     pub use crate::rect::*;
-    pub use crate::distance::*;
 }
