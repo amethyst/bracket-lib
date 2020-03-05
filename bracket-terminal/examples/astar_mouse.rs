@@ -156,7 +156,7 @@ impl GameState for State {
 
                     if INPUT.lock().unwrap().is_mouse_button_pressed(0) {
                         self.mode = Mode::Moving;
-                        self.path = path.clone();
+                        self.path = path;
                     }
                 }
             }

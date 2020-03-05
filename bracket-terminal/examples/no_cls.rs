@@ -9,10 +9,7 @@ struct State {
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
         if let Some(key) = ctx.key {
-            match key {
-                VirtualKeyCode::C => ctx.cls(),
-                _ => {}
-            }
+            if let VirtualKeyCode::C = key { ctx.cls() }
         }
 
         let x = self.rng.range(0, 80);

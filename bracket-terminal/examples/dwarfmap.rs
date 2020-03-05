@@ -231,7 +231,7 @@ impl GameState for State {
 
                     if ctx.left_click {
                         self.mode = Mode::Moving;
-                        self.path = path.clone();
+                        self.path = path;
                     }
                 }
             }

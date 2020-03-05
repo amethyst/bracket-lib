@@ -75,8 +75,8 @@ fn main() -> BError {
     bracket_terminal::link_resource!(NYAN_CAT, "../resources/nyan.xp");
 
     let context = BTermBuilder::simple80x50()
-        .with_font("vga8x16.png", 8u32, 16u32)
-        .with_sparse_console_no_bg(80u32, 25u32, "vga8x16.png")
+        .with_font("vga8x16.png", 8, 16)
+        .with_sparse_console_no_bg(80, 25, "vga8x16.png")
         .with_title("Bracket Terminal Example - Text Sprites")
         .build()?;
 
@@ -98,7 +98,7 @@ fn main() -> BError {
                 RGB::from_f32(0.0, 1.0, 0.0),
                 RGB::from_f32(0.0, 0.0, 0.0),
             ],
-            &vec![RGB::from_f32(0.0, 0.0, 0.0); 9],
+            &[RGB::from_f32(0.0, 0.0, 0.0); 9],
         ),
         nyancat: MultiTileSprite::from_xp(&XpFile::from_resource("../resources/nyan.xp")?),
     };
