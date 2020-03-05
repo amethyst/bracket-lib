@@ -11,6 +11,7 @@ struct State {
 }
 
 impl GameState for State {
+    #[allow(clippy::cast_precision_loss)]
     fn tick(&mut self, ctx: &mut BTerm) {
         let mut draw_batch = DrawBatch::new();
         let col1 = RGB::named(CYAN);
@@ -71,6 +72,7 @@ impl GameState for State {
 
 bracket_terminal::embedded_resource!(NYAN_CAT, "../resources/nyan.xp");
 
+#[allow(clippy::non_ascii_literal)]
 fn main() -> BError {
     bracket_terminal::link_resource!(NYAN_CAT, "../resources/nyan.xp");
 
