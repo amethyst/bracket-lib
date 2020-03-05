@@ -7,6 +7,7 @@ use amethyst::{
     core::math::{Point3, Vector3},
     core::transform::Transform,
     core::TransformBundle,
+    core::frame_limiter::{FrameLimiter, FrameRateLimitStrategy},
     ecs::prelude::*,
     input::{Bindings, InputBundle, InputHandler, StringBindings},
     prelude::*,
@@ -34,6 +35,9 @@ impl SimpleState for BTermGemBridge {
         self.make_camera(world);
         super::font::initialize_fonts(world).unwrap();
         self.initialize_console_objects(world);
+
+        // Frame rate limiter - does not override vsync?
+        //world.insert(FrameLimiter::new(FrameRateLimitStrategy::Unlimited, 0));
     }
 
     fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> amethyst::SimpleTrans {
@@ -301,7 +305,7 @@ pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> Result<()> {
                 .with_plugin(RenderFlat2D::default())
                 .with_plugin(RenderTiles2D::<SimpleConsoleTile, FlatEncoder>::default())
                 .with_plugin(RenderTiles2D::<SparseConsoleTile, FlatEncoder>::default()),
-        )
+            )
         .expect("Game data fail");
     let assets_dir = app_root;
     let mut game = Application::new(
