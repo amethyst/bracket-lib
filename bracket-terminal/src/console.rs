@@ -125,16 +125,20 @@ pub trait Console {
     /// The center of the scale is at character position (center_x, center_y).
     fn set_scale(&mut self, scale: f32, center_x: i32, center_y: i32);
 
-    // Produces the implementor as an Any that can be matched to determine type and access
-    // natively.
+    /// Produces the implementor as an Any that can be matched to determine type and access
+    /// natively.
     fn as_any(&self) -> &dyn Any;
 
-    // Returns true if an x/y coordinate is within the console bounds
+
+
+    /// Returns true if an x/y coordinate is within the console bounds
     fn in_bounds(&self, x: i32, y: i32) -> bool {
         let bounds = self.get_char_size();
         x >= 0 && x < bounds.0 as i32 && y >= 0 && y < bounds.1 as i32
     }
 
+    /// Try to use a coordinate: return Some(the coordinate) if it is valid,
+    /// None if it isn't.
     fn try_at(&self, x: i32, y: i32) -> Option<usize> {
         if self.in_bounds(x, y) {
             Some(self.at(x, y))
