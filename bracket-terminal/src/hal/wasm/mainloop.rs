@@ -97,6 +97,7 @@ fn rebuild_consoles(bterm: &BTerm) {
     for (i, c) in consoles.iter_mut().enumerate() {
         let font = &bi.fonts[bi.consoles[i].font_index];
         let shader = &bi.shaders[0];
+        let has_background = bi.consoles[i].shader_index == 0;
         unsafe {
             bi.shaders[0].useProgram(gl);
             gl.active_texture(glow::TEXTURE0);
@@ -148,6 +149,7 @@ fn rebuild_consoles(bterm: &BTerm) {
                         sc.scale,
                         sc.scale_center,
                         &sc.tiles,
+                        has_background
                     );
                 }
             }
@@ -160,10 +162,15 @@ fn render_consoles() -> Result<()> {
     let be = BACKEND.lock().unwrap();
     let gl = be.gl.as_ref().unwrap();
     let mut consoles = CONSOLE_BACKING.lock().unwrap();
+    unsafe {
+        gl.enable(glow::BLEND);
+        gl.blend_func(glow::SRC_ALPHA, glow::ONE_MINUS_SRC_ALPHA);
+    }
     for (i, c) in consoles.iter_mut().enumerate() {
         let cons = &bi.consoles[i];
         let font = &bi.fonts[cons.font_index];
         let shader = &bi.shaders[0];
+        let has_background = bi.consoles[i].shader_index == 0;
         match c {
             ConsoleBacking::Simple { backing } => {
                 unsafe {
@@ -185,9 +192,12 @@ fn render_consoles() -> Result<()> {
                     .as_any()
                     .downcast_ref::<SparseConsole>()
                     .unwrap();
-                backing.gl_draw(font, shader, gl, &sc.tiles)?;
+                backing.gl_draw(font, shader, gl, &sc.tiles, has_background)?;
             }
         }
+    }
+    unsafe {
+        gl.disable(glow::BLEND);
     }
     Ok(())
 }

@@ -22,10 +22,16 @@ impl GameState for State {
         ctx.set_active_console(1);
         ctx.cls();
         let alpha = (f32::sin(self.counter as f32) + 1.0) / 2.0;
-        ctx.print_color(10, 10, RGBA::from_f32(0.0, 0.0, 1.0, alpha), RGBA::from_f32(0.5, 0.5, 0.5, 1.0 - alpha), "Charles Dickens really knew how to write.");
+        ctx.print_color(
+            10, 
+            10, 
+            RGBA::from_f32(1.0, 0.0, 1.0, alpha), 
+            RGBA::from_f32(0.5, 0.5, 0.5, alpha), 
+            "Charles Dickens really knew how to write."
+        );
 
         self.frame_time += ctx.frame_time_ms;
-        if self.frame_time > 100.0 {
+        if self.frame_time > 200.0 {
             self.counter += 1;
             self.frame_time = 0.0;
         }

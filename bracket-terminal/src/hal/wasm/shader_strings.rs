@@ -21,6 +21,7 @@ out vec4 FragColor;
 uniform sampler2D texture1;
 uniform sampler2D glyphBuffer;
 uniform sampler2D bgBuffer;
+uniform sampler2D fgBuffer;
 uniform vec3 font;
 uniform vec3 screenSize;
 uniform bool screenBurn;
@@ -48,27 +49,29 @@ void main(){
     mediump float glyphY = 16.0f - floor(glyph / 16.0f);
     // So now we have it in 0..16 , 0..16.
 
-    vec3 rgb = glyphLookup.gba;
+    vec4 rgb = texture(fgBuffer, TexCoords);
 
     vec2 fontcoords;
     fontcoords.r = (glyphX + spriteX) * glyphSizeX;
     fontcoords.g = (glyphY - (1.0f - spriteY)) * glyphSizeY;
 
-    vec3 raw_color = texture(texture1, fontcoords).rgb;
-    vec3 color = raw_color * rgb;
-    vec3 bg = texture(bgBuffer, TexCoords).rgb;
+    vec4 raw_color = texture(texture1, fontcoords);
+    vec4 color = raw_color * rgb;
+    vec4 raw_bg = texture(bgBuffer, TexCoords);
+    vec4 bg = raw_bg;
 
     // Set the background color
     bool applyScan = true;
-    if (raw_color.r < 0.1 && raw_color.g < 0.1 && raw_color.b < 0.1) {
+    if (raw_color.r < 0.1 && raw_color.g < 0.1 && raw_color.b < 0.1 || raw_color.a < 0.1) {
         if (!hasBackground) discard;
-        if (bg.r < 0.1 && bg.g < 0.1 && bg.b < 0.1) {
+        if (bg.r < 0.1 && bg.g < 0.1 && bg.b < 0.1 || bg.a < 0.1) {
             if (screenBurn) {
                 float dist = (1.0 - distance(vec2(gl_FragCoord.x / screenSize.x, gl_FragCoord.y / screenSize.y), vec2(0.5,0.5))) * 0.2;
-                color = vec3(0.0, dist, dist);
+                color = vec4(0.0, dist, dist, 1.0);
                 applyScan = false;
             } else {
-                color = vec3(0.0, 0.0, 0.0);
+                if (raw_bg.a < 0.1) discard;
+                color = vec4(0.0, 0.0, 0.0, 1.0);
             }
         } else {
             color = bg;
@@ -77,8 +80,8 @@ void main(){
 
     // Scan lines
     float scanLine = mod(gl_FragCoord.y, 2.0) * 0.25;
-    vec3 scanColor = showScanLines ? (color.rgb - scanLine) : color;
+    vec4 scanColor = showScanLines ? (color - scanLine) : color;
 
-    FragColor = applyScan ? vec4(scanColor.rgb, 1.0) : vec4(color, 1.0);
+    FragColor = applyScan ? scanColor : color;
 }
 "#;

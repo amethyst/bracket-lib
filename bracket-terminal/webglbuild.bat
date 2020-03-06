@@ -15,6 +15,9 @@ CALL :StageExample no_cls, no_cls
 CALL :StageExample native_gl, native_gl
 CALL :StageExample keyboard, keyboard
 CALL :StageExample input_harness, input_harness
+CALL :StageExample virtual_console, virtual_console
+CALL :StageExample alpha, alpha
+
 
 REM Submit to server
 cd wasm_help\staging

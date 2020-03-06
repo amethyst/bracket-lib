@@ -6,95 +6,63 @@ use glow::HasContext;
 pub struct SparseConsoleBackend {
     charbuffer: glow::WebTextureKey,
     background: glow::WebTextureKey,
+    foreground: glow::WebTextureKey,
     offset_x: f32,
     offset_y: f32,
 }
 
+fn make_backing_texture(gl: &glow::Context, width: usize, height: usize) -> glow::WebTextureKey {
+    unsafe {
+        let texture = gl.create_texture().unwrap();
+        gl.bind_texture(glow::TEXTURE_2D, Some(texture));
+        gl.tex_parameter_i32(
+            glow::TEXTURE_2D,
+            glow::TEXTURE_WRAP_S,
+            glow::CLAMP_TO_EDGE as i32,
+        ); // set texture wrapping to gl::REPEAT (default wrapping method)
+        gl.tex_parameter_i32(
+            glow::TEXTURE_2D,
+            glow::TEXTURE_WRAP_T,
+            glow::CLAMP_TO_EDGE as i32,
+        );
+        // set texture filtering parameters
+        gl.tex_parameter_i32(
+            glow::TEXTURE_2D,
+            glow::TEXTURE_MIN_FILTER,
+            glow::NEAREST as i32,
+        );
+        gl.tex_parameter_i32(
+            glow::TEXTURE_2D,
+            glow::TEXTURE_MAG_FILTER,
+            glow::NEAREST as i32,
+        );
+
+        let data = vec![200u8; width * height * 4];
+        gl.tex_image_2d(
+            glow::TEXTURE_2D,
+            0,
+            glow::RGBA as i32,
+            width as i32,
+            height as i32,
+            0,
+            glow::RGBA,
+            glow::UNSIGNED_BYTE,
+            Some(&data.align_to::<u8>().1),
+        );
+        texture
+    }
+}
+
 impl SparseConsoleBackend {
     pub fn new(gl: &glow::Context, width: usize, height: usize) -> SparseConsoleBackend {
-        let texture;
-        unsafe {
-            texture = gl.create_texture().unwrap();
-            gl.bind_texture(glow::TEXTURE_2D, Some(texture));
-            gl.tex_parameter_i32(
-                glow::TEXTURE_2D,
-                glow::TEXTURE_WRAP_S,
-                glow::CLAMP_TO_EDGE as i32,
-            ); // set texture wrapping to gl::REPEAT (default wrapping method)
-            gl.tex_parameter_i32(
-                glow::TEXTURE_2D,
-                glow::TEXTURE_WRAP_T,
-                glow::CLAMP_TO_EDGE as i32,
-            );
-            // set texture filtering parameters
-            gl.tex_parameter_i32(
-                glow::TEXTURE_2D,
-                glow::TEXTURE_MIN_FILTER,
-                glow::NEAREST as i32,
-            );
-            gl.tex_parameter_i32(
-                glow::TEXTURE_2D,
-                glow::TEXTURE_MAG_FILTER,
-                glow::NEAREST as i32,
-            );
-
-            let data = vec![200u8; width * height * 4];
-            gl.tex_image_2d(
-                glow::TEXTURE_2D,
-                0,
-                glow::RGBA as i32,
-                width as i32,
-                height as i32,
-                0,
-                glow::RGBA,
-                glow::UNSIGNED_BYTE,
-                Some(&data.align_to::<u8>().1),
-            );
-        }
-
-        let texture2;
-        unsafe {
-            texture2 = gl.create_texture().unwrap();
-            gl.bind_texture(glow::TEXTURE_2D, Some(texture));
-            gl.tex_parameter_i32(
-                glow::TEXTURE_2D,
-                glow::TEXTURE_WRAP_S,
-                glow::CLAMP_TO_EDGE as i32,
-            ); // set texture wrapping to gl::REPEAT (default wrapping method)
-            gl.tex_parameter_i32(
-                glow::TEXTURE_2D,
-                glow::TEXTURE_WRAP_T,
-                glow::CLAMP_TO_EDGE as i32,
-            );
-            // set texture filtering parameters
-            gl.tex_parameter_i32(
-                glow::TEXTURE_2D,
-                glow::TEXTURE_MIN_FILTER,
-                glow::NEAREST as i32,
-            );
-            gl.tex_parameter_i32(
-                glow::TEXTURE_2D,
-                glow::TEXTURE_MAG_FILTER,
-                glow::NEAREST as i32,
-            );
-
-            let data = vec![200u8; width * height * 4];
-            gl.tex_image_2d(
-                glow::TEXTURE_2D,
-                0,
-                glow::RGBA as i32,
-                width as i32,
-                height as i32,
-                0,
-                glow::RGBA,
-                glow::UNSIGNED_BYTE,
-                Some(&data.align_to::<u8>().1),
-            );
-        }
+        let texture = make_backing_texture(gl, width, height);
+        let texture2 = make_backing_texture(gl, width, height);
+        let texture3 = make_backing_texture(gl, width, height);
 
         SparseConsoleBackend {
             charbuffer: texture,
             background: texture2,
+            foreground: texture3,
             offset_x: 0.0,
             offset_y: 0.0,
         }
@@ -111,10 +79,12 @@ impl SparseConsoleBackend {
         _scale: f32,
         _scale_center: (i32, i32),
         tiles: &Vec<SparseTile>,
+        has_background: bool
     ) {
         unsafe {
             let mut data = vec![0u8; width as usize * height as usize * 4];
             let mut data2 = vec![0u8; width as usize * height as usize * 4];
+            let mut data3 = vec![0u8; width as usize * height as usize * 4];
 
             for t in tiles.iter() {
                 let i = t.idx;
@@ -126,6 +96,12 @@ impl SparseConsoleBackend {
                 data2[(i * 4)] = (t.bg.r * 255.0) as u8;
                 data2[(i * 4) + 1] = (t.bg.g * 255.0) as u8;
                 data2[(i * 4) + 2] = (t.bg.b * 255.0) as u8;
+                data2[(i * 4) + 3] = (t.bg.a * 255.0) as u8;
+
+                data3[(i * 4)] = (t.fg.r * 255.0) as u8;
+                data3[(i * 4) + 1] = (t.fg.g * 255.0) as u8;
+                data3[(i * 4) + 2] = (t.fg.b * 255.0) as u8;
+                data3[(i * 4) + 3] = (t.fg.a * 255.0) as u8;
             }
 
             gl.bind_texture(glow::TEXTURE_2D, Some(self.charbuffer));
@@ -153,6 +129,19 @@ impl SparseConsoleBackend {
                 glow::UNSIGNED_BYTE,
                 Some(&data2.align_to::<u8>().1),
             );
+
+            gl.bind_texture(glow::TEXTURE_2D, Some(self.foreground));
+            gl.tex_image_2d(
+                glow::TEXTURE_2D,
+                0,
+                glow::RGBA as i32,
+                width as i32,
+                height as i32,
+                0,
+                glow::RGBA,
+                glow::UNSIGNED_BYTE,
+                Some(&data3.align_to::<u8>().1),
+            );
         }
 
         self.offset_x = offset_x / width as f32;
@@ -165,6 +154,7 @@ impl SparseConsoleBackend {
         shader: &Shader,
         gl: &glow::Context,
         _tiles: &Vec<SparseTile>,
+        has_background: bool
     ) -> Result<()> {
         unsafe {
             gl.active_texture(glow::TEXTURE1);
@@ -175,6 +165,10 @@ impl SparseConsoleBackend {
             gl.bind_texture(glow::TEXTURE_2D, Some(self.background));
             shader.setInt(gl, "bgBuffer", 2);
 
+            gl.active_texture(glow::TEXTURE3);
+            gl.bind_texture(glow::TEXTURE_2D, Some(self.foreground));
+            shader.setInt(gl, "fgBuffer", 3);
+
             shader.setVec3(
                 gl,
                 "font",
@@ -182,7 +176,7 @@ impl SparseConsoleBackend {
                 font.height as f32 / 16.0,
                 0.0,
             );
-            shader.setBool(gl, "hasBackground", false);
+            shader.setBool(gl, "hasBackground", has_background);
             shader.setVec3(gl, "offset", self.offset_x, self.offset_y, 0.0);
             gl.draw_arrays(glow::TRIANGLES, 0, 6);
         }
