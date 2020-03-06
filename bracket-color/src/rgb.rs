@@ -94,6 +94,18 @@ impl ops::Mul<RGB> for RGB {
     }
 }
 
+impl From<(u8, u8, u8)> for RGB {
+    fn from(vals: (u8, u8, u8)) -> Self {
+        Self::named(vals)
+    }
+}
+
+impl From<HSV> for RGB {
+    fn from(hsv: HSV) -> Self {
+        hsv.to_rgb()
+    }
+}
+
 impl RGB {
     /// Constructs a new, zeroed (black) RGB triplet.
     #[must_use]

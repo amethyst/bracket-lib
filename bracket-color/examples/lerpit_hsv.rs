@@ -4,11 +4,11 @@ use util::print_color;
 
 fn main() {
     for color in HsvLerp::new(
-        RGB::named(GREEN).to_hsv(),
-        RGB::named(CHOCOLATE).to_hsv(),
+        RGB::named(GREEN).into(),
+        RGB::named(CHOCOLATE).into(),
         20,
     ) {
-        print_color(color.to_rgb(), "You've got to lerp it, lerp it.\n");
+        print_color(color.into(), "You've got to lerp it, lerp it.\n");
     }
 
     print_color(RGB::named(WHITE), "\nAnd back to white.\n");
