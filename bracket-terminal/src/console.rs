@@ -163,6 +163,16 @@ pub trait Console {
             None
         }
     }
+
+    /// Sets ALL tiles foreground alpha (only tiles that exist, in sparse consoles).
+    fn set_all_fg_alpha(&mut self, alpha: f32);
+
+    /// Sets ALL tiles background alpha (only tiles that exist, in sparse consoles).
+    fn set_all_bg_alpha(&mut self, alpha: f32);
+
+    /// Sets ALL tiles foreground alpha (only tiles that exist, in sparse consoles).
+    fn set_all_alpha(&mut self, fg: f32, bg: f32);
+
 }
 
 pub fn log<S: ToString>(message: S) {

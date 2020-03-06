@@ -373,4 +373,22 @@ impl Console for VirtualConsole {
     fn get_clipping(&self) -> Option<Rect> {
         self.extra_clipping
     }
+
+    /// Sets ALL tiles foreground alpha (only tiles that exist, in sparse consoles).
+    fn set_all_fg_alpha(&mut self, alpha: f32) {
+        self.tiles.iter_mut().for_each(|t| t.fg.a = alpha);
+    }
+
+    /// Sets ALL tiles background alpha (only tiles that exist, in sparse consoles).
+    fn set_all_bg_alpha(&mut self, alpha: f32) {
+        self.tiles.iter_mut().for_each(|t| t.bg.a = alpha);
+    }
+
+    /// Sets ALL tiles foreground alpha (only tiles that exist, in sparse consoles).
+    fn set_all_alpha(&mut self, fg: f32, bg: f32) {
+        self.tiles.iter_mut().for_each(|t| {
+            t.fg.a = fg;
+            t.bg.a = bg;
+        });
+    }
 }

@@ -657,6 +657,27 @@ impl BTerm {
             .console
             .get_clipping()
     }
+
+    /// Sets ALL tiles foreground alpha (only tiles that exist, in sparse consoles).
+    pub fn set_all_fg_alpha(&mut self, alpha: f32) {
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .set_all_fg_alpha(alpha);
+    }
+
+    /// Sets ALL tiles background alpha (only tiles that exist, in sparse consoles).
+    pub fn set_all_bg_alpha(&mut self, alpha: f32) {
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .set_all_bg_alpha(alpha);
+    }
+
+    /// Sets ALL tiles foreground alpha (only tiles that exist, in sparse consoles).
+    pub fn set_all_alpha(&mut self, fg: f32, bg: f32) {
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .set_all_alpha(fg, bg);
+    }
 }
 
 /// Runs the BTerm application, calling into the provided gamestate handler every tick.
