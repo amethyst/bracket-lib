@@ -7,8 +7,7 @@ use crate::{
 };
 use bracket_color::prelude::RGB;
 use bracket_geometry::prelude::{Point, Rect};
-use std::any::Any;
-use std::convert::TryInto;
+use std::convert::*;
 use std::sync::Mutex;
 
 /// A display console, used internally to provide console render support.
@@ -326,194 +325,334 @@ impl BTerm {
     }
 }
 
-impl Console for BTerm {
-    fn get_char_size(&self) -> (u32, u32) {
+/// Implements console-like BTerm. Note that this *isn't* a Console trait anymore,
+/// due to the need for helper generics.
+impl BTerm {
+    /// Gets the active console's size, in characters.
+    pub fn get_char_size(&self) -> (u32, u32) {
         let bi = BACKEND_INTERNAL.lock().unwrap();
         bi.consoles[self.active_console].console.get_char_size()
     }
 
-    fn resize_pixels(&mut self, width: u32, height: u32) {
-        self.width_pixels = width;
-        self.height_pixels = height;
+    /// Internal - do not use.
+    /// Passes a resize message down to all registered consoles.
+    pub(crate) fn resize_pixels<T>(&mut self, width: T, height: T)
+    where
+        T: Into<u32>,
+    {
+        self.width_pixels = width.into();
+        self.height_pixels = height.into();
 
         let mut bi = BACKEND_INTERNAL.lock().unwrap();
         for c in bi.consoles.iter_mut() {
-            c.console.resize_pixels(width, height);
+            c.console
+                .resize_pixels(self.width_pixels, self.height_pixels);
         }
     }
 
-    // Implement pass-through to active console
-
-    fn at(&self, x: i32, y: i32) -> usize {
-        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
-            .console
-            .at(x, y)
-    }
-    fn cls(&mut self) {
+    /// Request that the active console clear itself to default values.
+    pub fn cls(&mut self) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .cls();
     }
-    fn cls_bg(&mut self, background: RGB) {
+
+    /// Request that the active console clear itself to a specified background color.
+    /// Has no effect on consoles that don't have a background color.
+    pub fn cls_bg<COLOR>(&mut self, background: COLOR)
+    where
+        COLOR: Into<RGB>,
+    {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .cls_bg(background);
+            .cls_bg(background.into());
     }
-    fn print(&mut self, x: i32, y: i32, output: &str) {
+
+    /// Print a string to the active console.
+    pub fn print<S: ToString>(&mut self, x: i32, y: i32, output: S) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .print(x, y, output);
+            .print(x, y, &output.to_string());
     }
-    fn print_color(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, output: &str) {
+
+    /// Print a string to the active console, in color.
+    pub fn print_color<S: ToString, COLOR, COLOR2>(
+        &mut self,
+        x: i32,
+        y: i32,
+        fg: COLOR,
+        bg: COLOR2,
+        output: S,
+    ) where
+        COLOR: Into<RGB>,
+        COLOR2: Into<RGB>,
+    {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .print_color(x, y, fg, bg, output);
+            .print_color(x, y, fg.into(), bg.into(), &output.to_string());
     }
-    fn set(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, glyph: u8) {
+
+    /// Set a single tile located at x/y to the specified foreground/background colors, and glyph.
+    pub fn set<COLOR, COLOR2>(&mut self, x: i32, y: i32, fg: COLOR, bg: COLOR2, glyph: u8)
+    where
+        COLOR: Into<RGB>,
+        COLOR2: Into<RGB>,
+    {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .set(x, y, fg, bg, glyph);
+            .set(x, y, fg.into(), bg.into(), glyph);
     }
-    fn set_bg(&mut self, x: i32, y: i32, bg: RGB) {
+
+    /// Sets the background color only of a specified tile.
+    pub fn set_bg<COLOR>(&mut self, x: i32, y: i32, bg: COLOR)
+    where
+        COLOR: Into<RGB>,
+    {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .set_bg(x, y, bg);
+            .set_bg(x, y, bg.into());
     }
-    fn draw_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB) {
-        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
-            .console
-            .draw_box(x, y, width, height, fg, bg);
-    }
-    fn draw_box_double(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB) {
-        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
-            .console
-            .draw_box_double(x, y, width, height, fg, bg);
-    }
-    fn draw_hollow_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB) {
-        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
-            .console
-            .draw_hollow_box(x, y, width, height, fg, bg);
-    }
-    fn draw_hollow_box_double(
+
+    /// Draws a filled box, with single line characters.
+    pub fn draw_box<COLOR, COLOR2>(
         &mut self,
         x: i32,
         y: i32,
         width: i32,
         height: i32,
-        fg: RGB,
-        bg: RGB,
-    ) {
+        fg: COLOR,
+        bg: COLOR2,
+    ) where
+        COLOR: Into<RGB>,
+        COLOR2: Into<RGB>,
+    {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .draw_hollow_box_double(x, y, width, height, fg, bg);
+            .draw_box(x, y, width, height, fg.into(), bg.into());
     }
-    fn draw_bar_horizontal(
+
+    /// Draws a filled box, with double line characters.
+    pub fn draw_box_double<COLOR, COLOR2>(
+        &mut self,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
+        fg: COLOR,
+        bg: COLOR2,
+    ) where
+        COLOR: Into<RGB>,
+        COLOR2: Into<RGB>,
+    {
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .draw_box_double(x, y, width, height, fg.into(), bg.into());
+    }
+
+    /// Draws a single-line box, without filling in the center.
+    pub fn draw_hollow_box<COLOR, COLOR2>(
+        &mut self,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
+        fg: COLOR,
+        bg: COLOR2,
+    ) where
+        COLOR: Into<RGB>,
+        COLOR2: Into<RGB>,
+    {
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .draw_hollow_box(x, y, width, height, fg.into(), bg.into());
+    }
+
+    /// Draws a double-line box, without filling in the contents.
+    pub fn draw_hollow_box_double<COLOR, COLOR2>(
+        &mut self,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
+        fg: COLOR,
+        bg: COLOR2,
+    ) where
+        COLOR: Into<RGB>,
+        COLOR2: Into<RGB>,
+    {
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .draw_hollow_box_double(x, y, width, height, fg.into(), bg.into());
+    }
+
+    /// Draws a horizontal bar, suitable for health-bars or progress bars.
+    #[allow(clippy::too_many_arguments)]
+    pub fn draw_bar_horizontal<COLOR, COLOR2>(
         &mut self,
         x: i32,
         y: i32,
         width: i32,
         n: i32,
         max: i32,
-        fg: RGB,
-        bg: RGB,
-    ) {
+        fg: COLOR,
+        bg: COLOR2,
+    ) where
+        COLOR: Into<RGB>,
+        COLOR2: Into<RGB>,
+    {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .draw_bar_horizontal(x, y, width, n, max, fg, bg);
+            .draw_bar_horizontal(x, y, width, n, max, fg.into(), bg.into());
     }
-    fn draw_bar_vertical(
+
+    /// Draws a vertical bar, suitable for health-bars or progress bars.
+    #[allow(clippy::too_many_arguments)]
+    pub fn draw_bar_vertical<COLOR, COLOR2>(
         &mut self,
         x: i32,
         y: i32,
         height: i32,
         n: i32,
         max: i32,
-        fg: RGB,
-        bg: RGB,
-    ) {
+        fg: COLOR,
+        bg: COLOR2,
+    ) where
+        COLOR: Into<RGB>,
+        COLOR2: Into<RGB>,
+    {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .draw_bar_vertical(x, y, height, n, max, fg, bg);
+            .draw_bar_vertical(x, y, height, n, max, fg.into(), bg.into());
     }
-    fn fill_region(&mut self, target: Rect, glyph: u8, fg: RGB, bg: RGB) {
+
+    /// Fills a target region with the specified color/glyph combo.
+    pub fn fill_region<COLOR, COLOR2>(&mut self, target: Rect, glyph: u8, fg: COLOR, bg: COLOR2)
+    where
+        COLOR: Into<RGB>,
+        COLOR2: Into<RGB>,
+    {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .fill_region(target, glyph, fg, bg);
+            .fill_region(target, glyph, fg.into(), bg.into());
     }
-    fn print_centered(&mut self, y: i32, text: &str) {
+
+    /// Prints centered text, centered across the whole line
+    pub fn print_centered<S: ToString>(&mut self, y: i32, text: S) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .print_centered(y, text);
+            .print_centered(y, &text.to_string());
     }
-    fn print_color_centered(&mut self, y: i32, fg: RGB, bg: RGB, text: &str) {
+
+    /// Prints centered text, centered across the whole line - in color
+    pub fn print_color_centered<S, COLOR, COLOR2>(&mut self, y: i32, fg: COLOR, bg: COLOR2, text: S)
+    where
+        S: ToString,
+        COLOR: Into<RGB>,
+        COLOR2: Into<RGB>,
+    {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .print_color_centered(y, fg, bg, text);
+            .print_color_centered(y, fg.into(), bg.into(), &text.to_string());
     }
+
     /// Prints text, centered on an arbitrary point
-    fn print_centered_at(&mut self, x: i32, y: i32, text: &str) {
+    pub fn print_centered_at<S: ToString>(&mut self, x: i32, y: i32, text: S) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .print_centered_at(x, y, text);
+            .print_centered_at(x, y, &text.to_string());
     }
 
     /// Prints colored text, centered on an arbitrary point
-    fn print_color_centered_at(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, text: &str) {
+    pub fn print_color_centered_at<S, COLOR, COLOR2>(
+        &mut self,
+        x: i32,
+        y: i32,
+        fg: COLOR,
+        bg: COLOR2,
+        text: S,
+    ) where
+        S: ToString,
+        COLOR: Into<RGB>,
+        COLOR2: Into<RGB>,
+    {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .print_color_centered_at(x, y, fg, bg, text);
+            .print_color_centered_at(x, y, fg.into(), bg.into(), &text.to_string());
     }
-    fn print_right(&mut self, x: i32, y: i32, text: &str) {
+
+    /// Prints right-aligned text
+    pub fn print_right<S: ToString>(&mut self, x: i32, y: i32, text: S) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .print_right(x, y, text);
+            .print_right(x, y, &text.to_string());
     }
-    fn print_color_right(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, text: &str) {
+
+    /// Prints right-aligned text, in color
+    pub fn print_color_right<S, COLOR, COLOR2>(
+        &mut self,
+        x: i32,
+        y: i32,
+        fg: COLOR,
+        bg: COLOR2,
+        text: S,
+    ) where
+        S: ToString,
+        COLOR: Into<RGB>,
+        COLOR2: Into<RGB>,
+    {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .print_color_right(x, y, fg, bg, text);
+            .print_color_right(x, y, fg.into(), bg.into(), &text.to_string());
     }
 
     /// Print a colorized string with the color encoding defined inline.
     /// For example: printer(1, 1, "#[blue]This blue text contains a #[pink]pink#[] word")
     /// You can get the same effect with a TextBlock, but this can be easier.
     /// Thanks to doryen_rs for the idea.
-    fn printer(&mut self, x: i32, y: i32, output: &str, align: TextAlign, background: Option<RGB>) {
+    pub fn printer<S: ToString>(
+        &mut self,
+        x: i32,
+        y: i32,
+        output: S,
+        align: TextAlign,
+        background: Option<RGB>,
+    ) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .printer(x, y, output, align, background);
+            .printer(x, y, &output.to_string(), align, background);
     }
 
-    fn to_xp_layer(&self) -> XpLayer {
+    /// Exports the current layer to a REX Paint file
+    pub fn to_xp_layer(&self) -> XpLayer {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .to_xp_layer()
     }
-    fn set_offset(&mut self, x: f32, y: f32) {
+
+    /// Sets the active offset for the current layer
+    pub fn set_offset(&mut self, x: f32, y: f32) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .set_offset(x, y);
     }
-    fn set_scale(&mut self, scale: f32, center_x: i32, center_y: i32) {
+
+    /// Sets the active scale for the current layer
+    pub fn set_scale(&mut self, scale: f32, center_x: i32, center_y: i32) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .set_scale(scale, center_x, center_y);
     }
 
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-
     /// Permits the creation of an arbitrary clipping rectangle. It's a really good idea
     /// to make sure that this rectangle is entirely valid.
-    fn set_clipping(&mut self, clipping: Option<Rect>) {
+    pub fn set_clipping(&mut self, clipping: Option<Rect>) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .set_clipping(clipping);
     }
 
     /// Returns the current arbitrary clipping rectangle, None if there isn't one.
-    fn get_clipping(&self) -> Option<Rect> {
+    pub fn get_clipping(&self) -> Option<Rect> {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .get_clipping()

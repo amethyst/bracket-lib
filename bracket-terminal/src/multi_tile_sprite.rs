@@ -1,4 +1,4 @@
-use crate::prelude::{string_to_cp437, BTerm, Console, DrawBatch, Tile, XpFile};
+use crate::prelude::{string_to_cp437, BTerm, DrawBatch, Tile, XpFile};
 use bracket_color::prelude::{ColorPair, RGB};
 use bracket_geometry::prelude::Point;
 

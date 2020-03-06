@@ -27,7 +27,7 @@ pub struct SparseConsole {
     pub scale: f32,
     pub scale_center: (i32, i32),
 
-    pub extra_clipping: Option<Rect>
+    pub extra_clipping: Option<Rect>,
 }
 
 impl SparseConsole {
@@ -43,7 +43,7 @@ impl SparseConsole {
             offset_y: 0.0,
             scale: 1.0,
             scale_center: (width as i32 / 2, height as i32 / 2),
-            extra_clipping: None
+            extra_clipping: None,
         };
 
         Box::new(new_console)

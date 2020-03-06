@@ -69,14 +69,14 @@ impl GameState for State {
             1,
             &format!("#[pink]FPS: #[]{}", ctx.fps),
             TextAlign::Right,
-            None
+            None,
         );
         ctx.printer(
             58,
             2,
             &format!("#[pink]Frame Time: #[]{} ms", ctx.frame_time_ms),
             TextAlign::Right,
-            None
+            None,
         );
     }
 }

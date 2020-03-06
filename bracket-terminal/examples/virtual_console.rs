@@ -4,9 +4,9 @@ use bracket_terminal::prelude::*;
 bracket_terminal::add_wasm_support!();
 
 struct State {
-    totc : VirtualConsole,
-    y : i32,
-    shrink: i32
+    totc: VirtualConsole,
+    y: i32,
+    shrink: i32,
 }
 
 impl GameState for State {
@@ -15,7 +15,7 @@ impl GameState for State {
         self.totc.print_sub_rect(
             Rect::with_size(0, self.y, 79, 49),
             Rect::with_exact(self.shrink, self.shrink, 79 - self.shrink, 49 - self.shrink),
-            ctx
+            ctx,
         );
         self.y += 1;
         if self.y > 380 {
@@ -34,9 +34,9 @@ fn main() -> BError {
         .build()?;
 
     let gs: State = State {
-        totc : VirtualConsole::from_text(TALE_OF_TWO_CITIES_INTRO, 79),
-        y : 0,
-        shrink : 0
+        totc: VirtualConsole::from_text(TALE_OF_TWO_CITIES_INTRO, 79),
+        y: 0,
+        shrink: 0,
     };
     main_loop(context, gs)
 }

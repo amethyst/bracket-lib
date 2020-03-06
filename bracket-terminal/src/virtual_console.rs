@@ -1,9 +1,11 @@
 //! A virtual console exists to store large amounts of arbitrary text,
 //! which can then be "windowed" into actual consoles.
 
-use crate::prelude::{string_to_cp437, ColoredTextSpans, Console, TextAlign, Tile, XpLayer, BTerm, DrawBatch};
+use crate::prelude::{
+    string_to_cp437, BTerm, ColoredTextSpans, Console, DrawBatch, TextAlign, Tile, XpLayer,
+};
 use bracket_color::prelude::*;
-use bracket_geometry::prelude::{Rect, Point};
+use bracket_geometry::prelude::{Point, Rect};
 use std::any::Any;
 
 pub struct VirtualConsole {
@@ -12,7 +14,7 @@ pub struct VirtualConsole {
 
     pub tiles: Vec<Tile>,
 
-    pub extra_clipping: Option<Rect>
+    pub extra_clipping: Option<Rect>,
 }
 
 impl VirtualConsole {
@@ -20,10 +22,10 @@ impl VirtualConsole {
     pub fn new(dimensions: Point) -> Self {
         let num_tiles: usize = (dimensions.x * dimensions.y) as usize;
         let mut console = VirtualConsole {
-            width : dimensions.x as u32,
+            width: dimensions.x as u32,
             height: dimensions.y as u32,
             tiles: Vec::with_capacity(num_tiles),
-            extra_clipping: None
+            extra_clipping: None,
         };
         for _ in 0..num_tiles {
             console.tiles.push(Tile {
@@ -39,9 +41,9 @@ impl VirtualConsole {
     /// Useful if you want to scroll through manuals!
     pub fn from_text(text: &str, width: usize) -> Self {
         let raw_lines = text.split('\n');
-        let mut lines : Vec<String> = Vec::new();
+        let mut lines: Vec<String> = Vec::new();
         for line in raw_lines {
-            let mut newline : String = String::from("");
+            let mut newline: String = String::from("");
 
             line.chars().for_each(|c| {
                 newline.push(c);
@@ -55,10 +57,10 @@ impl VirtualConsole {
 
         let num_tiles: usize = width * lines.len();
         let mut console = VirtualConsole {
-            width : width as u32,
+            width: width as u32,
             height: lines.len() as u32,
             tiles: Vec::with_capacity(num_tiles),
-            extra_clipping: None
+            extra_clipping: None,
         };
         println!("{}x{}", console.width, console.height);
 
@@ -79,16 +81,11 @@ impl VirtualConsole {
 
     /// Send a portion of the Virtual Console to a physical console, specifying both source and destination
     /// rectangles and the target console.
-    pub fn print_sub_rect(
-        &self,
-        source : Rect,
-        dest : Rect,
-        target : &mut BTerm
-    ) {
+    pub fn print_sub_rect(&self, source: Rect, dest: Rect, target: &mut BTerm) {
         target.set_clipping(Some(dest));
-        for y in dest.y1 .. dest.y2 {
+        for y in dest.y1..dest.y2 {
             let source_y = y + source.y1 - dest.y1;
-            for x in dest.x1 .. dest.x2 {
+            for x in dest.x1..dest.x2 {
                 let source_x = x + source.x1 - dest.x1;
                 if let Some(idx) = self.try_at(source_x, source_y) {
                     let t = self.tiles[idx];
@@ -103,16 +100,11 @@ impl VirtualConsole {
 
     /// Send a portion of the Virtual Console to a render batch, specifying both source and destination
     /// rectangles and the target batch.
-    pub fn batch_sub_rect(
-        &self,
-        source : Rect,
-        dest : Rect,
-        target : &mut DrawBatch
-    ) {
+    pub fn batch_sub_rect(&self, source: Rect, dest: Rect, target: &mut DrawBatch) {
         target.set_clipping(Some(dest));
-        for y in dest.y1 .. dest.y2 {
+        for y in dest.y1..dest.y2 {
             let source_y = y + source.y1 - dest.y1;
-            for x in dest.x1 .. dest.x2 {
+            for x in dest.x1..dest.x2 {
                 let source_x = x + source.x1 - dest.x1;
                 if let Some(idx) = self.try_at(source_x, source_y) {
                     let t = self.tiles[idx];

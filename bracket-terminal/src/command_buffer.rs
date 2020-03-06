@@ -2,7 +2,7 @@
 // designed to be used safely from within ECS systems in a potentially
 // multi-threaded environment.
 
-use crate::prelude::{BTerm, Console, TextAlign};
+use crate::prelude::{BTerm, TextAlign};
 use crate::Result;
 use bracket_color::prelude::{ColorPair, RGB};
 use bracket_geometry::prelude::{Point, Rect};
@@ -126,7 +126,9 @@ pub enum DrawCommand {
         max: i32,
         color: ColorPair,
     },
-    SetClipping{ clip: Option<Rect> }
+    SetClipping {
+        clip: Option<Rect>,
+    },
 }
 
 /// Represents a batch of drawing commands, designed to be submitted together.
@@ -390,10 +392,7 @@ impl DrawBatch {
     }
 
     pub fn set_clipping(&mut self, clip: Option<Rect>) -> &mut Self {
-        self.batch.push((
-            0,
-            DrawCommand::SetClipping{ clip }
-        ));
+        self.batch.push((0, DrawCommand::SetClipping { clip }));
         self
     }
 }
