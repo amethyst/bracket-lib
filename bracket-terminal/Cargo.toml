@@ -15,8 +15,6 @@ exclude = [
     "wasm_help"
 ]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 bracket-color = { path = "../bracket-color", features = [ "rex", "palette" ] }
 bracket-geometry = { path = "../bracket-geometry" }
