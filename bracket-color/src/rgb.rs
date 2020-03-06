@@ -331,6 +331,53 @@ mod crossterm_features {
             Ok(rgb)
         }
     }
+
+    #[cfg(test)]
+    mod tests {
+        use crate::prelude::RGB;
+        use crossterm::style::Color;
+        use std::convert::TryInto;
+
+        #[test]
+        fn basic_conversion() {
+            let rgb = RGB {
+                r: 0.0,
+                g: 0.5,
+                b: 1.0,
+            };
+            let rgb: Color = rgb.try_into().unwrap();
+            match rgb {
+                Color::Rgb {r, g, b} => {
+                    assert_eq!(r, 0);
+                    assert_eq!(g, 127);
+                    assert_eq!(b, 255);
+                }
+                _ => unreachable!(),
+            }
+        }
+
+        #[test]
+        fn negative_rgb() {
+            let rgb = RGB {
+                r: 0.0,
+                g: 0.5,
+                b: -1.0,
+            };
+            let rgb: Result<Color, _> = rgb.try_into();
+            assert!(rgb.is_err());
+        }
+
+        #[test]
+        fn too_large_rgb() {
+            let rgb = RGB {
+                r: 0.0,
+                g: 0.5,
+                b: 1.1,
+            };
+            let rgb: Result<Color, _> = rgb.try_into();
+            assert!(rgb.is_err());
+        }
+    }
 }
 
 // Unit tests for the color system
