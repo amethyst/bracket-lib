@@ -139,6 +139,7 @@ impl SimpleState for BTermGemBridge {
                                 fg.color.color.red = tile.fg.r;
                                 fg.color.color.green = tile.fg.g;
                                 fg.color.color.blue = tile.fg.b;
+                                fg.color.alpha = tile.fg.a;
                             }
                         }
                     });
@@ -158,6 +159,7 @@ impl SimpleState for BTermGemBridge {
                                 bg.color.color.red = tile.bg.r;
                                 bg.color.color.green = tile.bg.g;
                                 bg.color.color.blue = tile.bg.b;
+                                bg.color.alpha = tile.bg.a;
                             }
                         }
                     });
@@ -196,6 +198,7 @@ impl SimpleState for BTermGemBridge {
                             t.color.color.red = tile.fg.r;
                             t.color.color.green = tile.fg.g;
                             t.color.color.blue = tile.fg.b;
+                            t.color.alpha = tile.fg.a;
                         }
                     }
                 }
