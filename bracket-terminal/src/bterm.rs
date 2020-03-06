@@ -5,7 +5,7 @@ use crate::{
     },
     Result,
 };
-use bracket_color::prelude::RGB;
+use bracket_color::prelude::RGBA;
 use bracket_geometry::prelude::{Point, Rect};
 use std::convert::*;
 use std::sync::Mutex;
@@ -361,7 +361,7 @@ impl BTerm {
     /// Has no effect on consoles that don't have a background color.
     pub fn cls_bg<COLOR>(&mut self, background: COLOR)
     where
-        COLOR: Into<RGB>,
+        COLOR: Into<RGBA>,
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
@@ -384,8 +384,8 @@ impl BTerm {
         bg: COLOR2,
         output: S,
     ) where
-        COLOR: Into<RGB>,
-        COLOR2: Into<RGB>,
+        COLOR: Into<RGBA>,
+        COLOR2: Into<RGBA>,
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
@@ -395,8 +395,8 @@ impl BTerm {
     /// Set a single tile located at x/y to the specified foreground/background colors, and glyph.
     pub fn set<COLOR, COLOR2>(&mut self, x: i32, y: i32, fg: COLOR, bg: COLOR2, glyph: u8)
     where
-        COLOR: Into<RGB>,
-        COLOR2: Into<RGB>,
+        COLOR: Into<RGBA>,
+        COLOR2: Into<RGBA>,
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
@@ -406,7 +406,7 @@ impl BTerm {
     /// Sets the background color only of a specified tile.
     pub fn set_bg<COLOR>(&mut self, x: i32, y: i32, bg: COLOR)
     where
-        COLOR: Into<RGB>,
+        COLOR: Into<RGBA>,
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
@@ -423,8 +423,8 @@ impl BTerm {
         fg: COLOR,
         bg: COLOR2,
     ) where
-        COLOR: Into<RGB>,
-        COLOR2: Into<RGB>,
+        COLOR: Into<RGBA>,
+        COLOR2: Into<RGBA>,
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
@@ -441,8 +441,8 @@ impl BTerm {
         fg: COLOR,
         bg: COLOR2,
     ) where
-        COLOR: Into<RGB>,
-        COLOR2: Into<RGB>,
+        COLOR: Into<RGBA>,
+        COLOR2: Into<RGBA>,
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
@@ -459,8 +459,8 @@ impl BTerm {
         fg: COLOR,
         bg: COLOR2,
     ) where
-        COLOR: Into<RGB>,
-        COLOR2: Into<RGB>,
+        COLOR: Into<RGBA>,
+        COLOR2: Into<RGBA>,
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
@@ -477,8 +477,8 @@ impl BTerm {
         fg: COLOR,
         bg: COLOR2,
     ) where
-        COLOR: Into<RGB>,
-        COLOR2: Into<RGB>,
+        COLOR: Into<RGBA>,
+        COLOR2: Into<RGBA>,
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
@@ -497,8 +497,8 @@ impl BTerm {
         fg: COLOR,
         bg: COLOR2,
     ) where
-        COLOR: Into<RGB>,
-        COLOR2: Into<RGB>,
+        COLOR: Into<RGBA>,
+        COLOR2: Into<RGBA>,
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
@@ -517,8 +517,8 @@ impl BTerm {
         fg: COLOR,
         bg: COLOR2,
     ) where
-        COLOR: Into<RGB>,
-        COLOR2: Into<RGB>,
+        COLOR: Into<RGBA>,
+        COLOR2: Into<RGBA>,
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
@@ -528,8 +528,8 @@ impl BTerm {
     /// Fills a target region with the specified color/glyph combo.
     pub fn fill_region<COLOR, COLOR2>(&mut self, target: Rect, glyph: u8, fg: COLOR, bg: COLOR2)
     where
-        COLOR: Into<RGB>,
-        COLOR2: Into<RGB>,
+        COLOR: Into<RGBA>,
+        COLOR2: Into<RGBA>,
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
@@ -547,8 +547,8 @@ impl BTerm {
     pub fn print_color_centered<S, COLOR, COLOR2>(&mut self, y: i32, fg: COLOR, bg: COLOR2, text: S)
     where
         S: ToString,
-        COLOR: Into<RGB>,
-        COLOR2: Into<RGB>,
+        COLOR: Into<RGBA>,
+        COLOR2: Into<RGBA>,
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
@@ -572,8 +572,8 @@ impl BTerm {
         text: S,
     ) where
         S: ToString,
-        COLOR: Into<RGB>,
-        COLOR2: Into<RGB>,
+        COLOR: Into<RGBA>,
+        COLOR2: Into<RGBA>,
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
@@ -597,8 +597,8 @@ impl BTerm {
         text: S,
     ) where
         S: ToString,
-        COLOR: Into<RGB>,
-        COLOR2: Into<RGB>,
+        COLOR: Into<RGBA>,
+        COLOR2: Into<RGBA>,
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
@@ -615,7 +615,7 @@ impl BTerm {
         y: i32,
         output: S,
         align: TextAlign,
-        background: Option<RGB>,
+        background: Option<RGBA>,
     ) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console

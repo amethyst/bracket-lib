@@ -2,7 +2,7 @@ use super::BACKEND;
 use crate::hal::{font::Font, shader::Shader};
 use crate::sparse_console::SparseTile;
 use crate::Result;
-use bracket_color::prelude::RGB;
+use bracket_color::prelude::RGBA;
 use glow::HasContext;
 use std::mem;
 
@@ -83,8 +83,8 @@ impl SparseConsoleBackend {
         vertex_buffer: &mut Vec<f32>,
         x: f32,
         y: f32,
-        fg: RGB,
-        bg: RGB,
+        fg: RGBA,
+        bg: RGBA,
         ux: f32,
         uy: f32,
     ) {

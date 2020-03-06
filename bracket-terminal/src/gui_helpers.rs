@@ -1,5 +1,5 @@
 use crate::prelude::{to_cp437, Console};
-use bracket_color::prelude::RGB;
+use bracket_color::prelude::RGBA;
 
 /// Draws a box, starting at x/y with the extents width/height using CP437 line characters
 pub fn draw_box(
@@ -8,16 +8,16 @@ pub fn draw_box(
     sy: i32,
     width: i32,
     height: i32,
-    fg: RGB,
-    bg: RGB,
+    fg: RGBA,
+    bg: RGBA,
 ) {
     for y in sy..sy + height {
         for x in sx..sx + width {
             console.set(
                 x,
                 y,
-                RGB::from_f32(1.0, 1.0, 1.0),
-                RGB::from_f32(0.0, 0.0, 0.0),
+                RGBA::from_f32(1.0, 1.0, 1.0, fg.a),
+                RGBA::from_f32(0.0, 0.0, 0.0, fg.a),
                 32,
             );
         }
@@ -44,8 +44,8 @@ pub fn draw_hollow_box(
     sy: i32,
     width: i32,
     height: i32,
-    fg: RGB,
-    bg: RGB,
+    fg: RGBA,
+    bg: RGBA,
 ) {
     console.set(sx, sy, fg, bg, to_cp437('┌'));
     console.set(sx + width, sy, fg, bg, to_cp437('┐'));
@@ -68,16 +68,16 @@ pub fn draw_box_double(
     sy: i32,
     width: i32,
     height: i32,
-    fg: RGB,
-    bg: RGB,
+    fg: RGBA,
+    bg: RGBA,
 ) {
     for y in sy..sy + height {
         for x in sx..sx + width {
             console.set(
                 x,
                 y,
-                RGB::from_f32(1.0, 1.0, 1.0),
-                RGB::from_f32(0.0, 0.0, 0.0),
+                RGBA::from_f32(1.0, 1.0, 1.0, fg.a),
+                RGBA::from_f32(0.0, 0.0, 0.0, fg.a),
                 32,
             );
         }
@@ -104,8 +104,8 @@ pub fn draw_hollow_box_double(
     sy: i32,
     width: i32,
     height: i32,
-    fg: RGB,
-    bg: RGB,
+    fg: RGBA,
+    bg: RGBA,
 ) {
     console.set(sx, sy, fg, bg, to_cp437('╔'));
     console.set(sx + width, sy, fg, bg, to_cp437('╗'));
@@ -130,8 +130,8 @@ pub fn draw_bar_horizontal(
     width: i32,
     n: i32,
     max: i32,
-    fg: RGB,
-    bg: RGB,
+    fg: RGBA,
+    bg: RGBA,
 ) {
     let percent = n as f32 / max as f32;
     let fill_width = (percent * width as f32) as i32;
@@ -153,8 +153,8 @@ pub fn draw_bar_vertical(
     height: i32,
     n: i32,
     max: i32,
-    fg: RGB,
-    bg: RGB,
+    fg: RGBA,
+    bg: RGBA,
 ) {
     let percent = n as f32 / max as f32;
     let fill_height = height - ((percent * height as f32) as i32);

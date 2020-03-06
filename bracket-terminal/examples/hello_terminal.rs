@@ -36,7 +36,7 @@ impl GameState for State {
             49,
             "#[blue]Hello #[pink]Bracket#[] world.",
             TextAlign::Center,
-            Some(RGB::from_u8(200, 200, 200)),
+            Some(RGBA::from_u8(200, 200, 200, 255)),
         );
 
         // Notice that unicode conversion is active, so we can cut/paste characters from

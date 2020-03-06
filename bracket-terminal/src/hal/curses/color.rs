@@ -16,7 +16,7 @@ impl CursesColor {
     }
 }
 
-pub fn find_nearest_color(color: RGB, map: &[CursesColor]) -> i16 {
+pub fn find_nearest_color(color: RGBA, map: &[CursesColor]) -> i16 {
     let mut result = -1;
     let mut best_diff = std::f32::MAX;
 

@@ -1,6 +1,8 @@
-use super::rgb::{RGB, HtmlColorConversionError};
-use std::ops;
+use super::rgb::{HtmlColorConversionError, RGB};
+#[cfg(feature = "rex")]
+use crate::prelude::XpColor;
 use std::convert::From;
+use std::ops;
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(PartialEq, Copy, Clone, Default, Debug)]
@@ -9,7 +11,7 @@ pub struct RGBA {
     pub r: f32,
     pub g: f32,
     pub b: f32,
-    pub a: f32
+    pub a: f32,
 }
 
 // Implement operator overloading
@@ -100,7 +102,7 @@ impl RGBA {
             r: 0.0,
             g: 0.0,
             b: 0.0,
-            a: 0.0
+            a: 0.0,
         }
     }
 
@@ -116,7 +118,7 @@ impl RGBA {
             r: r_clamped,
             g: g_clamped,
             b: b_clamped,
-            a: a_clamped
+            a: a_clamped,
         }
     }
 
@@ -128,7 +130,7 @@ impl RGBA {
             r: f32::from(r) / 255.0,
             g: f32::from(g) / 255.0,
             b: f32::from(b) / 255.0,
-            a: f32::from(a) / 255.0
+            a: f32::from(a) / 255.0,
         }
     }
 
@@ -140,7 +142,7 @@ impl RGBA {
     }
 
     /// Constructs from an HTML color code (e.g. "#eeffeeff")
-    /// 
+    ///
     /// # Errors
     #[allow(clippy::cast_precision_loss)]
     pub fn from_hex<S: AsRef<str>>(code: S) -> Result<Self, HtmlColorConversionError> {
@@ -222,7 +224,7 @@ impl RGBA {
             r: (red1 + red2) as f32 / 255.0,
             g: (green1 + green2) as f32 / 255.0,
             b: (blue1 + blue2) as f32 / 255.0,
-            a: (alpha1 + alpha2) as f32 / 255.0
+            a: (alpha1 + alpha2) as f32 / 255.0,
         })
     }
 
@@ -238,13 +240,31 @@ impl RGBA {
     #[inline]
     #[must_use]
     pub fn lerp(&self, color: Self, percent: f32) -> Self {
-        let range = (color.r - self.r, color.g - self.g, color.b - self.b, color.a - self.a);
+        let range = (
+            color.r - self.r,
+            color.g - self.g,
+            color.b - self.b,
+            color.a - self.a,
+        );
         Self {
             r: self.r + range.0 * percent,
             g: self.g + range.1 * percent,
             b: self.b + range.2 * percent,
-            a: self.a + range.3 * percent
+            a: self.a + range.3 * percent,
         }
+    }
+
+    /// Converts an RGB to an xp file color component
+    #[allow(clippy::cast_sign_loss)]
+    #[allow(clippy::cast_possible_truncation)]
+    #[cfg(feature = "rex")]
+    #[must_use]
+    pub fn to_xp(&self) -> XpColor {
+        XpColor::new(
+            (self.r * 255.0) as u8,
+            (self.g * 255.0) as u8,
+            (self.b * 255.0) as u8,
+        )
     }
 }
 

@@ -4,7 +4,7 @@
 
 use crate::prelude::{BTerm, TextAlign};
 use crate::Result;
-use bracket_color::prelude::{ColorPair, RGB};
+use bracket_color::prelude::{ColorPair, RGBA};
 use bracket_geometry::prelude::{Point, Rect};
 use object_pool::{Pool, Reusable};
 use std::sync::Arc;
@@ -35,7 +35,7 @@ pub fn clear_command_buffer() -> Result<()> {
 pub enum DrawCommand {
     ClearScreen,
     ClearToColor {
-        color: RGB,
+        color: RGBA,
     },
     SetTarget {
         console: usize,
@@ -47,7 +47,7 @@ pub enum DrawCommand {
     },
     SetBackground {
         pos: Point,
-        bg: RGB,
+        bg: RGBA,
     },
     Print {
         pos: Point,
@@ -89,7 +89,7 @@ pub enum DrawCommand {
         pos: Point,
         text: String,
         align: TextAlign,
-        background: Option<RGB>,
+        background: Option<RGBA>,
     },
     Box {
         pos: Rect,
@@ -158,8 +158,16 @@ impl DrawBatch {
     }
 
     /// Adds a CLS (clear screen) to the drawing batch
-    pub fn cls_color(&mut self, color: RGB) -> &mut Self {
-        self.batch.push((0, DrawCommand::ClearToColor { color }));
+    pub fn cls_color<COLOR>(&mut self, color: COLOR) -> &mut Self
+    where
+        COLOR: Into<RGBA>,
+    {
+        self.batch.push((
+            0,
+            DrawCommand::ClearToColor {
+                color: color.into(),
+            },
+        ));
         self
     }
 
@@ -176,8 +184,12 @@ impl DrawBatch {
     }
 
     /// Sets an individual cell glyph
-    pub fn set_bg(&mut self, pos: Point, bg: RGB) -> &mut Self {
-        self.batch.push((0, DrawCommand::SetBackground { pos, bg }));
+    pub fn set_bg<COLOR>(&mut self, pos: Point, bg: COLOR) -> &mut Self
+    where
+        COLOR: Into<RGBA>,
+    {
+        self.batch
+            .push((0, DrawCommand::SetBackground { pos, bg: bg.into() }));
         self
     }
 
@@ -188,7 +200,7 @@ impl DrawBatch {
         pos: Point,
         text: S,
         align: TextAlign,
-        background: Option<RGB>,
+        background: Option<RGBA>,
     ) -> &mut Self {
         self.batch.push((
             0,

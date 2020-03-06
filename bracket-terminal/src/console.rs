@@ -1,5 +1,5 @@
 use crate::prelude::XpLayer;
-use bracket_color::prelude::{RGB, RGBA};
+use bracket_color::prelude::RGBA;
 use bracket_geometry::prelude::{Point, Rect};
 use std::any::Any;
 
@@ -7,8 +7,8 @@ use std::any::Any;
 #[derive(PartialEq, Copy, Clone, Debug)]
 pub struct Tile {
     pub glyph: u8,
-    pub fg: RGB,
-    pub bg: RGB,
+    pub fg: RGBA,
+    pub bg: RGBA,
 }
 
 #[derive(PartialEq, Copy, Clone, Debug)]
@@ -33,42 +33,50 @@ pub trait Console {
     fn cls(&mut self);
 
     /// Clear the console to a set background color, if supported.
-    fn cls_bg(&mut self, background: RGB);
+    fn cls_bg(&mut self, background: RGBA);
 
     /// Print a string at the specified x/y coordinate.
     fn print(&mut self, x: i32, y: i32, output: &str);
 
     /// Print a string in color at the specified x/y coordinate, with specified foreground and background.
-    fn print_color(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, output: &str);
+    fn print_color(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, output: &str);
 
     /// Print a colorized string with the color encoding defined inline.
     /// For example: printer(1, 1, "#[blue]This blue text contains a #[pink]pink#[] word")
     /// You can get the same effect with a TextBlock, but this can be easier.
     /// Thanks to doryen_rs for the idea.
-    fn printer(&mut self, x: i32, y: i32, output: &str, align: TextAlign, background: Option<RGB>);
+    fn printer(&mut self, x: i32, y: i32, output: &str, align: TextAlign, background: Option<RGBA>);
 
     /// Sets a single cell to a color/glyph combination.
-    fn set(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, glyph: u8);
+    fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: u8);
 
     /// Sets a single cell's background color.
-    fn set_bg(&mut self, x: i32, y: i32, bg: RGB);
+    fn set_bg(&mut self, x: i32, y: i32, bg: RGBA);
 
     /// Draws a box, starting at x/y with the extents width/height using CP437 line characters
-    fn draw_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB);
+    fn draw_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGBA, bg: RGBA);
 
     /// Draws a box, starting at x/y with the extents width/height using CP437 line characters,
     /// without filling in the middle
-    fn draw_hollow_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB);
+    fn draw_hollow_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGBA, bg: RGBA);
 
     /// Draws a box, starting at x/y with the extents width/height using CP437 double line characters
-    fn draw_box_double(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB);
+    fn draw_box_double(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGBA, bg: RGBA);
 
     /// Draws a box, starting at x/y with the extents width/height using CP437 double line characters,
     /// without filling in the middle
-    fn draw_hollow_box_double(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGB, bg: RGB);
+    fn draw_hollow_box_double(
+        &mut self,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
+        fg: RGBA,
+        bg: RGBA,
+    );
 
     /// Fills a rectangle-defined region with a given glyph
-    fn fill_region(&mut self, target: Rect, glyph: u8, fg: RGB, bg: RGB);
+    fn fill_region(&mut self, target: Rect, glyph: u8, fg: RGBA, bg: RGBA);
 
     /// Draws a horizontal progress bar.
     #[allow(clippy::too_many_arguments)]
@@ -79,8 +87,8 @@ pub trait Console {
         width: i32,
         n: i32,
         max: i32,
-        fg: RGB,
-        bg: RGB,
+        fg: RGBA,
+        bg: RGBA,
     );
 
     /// Draws a vertical progress bar.
@@ -92,27 +100,27 @@ pub trait Console {
         height: i32,
         n: i32,
         max: i32,
-        fg: RGB,
-        bg: RGB,
+        fg: RGBA,
+        bg: RGBA,
     );
 
     /// Prints text, centered to the whole console width, at vertical location y.
     fn print_centered(&mut self, y: i32, text: &str);
 
     /// Prints text in color, centered to the whole console width, at vertical location y.
-    fn print_color_centered(&mut self, y: i32, fg: RGB, bg: RGB, text: &str);
+    fn print_color_centered(&mut self, y: i32, fg: RGBA, bg: RGBA, text: &str);
 
     /// Prints text, centered on an arbitrary point
     fn print_centered_at(&mut self, x: i32, y: i32, text: &str);
 
     /// Prints colored text, centered on an arbitrary point
-    fn print_color_centered_at(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, text: &str);
+    fn print_color_centered_at(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, text: &str);
 
     /// Prints text right-aligned
     fn print_right(&mut self, x: i32, y: i32, text: &str);
 
     /// Prints colored text right-aligned
-    fn print_color_right(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, text: &str);
+    fn print_color_right(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, text: &str);
 
     /// Serializes the console layer to an XpFile
     fn to_xp_layer(&self) -> XpLayer;

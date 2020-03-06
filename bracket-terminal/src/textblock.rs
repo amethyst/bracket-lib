@@ -2,15 +2,15 @@ use super::command_buffer::DrawBatch;
 use super::prelude::ColorPair;
 use super::prelude::Point;
 use crate::prelude::{string_to_cp437, Console, Tile};
-use bracket_color::prelude::RGB;
+use bracket_color::prelude::{RGB, RGBA};
 
 pub struct TextBlock {
     x: i32,
     y: i32,
     width: i32,
     height: i32,
-    fg: RGB,
-    bg: RGB,
+    fg: RGBA,
+    bg: RGBA,
     buffer: Vec<Tile>,
     cursor: (i32, i32),
 }
@@ -22,13 +22,13 @@ impl TextBlock {
             y,
             width,
             height,
-            fg: RGB::from_f32(1.0, 1.0, 1.0),
-            bg: RGB::from_f32(0.0, 0.0, 0.0),
+            fg: RGBA::from_f32(1.0, 1.0, 1.0, 1.0),
+            bg: RGBA::from_f32(0.0, 0.0, 0.0, 1.0),
             buffer: vec![
                 Tile {
                     glyph: 0,
-                    fg: RGB::from_f32(1.0, 1.0, 1.0),
-                    bg: RGB::from_f32(0.0, 0.0, 0.0)
+                    fg: RGBA::from_f32(1.0, 1.0, 1.0, 1.0),
+                    bg: RGBA::from_f32(0.0, 0.0, 0.0, 1.0)
                 };
                 width as usize * height as usize
             ],
@@ -36,15 +36,24 @@ impl TextBlock {
         }
     }
 
-    pub fn fg(&mut self, fg: RGB) {
-        self.fg = fg;
+    pub fn fg<COLOR>(&mut self, fg: RGB)
+    where
+        COLOR: Into<RGBA>,
+    {
+        self.fg = fg.into();
     }
-    pub fn bg(&mut self, bg: RGB) {
-        self.bg = bg;
+
+    pub fn bg<COLOR>(&mut self, bg: COLOR)
+    where
+        COLOR: Into<RGBA>,
+    {
+        self.bg = bg.into();
     }
+
     pub fn move_to(&mut self, x: i32, y: i32) {
         self.cursor = (x, y);
     }
+
     fn at(&self, x: i32, y: i32) -> usize {
         ((y * self.width) + x) as usize
     }
@@ -118,8 +127,8 @@ impl TextBlock {
                 CommandType::Background { col } => self.bg = *col,
                 CommandType::Reset {} => {
                     self.cursor = (0, 0);
-                    self.fg = RGB::from_f32(1.0, 1.0, 1.0);
-                    self.bg = RGB::from_f32(0.0, 0.0, 0.0);
+                    self.fg = RGBA::from_f32(1.0, 1.0, 1.0, 1.0);
+                    self.bg = RGBA::from_f32(0.0, 0.0, 0.0, 1.0);
                 }
 
                 CommandType::TextWrapper { block: t } => {
@@ -152,8 +161,8 @@ pub enum CommandType {
     Text { block: Vec<u8> },
     Centered { block: Vec<u8> },
     NewLine {},
-    Foreground { col: RGB },
-    Background { col: RGB },
+    Foreground { col: RGBA },
+    Background { col: RGBA },
     TextWrapper { block: String },
     Reset {},
 }
@@ -187,12 +196,20 @@ impl TextBuilder {
         self.commands.push(CommandType::NewLine {});
         self
     }
-    pub fn fg(&mut self, col: RGB) -> &mut Self {
-        self.commands.push(CommandType::Foreground { col });
+    pub fn fg<COLOR>(&mut self, col: COLOR) -> &mut Self
+    where
+        COLOR: Into<RGBA>,
+    {
+        self.commands
+            .push(CommandType::Foreground { col: col.into() });
         self
     }
-    pub fn bg(&mut self, col: RGB) -> &mut Self {
-        self.commands.push(CommandType::Background { col });
+    pub fn bg<COLOR>(&mut self, col: COLOR) -> &mut Self
+    where
+        COLOR: Into<RGBA>,
+    {
+        self.commands
+            .push(CommandType::Background { col: col.into() });
         self
     }
     pub fn line_wrap(&mut self, text: &str) -> &mut Self {

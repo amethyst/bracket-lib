@@ -1,8 +1,8 @@
 #[cfg(feature = "rex")]
 use crate::prelude::XpColor;
 use crate::prelude::{HSV, RGBA};
-use std::ops;
 use std::convert::From;
+use std::ops;
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(PartialEq, Copy, Clone, Default, Debug)]
@@ -139,7 +139,7 @@ impl RGB {
     }
 
     /// Constructs from an HTML color code (e.g. "#eeffee")
-    /// 
+    ///
     /// # Errors
     #[allow(clippy::cast_precision_loss)]
     pub fn from_hex<S: AsRef<str>>(code: S) -> Result<Self, HtmlColorConversionError> {

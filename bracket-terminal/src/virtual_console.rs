@@ -30,8 +30,8 @@ impl VirtualConsole {
         for _ in 0..num_tiles {
             console.tiles.push(Tile {
                 glyph: 0,
-                fg: RGB::named(WHITE),
-                bg: RGB::named(BLACK),
+                fg: RGBA::from_f32(1.0, 1.0, 1.0, 1.0),
+                bg: RGBA::from_f32(0.0, 0.0, 0.0, 1.0),
             });
         }
         console
@@ -62,13 +62,13 @@ impl VirtualConsole {
             tiles: Vec::with_capacity(num_tiles),
             extra_clipping: None,
         };
-        println!("{}x{}", console.width, console.height);
+        //println!("{}x{}", console.width, console.height);
 
         for _ in 0..num_tiles {
             console.tiles.push(Tile {
                 glyph: 0,
-                fg: RGB::named(WHITE),
-                bg: RGB::named(BLACK),
+                fg: RGBA::from_f32(1.0, 1.0, 1.0, 1.0),
+                bg: RGBA::from_f32(0.0, 0.0, 0.0, 1.0),
             });
         }
 
@@ -136,16 +136,16 @@ impl Console for VirtualConsole {
     fn cls(&mut self) {
         for tile in &mut self.tiles {
             tile.glyph = 32;
-            tile.fg = RGB::named(WHITE);
-            tile.bg = RGB::named(BLACK);
+            tile.fg = RGBA::from_f32(1.0, 1.0, 1.0, 1.0);
+            tile.bg = RGBA::from_f32(0.0, 0.0, 0.0, 1.0);
         }
     }
 
     /// Clears the screen with a background color.
-    fn cls_bg(&mut self, background: RGB) {
+    fn cls_bg(&mut self, background: RGBA) {
         for tile in &mut self.tiles {
             tile.glyph = 32;
-            tile.fg = RGB::named(WHITE);
+            tile.fg = RGBA::from_f32(1.0, 1.0, 1.0, 1.0);
             tile.bg = background;
         }
     }
@@ -162,7 +162,7 @@ impl Console for VirtualConsole {
     }
 
     /// Prints a string at x/y, with foreground and background colors.
-    fn print_color(&mut self, mut x: i32, y: i32, fg: RGB, bg: RGB, output: &str) {
+    fn print_color(&mut self, mut x: i32, y: i32, fg: RGBA, bg: RGBA, output: &str) {
         let bytes = string_to_cp437(output);
         for glyph in bytes {
             if let Some(idx) = self.try_at(x, y) {
@@ -175,7 +175,7 @@ impl Console for VirtualConsole {
     }
 
     /// Sets a single cell in the console
-    fn set(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, glyph: u8) {
+    fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: u8) {
         if let Some(idx) = self.try_at(x, y) {
             self.tiles[idx].glyph = glyph;
             self.tiles[idx].fg = fg;
@@ -184,24 +184,24 @@ impl Console for VirtualConsole {
     }
 
     /// Sets a single cell in the console's background
-    fn set_bg(&mut self, x: i32, y: i32, bg: RGB) {
+    fn set_bg(&mut self, x: i32, y: i32, bg: RGBA) {
         if let Some(idx) = self.try_at(x, y) {
             self.tiles[idx].bg = bg;
         }
     }
 
     /// Draws a box, starting at x/y with the extents width/height using CP437 line characters
-    fn draw_box(&mut self, sx: i32, sy: i32, width: i32, height: i32, fg: RGB, bg: RGB) {
+    fn draw_box(&mut self, sx: i32, sy: i32, width: i32, height: i32, fg: RGBA, bg: RGBA) {
         crate::prelude::draw_box(self, sx, sy, width, height, fg, bg);
     }
 
     /// Draws a box, starting at x/y with the extents width/height using CP437 line characters
-    fn draw_hollow_box(&mut self, sx: i32, sy: i32, width: i32, height: i32, fg: RGB, bg: RGB) {
+    fn draw_hollow_box(&mut self, sx: i32, sy: i32, width: i32, height: i32, fg: RGBA, bg: RGBA) {
         crate::prelude::draw_hollow_box(self, sx, sy, width, height, fg, bg);
     }
 
     /// Draws a box, starting at x/y with the extents width/height using CP437 double line characters
-    fn draw_box_double(&mut self, sx: i32, sy: i32, width: i32, height: i32, fg: RGB, bg: RGB) {
+    fn draw_box_double(&mut self, sx: i32, sy: i32, width: i32, height: i32, fg: RGBA, bg: RGBA) {
         crate::prelude::draw_box_double(self, sx, sy, width, height, fg, bg);
     }
 
@@ -212,14 +212,14 @@ impl Console for VirtualConsole {
         sy: i32,
         width: i32,
         height: i32,
-        fg: RGB,
-        bg: RGB,
+        fg: RGBA,
+        bg: RGBA,
     ) {
         crate::prelude::draw_hollow_box_double(self, sx, sy, width, height, fg, bg);
     }
 
     /// Fills a rectangle with the specified rendering information
-    fn fill_region(&mut self, target: Rect, glyph: u8, fg: RGB, bg: RGB) {
+    fn fill_region(&mut self, target: Rect, glyph: u8, fg: RGBA, bg: RGBA) {
         target.for_each(|point| {
             self.set(point.x, point.y, fg, bg, glyph);
         });
@@ -233,8 +233,8 @@ impl Console for VirtualConsole {
         width: i32,
         n: i32,
         max: i32,
-        fg: RGB,
-        bg: RGB,
+        fg: RGBA,
+        bg: RGBA,
     ) {
         crate::prelude::draw_bar_horizontal(self, sx, sy, width, n, max, fg, bg);
     }
@@ -247,8 +247,8 @@ impl Console for VirtualConsole {
         height: i32,
         n: i32,
         max: i32,
-        fg: RGB,
-        bg: RGB,
+        fg: RGBA,
+        bg: RGBA,
     ) {
         crate::prelude::draw_bar_vertical(self, sx, sy, height, n, max, fg, bg);
     }
@@ -263,7 +263,7 @@ impl Console for VirtualConsole {
     }
 
     /// Prints text in color, centered to the whole console width, at vertical location y.
-    fn print_color_centered(&mut self, y: i32, fg: RGB, bg: RGB, text: &str) {
+    fn print_color_centered(&mut self, y: i32, fg: RGBA, bg: RGBA, text: &str) {
         self.print_color(
             (self.width as i32 / 2) - (text.to_string().len() as i32 / 2),
             y,
@@ -279,7 +279,7 @@ impl Console for VirtualConsole {
     }
 
     /// Prints text in color, centered to the whole console width, at vertical location y.
-    fn print_color_centered_at(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, text: &str) {
+    fn print_color_centered_at(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, text: &str) {
         self.print_color(x - (text.to_string().len() as i32 / 2), y, fg, bg, text);
     }
 
@@ -291,7 +291,7 @@ impl Console for VirtualConsole {
     }
 
     /// Prints colored text right-aligned
-    fn print_color_right(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, text: &str) {
+    fn print_color_right(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, text: &str) {
         let len = text.len() as i32;
         let actual_x = x - len;
         self.print_color(actual_x, y, fg, bg, text);
@@ -301,11 +301,18 @@ impl Console for VirtualConsole {
     /// For example: printer(1, 1, "#[blue]This blue text contains a #[pink]pink#[] word")
     /// You can get the same effect with a TextBlock, but this can be easier.
     /// Thanks to doryen_rs for the idea.
-    fn printer(&mut self, x: i32, y: i32, output: &str, align: TextAlign, background: Option<RGB>) {
+    fn printer(
+        &mut self,
+        x: i32,
+        y: i32,
+        output: &str,
+        align: TextAlign,
+        background: Option<RGBA>,
+    ) {
         let bg = if let Some(bg) = background {
             bg
         } else {
-            RGB::from_u8(0, 0, 0)
+            RGBA::from_f32(0.0, 0.0, 0.0, 1.0)
         };
 
         let split_text = ColoredTextSpans::new(output);

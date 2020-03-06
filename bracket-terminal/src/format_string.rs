@@ -3,14 +3,14 @@ use bracket_color::prelude::*;
 #[derive(Debug)]
 pub struct ColoredTextSpans {
     pub length: usize,
-    pub spans: Vec<(RGB, String)>,
+    pub spans: Vec<(RGBA, String)>,
 }
 
-fn find_color(col_name: &str) -> RGB {
-    if let Some(palette) = palette_color(col_name) {
+fn find_color(col_name: &str) -> RGBA {
+    if let Some(palette) = palette_color(&col_name) {
         palette
     } else {
-        RGB::from_u8(255, 255, 255)
+        RGBA::from_u8(255, 255, 255, 255)
     }
 }
 
@@ -35,7 +35,9 @@ impl ColoredTextSpans {
                     color_stack.pop();
                 }
                 result.spans.push((
-                    *color_stack.last().unwrap_or(&RGB::from_u8(255, 255, 255)),
+                    *color_stack
+                        .last()
+                        .unwrap_or(&RGBA::from_u8(255, 255, 255, 255)),
                     text_span.to_string(),
                 ));
                 result.length += text_span.chars().count();

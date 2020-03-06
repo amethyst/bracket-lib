@@ -1,7 +1,7 @@
 use super::{BACKEND, CONSOLE_BACKING};
 use crate::hal::*;
 use crate::prelude::{
-    BEvent, BTerm, Console, GameState, SimpleConsole, SparseConsole, BACKEND_INTERNAL, INPUT,
+    BEvent, BTerm, GameState, SimpleConsole, SparseConsole, BACKEND_INTERNAL, INPUT,
 };
 use crate::{clear_input_state, Result};
 use bracket_geometry::prelude::Point;

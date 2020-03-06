@@ -184,8 +184,8 @@ pub fn xp_to_console(
                     console.as_mut().set(
                         x as i32 + offset_x,
                         y as i32 + offset_y,
-                        RGB::from_xp(cell.fg),
-                        RGB::from_xp(cell.bg),
+                        RGB::from_xp(cell.fg).into(),
+                        RGB::from_xp(cell.bg).into(),
                         cell.ch as u8,
                     );
                 }

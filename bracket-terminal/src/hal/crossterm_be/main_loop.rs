@@ -133,8 +133,8 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
             if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
                 if st.is_dirty {
                     let mut idx = 0;
-                    let mut last_bg = RGB::new();
-                    let mut last_fg = RGB::new();
+                    let mut last_bg = RGBA::new();
+                    let mut last_fg = RGBA::new();
                     for y in 0..st.height {
                         queue!(
                             stdout(),

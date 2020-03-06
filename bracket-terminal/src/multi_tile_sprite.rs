@@ -1,5 +1,5 @@
 use crate::prelude::{string_to_cp437, BTerm, DrawBatch, Tile, XpFile};
-use bracket_color::prelude::{ColorPair, RGB};
+use bracket_color::prelude::{ColorPair, RGB, RGBA};
 use bracket_geometry::prelude::Point;
 
 /// Represents a sprite consisting of multiple glyphs/colors, occupying multiple console locations.
@@ -23,8 +23,8 @@ impl MultiTileSprite {
             .into_iter()
             .map(|glyph| Tile {
                 glyph,
-                fg: RGB::from_f32(1.0, 1.0, 1.0),
-                bg: RGB::from_f32(0.0, 0.0, 0.0),
+                fg: RGBA::from_f32(1.0, 1.0, 1.0, 1.0),
+                bg: RGBA::from_f32(0.0, 0.0, 0.0, 1.0),
             })
             .collect();
 
@@ -39,8 +39,8 @@ impl MultiTileSprite {
         content: S,
         width: T,
         height: T,
-        fg: &[RGB],
-        bg: &[RGB],
+        fg: &[RGBA],
+        bg: &[RGBA],
     ) -> Self
     where
         T: Into<i32>,
@@ -72,8 +72,8 @@ impl MultiTileSprite {
         let mut tiles: Vec<Tile> = vec![
             Tile {
                 glyph: 0,
-                fg: RGB::from_f32(1.0, 1.0, 1.0),
-                bg: RGB::from_f32(0.0, 0.0, 0.0)
+                fg: RGBA::from_f32(1.0, 1.0, 1.0, 1.0),
+                bg: RGBA::from_f32(0.0, 0.0, 0.0, 1.0)
             };
             (dimensions.x * dimensions.y) as usize
         ];
@@ -85,8 +85,8 @@ impl MultiTileSprite {
                     if !cell.bg.is_transparent() {
                         let idx = (y * (dimensions.x as usize)) + (x as usize);
                         tiles[idx].glyph = cell.ch as u8;
-                        tiles[idx].fg = RGB::from_xp(cell.fg);
-                        tiles[idx].bg = RGB::from_xp(cell.bg);
+                        tiles[idx].fg = RGB::from_xp(cell.fg).into();
+                        tiles[idx].bg = RGB::from_xp(cell.bg).into();
                     }
                 }
             }
