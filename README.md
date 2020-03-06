@@ -2,7 +2,7 @@
 
 ![](https://github.com/thebracket/rltk_rs/workflows/Rust/badge.svg)
 
-> You can read a tutorial series on writing a Roguelike with this library at: [http://bfnightly.bracketproductions.com/rustbook/](http://bfnightly.bracketproductions.com/rustbook/)
+> You can read a tutorial series on writing a Roguelike with this library at: [https://bfnightly.bracketproductions.com/rustbook/](https://bfnightly.bracketproductions.com/rustbook/)
 
 ## What happened to RLTK?
 

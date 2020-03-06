@@ -1,7 +1,4 @@
-use crate::prelude::{
-    font::Font, string_to_cp437, BTermPlatform, Console, Shader, SimpleConsoleBackend, Tile,
-    XpLayer,
-};
+use crate::prelude::{string_to_cp437, ColoredTextSpans, Console, TextAlign, Tile, XpLayer};
 use bracket_color::prelude::*;
 use bracket_geometry::prelude::Rect;
 use std::any::Any;
@@ -15,18 +12,18 @@ pub struct SimpleConsole {
     pub is_dirty: bool,
 
     // To handle offset tiles for people who want thin walls between tiles
-    offset_x: f32,
-    offset_y: f32,
+    pub offset_x: f32,
+    pub offset_y: f32,
 
-    scale: f32,
-    scale_center: (i32, i32),
+    pub scale: f32,
+    pub scale_center: (i32, i32),
 
-    backend: SimpleConsoleBackend,
+    pub extra_clipping: Option<Rect>
 }
 
 impl SimpleConsole {
     /// Initializes a console, ready to add to BTerm's console list.
-    pub fn init(width: u32, height: u32, platform: &BTermPlatform) -> Box<SimpleConsole> {
+    pub fn init(width: u32, height: u32) -> Box<SimpleConsole> {
         // Console backing init
         let num_tiles: usize = (width * height) as usize;
         let mut tiles: Vec<Tile> = Vec::with_capacity(num_tiles);
@@ -47,35 +44,14 @@ impl SimpleConsole {
             offset_y: 0.0,
             scale: 1.0,
             scale_center: (width as i32 / 2, height as i32 / 2),
-            backend: SimpleConsoleBackend::new(platform, width as usize, height as usize),
+            extra_clipping: None
         };
 
         Box::new(new_console)
     }
-
-    fn rebuild_vertices(&mut self, platform: &BTermPlatform) {
-        self.backend.rebuild_vertices(
-            platform,
-            self.height,
-            self.width,
-            &self.tiles,
-            self.offset_x,
-            self.offset_y,
-            self.scale,
-            self.scale_center,
-        );
-    }
 }
 
 impl Console for SimpleConsole {
-    /// Check if the console has changed, and if it has rebuild the backing buffer.
-    fn rebuild_if_dirty(&mut self, platform: &BTermPlatform) {
-        if self.is_dirty {
-            self.rebuild_vertices(platform);
-            self.is_dirty = false;
-        }
-    }
-
     fn get_char_size(&self) -> (u32, u32) {
         (self.width, self.height)
     }
@@ -84,16 +60,7 @@ impl Console for SimpleConsole {
         self.is_dirty = true;
     }
 
-    /// Sends the console to OpenGL.
-    fn gl_draw(&mut self, font: &Font, shader: &Shader, platform: &BTermPlatform) {
-        self.backend
-            .gl_draw(font, shader, platform, self.width, self.height)
-            .unwrap();
-        self.is_dirty = false;
-    }
-
     /// Translate an x/y into an array index.
-    #[inline]
     fn at(&self, x: i32, y: i32) -> usize {
         (((self.height - 1 - y as u32) * self.width) + x as u32) as usize
     }
@@ -198,20 +165,6 @@ impl Console for SimpleConsole {
         });
     }
 
-    /// Gets the content of a cell
-    fn get(&self, x: i32, y: i32) -> Option<(&u8, &RGB, &RGB)> {
-        if self.in_bounds(x, y) {
-            let idx = self.at(x, y);
-            Some((
-                &self.tiles[idx].glyph,
-                &self.tiles[idx].fg,
-                &self.tiles[idx].bg,
-            ))
-        } else {
-            None
-        }
-    }
-
     /// Draws a horizontal progress bar
     fn draw_bar_horizontal(
         &mut self,
@@ -262,6 +215,59 @@ impl Console for SimpleConsole {
         );
     }
 
+    /// Prints text, centered to the whole console width, at vertical location y.
+    fn print_centered_at(&mut self, x: i32, y: i32, text: &str) {
+        self.is_dirty = true;
+        self.print(x - (text.to_string().len() as i32 / 2), y, text);
+    }
+
+    /// Prints text in color, centered to the whole console width, at vertical location y.
+    fn print_color_centered_at(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, text: &str) {
+        self.is_dirty = true;
+        self.print_color(x - (text.to_string().len() as i32 / 2), y, fg, bg, text);
+    }
+
+    /// Prints text right-aligned
+    fn print_right(&mut self, x: i32, y: i32, text: &str) {
+        let len = text.len() as i32;
+        let actual_x = x - len;
+        self.print(actual_x, y, text);
+    }
+
+    /// Prints colored text right-aligned
+    fn print_color_right(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, text: &str) {
+        let len = text.len() as i32;
+        let actual_x = x - len;
+        self.print_color(actual_x, y, fg, bg, text);
+    }
+
+    /// Print a colorized string with the color encoding defined inline.
+    /// For example: printer(1, 1, "#[blue]This blue text contains a #[pink]pink#[] word")
+    /// You can get the same effect with a TextBlock, but this can be easier.
+    /// Thanks to doryen_rs for the idea.
+    fn printer(&mut self, x: i32, y: i32, output: &str, align: TextAlign, background: Option<RGB>) {
+        let bg = if let Some(bg) = background {
+            bg
+        } else {
+            RGB::from_u8(0, 0, 0)
+        };
+
+        let split_text = ColoredTextSpans::new(output);
+
+        let mut tx = match align {
+            TextAlign::Left => x,
+            TextAlign::Center => x - (split_text.length as i32 / 2),
+            TextAlign::Right => x - split_text.length as i32,
+        };
+        for span in split_text.spans.iter() {
+            let fg = span.0;
+            for ch in span.1.chars() {
+                self.set(tx, y, fg, bg, crate::codepage437::to_cp437(ch));
+                tx += 1;
+            }
+        }
+    }
+
     /// Saves the layer to an XpFile structure
     fn to_xp_layer(&self) -> XpLayer {
         let mut layer = XpLayer::new(self.width as usize, self.height as usize);
@@ -296,5 +302,16 @@ impl Console for SimpleConsole {
 
     fn as_any(&self) -> &dyn Any {
         self
+    }
+
+    /// Permits the creation of an arbitrary clipping rectangle. It's a really good idea
+    /// to make sure that this rectangle is entirely valid.
+    fn set_clipping(&mut self, clipping: Option<Rect>) {
+        self.extra_clipping = clipping;
+    }
+
+    /// Returns the current arbitrary clipping rectangle, None if there isn't one.
+    fn get_clipping(&self) -> Option<Rect> {
+        self.extra_clipping
     }
 }

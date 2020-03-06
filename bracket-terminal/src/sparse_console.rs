@@ -1,7 +1,7 @@
-use crate::prelude::{Console, font::Font, Shader, XpLayer, string_to_cp437, BTermPlatform, SparseConsoleBackend};
-use std::any::Any;
-use bracket_color::prelude::{RGB, XpColor};
+use crate::prelude::{string_to_cp437, to_cp437, ColoredTextSpans, Console, TextAlign, XpLayer};
+use bracket_color::prelude::{XpColor, RGB};
 use bracket_geometry::prelude::Rect;
+use std::any::Any;
 
 /// Internal storage structure for sparse tiles.
 pub struct SparseTile {
@@ -21,18 +21,18 @@ pub struct SparseConsole {
     pub is_dirty: bool,
 
     // To handle offset tiles for people who want thin walls between tiles
-    offset_x: f32,
-    offset_y: f32,
+    pub offset_x: f32,
+    pub offset_y: f32,
 
-    scale: f32,
-    scale_center: (i32, i32),
+    pub scale: f32,
+    pub scale_center: (i32, i32),
 
-    backend: SparseConsoleBackend,
+    pub extra_clipping: Option<Rect>
 }
 
 impl SparseConsole {
     /// Initializes the console.
-    pub fn init(width: u32, height: u32, platform: &BTermPlatform) -> Box<SparseConsole> {
+    pub fn init(width: u32, height: u32) -> Box<SparseConsole> {
         // Console backing init
         let new_console = SparseConsole {
             width,
@@ -43,47 +43,20 @@ impl SparseConsole {
             offset_y: 0.0,
             scale: 1.0,
             scale_center: (width as i32 / 2, height as i32 / 2),
-            backend: SparseConsoleBackend::new(platform, width as usize, height as usize),
+            extra_clipping: None
         };
 
         Box::new(new_console)
     }
-
-    fn rebuild_vertices(&mut self, platform: &BTermPlatform) {
-        self.backend.rebuild_vertices(
-            platform,
-            self.height,
-            self.width,
-            self.offset_x,
-            self.offset_y,
-            self.scale,
-            self.scale_center,
-            &self.tiles,
-        );
-    }
 }
 
 impl Console for SparseConsole {
-    /// If the console has changed, rebuild the vertex buffer.
-    fn rebuild_if_dirty(&mut self, platform: &BTermPlatform) {
-        if self.is_dirty {
-            self.rebuild_vertices(platform);
-            self.is_dirty = false;
-        }
-    }
-
     fn get_char_size(&self) -> (u32, u32) {
         (self.width, self.height)
     }
 
     fn resize_pixels(&mut self, _width: u32, _height: u32) {
         self.is_dirty = true;
-    }
-
-    /// Draws the console to OpenGL.
-    fn gl_draw(&mut self, font: &Font, shader: &Shader, platform: &BTermPlatform) {
-        self.backend.gl_draw(font, shader, platform, &self.tiles).unwrap();
-        self.is_dirty = false;
     }
 
     /// Translates x/y to an index entry. Not really useful.
@@ -159,7 +132,22 @@ impl Console for SparseConsole {
     fn set_bg(&mut self, x: i32, y: i32, bg: RGB) {
         if let Some(idx) = self.try_at(x, y) {
             self.is_dirty = true;
-            self.tiles[idx].bg = bg;
+            let mut found_tile = false;
+            self.tiles
+                .iter_mut()
+                .filter(|t| t.idx == idx)
+                .for_each(|t| {
+                    t.bg = bg;
+                    found_tile = true;
+                });
+            if !found_tile {
+                self.tiles.push(SparseTile {
+                    idx,
+                    glyph: to_cp437(' '),
+                    fg: RGB::from_u8(0, 0, 0),
+                    bg,
+                });
+            }
         }
     }
 
@@ -196,14 +184,6 @@ impl Console for SparseConsole {
         target.for_each(|point| {
             self.set(point.x, point.y, fg, bg, glyph);
         });
-    }
-
-    fn get(&self, x: i32, y: i32) -> Option<(&u8, &RGB, &RGB)> {
-        let idx = self.at(x, y);
-        for t in self.tiles.iter().filter(|t| t.idx == idx) {
-            return Some((&t.glyph, &t.fg, &t.bg));
-        }
-        None
     }
 
     /// Draws a horizontal progress bar
@@ -256,6 +236,59 @@ impl Console for SparseConsole {
         );
     }
 
+    /// Prints text, centered to the whole console width, at vertical location y.
+    fn print_centered_at(&mut self, x: i32, y: i32, text: &str) {
+        self.is_dirty = true;
+        self.print(x - (text.to_string().len() as i32 / 2), y, text);
+    }
+
+    /// Prints text in color, centered to the whole console width, at vertical location y.
+    fn print_color_centered_at(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, text: &str) {
+        self.is_dirty = true;
+        self.print_color(x - (text.to_string().len() as i32 / 2), y, fg, bg, text);
+    }
+
+    /// Prints text right-aligned
+    fn print_right(&mut self, x: i32, y: i32, text: &str) {
+        let len = text.len() as i32;
+        let actual_x = x - len;
+        self.print(actual_x, y, text);
+    }
+
+    /// Prints colored text right-aligned
+    fn print_color_right(&mut self, x: i32, y: i32, fg: RGB, bg: RGB, text: &str) {
+        let len = text.len() as i32;
+        let actual_x = x - len;
+        self.print_color(actual_x, y, fg, bg, text);
+    }
+
+    /// Print a colorized string with the color encoding defined inline.
+    /// For example: printer(1, 1, "#[blue]This blue text contains a #[pink]pink#[] word")
+    /// You can get the same effect with a TextBlock, but this can be easier.
+    /// Thanks to doryen_rs for the idea.
+    fn printer(&mut self, x: i32, y: i32, output: &str, align: TextAlign, background: Option<RGB>) {
+        let bg = if let Some(bg) = background {
+            bg
+        } else {
+            RGB::from_u8(0, 0, 0)
+        };
+
+        let split_text = ColoredTextSpans::new(output);
+
+        let mut tx = match align {
+            TextAlign::Left => x,
+            TextAlign::Center => x - (split_text.length as i32 / 2),
+            TextAlign::Right => x - split_text.length as i32,
+        };
+        for span in split_text.spans.iter() {
+            let fg = span.0;
+            for ch in span.1.chars() {
+                self.set(tx, y, fg, bg, crate::codepage437::to_cp437(ch));
+                tx += 1;
+            }
+        }
+    }
+
     /// Saves the layer to an XpFile structure
     fn to_xp_layer(&self) -> XpLayer {
         let mut layer = XpLayer::new(self.width as usize, self.height as usize);
@@ -297,5 +330,16 @@ impl Console for SparseConsole {
 
     fn as_any(&self) -> &dyn Any {
         self
+    }
+
+    /// Permits the creation of an arbitrary clipping rectangle. It's a really good idea
+    /// to make sure that this rectangle is entirely valid.
+    fn set_clipping(&mut self, clipping: Option<Rect>) {
+        self.extra_clipping = clipping;
+    }
+
+    /// Returns the current arbitrary clipping rectangle, None if there isn't one.
+    fn get_clipping(&self) -> Option<Rect> {
+        self.extra_clipping
     }
 }

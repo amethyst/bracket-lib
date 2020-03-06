@@ -1,0 +1,168 @@
+bracket_terminal::add_wasm_support!();
+use bracket_random::prelude::*;
+use bracket_terminal::prelude::*;
+use std::collections::HashMap;
+
+// We'll allow map tiles to be either a wall or a floor. We're deriving PartialEq so we don't
+// have to match on it every time. We'll make it a copy type because it's really just an int.
+#[derive(PartialEq, Copy, Clone)]
+enum TileType {
+    Wall,
+    Floor,
+}
+
+// We're extending State to include a minimal map and player coordinates.
+struct State {
+    map: Vec<TileType>,
+    player_position: usize,
+    keymap: HashMap<VirtualKeyCode, (i32, i32)>,
+}
+
+// We're storing all the tiles in one big array, so we need a way to map an X,Y coordinate to
+// a tile. Each row is stored sequentially (so 0..80, 81..160, etc.). This takes an x/y and returns
+// the array index.
+pub fn xy_idx(x: i32, y: i32) -> usize {
+    (y as usize * 80) + x as usize
+}
+
+// It's a great idea to have a reverse mapping for these coordinates. This is as simple as
+// index % 80 (mod 80), and index / 80
+pub fn idx_xy(idx: usize) -> (i32, i32) {
+    (idx as i32 % 80, idx as i32 / 80)
+}
+
+// Since we have some content, we should also include a map builder. A 'new'
+// function is a common Rust way to do this.
+impl State {
+    pub fn new() -> State {
+        let mut state = State {
+            map: vec![TileType::Floor; 80 * 50],
+            player_position: xy_idx(40, 25),
+            keymap: HashMap::new(),
+        };
+
+        // Make the keyboard mappings
+        state.keymap.insert(VirtualKeyCode::Numpad8, (0, -1));
+        state.keymap.insert(VirtualKeyCode::Numpad4, (-1, 0));
+        state.keymap.insert(VirtualKeyCode::Numpad6, (1, 0));
+        state.keymap.insert(VirtualKeyCode::Numpad2, (0, 1));
+        state.keymap.insert(VirtualKeyCode::Numpad7, (-1, -1));
+        state.keymap.insert(VirtualKeyCode::Numpad9, (1, -1));
+        state.keymap.insert(VirtualKeyCode::Numpad1, (-1, 1));
+        state.keymap.insert(VirtualKeyCode::Numpad3, (1, 1));
+        state.keymap.insert(VirtualKeyCode::Up, (0, -1));
+        state.keymap.insert(VirtualKeyCode::Down, (0, 1));
+        state.keymap.insert(VirtualKeyCode::Left, (-1, 0));
+        state.keymap.insert(VirtualKeyCode::Right, (1, 0));
+
+        // Make the boundaries walls
+        for x in 0..80 {
+            state.map[xy_idx(x, 0)] = TileType::Wall;
+            state.map[xy_idx(x, 49)] = TileType::Wall;
+        }
+        for y in 0..50 {
+            state.map[xy_idx(0, y)] = TileType::Wall;
+            state.map[xy_idx(79, y)] = TileType::Wall;
+        }
+
+        // Now we'll randomly splat a bunch of walls. It won't be pretty, but it's a decent illustration.
+        // First, obtain the thread-local RNG:
+        let mut rng = RandomNumberGenerator::new();
+
+        for _ in 0..400 {
+            // rand provides a gen_range function to get numbers in a range.
+            let x = rng.roll_dice(1, 80) - 1;
+            let y = rng.roll_dice(1, 50) - 1;
+            let idx = xy_idx(x, y);
+            // We don't want to add a wall on top of the player
+            if state.player_position != idx {
+                state.map[idx] = TileType::Wall;
+            }
+        }
+
+        // We'll return the state with the short-hand
+        state
+    }
+
+    // Handle player movement. Delta X and Y are the relative move
+    // requested by the player. We calculate the new coordinates,
+    // and if it is a floor - move the player there.
+    pub fn move_player(&mut self, delta_x: i32, delta_y: i32) {
+        let current_position = idx_xy(self.player_position);
+        let new_position = (current_position.0 + delta_x, current_position.1 + delta_y);
+        let new_idx = xy_idx(new_position.0, new_position.1);
+        if self.map[new_idx] == TileType::Floor {
+            self.player_position = new_idx;
+        }
+    }
+}
+
+// Implement the game loop
+impl GameState for State {
+    fn tick(&mut self, ctx: &mut BTerm) {
+        // New: handle keyboard inputs.
+        let mut delta = (0, 0);
+        let input = INPUT.lock().unwrap();
+        self.keymap.iter().for_each(|(key, key_delta)| {
+            if input.is_key_pressed(*key) {
+                delta = *key_delta;
+            }
+        });
+        self.move_player(delta.0, delta.1);
+
+        // Clear the screen
+        ctx.cls();
+
+        // Iterate the map array, incrementing coordinates as we go.
+        let mut y = 0;
+        let mut x = 0;
+        for tile in &self.map {
+            // Render a tile depending upon the tile type
+            match tile {
+                TileType::Floor => {
+                    ctx.print_color(
+                        x,
+                        y,
+                        RGB::from_f32(0.5, 0.5, 0.5),
+                        RGB::from_f32(0., 0., 0.),
+                        ".",
+                    );
+                }
+                TileType::Wall => {
+                    ctx.print_color(
+                        x,
+                        y,
+                        RGB::from_f32(0.0, 1.0, 0.0),
+                        RGB::from_f32(0., 0., 0.),
+                        "#",
+                    );
+                }
+            }
+
+            // Move the coordinates
+            x += 1;
+            if x > 79 {
+                x = 0;
+                y += 1;
+            }
+        }
+
+        // Render the player @ symbol
+        let ppos = idx_xy(self.player_position);
+        ctx.print_color(
+            ppos.0,
+            ppos.1,
+            RGB::from_f32(1.0, 1.0, 0.0),
+            RGB::from_f32(0., 0., 0.),
+            "@",
+        );
+    }
+}
+
+fn main() -> BError {
+    let context = BTermBuilder::simple80x50()
+        .with_title("Bracket Terminal Example - Walking")
+        .build()?;
+    let gs = State::new();
+    main_loop(context, gs)
+}

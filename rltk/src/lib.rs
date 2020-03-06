@@ -1,8 +1,8 @@
-pub use bracket_lib::prelude::*;
-pub use bracket_lib::prelude::BTerm as Rltk;
-pub use bracket_lib::prelude::BTermBuilder as RltkBuilder;
 pub use bracket_lib::prelude::rex;
 pub use bracket_lib::prelude::BError as RltkError;
+pub use bracket_lib::prelude::BTerm as Rltk;
+pub use bracket_lib::prelude::BTermBuilder as RltkBuilder;
+pub use bracket_lib::prelude::*;
 
 #[macro_export]
 macro_rules! link_resource {
@@ -15,6 +15,6 @@ macro_rules! link_resource {
 }
 
 pub mod prelude {
-    pub use crate::*;
     pub use crate::link_resource;
+    pub use crate::*;
 }

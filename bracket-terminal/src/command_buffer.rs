@@ -2,13 +2,13 @@
 // designed to be used safely from within ECS systems in a potentially
 // multi-threaded environment.
 
+use crate::prelude::{BTerm, Console, TextAlign};
 use crate::Result;
-use crate::prelude::{Console, BTerm};
+use bracket_color::prelude::{ColorPair, RGB};
+use bracket_geometry::prelude::{Point, Rect};
 use object_pool::{Pool, Reusable};
 use std::sync::Arc;
 use std::sync::Mutex;
-use bracket_color::prelude::{RGB, ColorPair};
-use bracket_geometry::prelude::{Point, Rect};
 
 lazy_static! {
     static ref COMMAND_BUFFER: Mutex<Vec<(usize, DrawCommand)>> =
@@ -58,6 +58,15 @@ pub enum DrawCommand {
         text: String,
         color: ColorPair,
     },
+    PrintRight {
+        pos: Point,
+        text: String,
+    },
+    PrintColorRight {
+        pos: Point,
+        text: String,
+        color: ColorPair,
+    },
     PrintCentered {
         y: i32,
         text: String,
@@ -66,6 +75,21 @@ pub enum DrawCommand {
         y: i32,
         text: String,
         color: ColorPair,
+    },
+    PrintCenteredAt {
+        pos: Point,
+        text: String,
+    },
+    PrintColorCenteredAt {
+        pos: Point,
+        text: String,
+        color: ColorPair,
+    },
+    Printer {
+        pos: Point,
+        text: String,
+        align: TextAlign,
+        background: Option<RGB>,
     },
     Box {
         pos: Rect,
@@ -102,6 +126,7 @@ pub enum DrawCommand {
         max: i32,
         color: ColorPair,
     },
+    SetClipping{ clip: Option<Rect> }
 }
 
 /// Represents a batch of drawing commands, designed to be submitted together.
@@ -154,6 +179,27 @@ impl DrawBatch {
         self
     }
 
+    /// Prints formatted text, using the doryen_rs convention. For example:
+    /// "#[blue]This blue text contains a #[pink]pink#[] word"
+    pub fn printer<S: ToString>(
+        &mut self,
+        pos: Point,
+        text: S,
+        align: TextAlign,
+        background: Option<RGB>,
+    ) -> &mut Self {
+        self.batch.push((
+            0,
+            DrawCommand::Printer {
+                pos,
+                text: text.to_string(),
+                align,
+                background,
+            },
+        ));
+        self
+    }
+
     /// Prints text in the default colors at a given location
     pub fn print<S: ToString>(&mut self, pos: Point, text: S) -> &mut Self {
         self.batch.push((
@@ -201,6 +247,65 @@ impl DrawBatch {
             0,
             DrawCommand::PrintColorCentered {
                 y,
+                text: text.to_string(),
+                color,
+            },
+        ));
+        self
+    }
+
+    /// Prints text, centered to the whole console width, at vertical location y.
+    pub fn print_centered_at<S: ToString>(&mut self, pos: Point, text: S) -> &mut Self {
+        self.batch.push((
+            0,
+            DrawCommand::PrintCenteredAt {
+                pos,
+                text: text.to_string(),
+            },
+        ));
+        self
+    }
+    /// Prints text, centered to the whole console width, at vertical location y.
+    pub fn print_color_centered_at<S: ToString>(
+        &mut self,
+        pos: Point,
+        text: S,
+        color: ColorPair,
+    ) -> &mut Self {
+        self.batch.push((
+            0,
+            DrawCommand::PrintColorCenteredAt {
+                pos,
+                text: text.to_string(),
+                color,
+            },
+        ));
+        self
+    }
+
+    /// Prints right aligned text
+    pub fn print_right<S: ToString>(&mut self, pos: Point, text: S) -> &mut Self {
+        self.batch.push((
+            0,
+            DrawCommand::PrintRight {
+                pos,
+                text: text.to_string(),
+            },
+        ));
+        self
+    }
+
+    /// Prints right aligned text
+    pub fn print_color_right<S: ToString>(
+        &mut self,
+        pos: Point,
+        text: S,
+        color: ColorPair,
+    ) -> &mut Self {
+        self.batch.push((
+            0,
+            DrawCommand::PrintColorRight {
+                pos,
                 text: text.to_string(),
                 color,
             },
@@ -283,6 +388,14 @@ impl DrawBatch {
         ));
         self
     }
+
+    pub fn set_clipping(&mut self, clip: Option<Rect>) -> &mut Self {
+        self.batch.push((
+            0,
+            DrawCommand::SetClipping{ clip }
+        ));
+        self
+    }
 }
 
 /// Submits the current batch to the BTerm buffer and empties it
@@ -305,6 +418,20 @@ pub fn render_draw_buffer(bterm: &mut BTerm) -> Result<()> {
         DrawCommand::PrintColorCentered { y, text, color } => {
             bterm.print_color_centered(*y, color.fg, color.bg, &text)
         }
+        DrawCommand::PrintCenteredAt { pos, text } => bterm.print_centered_at(pos.x, pos.y, &text),
+        DrawCommand::PrintColorCenteredAt { pos, text, color } => {
+            bterm.print_color_centered_at(pos.x, pos.y, color.fg, color.bg, &text)
+        }
+        DrawCommand::PrintRight { pos, text } => bterm.print_right(pos.x, pos.y, text),
+        DrawCommand::PrintColorRight { pos, text, color } => {
+            bterm.print_color_right(pos.x, pos.y, color.fg, color.bg, text)
+        }
+        DrawCommand::Printer {
+            pos,
+            text,
+            align,
+            background,
+        } => bterm.printer(pos.x, pos.y, text, *align, *background),
         DrawCommand::Box { pos, color } => bterm.draw_box(
             pos.x1,
             pos.y1,
@@ -354,6 +481,7 @@ pub fn render_draw_buffer(bterm: &mut BTerm) -> Result<()> {
             max,
             color,
         } => bterm.draw_bar_vertical(pos.x, pos.y, *height, *n, *max, color.fg, color.bg),
+        DrawCommand::SetClipping { clip } => bterm.set_clipping(*clip),
     });
     buffer.clear();
     Ok(())

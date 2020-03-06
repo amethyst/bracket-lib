@@ -1,6 +1,6 @@
-use std::convert::{TryInto, From};
+use std::convert::{From, TryInto};
 use std::ops;
-use ultraviolet::{Vec3,Vec3i};
+use ultraviolet::{Vec3, Vec3i};
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
@@ -34,7 +34,7 @@ impl Point3 {
         Self {
             x: t.0,
             y: t.1,
-            z: t.2
+            z: t.2,
         }
     }
 
@@ -54,7 +54,7 @@ impl From<Vec3> for Point3 {
         Self {
             x: item.x as i32,
             y: item.y as i32,
-            z: item.z as i32
+            z: item.z as i32,
         }
     }
 }
@@ -64,7 +64,7 @@ impl From<Vec3i> for Point3 {
         Self {
             x: item.x,
             y: item.y,
-            z: item.z
+            z: item.z,
         }
     }
 }

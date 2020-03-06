@@ -5,7 +5,8 @@ struct State {}
 
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
-        ctx.cls();
+        let mut draw_batch = DrawBatch::new();
+        draw_batch.cls();
         let mut block = TextBlock::new(0, 0, 80, 25);
 
         let mut buf = TextBuilder::empty();
@@ -30,7 +31,9 @@ impl GameState for State {
 
         block.print(&buf);
 
-        block.render(&mut ctx.consoles[0].console);
+        block.render_to_draw_batch(&mut draw_batch);
+        draw_batch.submit(0).expect("Batch error");
+        render_draw_buffer(ctx).expect("Render error");
     }
 }
 

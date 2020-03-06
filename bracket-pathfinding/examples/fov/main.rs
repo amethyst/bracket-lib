@@ -1,7 +1,7 @@
 mod common;
-use common::*;
-use bracket_pathfinding::prelude::*;
 use bracket_color::prelude::*;
+use bracket_pathfinding::prelude::*;
+use common::*;
 
 fn main() {
     let map = Map::new();
@@ -12,7 +12,7 @@ fn main() {
     // Draw the result
     for y in 0..MAP_HEIGHT {
         for x in 0..MAP_WIDTH {
-            let pos = Point::new(x,y);
+            let pos = Point::new(x, y);
             let idx = map.point2d_to_index(pos);
             let tile;
             let mut color;
@@ -22,8 +22,14 @@ fn main() {
                 tile = '@';
             } else {
                 match map.tiles[idx] {
-                    '#' => { tile = '#'; color = RGB::named(YELLOW); }
-                    _ => { tile = '.'; color = RGB::named(CHOCOLATE); },
+                    '#' => {
+                        tile = '#';
+                        color = RGB::named(YELLOW);
+                    }
+                    _ => {
+                        tile = '.';
+                        color = RGB::named(CHOCOLATE);
+                    }
                 }
             }
 

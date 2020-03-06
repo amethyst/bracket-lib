@@ -4,7 +4,7 @@ You can find the original C++ project here: [https://github.com/thebracket/rltk]
 
 > **Note**: `rltk_rs` is now a wrapper for `bracket-lib`. It maps all namespaces to work with the old `rltk` and `rltk::prelude` namespaces, including renaming `BTerm` and `BTermBuilder` for you. The Roguelike tutorial compiles unchanged with it.
 
-You can read a tutorial series on writing a Roguelike with this library at: [http://bfnightly.bracketproductions.com/rustbook/](http://bfnightly.bracketproductions.com/rustbook/)
+You can read a tutorial series on writing a Roguelike with this library at: [https://bfnightly.bracketproductions.com/rustbook/](https://bfnightly.bracketproductions.com/rustbook/)
 
 ## Running the examples
 
@@ -64,7 +64,7 @@ RLTK supports a number of *feature flags* to let you use it the way you want.
 
 Run this example with `cargo run --example 1` from the root of the cloned repository.
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex01/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex01/)
 
 ### Example 2: Multiple console layers
 
@@ -74,7 +74,7 @@ Run this example with `cargo run --example 1` from the root of the cloned reposi
 
 Run this example with `cargo run --example 2` from the root of the cloned repository.
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex02/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex02/)
 
 ### Example 3: Walking around
 
@@ -84,7 +84,7 @@ Run this example with `cargo run --example 2` from the root of the cloned reposi
 
 Run this example with `cargo run --example 3` from the root of the cloned repository.
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex03/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex03/)
 
 ### Example 4: Field of view
 
@@ -94,7 +94,7 @@ Run this example with `cargo run --example 3` from the root of the cloned reposi
 
 Run this example with `cargo run --example 4` from the root of the cloned repository.
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex04/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex04/)
 
 ### Example 5: Auto-explore with Dijkstra Flow Maps
 
@@ -104,7 +104,7 @@ Run this example with `cargo run --example 4` from the root of the cloned reposi
 
 Run this example with `cargo run --example 5 --release` from the root of the cloned repository. (The `--release` tells it to optimize the build; it's pretty slow without optimizations)
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex05/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex05/)
 
 ### Example 6: A-Star pathing and mouse control
 
@@ -114,7 +114,7 @@ Run this example with `cargo run --example 5 --release` from the root of the clo
 
 Run this example with `cargo run --example 6` from the root of the cloned repository.
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex06/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex06/)
 
 ### Example 7: Layered Tiles
 
@@ -124,7 +124,7 @@ Run this example with `cargo run --example 6` from the root of the cloned reposi
 
 Run this example with `cargo run --example 7` from the root of the cloned repository.
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex07/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex07/)
 
 ### Example 8: REX Paint Support
 
@@ -135,7 +135,7 @@ GridSageGames' excellent [REX Paint](https://www.gridsagegames.com/rexpaint/)), 
 
 Run this example with `cargo run --example 8` from the root of the cloned repository.
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex08/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex08/)
 
 ### Example 9: Layer Offsets
 
@@ -145,7 +145,7 @@ Run this example with `cargo run --example 8` from the root of the cloned reposi
 
 Run this example with `cargo run --example 9` from the root of the cloned repository.
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex09/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex09/)
 
 ### Example 10: Post Process Effects
 
@@ -155,7 +155,7 @@ Run this example with `cargo run --example 9` from the root of the cloned reposi
 
 Run this example with `cargo run --example 10` from the root of the cloned repository.
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex10/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex10/)
 
 ### Example 11: Dice Rolling
 
@@ -165,7 +165,7 @@ Run this example with `cargo run --example 10` from the root of the cloned repos
 
 Run this example with `cargo run --example 11` from the root of the cloned repository.
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex11/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex11/)
 
 ### Example 12: Simplex Noise
 
@@ -175,7 +175,7 @@ Run this example with `cargo run --example 11` from the root of the cloned repos
 
 Run this example with `cargo run --example 12` from the root of the cloned repository.
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex12/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex12/)
 
 ### Example 13: Formatting blocks
 
@@ -186,7 +186,7 @@ and then rendering them together. This is useful for large amounts of text.
 
 Run this example with `cargo run --example 13` from the root of the cloned repository.
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex13/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex13/)
 
 ### Example 14: Dwarf Fortress-Style 3D
 
@@ -196,19 +196,19 @@ Run this example with `cargo run --example 13` from the root of the cloned repos
 
 Run this example with `cargo run --example 14` from the root of the cloned repository.
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex14/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex14/)
 
 ### Example 15: Obtaining key codes
 
 [Example 15 - Keyboard](examples/ex16-keyboard.rs) provides a handy tool to grab keyboard codes and see how to use the `shift`, `control` and `alt` keys as modifiers or keyboard inputs.
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex16/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex16/)
 
 ### Example 16 (Web Assembly Only): Binding HTML Buttons
 
 [Example 16 - External HTML Buttons](examples/ex17-wasm-external.rs) demonstrates the new (as of 0.5.0) ability to add bindings to buttons on the HTML hosting the web assembly, and have them fire events in the new `web_button` context field.
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex17/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex17/)
 
 ### Example 17: Multi-Tile Sprites
 
@@ -218,7 +218,7 @@ Run this example with `cargo run --example 14` from the root of the cloned repos
 
 Run this example with `cargo run --example ex18-textsprites` from the root of the cloned repository.
 
-[Run this example in your browser - requires WebGL2](http://bfnightly.bracketproductions.com/wasmtest/ex18/)
+[Run this example in your browser - requires WebGL2](https://bfnightly.bracketproductions.com/wasmtest/ex18/)
 
 ## Building with WASM
 

@@ -1,8 +1,9 @@
-use crate::Result;
-use crate::prelude::{InitHints, BTerm, BTermPlatform};
-use glutin::{dpi::LogicalSize, event_loop::EventLoop, window::WindowBuilder, ContextBuilder};
-use crate::hal::native::{WrappedContext, PlatformGL, setup_quad, shader::Shader, shader_strings};
+use super::BACKEND;
+use crate::hal::native::{setup_quad, shader::Shader, shader_strings, WrappedContext};
 use crate::hal::Framebuffer;
+use crate::prelude::{BTerm, InitHints, BACKEND_INTERNAL};
+use crate::Result;
+use glutin::{dpi::LogicalSize, event_loop::EventLoop, window::WindowBuilder, ContextBuilder};
 
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
@@ -10,7 +11,6 @@ pub fn init_raw<S: ToString>(
     window_title: S,
     platform_hints: InitHints,
 ) -> Result<BTerm> {
-
     let el = EventLoop::new();
     let wb = WindowBuilder::new()
         .with_title(window_title.to_string())
@@ -76,24 +76,21 @@ pub fn init_raw<S: ToString>(
     // Build a simple quad rendering vao
     let quad_vao = setup_quad(&gl);
 
+    let mut be = BACKEND.lock().unwrap();
+    be.gl = Some(gl);
+    be.quad_vao = Some(quad_vao);
+    be.context_wrapper = Some(WrappedContext {
+        el,
+        wc: windowed_context,
+    });
+    be.backing_buffer = Some(backing_fbo);
+    be.frame_sleep_time = crate::hal::convert_fps_to_wait(platform_hints.frame_sleep_time);
+
+    BACKEND_INTERNAL.lock().unwrap().shaders = shaders;
+
     let bterm = BTerm {
-        backend: BTermPlatform {
-            platform: PlatformGL {
-                gl,
-                quad_vao,
-                context_wrapper: Some(WrappedContext {
-                    el,
-                    wc: windowed_context,
-                }),
-                backing_buffer: backing_fbo,
-                frame_sleep_time: crate::hal::convert_fps_to_wait(platform_hints.frame_sleep_time),
-            },
-        },
         width_pixels,
         height_pixels,
-        fonts: Vec::new(),
-        consoles: Vec::new(),
-        shaders,
         fps: 0.0,
         frame_time_ms: 0.0,
         active_console: 0,

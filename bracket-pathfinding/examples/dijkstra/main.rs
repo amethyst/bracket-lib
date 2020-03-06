@@ -1,13 +1,13 @@
 mod common;
-use common::*;
-use bracket_pathfinding::prelude::*;
 use bracket_color::prelude::*;
+use bracket_pathfinding::prelude::*;
+use common::*;
 
 fn main() {
     let map = Map::new();
 
     // Perform the search
-    let mut search_targets : Vec<usize> = Vec::new();
+    let mut search_targets: Vec<usize> = Vec::new();
     search_targets.push(map.point2d_to_index(START_POINT));
     search_targets.push(map.point2d_to_index(END_POINT));
     let flow_map = DijkstraMap::new(MAP_WIDTH, MAP_HEIGHT, &search_targets, &map, 1024.0);
@@ -23,7 +23,7 @@ fn main() {
                 '#' => RGB::named(YELLOW),
                 _ => {
                     if flow_map.map[idx] < std::f32::MAX {
-                        RGB::from_u8(0, 255-(flow_map.map[idx]) as u8, 0)
+                        RGB::from_u8(0, 255 - (flow_map.map[idx]) as u8, 0)
                     } else {
                         RGB::named(CHOCOLATE)
                     }

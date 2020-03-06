@@ -112,9 +112,18 @@ mod tests {
 
     #[test]
     fn parse_whitespace_test() {
-        assert_eq!(parse_dice_string("3d6 - 2").unwrap(), DiceType::new(3, 6, -2));
-        assert_eq!(parse_dice_string(" 3d6- 2").unwrap(), DiceType::new(3, 6, -2));
-        assert_eq!(parse_dice_string("3 d 6- 2").unwrap(), DiceType::new(3, 6, -2));
+        assert_eq!(
+            parse_dice_string("3d6 - 2").unwrap(),
+            DiceType::new(3, 6, -2)
+        );
+        assert_eq!(
+            parse_dice_string(" 3d6- 2").unwrap(),
+            DiceType::new(3, 6, -2)
+        );
+        assert_eq!(
+            parse_dice_string("3 d 6- 2").unwrap(),
+            DiceType::new(3, 6, -2)
+        );
     }
 
     #[test]

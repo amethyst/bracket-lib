@@ -1,5 +1,5 @@
 use bracket_algorithm_traits::prelude::Algorithm2D;
-use bracket_geometry::prelude::{Point, VectorLine, BresenhamCircleNoDiag};
+use bracket_geometry::prelude::{BresenhamCircleNoDiag, Point, VectorLine};
 use std::collections::HashSet;
 
 /// Calculates field-of-view for a map that supports Algorithm2D, returning a HashSet. This is a bit faster
@@ -47,9 +47,9 @@ fn scan_fov_line(
 #[cfg(test)]
 mod tests {
 
-    use bracket_geometry::prelude::{BresenhamCircle, Point};
-    use bracket_algorithm_traits::prelude::{BaseMap, Algorithm2D};
     use crate::prelude::*;
+    use bracket_algorithm_traits::prelude::{Algorithm2D, BaseMap};
+    use bracket_geometry::prelude::{BresenhamCircle, Point};
     use std::cmp::max;
     use std::collections::HashSet;
     use std::hash::Hash;

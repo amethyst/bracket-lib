@@ -1,5 +1,5 @@
-use crate::prelude::{DrawBatch, BTerm, Tile, Console, string_to_cp437, XpFile};
-use bracket_color::prelude::{RGB, ColorPair};
+use crate::prelude::{string_to_cp437, BTerm, Console, DrawBatch, Tile, XpFile};
+use bracket_color::prelude::{ColorPair, RGB};
 use bracket_geometry::prelude::Point;
 
 /// Represents a sprite consisting of multiple glyphs/colors, occupying multiple console locations.

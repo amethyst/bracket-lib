@@ -1,12 +1,14 @@
-use crate::Result;
-use crate::prelude::{GameState, BTerm};
+use super::*;
+use crate::prelude::{BEvent, BTerm, GameState, BACKEND_INTERNAL};
+use crate::{clear_input_state, Result};
 
 use amethyst::{
     core::math::{Point3, Vector3},
     core::transform::Transform,
     core::TransformBundle,
+    //core::frame_limiter::{FrameLimiter, FrameRateLimitStrategy},
     ecs::prelude::*,
-    input::{Bindings, Button, InputBundle, InputHandler, StringBindings},
+    input::{Bindings, InputBundle, InputHandler, StringBindings},
     prelude::*,
     renderer::{camera::Projection, palette::Srgba, Camera},
     renderer::{
@@ -22,7 +24,7 @@ use amethyst::{
 pub struct BTermGemBridge {
     bterm: BTerm,
     state: Box<dyn GameState>,
-    key_delay: f32,
+    input_reader: Option<amethyst::shrev::ReaderId<amethyst::input::InputEvent<StringBindings>>>,
 }
 
 impl SimpleState for BTermGemBridge {
@@ -30,8 +32,11 @@ impl SimpleState for BTermGemBridge {
         let world = data.world;
         world.register::<SimpleConsoleLink>();
         self.make_camera(world);
-        super::font::initialize_fonts(&mut self.bterm, world).unwrap();
+        super::font::initialize_fonts(world).unwrap();
         self.initialize_console_objects(world);
+
+        // Frame rate limiter - does not override vsync?
+        //world.insert(FrameLimiter::new(FrameRateLimitStrategy::Unlimited, 0));
     }
 
     fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> amethyst::SimpleTrans {
@@ -39,40 +44,63 @@ impl SimpleState for BTermGemBridge {
         let timer = data.world.fetch::<amethyst::core::Time>();
         self.bterm.frame_time_ms = timer.delta_time().as_millis() as f32;
         self.bterm.fps = 1.0 / timer.delta_seconds();
-        self.key_delay += self.bterm.frame_time_ms;
         std::mem::drop(timer);
 
         // Handle Input
-        self.bterm.left_click = false;
-        self.bterm.key = None;
-        self.bterm.shift = false;
-        self.bterm.control = false;
-        self.bterm.alt = false;
-        let inputs = data.world.fetch::<InputHandler<StringBindings>>();
-        if self.key_delay > 75.0 {
-            self.key_delay = 0.0;
-            for key in inputs.keys_that_are_down() {
-                use crate::prelude::VirtualKeyCode;
-                match key {
-                    VirtualKeyCode::LShift => self.bterm.shift = true,
-                    VirtualKeyCode::RShift => self.bterm.shift = true,
-                    VirtualKeyCode::LAlt => self.bterm.alt = true,
-                    VirtualKeyCode::RAlt => self.bterm.alt = true,
-                    VirtualKeyCode::LControl => self.bterm.control = true,
-                    VirtualKeyCode::RControl => self.bterm.control = true,
-                    _ => {
-                        self.bterm.key = Some(key);
+        clear_input_state(&mut self.bterm);
+
+        use amethyst::input::InputEvent;
+        use amethyst::shrev::EventChannel;
+        let mut channel = data
+            .world
+            .fetch_mut::<EventChannel<InputEvent<StringBindings>>>();
+        if let Some(mut reader) = self.input_reader.as_mut() {
+            for event in channel.read(&mut reader) {
+                match event {
+                    InputEvent::CursorMoved { .. } => {
+                        // We don't want delta..
+                        let inputs = data.world.fetch::<InputHandler<StringBindings>>();
+                        if let Some(pos) = inputs.mouse_position() {
+                            self.bterm.on_mouse_position(pos.0 as f64, pos.1 as f64);
+                        }
                     }
+                    InputEvent::MouseButtonPressed(button) => {
+                        self.bterm.on_mouse_button(
+                            match button {
+                                MouseButton::Left => 0,
+                                MouseButton::Right => 1,
+                                MouseButton::Middle => 2,
+                                MouseButton::Other(num) => 3 + *num as usize,
+                            },
+                            true,
+                        );
+                    }
+                    InputEvent::MouseButtonReleased(button) => {
+                        self.bterm.on_mouse_button(
+                            match button {
+                                MouseButton::Left => 0,
+                                MouseButton::Right => 1,
+                                MouseButton::Middle => 2,
+                                MouseButton::Other(num) => 3 + *num as usize,
+                            },
+                            false,
+                        );
+                    }
+                    InputEvent::KeyPressed { key_code, scancode } => {
+                        self.bterm.on_key(*key_code, *scancode, true);
+                    }
+                    InputEvent::KeyReleased { key_code, scancode } => {
+                        self.bterm.on_key(*key_code, *scancode, true);
+                    }
+                    InputEvent::KeyTyped(c) => self.bterm.on_event(BEvent::Character { c: *c }),
+                    InputEvent::ButtonPressed { .. } => {}
+                    InputEvent::ButtonReleased { .. } => {}
+                    _ => {}
                 }
             }
+        } else {
+            self.input_reader = Some(channel.register_reader());
         }
-        if let Some(pos) = inputs.mouse_position() {
-            self.bterm.mouse_pos = (pos.0 as i32, pos.1 as i32);
-        }
-        if inputs.button_is_down(Button::Mouse(MouseButton::Left)) {
-            self.bterm.left_click = true;
-        }
-        std::mem::drop(inputs);
 
         // Tick the game's state
         self.state.tick(&mut self.bterm);
@@ -83,14 +111,18 @@ impl SimpleState for BTermGemBridge {
         }
 
         {
+            let mut bi = BACKEND_INTERNAL.lock().unwrap();
             let mut map_storage = data
                 .world
                 .write_storage::<TileMap<SimpleConsoleTile, FlatEncoder>>();
             let console_storage = data.world.read_storage::<SimpleConsoleLink>();
             for (map, conlink) in (&mut map_storage, &console_storage).join() {
-                let cons = &mut self.bterm.consoles[conlink.console_index];
+                let cons = &mut bi.consoles[conlink.console_index];
                 let size = cons.console.get_char_size();
-                if let Some(concrete) = cons.console.as_any().downcast_ref::<crate::prelude::SimpleConsole>()
+                if let Some(concrete) = cons
+                    .console
+                    .as_any()
+                    .downcast_ref::<crate::prelude::SimpleConsole>()
                 {
                     amethyst::tiles::iters::Region::new(
                         Point3::new(0, 0, 1),
@@ -113,12 +145,13 @@ impl SimpleState for BTermGemBridge {
 
                     amethyst::tiles::iters::Region::new(
                         Point3::new(0, 0, 0),
-                        Point3::new(size.0, size.1, 0),
+                        Point3::new(size.0, size.1 - 1, 0),
                     )
                     .iter()
                     .for_each(|coord| {
                         if let Some(bg) = map.get_mut(&coord) {
-                            let idx = ((coord.y * size.0) + coord.x) as usize;
+                            let flipped_y = (size.1 - 1) - coord.y;
+                            let idx = ((flipped_y * size.0) + coord.x) as usize;
                             if idx < concrete.tiles.len() {
                                 let tile = &concrete.tiles[idx];
                                 bg.glyph = 219;
@@ -135,9 +168,12 @@ impl SimpleState for BTermGemBridge {
                 .world
                 .write_storage::<TileMap<SparseConsoleTile, FlatEncoder>>();
             for (map, conlink) in (&mut smap_storage, &console_storage).join() {
-                let cons = &mut self.bterm.consoles[conlink.console_index];
+                let cons = &mut bi.consoles[conlink.console_index];
                 let size = cons.console.get_char_size();
-                if let Some(concrete) = cons.console.as_any().downcast_ref::<crate::prelude::SparseConsole>()
+                if let Some(concrete) = cons
+                    .console
+                    .as_any()
+                    .downcast_ref::<crate::prelude::SparseConsole>()
                 {
                     amethyst::tiles::iters::Region::new(
                         Point3::new(0, 0, 0),
@@ -192,11 +228,16 @@ impl BTermGemBridge {
     }
 
     fn initialize_console_objects(&mut self, world: &mut World) {
-        for (i, cons) in self.bterm.consoles.iter_mut().enumerate() {
+        let bi = BACKEND_INTERNAL.lock().unwrap();
+        for (i, cons) in bi.consoles.iter().enumerate() {
             let size = cons.console.get_char_size();
-            if let Some(_concrete) = cons.console.as_any().downcast_ref::<crate::prelude::SimpleConsole>() {
-                if let Some(ss) = &self.bterm.fonts[cons.font_index].ss {
-                    let font_size = &self.bterm.fonts[cons.font_index].tile_size;
+            if let Some(_concrete) = cons
+                .console
+                .as_any()
+                .downcast_ref::<crate::prelude::SimpleConsole>()
+            {
+                if let Some(ss) = &bi.fonts[cons.font_index].ss {
+                    let font_size = &bi.fonts[cons.font_index].tile_size;
 
                     let mut transform = Transform::default();
                     transform.set_translation_xyz(
@@ -220,9 +261,13 @@ impl BTermGemBridge {
                 }
             }
 
-            if let Some(_concrete) = cons.console.as_any().downcast_ref::<crate::prelude::SparseConsole>() {
-                if let Some(ss) = &self.bterm.fonts[cons.font_index].ss {
-                    let font_size = &self.bterm.fonts[cons.font_index].tile_size;
+            if let Some(_concrete) = cons
+                .console
+                .as_any()
+                .downcast_ref::<crate::prelude::SparseConsole>()
+            {
+                if let Some(ss) = &bi.fonts[cons.font_index].ss {
+                    let font_size = &bi.fonts[cons.font_index].tile_size;
 
                     let mut transform = Transform::default();
                     transform.set_translation_xyz(
@@ -254,7 +299,7 @@ pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> Result<()> {
 
     let mut cfg = amethyst::window::DisplayConfig::default();
     cfg.dimensions = Some((bterm.width_pixels, bterm.height_pixels));
-    cfg.title = bterm.backend.platform.window_title.clone();
+    cfg.title = BACKEND.lock().unwrap().window_title.clone();
 
     let app_root = application_root_dir()?;
 
@@ -281,7 +326,7 @@ pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> Result<()> {
         BTermGemBridge {
             bterm,
             state: Box::new(gamestate),
-            key_delay: 0.0,
+            input_reader: None,
         },
         game_data,
     )

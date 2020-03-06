@@ -1,5 +1,6 @@
+use super::BACKEND;
+use crate::prelude::embedding;
 use crate::Result;
-use crate::prelude::{embedding, BTermPlatform};
 use glow::HasContext;
 use image::{ColorType, GenericImageView};
 
@@ -53,8 +54,9 @@ impl Font {
     }
 
     /// Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
-    pub fn setup_gl_texture(&mut self, platform: &BTermPlatform) -> Result<u32> {
-        let gl = &platform.platform.gl;
+    pub fn setup_gl_texture(&mut self) -> Result<u32> {
+        let be = BACKEND.lock().unwrap();
+        let gl = be.gl.as_ref().unwrap();
         let texture;
 
         unsafe {
@@ -115,8 +117,7 @@ impl Font {
     }
 
     /// Sets this font file as the active texture
-    pub fn bind_texture(&self, platform: &super::super::BTermPlatform) {
-        let gl = &platform.platform.gl;
+    pub fn bind_texture(&self, gl: &glow::Context) {
         unsafe {
             gl.bind_texture(glow::TEXTURE_2D, self.gl_id);
         }

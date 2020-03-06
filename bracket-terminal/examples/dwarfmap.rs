@@ -1,7 +1,7 @@
 bracket_terminal::add_wasm_support!();
-use bracket_terminal::prelude::*;
 use bracket_noise::prelude::*;
 use bracket_pathfinding::prelude::*;
+use bracket_terminal::prelude::*;
 
 #[derive(PartialEq, Copy, Clone)]
 enum TileType {
@@ -231,7 +231,7 @@ impl GameState for State {
 
                     if ctx.left_click {
                         self.mode = Mode::Moving;
-                        self.path = path.clone();
+                        self.path = path;
                     }
                 }
             }

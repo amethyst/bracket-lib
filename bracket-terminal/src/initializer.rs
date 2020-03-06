@@ -1,5 +1,5 @@
+use crate::prelude::{font::Font, init_raw, BTerm, InitHints, SimpleConsole, SparseConsole, INPUT};
 use crate::Result;
-use crate::prelude::{init_raw, BTerm, InitHints, SimpleConsole, SparseConsole, font::Font};
 use std::collections::HashMap;
 use std::convert::TryInto;
 
@@ -41,13 +41,31 @@ pub struct BTermBuilder {
     tile_width: u32,
     tile_height: u32,
     platform_hints: InitHints,
+    advanced_input: bool,
+}
+
+impl Default for BTermBuilder {
+    fn default() -> Self {
+        Self {
+            width: 80,
+            height: 50,
+            title: None,
+            resource_path: "resources".to_string(),
+            fonts: Vec::new(),
+            consoles: Vec::new(),
+            tile_height: 8,
+            tile_width: 8,
+            platform_hints: InitHints::new(),
+            advanced_input: false,
+        }
+    }
 }
 
 impl BTermBuilder {
     /// Provides a new, unconfigured, starting point for an BTerm session. You'll have to
     /// specify everything manually.
     pub fn new() -> Self {
-        BTermBuilder {
+        Self {
             width: 80,
             height: 50,
             title: None,
@@ -57,12 +75,13 @@ impl BTermBuilder {
             tile_height: 8,
             tile_width: 8,
             platform_hints: InitHints::new(),
+            advanced_input: false,
         }
     }
 
     /// Provides an 80x50 console in the baked-in 8x8 terminal font as your starting point.
     pub fn simple80x50() -> Self {
-        let mut cb = BTermBuilder {
+        let mut cb = Self {
             width: 80,
             height: 50,
             title: None,
@@ -72,6 +91,7 @@ impl BTermBuilder {
             tile_height: 8,
             tile_width: 8,
             platform_hints: InitHints::new(),
+            advanced_input: false,
         };
         cb.fonts.push(BuilderFont {
             path: "terminal8x8.png".to_string(),
@@ -92,7 +112,7 @@ impl BTermBuilder {
     {
         let w: u32 = width.try_into().or(Err("Must be convertible to a u32"))?;
         let h: u32 = height.try_into().or(Err("Must be convertible to a u32"))?;
-        let mut cb = BTermBuilder {
+        let mut cb = Self {
             width: w,
             height: h,
             title: None,
@@ -102,6 +122,7 @@ impl BTermBuilder {
             tile_height: 8,
             tile_width: 8,
             platform_hints: InitHints::new(),
+            advanced_input: false,
         };
         cb.fonts.push(BuilderFont {
             path: "terminal8x8.png".to_string(),
@@ -117,7 +138,7 @@ impl BTermBuilder {
 
     /// Provides an 80x50 terminal, in the VGA font as your starting point.
     pub fn vga80x50() -> Self {
-        let mut cb = BTermBuilder {
+        let mut cb = Self {
             width: 80,
             height: 50,
             title: None,
@@ -127,6 +148,7 @@ impl BTermBuilder {
             tile_height: 16,
             tile_width: 8,
             platform_hints: InitHints::new(),
+            advanced_input: false,
         };
         cb.fonts.push(BuilderFont {
             path: "vga8x16.png".to_string(),
@@ -146,8 +168,11 @@ impl BTermBuilder {
         T: TryInto<u32>,
     {
         let w: u32 = width.try_into().ok().expect("Must be convertible to a u32");
-        let h: u32 = height.try_into().ok().expect("Must be convertible to a u32");
-        let mut cb = BTermBuilder {
+        let h: u32 = height
+            .try_into()
+            .ok()
+            .expect("Must be convertible to a u32");
+        let mut cb = Self {
             width: w,
             height: h,
             title: None,
@@ -157,6 +182,7 @@ impl BTermBuilder {
             tile_height: 16,
             tile_width: 8,
             platform_hints: InitHints::new(),
+            advanced_input: false,
         };
         cb.fonts.push(BuilderFont {
             path: "vga8x16.png".to_string(),
@@ -176,7 +202,10 @@ impl BTermBuilder {
         T: TryInto<u32>,
     {
         self.width = width.try_into().ok().expect("Must be convertible to a u32");
-        self.height = height.try_into().ok().expect("Must be convertible to a u32");
+        self.height = height
+            .try_into()
+            .ok()
+            .expect("Must be convertible to a u32");
         self
     }
 
@@ -186,7 +215,10 @@ impl BTermBuilder {
         T: TryInto<u32>,
     {
         self.tile_width = width.try_into().ok().expect("Must be convertible to a u32");
-        self.tile_height = height.try_into().ok().expect("Must be convertible to a u32");
+        self.tile_height = height
+            .try_into()
+            .ok()
+            .expect("Must be convertible to a u32");
         self
     }
 
@@ -212,7 +244,10 @@ impl BTermBuilder {
             path: font_path.to_string(),
             dimensions: (
                 width.try_into().ok().expect("Must be convertible to a u32"),
-                height.try_into().ok().expect("Must be convertible to a u32"),
+                height
+                    .try_into()
+                    .ok()
+                    .expect("Must be convertible to a u32"),
             ),
         });
         self
@@ -225,7 +260,10 @@ impl BTermBuilder {
     {
         self.consoles.push(ConsoleType::SimpleConsole {
             width: width.try_into().ok().expect("Must be convertible to a u32"),
-            height: height.try_into().ok().expect("Must be convertible to a u32"),
+            height: height
+                .try_into()
+                .ok()
+                .expect("Must be convertible to a u32"),
             font: font.to_string(),
         });
         self
@@ -248,7 +286,10 @@ impl BTermBuilder {
     {
         self.consoles.push(ConsoleType::SparseConsole {
             width: width.try_into().ok().expect("Must be convertible to a u32"),
-            height: height.try_into().ok().expect("Must be convertible to a u32"),
+            height: height
+                .try_into()
+                .ok()
+                .expect("Must be convertible to a u32"),
             font: font.to_string(),
         });
         self
@@ -261,7 +302,10 @@ impl BTermBuilder {
     {
         self.consoles.push(ConsoleType::SparseConsoleNoBg {
             width: width.try_into().ok().expect("Must be convertible to a u32"),
-            height: height.try_into().ok().expect("Must be convertible to a u32"),
+            height: height
+                .try_into()
+                .ok()
+                .expect("Must be convertible to a u32"),
             font: font.to_string(),
         });
         self
@@ -291,12 +335,18 @@ impl BTermBuilder {
         self
     }
 
+    /// Enables input event queue
+    pub fn with_advanced_input(mut self, advanced_input: bool) -> Self {
+        self.advanced_input = advanced_input;
+        self
+    }
+
     /// Combine all of the builder parameters, and return an BTerm context ready to go.
     pub fn build(self) -> Result<BTerm> {
         let mut context = init_raw(
             self.width * self.tile_width,
             self.height * self.tile_height,
-            self.title.unwrap_or("BTerm Window".to_string()),
+            self.title.unwrap_or_else(|| "BTerm Window".to_string()),
             self.platform_hints,
         )?;
 
@@ -316,10 +366,7 @@ impl BTermBuilder {
                 } => {
                     let font_path = format!("{}/{}", self.resource_path, font);
                     let font_id = font_map[&font_path];
-                    context.register_console(
-                        SimpleConsole::init(*width, *height, &context.backend),
-                        font_id,
-                    );
+                    context.register_console(SimpleConsole::init(*width, *height), font_id);
                 }
                 ConsoleType::SparseConsole {
                     width,
@@ -328,10 +375,7 @@ impl BTermBuilder {
                 } => {
                     let font_path = format!("{}/{}", self.resource_path, font);
                     let font_id = font_map[&font_path];
-                    context.register_console(
-                        SparseConsole::init(*width, *height, &context.backend),
-                        font_id,
-                    );
+                    context.register_console(SparseConsole::init(*width, *height), font_id);
                 }
                 ConsoleType::SparseConsoleNoBg {
                     width,
@@ -340,12 +384,13 @@ impl BTermBuilder {
                 } => {
                     let font_path = format!("{}/{}", self.resource_path, font);
                     let font_id = font_map[&font_path];
-                    context.register_console_no_bg(
-                        SparseConsole::init(*width, *height, &context.backend),
-                        font_id,
-                    );
+                    context.register_console_no_bg(SparseConsole::init(*width, *height), font_id);
                 }
             }
+        }
+
+        if self.advanced_input {
+            INPUT.lock().unwrap().activate_event_queue();
         }
 
         Ok(context)

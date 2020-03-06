@@ -1,6 +1,6 @@
-use crate::prelude::HSV;
 #[cfg(feature = "rex")]
 use crate::prelude::XpColor;
+use crate::prelude::HSV;
 use std::ops;
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]

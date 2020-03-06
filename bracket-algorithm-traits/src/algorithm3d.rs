@@ -37,7 +37,12 @@ pub trait Algorithm3D: BaseMap {
     // the time, that's what you want.
     fn in_bounds(&self, pos: Point3) -> bool {
         let bounds = self.dimensions();
-        pos.x > 0 && pos.x < bounds.x && pos.y > 0 && pos.y < bounds.y && pos.z > 0 && pos.z < bounds.z
+        pos.x > 0
+            && pos.x < bounds.x
+            && pos.y > 0
+            && pos.y < bounds.y
+            && pos.z > 0
+            && pos.z < bounds.z
     }
 }
 
@@ -50,58 +55,58 @@ mod tests {
     // Tests that we make an RGB triplet at defaults and it is black.
     #[should_panic]
     fn test_unimplemented_dimensions() {
-        struct TestMap{};
+        struct TestMap {};
         impl BaseMap for TestMap {}
-        impl Algorithm3D for TestMap{}
+        impl Algorithm3D for TestMap {}
 
-        let map = TestMap{};
-        assert!(map.in_bounds(Point3::new(1,1,1)));
+        let map = TestMap {};
+        assert!(map.in_bounds(Point3::new(1, 1, 1)));
     }
 
     #[test]
     fn test_in_bounds() {
-        struct TestMap{};
+        struct TestMap {};
         impl BaseMap for TestMap {}
-        impl Algorithm3D for TestMap{
+        impl Algorithm3D for TestMap {
             fn dimensions(&self) -> Point3 {
                 Point3::new(2, 2, 2)
             }
         }
 
-        let map = TestMap{};
-        assert!(map.in_bounds(Point3::new(1,1,1)));
-        assert!(!map.in_bounds(Point3::new(3,3,3)));
+        let map = TestMap {};
+        assert!(map.in_bounds(Point3::new(1, 1, 1)));
+        assert!(!map.in_bounds(Point3::new(3, 3, 3)));
     }
 
     #[test]
     fn test_point3d_to_index() {
-        struct TestMap{};
+        struct TestMap {};
         impl BaseMap for TestMap {}
-        impl Algorithm3D for TestMap{
+        impl Algorithm3D for TestMap {
             fn dimensions(&self) -> Point3 {
                 Point3::new(10, 10, 10)
             }
         }
 
-        let map = TestMap{};
-        assert!(map.point3d_to_index(Point3::new(0,0,0)) == 0);
-        assert!(map.point3d_to_index(Point3::new(1,0,0)) == 1);
-        assert!(map.point3d_to_index(Point3::new(0,1,0)) == 10);
-        assert!(map.point3d_to_index(Point3::new(9,9,0)) == 99);
-        assert!(map.point3d_to_index(Point3::new(9,9,9)) == 999);
+        let map = TestMap {};
+        assert!(map.point3d_to_index(Point3::new(0, 0, 0)) == 0);
+        assert!(map.point3d_to_index(Point3::new(1, 0, 0)) == 1);
+        assert!(map.point3d_to_index(Point3::new(0, 1, 0)) == 10);
+        assert!(map.point3d_to_index(Point3::new(9, 9, 0)) == 99);
+        assert!(map.point3d_to_index(Point3::new(9, 9, 9)) == 999);
     }
 
     #[test]
     fn test_index_to_point3d() {
-        struct TestMap{};
+        struct TestMap {};
         impl BaseMap for TestMap {}
-        impl Algorithm3D for TestMap{
+        impl Algorithm3D for TestMap {
             fn dimensions(&self) -> Point3 {
                 Point3::new(10, 10, 10)
             }
         }
 
-        let map = TestMap{};
+        let map = TestMap {};
         let mut x = 0;
         let mut y = 0;
         let mut z: i32 = 0;
