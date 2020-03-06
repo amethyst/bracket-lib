@@ -18,7 +18,7 @@ pub struct SimpleConsoleBackend {
 
 impl SimpleConsoleBackend {
     pub fn new(width: usize, height: usize, gl: &glow::Context) -> SimpleConsoleBackend {
-        let vertex_capacity: usize = (11 * width as usize * height as usize) * 4;
+        let vertex_capacity: usize = (13 * width as usize * height as usize) * 4;
         let index_capacity: usize = 6 * width as usize * height as usize;
         let (vbo, vao, ebo) = SimpleConsoleBackend::init_gl_for_console(gl);
         let mut result = SimpleConsoleBackend {
@@ -52,14 +52,14 @@ impl SimpleConsoleBackend {
 
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(vbo));
 
-            let stride = 11 * mem::size_of::<f32>() as i32;
+            let stride = 13 * mem::size_of::<f32>() as i32;
             // position attribute
             gl.vertex_attrib_pointer_f32(0, 3, glow::FLOAT, false, stride, 0);
             gl.enable_vertex_attrib_array(0);
             // color attribute
             gl.vertex_attrib_pointer_f32(
                 1,
-                3,
+                4,
                 glow::FLOAT,
                 false,
                 stride,
@@ -69,11 +69,11 @@ impl SimpleConsoleBackend {
             // bgcolor attribute
             gl.vertex_attrib_pointer_f32(
                 2,
-                3,
+                4,
                 glow::FLOAT,
                 false,
                 stride,
-                (6 * mem::size_of::<f32>()) as i32,
+                (7 * mem::size_of::<f32>()) as i32,
             );
             gl.enable_vertex_attrib_array(2);
             // texture coord attribute
@@ -83,7 +83,7 @@ impl SimpleConsoleBackend {
                 glow::FLOAT,
                 false,
                 stride,
-                (9 * mem::size_of::<f32>()) as i32,
+                (11 * mem::size_of::<f32>()) as i32,
             );
             gl.enable_vertex_attrib_array(3);
 
@@ -135,12 +135,14 @@ impl SimpleConsoleBackend {
         self.vertex_buffer[self.vertex_counter + 3] = fg.r;
         self.vertex_buffer[self.vertex_counter + 4] = fg.g;
         self.vertex_buffer[self.vertex_counter + 5] = fg.b;
-        self.vertex_buffer[self.vertex_counter + 6] = bg.r;
-        self.vertex_buffer[self.vertex_counter + 7] = bg.g;
-        self.vertex_buffer[self.vertex_counter + 8] = bg.b;
-        self.vertex_buffer[self.vertex_counter + 9] = ux;
-        self.vertex_buffer[self.vertex_counter + 10] = uy;
-        self.vertex_counter += 11;
+        self.vertex_buffer[self.vertex_counter + 6] = fg.a;
+        self.vertex_buffer[self.vertex_counter + 7] = bg.r;
+        self.vertex_buffer[self.vertex_counter + 8] = bg.g;
+        self.vertex_buffer[self.vertex_counter + 9] = bg.b;
+        self.vertex_buffer[self.vertex_counter + 10] = bg.a;
+        self.vertex_buffer[self.vertex_counter + 11] = ux;
+        self.vertex_buffer[self.vertex_counter + 12] = uy;
+        self.vertex_counter += 13;
     }
 
     /// Rebuilds the OpenGL backing buffer.
@@ -267,12 +269,15 @@ impl SimpleConsoleBackend {
             gl.bind_vertex_array(Some(self.vao));
             gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
+            gl.enable(glow::BLEND);
+            gl.blend_func(glow::SRC_ALPHA, glow::ONE_MINUS_SRC_ALPHA);
             gl.draw_elements(
                 glow::TRIANGLES,
                 (width * height * 6) as i32,
                 glow::UNSIGNED_INT,
                 0,
             );
+            gl.disable(glow::BLEND);
         }
         Ok(())
     }

@@ -27,9 +27,9 @@ void main()
 pub static CONSOLE_NO_BG_FS: &str = r#"#version 330 core
 out vec4 FragColor;
 
-in vec3 ourColor;
+in vec4 ourColor;
 in vec2 TexCoord;
-in vec3 ourBackground;
+in vec4 ourBackground;
 
 // texture sampler
 uniform sampler2D texture1;
@@ -38,19 +38,19 @@ void main()
 {
     vec4 original = texture(texture1, TexCoord);
     if (original.r < 0.1f || original.g < 0.1f || original.b < 0.1f) discard;
-    vec4 fg = original * vec4(ourColor, 1.f);
+    vec4 fg = original * ourColor;
 	FragColor = fg;
 }
 "#;
 
 pub static CONSOLE_NO_BG_VS: &str = r#"#version 330 core
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aColor;
-layout (location = 2) in vec3 bColor;
+layout (location = 1) in vec4 aColor;
+layout (location = 2) in vec4 bColor;
 layout (location = 3) in vec2 aTexCoord;
 
-out vec3 ourColor;
-out vec3 ourBackground;
+out vec4 ourColor;
+out vec4 ourBackground;
 out vec2 TexCoord;
 
 void main()
@@ -64,9 +64,9 @@ void main()
 pub static CONSOLE_WITH_BG_FS: &str = r#"#version 330 core
 out vec4 FragColor;
 
-in vec3 ourColor;
+in vec4 ourColor;
 in vec2 TexCoord;
-in vec3 ourBackground;
+in vec4 ourBackground;
 
 // texture sampler
 uniform sampler2D texture1;
@@ -74,19 +74,19 @@ uniform sampler2D texture1;
 void main()
 {
     vec4 original = texture(texture1, TexCoord);
-    vec4 fg = original.r > 0.1f || original.g > 0.1f || original.b > 0.1f ? original * vec4(ourColor, 1.f) : vec4(ourBackground, 1.f);
+    vec4 fg = original.r > 0.1f || original.g > 0.1f || original.b > 0.1f ? original * ourColor : ourBackground;
 	FragColor = fg;
 }
 "#;
 
 pub static CONSOLE_WITH_BG_VS: &str = r#"#version 330 core
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aColor;
-layout (location = 2) in vec3 bColor;
+layout (location = 1) in vec4 aColor;
+layout (location = 2) in vec4 bColor;
 layout (location = 3) in vec2 aTexCoord;
 
-out vec3 ourColor;
-out vec3 ourBackground;
+out vec4 ourColor;
+out vec4 ourBackground;
 out vec2 TexCoord;
 
 void main()

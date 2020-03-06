@@ -39,14 +39,14 @@ impl SparseConsoleBackend {
 
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(vbo));
 
-            let stride = 11 * mem::size_of::<f32>() as i32;
+            let stride = 13 * mem::size_of::<f32>() as i32;
             // position attribute
             gl.vertex_attrib_pointer_f32(0, 3, glow::FLOAT, false, stride, 0);
             gl.enable_vertex_attrib_array(0);
             // color attribute
             gl.vertex_attrib_pointer_f32(
                 1,
-                3,
+                4,
                 glow::FLOAT,
                 false,
                 stride,
@@ -56,11 +56,11 @@ impl SparseConsoleBackend {
             // bgcolor attribute
             gl.vertex_attrib_pointer_f32(
                 2,
-                3,
+                4,
                 glow::FLOAT,
                 false,
                 stride,
-                (6 * mem::size_of::<f32>()) as i32,
+                (7 * mem::size_of::<f32>()) as i32,
             );
             gl.enable_vertex_attrib_array(2);
             // texture coord attribute
@@ -70,7 +70,7 @@ impl SparseConsoleBackend {
                 glow::FLOAT,
                 false,
                 stride,
-                (9 * mem::size_of::<f32>()) as i32,
+                (11 * mem::size_of::<f32>()) as i32,
             );
             gl.enable_vertex_attrib_array(3);
         };
@@ -88,7 +88,7 @@ impl SparseConsoleBackend {
         ux: f32,
         uy: f32,
     ) {
-        vertex_buffer.extend_from_slice(&[x, y, 0.0, fg.r, fg.g, fg.b, bg.r, bg.g, bg.b, ux, uy]);
+        vertex_buffer.extend_from_slice(&[x, y, 0.0, fg.r, fg.g, fg.b, fg.a, bg.r, bg.g, bg.b, bg.a, ux, uy]);
     }
 
     /// Helper to build vertices for the sparse grid.
@@ -216,12 +216,15 @@ impl SparseConsoleBackend {
             gl.bind_vertex_array(Some(self.vao));
             gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
+            gl.enable(glow::BLEND);
+            gl.blend_func(glow::SRC_ALPHA, glow::ONE_MINUS_SRC_ALPHA);
             gl.draw_elements(
                 glow::TRIANGLES,
                 (tiles.len() * 6) as i32,
                 glow::UNSIGNED_INT,
                 0,
             );
+            gl.disable(glow::BLEND);
         }
         Ok(())
     }
