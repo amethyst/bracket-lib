@@ -33,9 +33,6 @@ macro_rules! w3c_color_helper {
         $(
             plock.insert($n.to_string(), RGBA::named($name));
         )*
-
-        println!("All registered colors:");
-        plock.iter().for_each(|(k,v)| println!("{}", k));
     };
 }
 
