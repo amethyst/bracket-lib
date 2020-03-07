@@ -1,4 +1,4 @@
-use super::rgb::{HtmlColorConversionError, RGB};
+use crate::prelude::{HtmlColorConversionError, RGB, HSV};
 #[cfg(feature = "rex")]
 use crate::prelude::XpColor;
 use std::convert::From;
@@ -297,9 +297,32 @@ impl RGBA {
     }
 }
 
+
+/// Support conversion from RGB
 impl From<RGB> for RGBA {
     fn from(item: RGB) -> Self {
         Self::from_f32(item.r, item.g, item.b, 1.0)
+    }
+}
+
+/// Support conversion from HSV
+impl From<HSV> for RGBA {
+    fn from(item:HSV) -> Self {
+        item.to_rgba(1.0)
+    }
+}
+
+/// Support conversion from a color tuple
+impl From<(u8, u8, u8, u8)> for RGBA {
+    fn from(vals: (u8, u8, u8, u8)) -> Self {
+        Self::from_u8(vals.0, vals.1, vals.2, vals.3)
+    }
+}
+
+/// Support conversion from a color tuple
+impl From<(u8, u8, u8)> for RGBA {
+    fn from(vals: (u8, u8, u8)) -> Self {
+        Self::from_u8(vals.0, vals.1, vals.2, 255)
     }
 }
 

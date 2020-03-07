@@ -1,4 +1,5 @@
 use crate::prelude::{RGB, RGBA};
+use std::convert::From;
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(PartialEq, Copy, Clone, Default, Debug)]
@@ -9,9 +10,17 @@ pub struct HSV {
     pub v: f32,
 }
 
+/// Support conversion from RGB
 impl From<RGB> for HSV {
     fn from(rgb: RGB) -> Self {
         rgb.to_hsv()
+    }
+}
+
+/// Support conversion from RGBA
+impl From<RGBA> for HSV {
+    fn from(rgba: RGBA) -> Self {
+        rgba.to_rgb().to_hsv()
     }
 }
 

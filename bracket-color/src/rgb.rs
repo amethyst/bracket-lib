@@ -95,15 +95,24 @@ impl ops::Mul<RGB> for RGB {
     }
 }
 
+/// Support conversion from a color tuple
 impl From<(u8, u8, u8)> for RGB {
     fn from(vals: (u8, u8, u8)) -> Self {
         Self::named(vals)
     }
 }
 
+/// Support conversion from HSV
 impl From<HSV> for RGB {
     fn from(hsv: HSV) -> Self {
         hsv.to_rgb()
+    }
+}
+
+/// Support conversion from RGBA
+impl From<RGBA> for RGB {
+    fn from(item: RGBA) -> Self {
+        Self::from_f32(item.r, item.g, item.b)
     }
 }
 
@@ -464,8 +473,3 @@ mod tests {
     }
 }
 
-impl From<RGBA> for RGB {
-    fn from(item: RGBA) -> Self {
-        Self::from_f32(item.r, item.g, item.b)
-    }
-}
