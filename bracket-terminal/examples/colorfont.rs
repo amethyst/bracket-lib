@@ -21,14 +21,14 @@ impl GameState for State {
 bracket_terminal::embedded_resource!(TILE_FONT, "../resources/vga8x16-color-alpha.png");
 
 fn main() -> BError {
-    bracket_terminal::link_resource!(TILE_FONT, "../resources/vga8x16-color-alpha.png");
+    bracket_terminal::link_resource!(TILE_FONT, "resources/vga8x16-color-alpha.png");
 
     let context = BTermBuilder::new()
         .with_dimensions(80, 25)
         .with_tile_dimensions(8, 16)
         .with_title("Colorful Font with Alpha")
-        .with_font("../resources/vga8x16-color-alpha.png", 8, 16)
-        .with_simple_console(80, 25, "../resources/vga8x16-color-alpha.png")
+        .with_font("vga8x16-color-alpha.png", 8, 16)
+        .with_simple_console(80, 25, "vga8x16-color-alpha.png")
         .build()?;
 
     let gs: State = State {
