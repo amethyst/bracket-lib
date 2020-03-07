@@ -386,3 +386,71 @@ mod crossterm_features {
         }
     }
 }
+
+// Unit tests for the color system
+
+#[cfg(test)]
+mod tests {
+    use crate::prelude::*;
+
+    #[test]
+    // Tests that we make an RGB triplet at defaults and it is black.
+    fn make_rgba_minimal() {
+        let black = RGBA::new();
+        assert!(black.r < std::f32::EPSILON);
+        assert!(black.g < std::f32::EPSILON);
+        assert!(black.b < std::f32::EPSILON);
+        assert!(black.a < std::f32::EPSILON);
+    }
+
+    #[test]
+    // Tests that we make an HSV triplet at defaults and it is black.
+    fn convert_olive_to_rgb() {
+        let grey = HSV::from_f32(60.0 / 360.0, 1.0, 0.501_960_8);
+        let rgb = grey.to_rgba(1.0);
+        assert!(f32::abs(rgb.r - 128.0 / 255.0) < std::f32::EPSILON);
+        assert!(f32::abs(rgb.g - 128.0 / 255.0) < std::f32::EPSILON);
+        assert!(rgb.b < std::f32::EPSILON);
+        assert!((rgb.a - 1.0).abs() < std::f32::EPSILON);
+    }
+
+    #[test]
+    // Tests that we make an HSV triplet at defaults and it is black.
+    fn test_red_hex() {
+        let rgb = RGBA::from_hex("#FF0000FF").expect("Invalid hex string");
+        assert!(f32::abs(rgb.r - 1.0) < std::f32::EPSILON);
+        assert!(rgb.g < std::f32::EPSILON);
+        assert!(rgb.b < std::f32::EPSILON);
+        assert!((rgb.a - 1.0).abs() < std::f32::EPSILON);
+    }
+
+    #[test]
+    // Tests that we make an HSV triplet at defaults and it is black.
+    fn test_green_hex() {
+        let rgb = RGBA::from_hex("#00FF00FF").expect("Invalid hex string");
+        assert!(rgb.r < std::f32::EPSILON);
+        assert!(f32::abs(rgb.g - 1.0) < std::f32::EPSILON);
+        assert!(rgb.b < std::f32::EPSILON);
+        assert!((rgb.a - 1.0).abs() < std::f32::EPSILON);
+    }
+
+    #[test]
+    // Tests that we make an HSV triplet at defaults and it is black.
+    fn test_blue_hex() {
+        let rgb = RGBA::from_hex("#0000FFFF").expect("Invalid hex string");
+        assert!(rgb.r < std::f32::EPSILON);
+        assert!(rgb.g < std::f32::EPSILON);
+        assert!(f32::abs(rgb.b - 1.0) < std::f32::EPSILON);
+        assert!((rgb.a - 1.0).abs() < std::f32::EPSILON);
+    }
+
+    #[test]
+    // Tests that we make an HSV triplet at defaults and it is black.
+    fn test_blue_named() {
+        let rgb = RGBA::named(BLUE);
+        assert!(rgb.r < std::f32::EPSILON);
+        assert!(rgb.g < std::f32::EPSILON);
+        assert!(f32::abs(rgb.b - 1.0) < std::f32::EPSILON);
+        assert!((rgb.a - 1.0).abs() < std::f32::EPSILON);
+    }
+}

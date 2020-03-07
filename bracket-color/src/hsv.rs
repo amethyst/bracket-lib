@@ -1,4 +1,4 @@
-use crate::prelude::RGB;
+use crate::prelude::{RGB, RGBA};
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(PartialEq, Copy, Clone, Default, Debug)]
@@ -31,6 +31,13 @@ impl HSV {
     #[must_use]
     pub const fn from_f32(h: f32, s: f32, v: f32) -> Self {
         Self { h, s, v }
+    }
+
+    /// Converts to an RGBA value with a specified alpha level
+    #[inline]
+    #[must_use]
+    pub fn to_rgba(&self, alpha: f32) -> RGBA {
+        self.to_rgb().to_rgba(alpha)
     }
 
     /// Converts an HSV triple to an RGB triple
