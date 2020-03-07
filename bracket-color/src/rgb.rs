@@ -332,9 +332,9 @@ impl RGB {
 
 #[cfg(feature = "crossterm")]
 mod crossterm_features {
+    use super::RGB;
     use crossterm::style::Color;
     use std::convert::TryFrom;
-    use super::RGB;
 
     impl TryFrom<RGB> for Color {
         type Error = &'static str;
@@ -349,16 +349,8 @@ mod crossterm_features {
                     return Err("Value > 1.0 found!");
                 }
             }
-            let (r, g, b) = (
-                (r * 255.0) as u8,
-                (g * 255.0) as u8,
-                (b * 255.0) as u8,
-            );
-            let rgb = Color::Rgb {
-                r,
-                g,
-                b,
-            };
+            let (r, g, b) = ((r * 255.0) as u8, (g * 255.0) as u8, (b * 255.0) as u8);
+            let rgb = Color::Rgb { r, g, b };
             Ok(rgb)
         }
     }
@@ -378,7 +370,7 @@ mod crossterm_features {
             };
             let rgb: Color = rgb.try_into().unwrap();
             match rgb {
-                Color::Rgb {r, g, b} => {
+                Color::Rgb { r, g, b } => {
                     assert_eq!(r, 0);
                     assert_eq!(g, 127);
                     assert_eq!(b, 255);
@@ -481,4 +473,3 @@ mod tests {
         assert!(black.lerp(white, 1.0) == white);
     }
 }
-

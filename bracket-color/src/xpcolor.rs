@@ -1,5 +1,5 @@
-use byteorder::{ReadBytesExt, WriteBytesExt};
 use crate::prelude::RGB;
+use byteorder::{ReadBytesExt, WriteBytesExt};
 use std::io;
 
 /// Structure representing the components of one color
