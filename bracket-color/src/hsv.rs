@@ -171,4 +171,13 @@ mod tests {
         assert!(f32::abs(hsv.s - 1.0) < std::f32::EPSILON);
         assert!(f32::abs(hsv.v - 0.5019_608) < std::f32::EPSILON);
     }
+
+    #[test]
+    // Test the lerp function
+    fn test_lerp() {
+        let black = RGB::named(BLACK).to_hsv();
+        let white = RGB::named(WHITE).to_hsv();
+        assert!(black.lerp(white, 0.0) == black);
+        assert!(black.lerp(white, 1.0) == white);
+    }
 }

@@ -476,4 +476,28 @@ mod tests {
         assert!(f32::abs(rgb.b - 1.0) < std::f32::EPSILON);
         assert!((rgb.a - 1.0).abs() < std::f32::EPSILON);
     }
+
+    #[test]
+    // Test the lerp function
+    fn test_lerp() {
+        let black = RGBA::named(BLACK);
+        let white = RGBA::named(WHITE);
+        assert!(black.lerp(white, 0.0) == black);
+        assert!(black.lerp(white, 1.0) == white);
+    }
+
+    #[test]
+    // Test the lerp function
+    fn test_lerp_alpha() {
+        let black = RGB::named(BLACK).to_rgba(0.0);
+        let white = RGB::named(WHITE).to_rgba(1.0);
+
+        let l0 = black.lerp_alpha(white, 0.0);
+        let l1 = black.lerp_alpha(white, 1.0);
+        assert!(l0.a < std::f32::EPSILON);
+        assert!((l1.a - 1.0).abs() < std::f32::EPSILON);
+
+        assert!(l0.to_rgb() == RGB::named(BLACK));
+        assert!(l1.to_rgb() == RGB::named(BLACK));
+    }
 }

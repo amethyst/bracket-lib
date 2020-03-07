@@ -471,5 +471,14 @@ mod tests {
         assert!(rgb.g < std::f32::EPSILON);
         assert!(f32::abs(rgb.b - 1.0) < std::f32::EPSILON);
     }
+
+    #[test]
+    // Test the lerp function
+    fn test_lerp() {
+        let black = RGB::named(BLACK);
+        let white = RGB::named(WHITE);
+        assert!(black.lerp(white, 0.0) == black);
+        assert!(black.lerp(white, 1.0) == white);
+    }
 }
 
