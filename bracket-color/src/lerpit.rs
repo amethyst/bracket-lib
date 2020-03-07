@@ -1,4 +1,4 @@
-use crate::prelude::{HSV, RGB};
+use crate::prelude::{HSV, RGB, RGBA};
 use core::iter::{ExactSizeIterator, Iterator};
 use std::convert::TryInto;
 
@@ -111,5 +111,54 @@ impl ExactSizeIterator for HsvLerp {
     #[must_use]
     fn len(&self) -> usize {
         self.n_steps
+    }
+}
+
+/// Implements an RGBA Lerp as an iterator
+pub struct RgbaLerp {
+    /// Starting color
+    start: RGBA,
+    /// Ending color
+    end: RGBA,
+    /// Number of lerp steps
+    n_steps: usize,
+    /// Current step (modified by the iterator)
+    step: usize,
+}
+
+impl RgbaLerp {
+    /// Creates a new RGB iterator
+    #[inline]
+    pub fn new<T>(start: RGBA, end: RGBA, steps: T) -> Self
+    where
+        T: TryInto<usize>,
+    {
+        Self {
+            start,
+            end,
+            n_steps: steps
+                .try_into()
+                .ok()
+                .expect("Not a usize-convertible integer"),
+            step: 0,
+        }
+    }
+}
+
+impl Iterator for RgbaLerp {
+    type Item = RGBA;
+
+    /// Returns the next step in the iterator
+    #[inline]
+    #[allow(clippy::cast_precision_loss)]
+    fn next(&mut self) -> Option<RGBA> {
+        if self.step > self.n_steps {
+            None
+        } else {
+            let percent = self.step as f32 / self.n_steps as f32;
+            self.step += 1;
+
+            Some(self.start.lerp(self.end, percent))
+        }
     }
 }
