@@ -129,6 +129,9 @@ pub enum DrawCommand {
     SetClipping {
         clip: Option<Rect>,
     },
+    SetFgAlpha { alpha: f32 },
+    SetBgAlpha { alpha: f32 },
+    SetAllAlpha { fg: f32, bg: f32 }
 }
 
 /// Represents a batch of drawing commands, designed to be submitted together.
@@ -403,8 +406,27 @@ impl DrawBatch {
         self
     }
 
+    /// Sets a clipping rectangle for the current console
     pub fn set_clipping(&mut self, clip: Option<Rect>) -> &mut Self {
         self.batch.push((0, DrawCommand::SetClipping { clip }));
+        self
+    }
+
+    /// Apply an alpha channel value to all cells' foregrounds in the current terminal.
+    pub fn set_all_fg_alpha(&mut self, alpha: f32) -> &mut Self {
+        self.batch.push((0, DrawCommand::SetFgAlpha{ alpha }));
+        self
+    }
+
+    /// Apply an alpha channel value to all cells' backgrounds in the current terminal.
+    pub fn set_all_bg_alpha(&mut self, alpha: f32) -> &mut Self {
+        self.batch.push((0, DrawCommand::SetBgAlpha{ alpha }));
+        self
+    }
+
+    /// Apply fg/bg alpha channel values to all cells in the current terminal.
+    pub fn set_all_alpha(&mut self, fg: f32, bg: f32) -> &mut Self {
+        self.batch.push((0, DrawCommand::SetAllAlpha{ fg, bg }));
         self
     }
 }
@@ -493,6 +515,9 @@ pub fn render_draw_buffer(bterm: &mut BTerm) -> Result<()> {
             color,
         } => bterm.draw_bar_vertical(pos.x, pos.y, *height, *n, *max, color.fg, color.bg),
         DrawCommand::SetClipping { clip } => bterm.set_clipping(*clip),
+        DrawCommand::SetFgAlpha { alpha } => bterm.set_all_fg_alpha(*alpha),
+        DrawCommand::SetBgAlpha { alpha } => bterm.set_all_fg_alpha(*alpha),
+        DrawCommand::SetAllAlpha { fg, bg } => bterm.set_all_alpha(*fg, *bg),
     });
     buffer.clear();
     Ok(())
