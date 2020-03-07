@@ -272,6 +272,13 @@ impl RGB {
         HSV::from_f32(h, s, v)
     }
 
+    /// Converts an RGB to an RGBA
+    #[inline]
+    #[must_use]
+    pub fn to_rgba(&self, alpha: f32) -> RGBA {
+        RGBA::from_f32(self.r, self.g, self.b, alpha)
+    }
+
     /// Applies a quick grayscale conversion to the color
     #[inline]
     #[must_use]

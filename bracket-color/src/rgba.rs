@@ -228,12 +228,28 @@ impl RGBA {
         })
     }
 
+    /// Converts to an RGB, dropping the alpha component
+    #[inline]
+    #[must_use]
+    pub fn to_rgb(&self) -> RGB {
+        RGB::from_f32(self.r, self.g, self.b)
+    }
+
     /// Applies a quick grayscale conversion to the color
     #[inline]
     #[must_use]
     pub fn to_greyscale(&self) -> Self {
         let linear = (self.r * 0.2126) + (self.g * 0.7152) + (self.b * 0.0722);
         Self::from_f32(linear, linear, linear, self.a)
+    }
+
+    /// Applies a lengthier desaturate (via HSV) to the color
+    #[inline]
+    #[must_use]
+    pub fn desaturate(&self) -> Self {
+        let mut hsv = self.to_rgb().to_hsv();
+        hsv.s = 0.0;
+        hsv.to_rgb().to_rgba(self.a)
     }
 
     /// Lerps by a specified percentage (from 0 to 1) between this color and another
@@ -251,6 +267,19 @@ impl RGBA {
             g: self.g + range.1 * percent,
             b: self.b + range.2 * percent,
             a: self.a + range.3 * percent,
+        }
+    }
+
+    /// Lerps only the alpha channel, by a specified percentage (from 0 to 1) between this color and another
+    #[inline]
+    #[must_use]
+    pub fn lerp_alpha(&self, color: Self, percent: f32) -> Self {
+        let range = color.a - self.a;
+        Self {
+            r: self.r,
+            g: self.g,
+            b: self.b,
+            a: self.a + range * percent,
         }
     }
 
