@@ -9,6 +9,12 @@ pub struct HSV {
     pub v: f32,
 }
 
+impl From<RGB> for HSV {
+    fn from(rgb: RGB) -> Self {
+        rgb.to_hsv()
+    }
+}
+
 impl HSV {
     /// Constructs a new, zeroed (black) HSV triplet.
     #[must_use]

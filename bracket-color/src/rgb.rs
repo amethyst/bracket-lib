@@ -95,6 +95,18 @@ impl ops::Mul<RGB> for RGB {
     }
 }
 
+impl From<(u8, u8, u8)> for RGB {
+    fn from(vals: (u8, u8, u8)) -> Self {
+        Self::named(vals)
+    }
+}
+
+impl From<HSV> for RGB {
+    fn from(hsv: HSV) -> Self {
+        hsv.to_rgb()
+    }
+}
+
 impl RGB {
     /// Constructs a new, zeroed (black) RGB triplet.
     #[must_use]
@@ -305,6 +317,87 @@ impl RGB {
             r: self.r + range.0 * percent,
             g: self.g + range.1 * percent,
             b: self.b + range.2 * percent,
+        }
+    }
+}
+
+#[cfg(feature = "crossterm")]
+mod crossterm_features {
+    use crossterm::style::Color;
+    use std::convert::TryFrom;
+    use super::RGB;
+
+    impl TryFrom<RGB> for Color {
+        type Error = &'static str;
+
+        fn try_from(rgb: RGB) -> Result<Self, Self::Error> {
+            let (r, g, b) = (rgb.r, rgb.g, rgb.b);
+            for c in [r, g, b].iter() {
+                if *c < 0.0 {
+                    return Err("Value < 0.0 found!");
+                }
+                if *c > 1.0 {
+                    return Err("Value > 1.0 found!");
+                }
+            }
+            let (r, g, b) = (
+                (r * 255.0) as u8,
+                (g * 255.0) as u8,
+                (b * 255.0) as u8,
+            );
+            let rgb = Color::Rgb {
+                r,
+                g,
+                b,
+            };
+            Ok(rgb)
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use crate::prelude::RGB;
+        use crossterm::style::Color;
+        use std::convert::TryInto;
+
+        #[test]
+        fn basic_conversion() {
+            let rgb = RGB {
+                r: 0.0,
+                g: 0.5,
+                b: 1.0,
+            };
+            let rgb: Color = rgb.try_into().unwrap();
+            match rgb {
+                Color::Rgb {r, g, b} => {
+                    assert_eq!(r, 0);
+                    assert_eq!(g, 127);
+                    assert_eq!(b, 255);
+                }
+                _ => unreachable!(),
+            }
+        }
+
+        #[test]
+        fn negative_rgb() {
+            let rgb = RGB {
+                r: 0.0,
+                g: 0.5,
+                b: -1.0,
+            };
+            let rgb: Result<Color, _> = rgb.try_into();
+            assert!(rgb.is_err());
+        }
+
+        #[test]
+        fn too_large_rgb() {
+            let rgb = RGB {
+                r: 0.0,
+                g: 0.5,
+                b: 1.1,
+            };
+            let rgb: Result<Color, _> = rgb.try_into();
+            assert!(rgb.is_err());
         }
     }
 }
