@@ -2,7 +2,7 @@
 // designed to be used safely from within ECS systems in a potentially
 // multi-threaded environment.
 
-use crate::prelude::{BTerm, TextAlign};
+use crate::prelude::{BTerm, TextAlign, FontCharType};
 use crate::Result;
 use bracket_color::prelude::{ColorPair, RGBA};
 use bracket_geometry::prelude::{Point, Rect};
@@ -43,7 +43,7 @@ pub enum DrawCommand {
     Set {
         pos: Point,
         color: ColorPair,
-        glyph: u8,
+        glyph: FontCharType,
     },
     SetBackground {
         pos: Point,
@@ -110,7 +110,7 @@ pub enum DrawCommand {
     FillRegion {
         pos: Rect,
         color: ColorPair,
-        glyph: u8,
+        glyph: FontCharType,
     },
     BarHorizontal {
         pos: Point,
@@ -181,7 +181,7 @@ impl DrawBatch {
     }
 
     /// Sets an individual cell glyph
-    pub fn set(&mut self, pos: Point, color: ColorPair, glyph: u8) -> &mut Self {
+    pub fn set(&mut self, pos: Point, color: ColorPair, glyph: FontCharType) -> &mut Self {
         self.batch.push((0, DrawCommand::Set { pos, color, glyph }));
         self
     }
@@ -356,7 +356,7 @@ impl DrawBatch {
     }
 
     /// Draws a non-filled (hollow) double-lined box, starting at x/y with the extents width/height using CP437 line characters
-    pub fn fill_region(&mut self, pos: Rect, color: ColorPair, glyph: u8) -> &mut Self {
+    pub fn fill_region(&mut self, pos: Rect, color: ColorPair, glyph: FontCharType) -> &mut Self {
         self.batch
             .push((0, DrawCommand::FillRegion { pos, color, glyph }));
         self
@@ -498,7 +498,7 @@ pub fn render_draw_buffer(bterm: &mut BTerm) -> Result<()> {
             color.bg,
         ),
         DrawCommand::FillRegion { pos, color, glyph } => {
-            bterm.fill_region(*pos, *glyph, color.fg, color.bg)
+            bterm.fill_region::<RGBA, RGBA, FontCharType>(*pos, *glyph, color.fg, color.bg)
         }
         DrawCommand::BarHorizontal {
             pos,

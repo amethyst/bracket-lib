@@ -1,4 +1,4 @@
-use crate::prelude::XpLayer;
+use crate::prelude::{XpLayer, FontCharType};
 use bracket_color::prelude::RGBA;
 use bracket_geometry::prelude::{Point, Rect};
 use std::any::Any;
@@ -6,7 +6,7 @@ use std::any::Any;
 /// The internal storage type for tiles in a simple console.
 #[derive(PartialEq, Copy, Clone, Debug)]
 pub struct Tile {
-    pub glyph: u8,
+    pub glyph: FontCharType,
     pub fg: RGBA,
     pub bg: RGBA,
 }
@@ -48,7 +48,7 @@ pub trait Console {
     fn printer(&mut self, x: i32, y: i32, output: &str, align: TextAlign, background: Option<RGBA>);
 
     /// Sets a single cell to a color/glyph combination.
-    fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: u8);
+    fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: FontCharType);
 
     /// Sets a single cell's background color.
     fn set_bg(&mut self, x: i32, y: i32, bg: RGBA);
@@ -76,7 +76,7 @@ pub trait Console {
     );
 
     /// Fills a rectangle-defined region with a given glyph
-    fn fill_region(&mut self, target: Rect, glyph: u8, fg: RGBA, bg: RGBA);
+    fn fill_region(&mut self, target: Rect, glyph: FontCharType, fg: RGBA, bg: RGBA);
 
     /// Draws a horizontal progress bar.
     #[allow(clippy::too_many_arguments)]

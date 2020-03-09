@@ -1,4 +1,4 @@
-use crate::prelude::{string_to_cp437, to_cp437, ColoredTextSpans, Console, TextAlign, XpLayer};
+use crate::prelude::{string_to_cp437, to_cp437, ColoredTextSpans, Console, TextAlign, XpLayer, FontCharType};
 use bracket_color::prelude::{XpColor, RGBA};
 use bracket_geometry::prelude::Rect;
 use std::any::Any;
@@ -6,7 +6,7 @@ use std::any::Any;
 /// Internal storage structure for sparse tiles.
 pub struct SparseTile {
     pub idx: usize,
-    pub glyph: u8,
+    pub glyph: FontCharType,
     pub fg: RGBA,
     pub bg: RGBA,
 }
@@ -121,7 +121,7 @@ impl Console for SparseConsole {
     }
 
     /// Sets a single cell in the console
-    fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: u8) {
+    fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: FontCharType) {
         self.is_dirty = true;
         if let Some(idx) = self.try_at(x, y) {
             self.tiles.push(SparseTile { idx, glyph, fg, bg });
@@ -180,7 +180,7 @@ impl Console for SparseConsole {
     }
 
     /// Fills a rectangle with the specified rendering information
-    fn fill_region(&mut self, target: Rect, glyph: u8, fg: RGBA, bg: RGBA) {
+    fn fill_region(&mut self, target: Rect, glyph: FontCharType, fg: RGBA, bg: RGBA) {
         target.for_each(|point| {
             self.set(point.x, point.y, fg, bg, glyph);
         });

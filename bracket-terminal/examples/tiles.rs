@@ -124,7 +124,7 @@ impl GameState for State {
         for (i, tile) in self.map.iter().enumerate() {
             // Render a tile depending upon the tile type; now we check visibility as well!
             let mut fg = RGB::from_f32(1.0, 1.0, 1.0);
-            let glyph: u8;
+            let glyph;
 
             match tile {
                 TileType::Floor => {

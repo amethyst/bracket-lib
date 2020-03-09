@@ -133,7 +133,7 @@ impl GameState for State {
             for x in 0..WIDTH {
                 let mut idx = xyz_idx(x, y, ppos.2);
 
-                let mut glyph: u8 = to_cp437('░');
+                let mut glyph = to_cp437('░');
                 let mut fg = RGB::from_f32(0.0, 0.5, 0.5);
 
                 match self.map[idx] {

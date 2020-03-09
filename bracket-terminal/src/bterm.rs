@@ -1,7 +1,7 @@
 use crate::{
     prelude::{
         font::Font, init_raw, BEvent, Console, GameState, InitHints, Shader, SimpleConsole,
-        TextAlign, VirtualKeyCode, XpFile, XpLayer, INPUT,
+        TextAlign, VirtualKeyCode, XpFile, XpLayer, INPUT, FontCharType
     },
     Result,
 };
@@ -393,14 +393,15 @@ impl BTerm {
     }
 
     /// Set a single tile located at x/y to the specified foreground/background colors, and glyph.
-    pub fn set<COLOR, COLOR2>(&mut self, x: i32, y: i32, fg: COLOR, bg: COLOR2, glyph: u8)
+    pub fn set<COLOR, COLOR2, GLYPH>(&mut self, x: i32, y: i32, fg: COLOR, bg: COLOR2, glyph: GLYPH)
     where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
+        GLYPH: TryInto<FontCharType>
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .set(x, y, fg.into(), bg.into(), glyph);
+            .set(x, y, fg.into(), bg.into(), glyph.try_into().ok().unwrap());
     }
 
     /// Sets the background color only of a specified tile.
@@ -526,14 +527,15 @@ impl BTerm {
     }
 
     /// Fills a target region with the specified color/glyph combo.
-    pub fn fill_region<COLOR, COLOR2>(&mut self, target: Rect, glyph: u8, fg: COLOR, bg: COLOR2)
+    pub fn fill_region<COLOR, COLOR2, GLYPH>(&mut self, target: Rect, glyph: FontCharType, fg: COLOR, bg: COLOR2)
     where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
+        GLYPH: TryInto<FontCharType>
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
-            .fill_region(target, glyph, fg.into(), bg.into());
+            .fill_region(target, glyph.try_into().ok().unwrap(), fg.into(), bg.into());
     }
 
     /// Prints centered text, centered across the whole line

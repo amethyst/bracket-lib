@@ -1,4 +1,4 @@
-use crate::prelude::{string_to_cp437, BTerm, DrawBatch, Tile, XpFile};
+use crate::prelude::{string_to_cp437, BTerm, DrawBatch, Tile, XpFile, FontCharType};
 use bracket_color::prelude::{ColorPair, RGB, RGBA};
 use bracket_geometry::prelude::Point;
 
@@ -84,7 +84,7 @@ impl MultiTileSprite {
                     let cell = layer.get(x, y).unwrap();
                     if !cell.bg.is_transparent() {
                         let idx = (y * (dimensions.x as usize)) + (x as usize);
-                        tiles[idx].glyph = cell.ch as u8;
+                        tiles[idx].glyph = cell.ch as FontCharType;
                         tiles[idx].fg = RGB::from_xp(cell.fg).into();
                         tiles[idx].bg = RGB::from_xp(cell.bg).into();
                     }

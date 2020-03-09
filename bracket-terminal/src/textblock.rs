@@ -1,7 +1,7 @@
 use super::command_buffer::DrawBatch;
 use super::prelude::ColorPair;
 use super::prelude::Point;
-use crate::prelude::{string_to_cp437, Console, Tile};
+use crate::prelude::{string_to_cp437, Console, Tile, FontCharType};
 use bracket_color::prelude::{RGB, RGBA};
 
 pub struct TextBlock {
@@ -158,8 +158,8 @@ impl TextBlock {
 }
 
 pub enum CommandType {
-    Text { block: Vec<u8> },
-    Centered { block: Vec<u8> },
+    Text { block: Vec<FontCharType> },
+    Centered { block: Vec<FontCharType> },
     NewLine {},
     Foreground { col: RGBA },
     Background { col: RGBA },

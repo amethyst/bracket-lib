@@ -1,5 +1,7 @@
+use crate::FontCharType;
+
 /// Converts a unicode character to a CP437 equivalent, returning 0 if it didn't have a match
-pub fn to_cp437(c: char) -> u8 {
+pub fn to_cp437(c: char) -> FontCharType {
     match c {
         '☺' => 1,
         '☻' => 2,
@@ -552,18 +554,19 @@ pub fn to_char(c: u8) -> char {
 }
 
 /// Converts a string into a vector of u8, CP437 representations of the string
-pub fn string_to_cp437<S: AsRef<str>>(input: S) -> Vec<u8> {
+pub fn string_to_cp437<S: AsRef<str>>(input: S) -> Vec<FontCharType> {
     input.as_ref().chars().map(to_cp437).collect()
 }
 
 #[cfg(test)]
 mod tests {
     use super::string_to_cp437;
+    use crate::FontCharType;
 
     #[test]
     // Tests that we make an RGB triplet at defaults and it is black.
     fn test_hello() {
-        let test: Vec<u8> = vec![72, 101, 108, 108, 111];
+        let test: Vec<FontCharType> = vec![72, 101, 108, 108, 111];
         let convert = string_to_cp437("Hello");
         assert_eq!(test, convert);
     }
@@ -571,7 +574,7 @@ mod tests {
     #[test]
     // Tests that we make an RGB triplet at defaults and it is black.
     fn test_fancy() {
-        let test: Vec<u8> = vec![171, 165, 176, 206, 234, 247];
+        let test: Vec<FontCharType> = vec![171, 165, 176, 206, 234, 247];
         let convert = string_to_cp437("½Ñ░╬Ω≈");
         assert_eq!(test, convert);
     }
@@ -579,7 +582,7 @@ mod tests {
     #[test]
     // Tests that we make an RGB triplet at defaults and it is black.
     fn test_first_group() {
-        let test: Vec<u8> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+        let test: Vec<FontCharType> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
         let convert = string_to_cp437("☺☻♥♦♣♠•◘○◙♂♀♪♫☼");
         assert_eq!(test, convert);
     }

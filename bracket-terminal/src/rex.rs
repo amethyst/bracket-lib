@@ -17,7 +17,7 @@ use flate2::read::GzDecoder;
 use flate2::write::GzEncoder;
 use flate2::Compression;
 
-use crate::prelude::Console;
+use crate::prelude::{Console, FontCharType};
 use bracket_color::prelude::{XpColor, RGB};
 
 /// Structure representing a character and its foreground/background color
@@ -186,7 +186,7 @@ pub fn xp_to_console(
                         y as i32 + offset_y,
                         RGB::from_xp(cell.fg).into(),
                         RGB::from_xp(cell.bg).into(),
-                        cell.ch as u8,
+                        cell.ch as FontCharType,
                     );
                 }
             }

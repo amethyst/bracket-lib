@@ -3,6 +3,7 @@
 
 use crate::prelude::{
     string_to_cp437, BTerm, ColoredTextSpans, Console, DrawBatch, TextAlign, Tile, XpLayer,
+    FontCharType
 };
 use bracket_color::prelude::*;
 use bracket_geometry::prelude::{Point, Rect};
@@ -175,7 +176,7 @@ impl Console for VirtualConsole {
     }
 
     /// Sets a single cell in the console
-    fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: u8) {
+    fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: FontCharType) {
         if let Some(idx) = self.try_at(x, y) {
             self.tiles[idx].glyph = glyph;
             self.tiles[idx].fg = fg;
@@ -219,7 +220,7 @@ impl Console for VirtualConsole {
     }
 
     /// Fills a rectangle with the specified rendering information
-    fn fill_region(&mut self, target: Rect, glyph: u8, fg: RGBA, bg: RGBA) {
+    fn fill_region(&mut self, target: Rect, glyph: FontCharType, fg: RGBA, bg: RGBA) {
         target.for_each(|point| {
             self.set(point.x, point.y, fg, bg, glyph);
         });
