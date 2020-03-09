@@ -21,9 +21,11 @@ mod virtual_console;
 pub(crate) type Error = Box<dyn std::error::Error>;
 pub(crate) type Result<T> = core::result::Result<T, Error>;
 pub(crate) use input::clear_input_state;
+pub type FontCharType = u16;
 
 pub mod prelude {
 
+    pub use crate::FontCharType;
     pub use crate::bterm::*;
     pub use crate::codepage437::*;
     pub use crate::command_buffer::*;
