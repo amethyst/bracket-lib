@@ -31,7 +31,8 @@ lazy_static! {
         backing_buffer: None,
         frame_sleep_time: None,
         gl_callback: None,
-        resize_scaling: false
+        resize_scaling: false,
+        resize_request: None
     });
 }
 
@@ -47,6 +48,7 @@ pub struct PlatformGL {
     pub frame_sleep_time: Option<u64>,
     pub gl_callback: Option<GlCallback>,
     pub resize_scaling: bool,
+    pub resize_request: Option<(u32, u32)>,
 }
 
 unsafe impl Send for PlatformGL {}

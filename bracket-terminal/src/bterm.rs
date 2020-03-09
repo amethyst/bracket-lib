@@ -724,6 +724,19 @@ impl BTerm {
             .console
             .set_char_size(width, height);
     }
+
+    #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
+    /// Manually override the character size for the current terminal. Use with caution!
+    pub fn set_char_size_and_resize_window(&mut self, width: u32, height: u32) {
+        /*
+        let be = BACKEND_INTERNAL.lock().unwrap();
+        let font_size = be.fonts[be.consoles[0].font_index].tile_size;
+        let w = font_size.0 * width;
+        let h = font_size.1 * height;
+        crate::prelude::BACKEND.lock().unwrap().resize_request = Some((w, h));
+        */
+        panic!("This will be supported when `winit` stops crashing on resize request.");
+    }
 }
 
 /// Runs the BTerm application, calling into the provided gamestate handler every tick.
