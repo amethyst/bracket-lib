@@ -25,12 +25,11 @@ pub type FontCharType = u16;
 
 pub mod prelude {
 
-    pub use crate::FontCharType;
     pub use crate::bterm::*;
     pub use crate::codepage437::*;
     pub use crate::command_buffer::*;
     pub use crate::console;
-    pub use crate::console::{Console, TextAlign, Tile, CharacterTranslationMode};
+    pub use crate::console::{CharacterTranslationMode, Console, TextAlign, Tile};
     pub use crate::embedding;
     pub use crate::embedding::EMBED;
     pub use crate::gamestate::GameState;
@@ -45,6 +44,7 @@ pub mod prelude {
     pub use crate::sparse_console::SparseConsole;
     pub use crate::textblock::*;
     pub use crate::virtual_console::VirtualConsole;
+    pub use crate::FontCharType;
     pub use bracket_color::prelude::*;
     pub use bracket_geometry::prelude::*;
     pub type BError = std::result::Result<(), Box<dyn std::error::Error>>;

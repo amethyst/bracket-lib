@@ -88,7 +88,9 @@ impl SparseConsoleBackend {
         ux: f32,
         uy: f32,
     ) {
-        vertex_buffer.extend_from_slice(&[x, y, 0.0, fg.r, fg.g, fg.b, fg.a, bg.r, bg.g, bg.b, bg.a, ux, uy]);
+        vertex_buffer.extend_from_slice(&[
+            x, y, 0.0, fg.r, fg.g, fg.b, fg.a, bg.r, bg.g, bg.b, bg.a, ux, uy,
+        ]);
     }
 
     /// Helper to build vertices for the sparse grid.

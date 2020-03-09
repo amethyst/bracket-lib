@@ -1,7 +1,7 @@
 use super::command_buffer::DrawBatch;
 use super::prelude::ColorPair;
 use super::prelude::Point;
-use crate::prelude::{string_to_cp437, Console, Tile, FontCharType};
+use crate::prelude::{string_to_cp437, Console, FontCharType, Tile};
 use bracket_color::prelude::{RGB, RGBA};
 
 pub struct TextBlock {

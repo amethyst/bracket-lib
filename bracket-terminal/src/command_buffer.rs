@@ -2,7 +2,7 @@
 // designed to be used safely from within ECS systems in a potentially
 // multi-threaded environment.
 
-use crate::prelude::{BTerm, TextAlign, FontCharType};
+use crate::prelude::{BTerm, FontCharType, TextAlign};
 use crate::Result;
 use bracket_color::prelude::{ColorPair, RGBA};
 use bracket_geometry::prelude::{Point, Rect};
@@ -129,9 +129,16 @@ pub enum DrawCommand {
     SetClipping {
         clip: Option<Rect>,
     },
-    SetFgAlpha { alpha: f32 },
-    SetBgAlpha { alpha: f32 },
-    SetAllAlpha { fg: f32, bg: f32 }
+    SetFgAlpha {
+        alpha: f32,
+    },
+    SetBgAlpha {
+        alpha: f32,
+    },
+    SetAllAlpha {
+        fg: f32,
+        bg: f32,
+    },
 }
 
 /// Represents a batch of drawing commands, designed to be submitted together.
@@ -414,19 +421,19 @@ impl DrawBatch {
 
     /// Apply an alpha channel value to all cells' foregrounds in the current terminal.
     pub fn set_all_fg_alpha(&mut self, alpha: f32) -> &mut Self {
-        self.batch.push((0, DrawCommand::SetFgAlpha{ alpha }));
+        self.batch.push((0, DrawCommand::SetFgAlpha { alpha }));
         self
     }
 
     /// Apply an alpha channel value to all cells' backgrounds in the current terminal.
     pub fn set_all_bg_alpha(&mut self, alpha: f32) -> &mut Self {
-        self.batch.push((0, DrawCommand::SetBgAlpha{ alpha }));
+        self.batch.push((0, DrawCommand::SetBgAlpha { alpha }));
         self
     }
 
     /// Apply fg/bg alpha channel values to all cells in the current terminal.
     pub fn set_all_alpha(&mut self, fg: f32, bg: f32) -> &mut Self {
-        self.batch.push((0, DrawCommand::SetAllAlpha{ fg, bg }));
+        self.batch.push((0, DrawCommand::SetAllAlpha { fg, bg }));
         self
     }
 }

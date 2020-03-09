@@ -1,4 +1,7 @@
-use crate::prelude::{string_to_cp437, ColoredTextSpans, Console, TextAlign, Tile, XpLayer, FontCharType, CharacterTranslationMode};
+use crate::prelude::{
+    string_to_cp437, CharacterTranslationMode, ColoredTextSpans, Console, FontCharType, TextAlign,
+    Tile, XpLayer,
+};
 use bracket_color::prelude::*;
 use bracket_geometry::prelude::Rect;
 use std::any::Any;
@@ -20,7 +23,7 @@ pub struct SimpleConsole {
 
     pub extra_clipping: Option<Rect>,
     pub translation: CharacterTranslationMode,
-    pub(crate) needs_resize_internal : bool
+    pub(crate) needs_resize_internal: bool,
 }
 
 impl SimpleConsole {
@@ -94,7 +97,9 @@ impl Console for SimpleConsole {
         self.is_dirty = true;
         let bytes = match self.translation {
             CharacterTranslationMode::Codepage437 => string_to_cp437(output),
-            CharacterTranslationMode::Unicode => output.chars().map(|c| c as FontCharType).collect()
+            CharacterTranslationMode::Unicode => {
+                output.chars().map(|c| c as FontCharType).collect()
+            }
         };
         for glyph in bytes {
             if let Some(idx) = self.try_at(x, y) {
@@ -110,7 +115,9 @@ impl Console for SimpleConsole {
 
         let bytes = match self.translation {
             CharacterTranslationMode::Codepage437 => string_to_cp437(output),
-            CharacterTranslationMode::Unicode => output.chars().map(|c| c as FontCharType).collect()
+            CharacterTranslationMode::Unicode => {
+                output.chars().map(|c| c as FontCharType).collect()
+            }
         };
         for glyph in bytes {
             if let Some(idx) = self.try_at(x, y) {
@@ -286,8 +293,8 @@ impl Console for SimpleConsole {
                     bg,
                     match self.translation {
                         CharacterTranslationMode::Codepage437 => crate::codepage437::to_cp437(ch),
-                        CharacterTranslationMode::Unicode => ch as FontCharType
-                    }
+                        CharacterTranslationMode::Unicode => ch as FontCharType,
+                    },
                 );
                 tx += 1;
             }
@@ -368,7 +375,7 @@ impl Console for SimpleConsole {
     fn set_char_size(&mut self, width: u32, height: u32) {
         // Resize the terminal
         let num_tiles = (width * height) as usize;
-        let mut new_tiles : Vec<Tile> = Vec::with_capacity(num_tiles);
+        let mut new_tiles: Vec<Tile> = Vec::with_capacity(num_tiles);
         for _ in 0..num_tiles {
             new_tiles.push(Tile {
                 glyph: 0,

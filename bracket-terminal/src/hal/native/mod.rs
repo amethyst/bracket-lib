@@ -65,7 +65,7 @@ pub struct InitHints {
     pub hardware_acceleration: bool,
     pub srgb: bool,
     pub frame_sleep_time: Option<f32>,
-    pub resize_scaling: bool
+    pub resize_scaling: bool,
 }
 
 impl InitHints {
@@ -78,7 +78,7 @@ impl InitHints {
             hardware_acceleration: true,
             srgb: true,
             frame_sleep_time: None,
-            resize_scaling: false
+            resize_scaling: false,
         }
     }
 }
@@ -93,7 +93,7 @@ impl Default for InitHints {
             hardware_acceleration: true,
             srgb: true,
             frame_sleep_time: None,
-            resize_scaling: false
+            resize_scaling: false,
         }
     }
 }

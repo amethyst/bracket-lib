@@ -1,7 +1,7 @@
 use crate::{
     prelude::{
-        font::Font, init_raw, BEvent, Console, GameState, InitHints, Shader, SimpleConsole,
-        TextAlign, VirtualKeyCode, XpFile, XpLayer, INPUT, FontCharType, CharacterTranslationMode
+        font::Font, init_raw, BEvent, CharacterTranslationMode, Console, FontCharType, GameState,
+        InitHints, Shader, SimpleConsole, TextAlign, VirtualKeyCode, XpFile, XpLayer, INPUT,
     },
     Result,
 };
@@ -397,7 +397,7 @@ impl BTerm {
     where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
-        GLYPH: TryInto<FontCharType>
+        GLYPH: TryInto<FontCharType>,
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
@@ -527,11 +527,16 @@ impl BTerm {
     }
 
     /// Fills a target region with the specified color/glyph combo.
-    pub fn fill_region<COLOR, COLOR2, GLYPH>(&mut self, target: Rect, glyph: FontCharType, fg: COLOR, bg: COLOR2)
-    where
+    pub fn fill_region<COLOR, COLOR2, GLYPH>(
+        &mut self,
+        target: Rect,
+        glyph: FontCharType,
+        fg: COLOR,
+        bg: COLOR2,
+    ) where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
-        GLYPH: TryInto<FontCharType>
+        GLYPH: TryInto<FontCharType>,
     {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
@@ -706,7 +711,9 @@ impl BTerm {
             let new_x = (old_dims.0 as f32 * x_mul) as u32;
             let new_y = (old_dims.1 as f32 * y_mul) as u32;
             //println!("{}, {}", new_x, new_y);
-            be.consoles[self.active_console].console.set_char_size(new_x, new_y);
+            be.consoles[self.active_console]
+                .console
+                .set_char_size(new_x, new_y);
         }
     }
 

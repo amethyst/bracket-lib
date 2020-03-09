@@ -156,7 +156,7 @@ impl SimpleConsoleBackend {
         offset_y: f32,
         scale: f32,
         scale_center: (i32, i32),
-        needs_resize: bool
+        needs_resize: bool,
     ) {
         if needs_resize {
             let vertex_capacity: usize = (13 * width as usize * height as usize) * 4;

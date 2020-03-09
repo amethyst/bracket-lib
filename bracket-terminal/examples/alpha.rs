@@ -5,8 +5,8 @@ bracket_terminal::add_wasm_support!();
 
 struct State {
     totc: VirtualConsole,
-    counter : usize,
-    frame_time : f32
+    counter: usize,
+    frame_time: f32,
 }
 
 impl GameState for State {
@@ -23,11 +23,11 @@ impl GameState for State {
         ctx.cls();
         let alpha = (f32::sin(self.counter as f32) + 1.0) / 2.0;
         ctx.print_color(
-            10, 
-            10, 
-            RGBA::from_f32(1.0, 0.0, 1.0, alpha), 
-            RGBA::from_f32(0.5, 0.5, 0.5, alpha), 
-            "Charles Dickens really knew how to write."
+            10,
+            10,
+            RGBA::from_f32(1.0, 0.0, 1.0, alpha),
+            RGBA::from_f32(0.5, 0.5, 0.5, alpha),
+            "Charles Dickens really knew how to write.",
         );
 
         self.frame_time += ctx.frame_time_ms;
@@ -48,7 +48,7 @@ fn main() -> BError {
     let gs: State = State {
         totc: VirtualConsole::from_text(TALE_OF_TWO_CITIES_INTRO, 79),
         counter: 0,
-        frame_time: 0.0
+        frame_time: 0.0,
     };
     main_loop(context, gs)
 }

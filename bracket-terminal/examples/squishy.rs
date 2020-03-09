@@ -12,14 +12,14 @@ bracket_terminal::add_wasm_support!();
 
 struct State {
     rng: RandomNumberGenerator,
-    width: u32
+    width: u32,
 }
 
 impl State {
     pub fn new() -> Self {
         Self {
             rng: RandomNumberGenerator::new(),
-            width: 80
+            width: 80,
         }
     }
 }
@@ -44,8 +44,18 @@ impl GameState for State {
                 ctx.set(x, y, fore, back, ascii);
             }
         }
-        ctx.print_color_centered(22, RGBA::named(WHITE), RGBA::named(BLACK), &format!("{} fps", ctx.fps as u32));
-        ctx.print_color_centered(23, RGBA::named(WHITE), RGBA::named(BLACK), &format!("{} width", self.width));
+        ctx.print_color_centered(
+            22,
+            RGBA::named(WHITE),
+            RGBA::named(BLACK),
+            &format!("{} fps", ctx.fps as u32),
+        );
+        ctx.print_color_centered(
+            23,
+            RGBA::named(WHITE),
+            RGBA::named(BLACK),
+            &format!("{} width", self.width),
+        );
 
         self.width += 1;
         self.width = self.width % 200;

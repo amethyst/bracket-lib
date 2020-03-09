@@ -79,7 +79,7 @@ impl SparseConsoleBackend {
         _scale: f32,
         _scale_center: (i32, i32),
         tiles: &Vec<SparseTile>,
-        has_background: bool
+        has_background: bool,
     ) {
         unsafe {
             let mut data = vec![0u8; width as usize * height as usize * 4];
@@ -154,7 +154,7 @@ impl SparseConsoleBackend {
         shader: &Shader,
         gl: &glow::Context,
         _tiles: &Vec<SparseTile>,
-        has_background: bool
+        has_background: bool,
     ) -> Result<()> {
         unsafe {
             gl.active_texture(glow::TEXTURE1);

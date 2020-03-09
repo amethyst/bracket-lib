@@ -149,7 +149,7 @@ fn rebuild_consoles(bterm: &BTerm) {
                         sc.scale,
                         sc.scale_center,
                         &sc.tiles,
-                        has_background
+                        has_background,
                     );
                 }
             }

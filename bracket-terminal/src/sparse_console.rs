@@ -1,4 +1,7 @@
-use crate::prelude::{string_to_cp437, to_cp437, ColoredTextSpans, Console, TextAlign, XpLayer, FontCharType, CharacterTranslationMode};
+use crate::prelude::{
+    string_to_cp437, to_cp437, CharacterTranslationMode, ColoredTextSpans, Console, FontCharType,
+    TextAlign, XpLayer,
+};
 use bracket_color::prelude::{XpColor, RGBA};
 use bracket_geometry::prelude::Rect;
 use std::any::Any;
@@ -85,7 +88,9 @@ impl Console for SparseConsole {
         let bounds = self.get_char_size();
         let bytes = match self.translation {
             CharacterTranslationMode::Codepage437 => string_to_cp437(output),
-            CharacterTranslationMode::Unicode => output.chars().map(|c| c as FontCharType).collect()
+            CharacterTranslationMode::Unicode => {
+                output.chars().map(|c| c as FontCharType).collect()
+            }
         };
 
         self.tiles.extend(
@@ -113,7 +118,9 @@ impl Console for SparseConsole {
         let bounds = self.get_char_size();
         let bytes = match self.translation {
             CharacterTranslationMode::Codepage437 => string_to_cp437(output),
-            CharacterTranslationMode::Unicode => output.chars().map(|c| c as FontCharType).collect()
+            CharacterTranslationMode::Unicode => {
+                output.chars().map(|c| c as FontCharType).collect()
+            }
         };
         self.tiles.extend(
             bytes
@@ -302,14 +309,14 @@ impl Console for SparseConsole {
             let fg = span.0;
             for ch in span.1.chars() {
                 self.set(
-                    tx, 
-                    y, 
-                    fg, 
-                    bg, 
+                    tx,
+                    y,
+                    fg,
+                    bg,
                     match self.translation {
                         CharacterTranslationMode::Codepage437 => crate::codepage437::to_cp437(ch),
-                        CharacterTranslationMode::Unicode => ch as FontCharType
-                    }
+                        CharacterTranslationMode::Unicode => ch as FontCharType,
+                    },
                 );
                 tx += 1;
             }

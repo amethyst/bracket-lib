@@ -2,8 +2,8 @@
 //! which can then be "windowed" into actual consoles.
 
 use crate::prelude::{
-    string_to_cp437, BTerm, ColoredTextSpans, Console, DrawBatch, TextAlign, Tile, XpLayer,
-    FontCharType, CharacterTranslationMode
+    string_to_cp437, BTerm, CharacterTranslationMode, ColoredTextSpans, Console, DrawBatch,
+    FontCharType, TextAlign, Tile, XpLayer,
 };
 use bracket_color::prelude::*;
 use bracket_geometry::prelude::{Point, Rect};
@@ -158,7 +158,9 @@ impl Console for VirtualConsole {
     fn print(&mut self, mut x: i32, y: i32, output: &str) {
         let bytes = match self.translation {
             CharacterTranslationMode::Codepage437 => string_to_cp437(output),
-            CharacterTranslationMode::Unicode => output.chars().map(|c| c as FontCharType).collect()
+            CharacterTranslationMode::Unicode => {
+                output.chars().map(|c| c as FontCharType).collect()
+            }
         };
         for glyph in bytes {
             if let Some(idx) = self.try_at(x, y) {
@@ -172,7 +174,9 @@ impl Console for VirtualConsole {
     fn print_color(&mut self, mut x: i32, y: i32, fg: RGBA, bg: RGBA, output: &str) {
         let bytes = match self.translation {
             CharacterTranslationMode::Codepage437 => string_to_cp437(output),
-            CharacterTranslationMode::Unicode => output.chars().map(|c| c as FontCharType).collect()
+            CharacterTranslationMode::Unicode => {
+                output.chars().map(|c| c as FontCharType).collect()
+            }
         };
         for glyph in bytes {
             if let Some(idx) = self.try_at(x, y) {
@@ -342,8 +346,8 @@ impl Console for VirtualConsole {
                     bg,
                     match self.translation {
                         CharacterTranslationMode::Codepage437 => crate::codepage437::to_cp437(ch),
-                        CharacterTranslationMode::Unicode => ch as FontCharType
-                    }
+                        CharacterTranslationMode::Unicode => ch as FontCharType,
+                    },
                 );
                 tx += 1;
             }
