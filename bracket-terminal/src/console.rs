@@ -146,10 +146,11 @@ pub trait Console {
 
     /// Returns true if an x/y coordinate is within the console bounds
     fn in_bounds(&self, x: i32, y: i32) -> bool {
+        let bounds = self.get_char_size();
         if let Some(clip) = self.get_clipping() {
-            clip.point_in_rect(Point::new(x, y))
-        } else {
-            let bounds = self.get_char_size();
+            clip.point_in_rect(Point::new(x, y)) && 
+            x >= 0 && x < bounds.0 as i32 && y >= 0 && y < bounds.1 as i32
+        } else {            
             x >= 0 && x < bounds.0 as i32 && y >= 0 && y < bounds.1 as i32
         }
     }
