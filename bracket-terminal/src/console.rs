@@ -150,7 +150,7 @@ pub trait Console {
         if let Some(clip) = self.get_clipping() {
             clip.point_in_rect(Point::new(x, y)) && 
             x >= 0 && x < bounds.0 as i32 && y >= 0 && y < bounds.1 as i32
-        } else {            
+        } else {
             x >= 0 && x < bounds.0 as i32 && y >= 0 && y < bounds.1 as i32
         }
     }
