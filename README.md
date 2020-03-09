@@ -1,6 +1,6 @@
 # Welcome to bracket-lib
 
-![](https://github.com/thebracket/rltk_rs/workflows/Rust/badge.svg)
+![](https://github.com/thebracket/bracket-lib/workflows/Rust/badge.svg)
 
 > You can read a tutorial series on writing a Roguelike with this library at: [https://bfnightly.bracketproductions.com/rustbook/](https://bfnightly.bracketproductions.com/rustbook/)
 
