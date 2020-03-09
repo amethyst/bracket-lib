@@ -74,6 +74,11 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
             *control_flow = ControlFlow::Exit;
         }
 
+        /*let rr = BACKEND.lock().unwrap().resize_request;
+        if let Some(rr) = rr {
+            wc.window().set_inner_size(glutin::dpi::PhysicalSize::new(rr.0, rr.1));
+        }*/
+
         match event {
             Event::NewEvents(_) => {
                 clear_input_state(&mut bterm);

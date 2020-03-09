@@ -735,7 +735,7 @@ impl BTerm {
         let h = font_size.1 * height;
         crate::prelude::BACKEND.lock().unwrap().resize_request = Some((w, h));
         */
-        panic!("This will be supported when `winit` stops crashing on resize request.");
+        //panic!("This will be supported when `winit` stops crashing on resize request.");
     }
 }
 
