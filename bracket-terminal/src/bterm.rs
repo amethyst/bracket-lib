@@ -687,6 +687,15 @@ impl BTerm {
             .console
             .set_translation_mode(translation)
     }
+
+    /// Change the active font for the layer
+    pub fn set_active_font(&mut self, font_index: usize) {
+        let mut be = BACKEND_INTERNAL.lock().unwrap();
+        if font_index > be.fonts.len() {
+            panic!("Font index out of bounds.");
+        }
+        be.consoles[self.active_console].font_index = font_index;
+    }
 }
 
 /// Runs the BTerm application, calling into the provided gamestate handler every tick.
