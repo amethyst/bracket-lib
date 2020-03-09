@@ -1,7 +1,7 @@
 use crate::{
     prelude::{
         font::Font, init_raw, BEvent, Console, GameState, InitHints, Shader, SimpleConsole,
-        TextAlign, VirtualKeyCode, XpFile, XpLayer, INPUT, FontCharType
+        TextAlign, VirtualKeyCode, XpFile, XpLayer, INPUT, FontCharType, CharacterTranslationMode
     },
     Result,
 };
@@ -679,6 +679,13 @@ impl BTerm {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
             .console
             .set_all_alpha(fg, bg);
+    }
+
+    /// Sets the character translation mode on a console
+    pub fn set_translation_mode(&mut self, console: usize, translation: CharacterTranslationMode) {
+        BACKEND_INTERNAL.lock().unwrap().consoles[console]
+            .console
+            .set_translation_mode(translation)
     }
 }
 

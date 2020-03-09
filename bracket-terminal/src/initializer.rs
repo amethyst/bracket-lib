@@ -1,4 +1,4 @@
-use crate::prelude::{font::Font, init_raw, BTerm, InitHints, SimpleConsole, SparseConsole, INPUT};
+use crate::prelude::{font::Font, init_raw, BTerm, InitHints, SimpleConsole, SparseConsole, INPUT, CharacterTranslationMode};
 use crate::Result;
 use std::collections::HashMap;
 use std::convert::TryInto;
@@ -15,16 +15,19 @@ enum ConsoleType {
         width: u32,
         height: u32,
         font: String,
+        translator: CharacterTranslationMode,
     },
     SparseConsole {
         width: u32,
         height: u32,
         font: String,
+        translator: CharacterTranslationMode,
     },
     SparseConsoleNoBg {
         width: u32,
         height: u32,
         font: String,
+        translator: CharacterTranslationMode,
     },
 }
 
@@ -101,6 +104,7 @@ impl BTermBuilder {
             width: 80,
             height: 50,
             font: "terminal8x8.png".to_string(),
+            translator: CharacterTranslationMode::Codepage437
         });
         cb
     }
@@ -132,6 +136,7 @@ impl BTermBuilder {
             width: w,
             height: h,
             font: "terminal8x8.png".to_string(),
+            translator: CharacterTranslationMode::Codepage437
         });
         Ok(cb)
     }
@@ -158,6 +163,7 @@ impl BTermBuilder {
             width: 80,
             height: 50,
             font: "vga8x16.png".to_string(),
+            translator: CharacterTranslationMode::Codepage437
         });
         cb
     }
@@ -192,6 +198,7 @@ impl BTermBuilder {
             width: w,
             height: h,
             font: "vga8x16.png".to_string(),
+            translator: CharacterTranslationMode::Codepage437
         });
         cb
     }
@@ -265,6 +272,7 @@ impl BTermBuilder {
                 .ok()
                 .expect("Must be convertible to a u32"),
             font: font.to_string(),
+            translator: CharacterTranslationMode::Codepage437
         });
         self
     }
@@ -275,6 +283,7 @@ impl BTermBuilder {
             width: self.width,
             height: self.height,
             font: "terminal8x8.png".to_string(),
+            translator: CharacterTranslationMode::Codepage437
         });
         self
     }
@@ -291,6 +300,7 @@ impl BTermBuilder {
                 .ok()
                 .expect("Must be convertible to a u32"),
             font: font.to_string(),
+            translator: CharacterTranslationMode::Codepage437
         });
         self
     }
@@ -307,6 +317,7 @@ impl BTermBuilder {
                 .ok()
                 .expect("Must be convertible to a u32"),
             font: font.to_string(),
+            translator: CharacterTranslationMode::Codepage437
         });
         self
     }
@@ -363,28 +374,34 @@ impl BTermBuilder {
                     width,
                     height,
                     font,
+                    translator,
                 } => {
                     let font_path = format!("{}/{}", self.resource_path, font);
                     let font_id = font_map[&font_path];
-                    context.register_console(SimpleConsole::init(*width, *height), font_id);
+                    let cid = context.register_console(SimpleConsole::init(*width, *height), font_id);
+                    context.set_translation_mode(cid, *translator);
                 }
                 ConsoleType::SparseConsole {
                     width,
                     height,
                     font,
+                    translator,
                 } => {
                     let font_path = format!("{}/{}", self.resource_path, font);
                     let font_id = font_map[&font_path];
-                    context.register_console(SparseConsole::init(*width, *height), font_id);
+                    let cid = context.register_console(SparseConsole::init(*width, *height), font_id);
+                    context.set_translation_mode(cid, *translator);
                 }
                 ConsoleType::SparseConsoleNoBg {
                     width,
                     height,
                     font,
+                    translator,
                 } => {
                     let font_path = format!("{}/{}", self.resource_path, font);
                     let font_id = font_map[&font_path];
-                    context.register_console_no_bg(SparseConsole::init(*width, *height), font_id);
+                    let cid = context.register_console_no_bg(SparseConsole::init(*width, *height), font_id);
+                    context.set_translation_mode(cid, *translator);
                 }
             }
         }

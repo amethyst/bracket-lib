@@ -18,6 +18,12 @@ pub enum TextAlign {
     Right,
 }
 
+#[derive(PartialEq, Copy, Clone, Debug)]
+pub enum CharacterTranslationMode {
+    Codepage437,
+    Unicode
+}
+
 /// Trait that must be implemented by console types.
 pub trait Console {
     /// Gets the dimensions of the console in characters
@@ -174,6 +180,8 @@ pub trait Console {
     /// Sets ALL tiles foreground alpha (only tiles that exist, in sparse consoles).
     fn set_all_alpha(&mut self, fg: f32, bg: f32);
 
+    /// Sets the character translation mode
+    fn set_translation_mode(&mut self, mode: CharacterTranslationMode);
 }
 
 pub fn log<S: ToString>(message: S) {

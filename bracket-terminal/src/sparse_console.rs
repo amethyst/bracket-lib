@@ -1,4 +1,4 @@
-use crate::prelude::{string_to_cp437, to_cp437, ColoredTextSpans, Console, TextAlign, XpLayer, FontCharType};
+use crate::prelude::{string_to_cp437, to_cp437, ColoredTextSpans, Console, TextAlign, XpLayer, FontCharType, CharacterTranslationMode};
 use bracket_color::prelude::{XpColor, RGBA};
 use bracket_geometry::prelude::Rect;
 use std::any::Any;
@@ -28,6 +28,7 @@ pub struct SparseConsole {
     pub scale_center: (i32, i32),
 
     pub extra_clipping: Option<Rect>,
+    pub translation: CharacterTranslationMode,
 }
 
 impl SparseConsole {
@@ -44,6 +45,7 @@ impl SparseConsole {
             scale: 1.0,
             scale_center: (width as i32 / 2, height as i32 / 2),
             extra_clipping: None,
+            translation: CharacterTranslationMode::Codepage437,
         };
 
         Box::new(new_console)
@@ -81,7 +83,10 @@ impl Console for SparseConsole {
         self.is_dirty = true;
 
         let bounds = self.get_char_size();
-        let bytes = string_to_cp437(output);
+        let bytes = match self.translation {
+            CharacterTranslationMode::Codepage437 => string_to_cp437(output),
+            CharacterTranslationMode::Unicode => output.chars().map(|c| c as FontCharType).collect()
+        };
 
         self.tiles.extend(
             bytes
@@ -106,7 +111,10 @@ impl Console for SparseConsole {
         self.is_dirty = true;
 
         let bounds = self.get_char_size();
-        let bytes = string_to_cp437(output);
+        let bytes = match self.translation {
+            CharacterTranslationMode::Codepage437 => string_to_cp437(output),
+            CharacterTranslationMode::Unicode => output.chars().map(|c| c as FontCharType).collect()
+        };
         self.tiles.extend(
             bytes
                 .into_iter()
@@ -143,7 +151,10 @@ impl Console for SparseConsole {
             if !found_tile {
                 self.tiles.push(SparseTile {
                     idx,
-                    glyph: to_cp437(' '),
+                    glyph: match self.translation {
+                        CharacterTranslationMode::Codepage437 => to_cp437(' '),
+                        CharacterTranslationMode::Unicode => ' ' as FontCharType,
+                    },
                     fg: RGBA::from_u8(0, 0, 0, 255),
                     bg,
                 });
@@ -290,7 +301,16 @@ impl Console for SparseConsole {
         for span in split_text.spans.iter() {
             let fg = span.0;
             for ch in span.1.chars() {
-                self.set(tx, y, fg, bg, crate::codepage437::to_cp437(ch));
+                self.set(
+                    tx, 
+                    y, 
+                    fg, 
+                    bg, 
+                    match self.translation {
+                        CharacterTranslationMode::Codepage437 => crate::codepage437::to_cp437(ch),
+                        CharacterTranslationMode::Unicode => ch as FontCharType
+                    }
+                );
                 tx += 1;
             }
         }
@@ -366,5 +386,10 @@ impl Console for SparseConsole {
             t.fg.a = fg;
             t.bg.a = bg;
         });
+    }
+
+    /// Sets the character translation mode
+    fn set_translation_mode(&mut self, mode: CharacterTranslationMode) {
+        self.translation = mode;
     }
 }

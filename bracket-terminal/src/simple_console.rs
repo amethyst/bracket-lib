@@ -1,4 +1,4 @@
-use crate::prelude::{string_to_cp437, ColoredTextSpans, Console, TextAlign, Tile, XpLayer, FontCharType};
+use crate::prelude::{string_to_cp437, ColoredTextSpans, Console, TextAlign, Tile, XpLayer, FontCharType, CharacterTranslationMode};
 use bracket_color::prelude::*;
 use bracket_geometry::prelude::Rect;
 use std::any::Any;
@@ -19,6 +19,7 @@ pub struct SimpleConsole {
     pub scale_center: (i32, i32),
 
     pub extra_clipping: Option<Rect>,
+    pub translation: CharacterTranslationMode,
 }
 
 impl SimpleConsole {
@@ -45,6 +46,7 @@ impl SimpleConsole {
             scale: 1.0,
             scale_center: (width as i32 / 2, height as i32 / 2),
             extra_clipping: None,
+            translation: CharacterTranslationMode::Codepage437,
         };
 
         Box::new(new_console)
@@ -88,7 +90,10 @@ impl Console for SimpleConsole {
     /// Prints a string at x/y.
     fn print(&mut self, mut x: i32, y: i32, output: &str) {
         self.is_dirty = true;
-        let bytes = string_to_cp437(output);
+        let bytes = match self.translation {
+            CharacterTranslationMode::Codepage437 => string_to_cp437(output),
+            CharacterTranslationMode::Unicode => output.chars().map(|c| c as FontCharType).collect()
+        };
         for glyph in bytes {
             if let Some(idx) = self.try_at(x, y) {
                 self.tiles[idx].glyph = glyph;
@@ -101,7 +106,10 @@ impl Console for SimpleConsole {
     fn print_color(&mut self, mut x: i32, y: i32, fg: RGBA, bg: RGBA, output: &str) {
         self.is_dirty = true;
 
-        let bytes = string_to_cp437(output);
+        let bytes = match self.translation {
+            CharacterTranslationMode::Codepage437 => string_to_cp437(output),
+            CharacterTranslationMode::Unicode => output.chars().map(|c| c as FontCharType).collect()
+        };
         for glyph in bytes {
             if let Some(idx) = self.try_at(x, y) {
                 self.tiles[idx].glyph = glyph;
@@ -269,7 +277,16 @@ impl Console for SimpleConsole {
         for span in split_text.spans.iter() {
             let fg = span.0;
             for ch in span.1.chars() {
-                self.set(tx, y, fg, bg, crate::codepage437::to_cp437(ch));
+                self.set(
+                    tx,
+                    y,
+                    fg,
+                    bg,
+                    match self.translation {
+                        CharacterTranslationMode::Codepage437 => crate::codepage437::to_cp437(ch),
+                        CharacterTranslationMode::Unicode => ch as FontCharType
+                    }
+                );
                 tx += 1;
             }
         }
@@ -338,5 +355,10 @@ impl Console for SimpleConsole {
             t.fg.a = fg;
             t.bg.a = bg;
         });
+    }
+
+    /// Sets the character translation mode
+    fn set_translation_mode(&mut self, mode: CharacterTranslationMode) {
+        self.translation = mode;
     }
 }

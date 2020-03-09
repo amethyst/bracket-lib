@@ -3,7 +3,7 @@
 
 use crate::prelude::{
     string_to_cp437, BTerm, ColoredTextSpans, Console, DrawBatch, TextAlign, Tile, XpLayer,
-    FontCharType
+    FontCharType, CharacterTranslationMode
 };
 use bracket_color::prelude::*;
 use bracket_geometry::prelude::{Point, Rect};
@@ -16,6 +16,7 @@ pub struct VirtualConsole {
     pub tiles: Vec<Tile>,
 
     pub extra_clipping: Option<Rect>,
+    pub translation: CharacterTranslationMode,
 }
 
 impl VirtualConsole {
@@ -27,6 +28,7 @@ impl VirtualConsole {
             height: dimensions.y as u32,
             tiles: Vec::with_capacity(num_tiles),
             extra_clipping: None,
+            translation: CharacterTranslationMode::Codepage437,
         };
         for _ in 0..num_tiles {
             console.tiles.push(Tile {
@@ -62,6 +64,7 @@ impl VirtualConsole {
             height: lines.len() as u32,
             tiles: Vec::with_capacity(num_tiles),
             extra_clipping: None,
+            translation: CharacterTranslationMode::Codepage437,
         };
         //println!("{}x{}", console.width, console.height);
 
@@ -153,7 +156,10 @@ impl Console for VirtualConsole {
 
     /// Prints a string at x/y.
     fn print(&mut self, mut x: i32, y: i32, output: &str) {
-        let bytes = string_to_cp437(output);
+        let bytes = match self.translation {
+            CharacterTranslationMode::Codepage437 => string_to_cp437(output),
+            CharacterTranslationMode::Unicode => output.chars().map(|c| c as FontCharType).collect()
+        };
         for glyph in bytes {
             if let Some(idx) = self.try_at(x, y) {
                 self.tiles[idx].glyph = glyph;
@@ -164,7 +170,10 @@ impl Console for VirtualConsole {
 
     /// Prints a string at x/y, with foreground and background colors.
     fn print_color(&mut self, mut x: i32, y: i32, fg: RGBA, bg: RGBA, output: &str) {
-        let bytes = string_to_cp437(output);
+        let bytes = match self.translation {
+            CharacterTranslationMode::Codepage437 => string_to_cp437(output),
+            CharacterTranslationMode::Unicode => output.chars().map(|c| c as FontCharType).collect()
+        };
         for glyph in bytes {
             if let Some(idx) = self.try_at(x, y) {
                 self.tiles[idx].glyph = glyph;
@@ -326,7 +335,16 @@ impl Console for VirtualConsole {
         for span in split_text.spans.iter() {
             let fg = span.0;
             for ch in span.1.chars() {
-                self.set(tx, y, fg, bg, crate::codepage437::to_cp437(ch));
+                self.set(
+                    tx,
+                    y,
+                    fg,
+                    bg,
+                    match self.translation {
+                        CharacterTranslationMode::Codepage437 => crate::codepage437::to_cp437(ch),
+                        CharacterTranslationMode::Unicode => ch as FontCharType
+                    }
+                );
                 tx += 1;
             }
         }
@@ -391,5 +409,10 @@ impl Console for VirtualConsole {
             t.fg.a = fg;
             t.bg.a = bg;
         });
+    }
+
+    /// Sets the character translation mode
+    fn set_translation_mode(&mut self, mode: CharacterTranslationMode) {
+        self.translation = mode;
     }
 }

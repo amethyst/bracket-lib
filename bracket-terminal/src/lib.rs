@@ -30,7 +30,7 @@ pub mod prelude {
     pub use crate::codepage437::*;
     pub use crate::command_buffer::*;
     pub use crate::console;
-    pub use crate::console::{Console, TextAlign, Tile};
+    pub use crate::console::{Console, TextAlign, Tile, CharacterTranslationMode};
     pub use crate::embedding;
     pub use crate::embedding::EMBED;
     pub use crate::gamestate::GameState;
