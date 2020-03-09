@@ -710,6 +710,7 @@ impl BTerm {
         }
     }
 
+    #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
     /// Manually override the character size for the current terminal. Use with caution!
     pub fn set_char_size(&mut self, width: u32, height: u32) {
         BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
