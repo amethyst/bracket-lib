@@ -392,4 +392,10 @@ impl Console for SparseConsole {
     fn set_translation_mode(&mut self, mode: CharacterTranslationMode) {
         self.translation = mode;
     }
+
+    /// Sets the character size of the terminal
+    fn set_char_size(&mut self, width: u32, height: u32) {
+        self.width = width;
+        self.height = height;
+    }
 }

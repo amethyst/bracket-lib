@@ -182,6 +182,9 @@ pub trait Console {
 
     /// Sets the character translation mode
     fn set_translation_mode(&mut self, mode: CharacterTranslationMode);
+
+    /// Sets the character size of the layer. Be really careful with this.
+    fn set_char_size(&mut self, width: u32, height: u32);
 }
 
 pub fn log<S: ToString>(message: S) {

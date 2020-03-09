@@ -207,6 +207,7 @@ fn rebuild_consoles() {
                         sc.offset_y,
                         sc.scale,
                         sc.scale_center,
+                        sc.needs_resize_internal
                     );
                 }
             }

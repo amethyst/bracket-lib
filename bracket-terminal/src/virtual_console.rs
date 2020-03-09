@@ -415,4 +415,9 @@ impl Console for VirtualConsole {
     fn set_translation_mode(&mut self, mode: CharacterTranslationMode) {
         self.translation = mode;
     }
+
+    /// Sets the character size of the terminal
+    fn set_char_size(&mut self, _width: u32, _height: u32) {
+        panic!("Not implemented.");
+    }
 }

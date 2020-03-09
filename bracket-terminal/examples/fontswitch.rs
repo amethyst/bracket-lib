@@ -10,10 +10,11 @@ struct State {
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
         ctx.set_active_console(0);
+        let char_size = ctx.get_char_size();
         ctx.cls();
         self.totc.print_sub_rect(
-            Rect::with_size(0, 0, 79, 49),
-            Rect::with_exact(0, 0, 79, 49),
+            Rect::with_size(0, 0, char_size.0, char_size.1),
+            Rect::with_exact(0, 0, char_size.0, char_size.1),
             ctx,
         );
 
@@ -21,6 +22,7 @@ impl GameState for State {
             match key {
                 VirtualKeyCode::Key1 => ctx.set_active_font(0),
                 VirtualKeyCode::Key2 => ctx.set_active_font(1),
+                VirtualKeyCode::Key3 => ctx.set_active_font(2),
                 _ => {}
             }
         }
@@ -34,6 +36,7 @@ fn main() -> BError {
     let context = BTermBuilder::simple80x50()
         .with_title("Hello Virtual Terminal Example")
         .with_font("cheepicus8x8.png", 8, 8)
+        .with_font("vga8x16.png", 8u32, 16u32)
         .build()?;
 
     let gs: State = State {
@@ -42,7 +45,7 @@ fn main() -> BError {
     main_loop(context, gs)
 }
 
-const TALE_OF_TWO_CITIES_INTRO : &str = "PRESS 1 FOR 8x8 FONT, 2 FOR CHEEPICUS FONT.
+const TALE_OF_TWO_CITIES_INTRO : &str = "PRESS 1 FOR 8x8 FONT, 2 FOR CHEEPICUS FONT, 3 FOR VGA.
 
 I. The Period
 It was the best of times,

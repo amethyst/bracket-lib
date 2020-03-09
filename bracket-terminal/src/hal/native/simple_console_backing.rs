@@ -156,7 +156,21 @@ impl SimpleConsoleBackend {
         offset_y: f32,
         scale: f32,
         scale_center: (i32, i32),
+        needs_resize: bool
     ) {
+        if needs_resize {
+            let vertex_capacity: usize = (13 * width as usize * height as usize) * 4;
+            let index_capacity: usize = 6 * width as usize * height as usize;
+            self.vertex_buffer.clear();
+            self.index_buffer.clear();
+            for _ in 0..vertex_capacity {
+                self.vertex_buffer.push(0.0);
+            }
+            for _ in 0..index_capacity {
+                self.index_buffer.push(0);
+            }
+        }
+
         self.vertex_counter = 0;
         self.index_counter = 0;
         let glyph_size_x: f32 = 1.0f32 / 16.0f32;

@@ -694,7 +694,27 @@ impl BTerm {
         if font_index > be.fonts.len() {
             panic!("Font index out of bounds.");
         }
+        let old_font_size = be.fonts[be.consoles[self.active_console].font_index].tile_size;
+        let new_font_size = be.fonts[font_index].tile_size;
         be.consoles[self.active_console].font_index = font_index;
+
+        if old_font_size != new_font_size {
+            let x_mul = old_font_size.0 as f32 / new_font_size.0 as f32;
+            let y_mul = old_font_size.1 as f32 / new_font_size.1 as f32;
+            //println!("{}, {}", x_mul, y_mul);
+            let old_dims = be.consoles[self.active_console].console.get_char_size();
+            let new_x = (old_dims.0 as f32 * x_mul) as u32;
+            let new_y = (old_dims.1 as f32 * y_mul) as u32;
+            //println!("{}, {}", new_x, new_y);
+            be.consoles[self.active_console].console.set_char_size(new_x, new_y);
+        }
+    }
+
+    /// Manually override the character size for the current terminal. Use with caution!
+    pub fn set_char_size(&mut self, width: u32, height: u32) {
+        BACKEND_INTERNAL.lock().unwrap().consoles[self.active_console]
+            .console
+            .set_char_size(width, height);
     }
 }
 

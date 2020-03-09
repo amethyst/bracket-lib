@@ -20,6 +20,7 @@ pub struct SimpleConsole {
 
     pub extra_clipping: Option<Rect>,
     pub translation: CharacterTranslationMode,
+    pub(crate) needs_resize_internal : bool
 }
 
 impl SimpleConsole {
@@ -47,6 +48,7 @@ impl SimpleConsole {
             scale_center: (width as i32 / 2, height as i32 / 2),
             extra_clipping: None,
             translation: CharacterTranslationMode::Codepage437,
+            needs_resize_internal: false,
         };
 
         Box::new(new_console)
@@ -360,5 +362,34 @@ impl Console for SimpleConsole {
     /// Sets the character translation mode
     fn set_translation_mode(&mut self, mode: CharacterTranslationMode) {
         self.translation = mode;
+    }
+
+    /// Sets the character size of the terminal
+    fn set_char_size(&mut self, width: u32, height: u32) {
+        // Resize the terminal
+        let num_tiles = (width * height) as usize;
+        let mut new_tiles : Vec<Tile> = Vec::with_capacity(num_tiles);
+        for _ in 0..num_tiles {
+            new_tiles.push(Tile {
+                glyph: 0,
+                fg: RGBA::from_u8(255, 255, 255, 255),
+                bg: RGBA::from_u8(0, 0, 0, 255),
+            });
+        }
+
+        // Copy the old console data
+        for y in 0..i32::min(self.height as i32, height as i32) {
+            for x in 0..i32::min(self.width as i32, width as i32) {
+                let idx = self.at(x, y);
+                let new_idx = ((y * width as i32) + x) as usize;
+                new_tiles[new_idx] = self.tiles[idx];
+            }
+        }
+        self.tiles = new_tiles;
+
+        // Set the size field
+        self.width = width;
+        self.height = height;
+        self.needs_resize_internal = true;
     }
 }
