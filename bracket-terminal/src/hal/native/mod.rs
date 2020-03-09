@@ -30,7 +30,8 @@ lazy_static! {
         context_wrapper: None,
         backing_buffer: None,
         frame_sleep_time: None,
-        gl_callback: None
+        gl_callback: None,
+        resize_scaling: false
     });
 }
 
@@ -45,6 +46,7 @@ pub struct PlatformGL {
     pub backing_buffer: Option<super::Framebuffer>,
     pub frame_sleep_time: Option<u64>,
     pub gl_callback: Option<GlCallback>,
+    pub resize_scaling: bool,
 }
 
 unsafe impl Send for PlatformGL {}
@@ -63,6 +65,7 @@ pub struct InitHints {
     pub hardware_acceleration: bool,
     pub srgb: bool,
     pub frame_sleep_time: Option<f32>,
+    pub resize_scaling: bool
 }
 
 impl InitHints {
@@ -75,6 +78,7 @@ impl InitHints {
             hardware_acceleration: true,
             srgb: true,
             frame_sleep_time: None,
+            resize_scaling: false
         }
     }
 }
@@ -89,6 +93,7 @@ impl Default for InitHints {
             hardware_acceleration: true,
             srgb: true,
             frame_sleep_time: None,
+            resize_scaling: false
         }
     }
 }

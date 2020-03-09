@@ -32,6 +32,18 @@ fn on_resize(bterm: &mut BTerm, physical_size: glutin::dpi::PhysicalSize<u32>) -
     bterm.on_event(BEvent::Resized {
         new_size: Point::new(physical_size.width, physical_size.height),
     });
+
+    let mut bit = BACKEND_INTERNAL.lock().unwrap();
+    if be.resize_scaling {
+        let num_consoles = bit.consoles.len();
+        for i in 0..num_consoles {
+            let font_size = bit.fonts[bit.consoles[i].font_index].tile_size;
+            let chr_w = physical_size.width / font_size.0;
+            let chr_h = physical_size.height / font_size.1;
+            bit.consoles[i].console.set_char_size(chr_w, chr_h);
+        }
+    }
+
     Ok(())
 }
 

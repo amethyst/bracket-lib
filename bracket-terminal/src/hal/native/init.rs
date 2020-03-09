@@ -85,6 +85,7 @@ pub fn init_raw<S: ToString>(
     });
     be.backing_buffer = Some(backing_fbo);
     be.frame_sleep_time = crate::hal::convert_fps_to_wait(platform_hints.frame_sleep_time);
+    be.resize_scaling = platform_hints.resize_scaling;
 
     BACKEND_INTERNAL.lock().unwrap().shaders = shaders;
 

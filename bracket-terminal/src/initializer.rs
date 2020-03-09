@@ -352,6 +352,13 @@ impl BTermBuilder {
         self
     }
 
+    /// Enable resize changing console size, rather than scaling. Native OpenGL only.
+    #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
+    pub fn with_resize_scaling(mut self, resize_scaling: bool) -> Self {
+        self.platform_hints.resize_scaling = resize_scaling;
+        self
+    }
+
     /// Combine all of the builder parameters, and return an BTerm context ready to go.
     pub fn build(self) -> Result<BTerm> {
         let mut context = init_raw(

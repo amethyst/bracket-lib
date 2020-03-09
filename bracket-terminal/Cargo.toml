@@ -64,3 +64,8 @@ harness = false
 name = "native_gl"
 path = "examples/native_gl.rs"
 features = [ "opengl" ]
+
+[[example]]
+name = "bench_scalable"
+path = "examples/bench_scalable.rs"
+features = [ "opengl" ]
