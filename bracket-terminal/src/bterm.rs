@@ -138,8 +138,8 @@ impl BTerm {
         context
     }
 
-    /// Registers a font, and returns its handle number. Also loads it into OpenGL.
-    pub fn register_font(&mut self, font: Font) -> Result<usize> {
+    /// Registers a font, and returns its handle number. Do not use after initialization!
+    pub(crate) fn register_font(&mut self, font: Font) -> Result<usize> {
         let mut bi = BACKEND_INTERNAL.lock().unwrap();
         bi.fonts.push(font);
         Ok(bi.fonts.len() - 1)
