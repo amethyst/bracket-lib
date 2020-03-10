@@ -74,7 +74,7 @@ uniform sampler2D texture1;
 void main()
 {
     vec4 original = texture(texture1, TexCoord);
-    vec4 fg = original.r > 0.1f || original.g > 0.1f || original.b > 0.1f ? original * ourColor : ourBackground;
+    vec4 fg = (original.r > 0.1f || original.g > 0.1f || original.b > 0.1f) && original.a > 0.1f ? original * ourColor : ourBackground;
 	FragColor = fg;
 }
 "#;
