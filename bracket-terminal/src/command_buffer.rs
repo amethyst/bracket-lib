@@ -362,7 +362,7 @@ impl DrawBatch {
         self
     }
 
-    /// Draws a non-filled (hollow) double-lined box, starting at x/y with the extents width/height using CP437 line characters
+    /// Fills a region with a glyph/color combination.
     pub fn fill_region(&mut self, pos: Rect, color: ColorPair, glyph: FontCharType) -> &mut Self {
         self.batch
             .push((0, DrawCommand::FillRegion { pos, color, glyph }));
