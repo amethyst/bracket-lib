@@ -3,6 +3,7 @@ use crate::prelude::embedding;
 use crate::Result;
 use glow::HasContext;
 use image::GenericImageView;
+use bracket_color::prelude::RGB;
 
 #[derive(PartialEq, Clone)]
 /// BTerm's representation of a font or tileset file.
@@ -14,6 +15,7 @@ pub struct Font {
     pub gl_id: Option<u32>,
 
     pub tile_size: (u32, u32),
+    pub explicit_background: Option<RGB>,
 }
 
 #[allow(non_snake_case)]
@@ -26,6 +28,7 @@ impl Font {
             height,
             gl_id: None,
             tile_size,
+            explicit_background: None
         }
     }
 
@@ -42,7 +45,7 @@ impl Font {
     }
 
     /// Loads a font file (texture) to obtain the width and height for you
-    pub fn load<S: ToString>(filename: S, tile_size: (u32, u32)) -> Font {
+    pub fn load<S: ToString>(filename: S, tile_size: (u32, u32), explicit_background: Option<RGB>) -> Font {
         let img = Font::load_image(&filename.to_string());
         Font {
             bitmap_file: filename.to_string(),
@@ -50,6 +53,7 @@ impl Font {
             height: img.height(),
             gl_id: None,
             tile_size,
+            explicit_background
         }
     }
 
@@ -87,7 +91,22 @@ impl Font {
             let img_orig = Font::load_image(&self.bitmap_file);
             let img_flip = img_orig.flipv();
             let img = img_flip.to_rgba();
-            let data = img.into_raw();
+            let mut data = img.into_raw();
+            if let Some(bg_rgb) = self.explicit_background {
+                let bg_r = (bg_rgb.r * 255.0) as u8;
+                let bg_g = (bg_rgb.g * 255.0) as u8;
+                let bg_b = (bg_rgb.b * 255.0) as u8;
+                let len = data.len()/4;
+                for i in 0..len {
+                    let idx = i*4;                    
+                    if data[idx] == bg_r && data[idx+1] == bg_g && data[idx+2] == bg_b {
+                        data[idx] = 0;
+                        data[idx+1] = 0;
+                        data[idx+2] = 0;
+                        data[idx+3] = 0;
+                    }
+                }
+            }
             let format = glow::RGBA;
             gl.tex_image_2d(
                 glow::TEXTURE_2D,

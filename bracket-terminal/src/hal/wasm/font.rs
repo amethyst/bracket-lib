@@ -2,6 +2,7 @@ use crate::prelude::embedding;
 use crate::Result;
 use glow::HasContext;
 use image::{ColorType, GenericImageView};
+use bracket_color::prelude::RGB;
 
 #[derive(PartialEq, Clone)]
 /// BTerm's representation of a font or tileset file.
@@ -13,6 +14,7 @@ pub struct Font {
     pub gl_id: Option<glow::WebTextureKey>,
 
     pub tile_size: (u32, u32),
+    pub explicit_background: Option<RGB>,
 }
 
 #[allow(non_snake_case)]
@@ -25,6 +27,7 @@ impl Font {
             height,
             gl_id: None,
             tile_size,
+            explicit_background: None
         }
     }
 
@@ -41,7 +44,7 @@ impl Font {
     }
 
     /// Loads a font file (texture) to obtain the width and height for you
-    pub fn load<S: ToString>(filename: S, tile_size: (u32, u32)) -> Font {
+    pub fn load<S: ToString>(filename: S, tile_size: (u32, u32), explicit_background: Option<RGB>) -> Font {
         let img = Font::load_image(&filename.to_string());
         Font {
             bitmap_file: filename.to_string(),
@@ -49,6 +52,7 @@ impl Font {
             height: img.height(),
             gl_id: None,
             tile_size,
+            explicit_background
         }
     }
 

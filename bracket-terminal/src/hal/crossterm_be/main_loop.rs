@@ -104,6 +104,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                 Event::Resize(x, y) => {
                     bterm.on_event(BEvent::Resized {
                         new_size: bracket_geometry::prelude::Point::new(x, y),
+                        dpi_scale_factor: 1.0
                     });
                 }
                 _ => {}
@@ -171,7 +172,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                                 .expect("Command fail");
                                 last_bg = t.bg;
                             }
-                            queue!(stdout(), Print(to_char(t.glyph))).expect("Command fail");
+                            queue!(stdout(), Print(to_char(t.glyph as u8))).expect("Command fail");
                             idx += 1;
                         }
                     }
@@ -204,7 +205,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                             })
                         )
                         .expect("Command fail");
-                        queue!(stdout(), Print(to_char(t.glyph))).expect("Command fail");
+                        queue!(stdout(), Print(to_char(t.glyph as u8))).expect("Command fail");
                     }
                 }
             }

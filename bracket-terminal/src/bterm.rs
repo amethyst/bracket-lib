@@ -110,7 +110,7 @@ impl BTerm {
         let h: u32 = height_chars.try_into().ok().unwrap();
         let font_path = format!("{}/terminal8x8.png", &path_to_shaders.to_string());
         let mut context = BTerm::init_raw(w * 8, h * 8, window_title, InitHints::new()).unwrap();
-        let font = context.register_font(Font::load(font_path, (8, 8)));
+        let font = context.register_font(Font::load(font_path, (8, 8), None));
         context.register_console(SimpleConsole::init(w, h), font.unwrap());
         context
     }
@@ -133,7 +133,7 @@ impl BTerm {
         let h: u32 = height_chars.try_into().ok().unwrap();
         let font_path = format!("{}/vga8x16.png", &path_to_shaders.to_string());
         let mut context = BTerm::init_raw(w * 8, h * 16, window_title, InitHints::new()).unwrap();
-        let font = context.register_font(Font::load(font_path, (8, 16)));
+        let font = context.register_font(Font::load(font_path, (8, 16), None));
         context.register_console(SimpleConsole::init(w, h), font.unwrap());
         context
     }

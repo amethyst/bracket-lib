@@ -134,7 +134,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                         window.mvaddch(
                             st.height as i32 - (y as i32 + 1),
                             x as i32,
-                            to_char(t.glyph),
+                            to_char(t.glyph as u8),
                         );
                         idx += 1;
                     }
@@ -150,7 +150,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     window.mvaddch(
                         st.height as i32 - (y as i32 + 1),
                         x as i32,
-                        to_char(t.glyph),
+                        to_char(t.glyph as u8),
                     );
                 }
             }
