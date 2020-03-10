@@ -36,7 +36,7 @@ amethyst_engine_metal = [ "bracket-terminal/amethyst_engine_metal" ]
 
 [dependencies]
 bracket-algorithm-traits = { path = "bracket-algorithm-traits/" }
-bracket-color = { path = "bracket-color/", features = [ "rex" ] }
+bracket-color = { path = "bracket-color/", features = [ "rex", "palette" ] }
 bracket-geometry = { path = "bracket-geometry/" }
 bracket-noise = { path = "bracket-noise/" }
 bracket-pathfinding = { path = "bracket-pathfinding/" }

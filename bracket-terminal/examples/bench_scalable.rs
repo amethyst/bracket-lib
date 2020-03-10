@@ -59,7 +59,7 @@ fn main() -> BError {
         .unwrap()
         .with_title("bracket-lib benchmark")
         .with_vsync(false)
-        .with_resize_scaling(true)
+        .with_automatic_console_resize(true)
         .build()?;
     main_loop(context, State::new())
 }
