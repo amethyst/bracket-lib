@@ -5,7 +5,10 @@ pub use bracket_geometry::prelude::Point;
 #[derive(Clone, Debug, PartialEq)]
 pub enum BEvent {
     /// The window was resized
-    Resized { new_size: Point, dpi_scale_factor: f32 },
+    Resized {
+        new_size: Point,
+        dpi_scale_factor: f32,
+    },
 
     /// The window was moved
     Moved { new_position: Point },
@@ -40,5 +43,8 @@ pub enum BEvent {
 
     /// The window's scale factor was changed. You generally don't need to do anything for this, unless you are working with
     /// pixel coordinates.
-    ScaleFactorChanged { new_size: Point, dpi_scale_factor: f32 },
+    ScaleFactorChanged {
+        new_size: Point,
+        dpi_scale_factor: f32,
+    },
 }

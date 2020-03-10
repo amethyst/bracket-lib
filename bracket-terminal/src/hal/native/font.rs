@@ -1,9 +1,9 @@
 use super::BACKEND;
 use crate::prelude::embedding;
 use crate::Result;
+use bracket_color::prelude::RGB;
 use glow::HasContext;
 use image::GenericImageView;
-use bracket_color::prelude::RGB;
 
 #[derive(PartialEq, Clone)]
 /// BTerm's representation of a font or tileset file.
@@ -28,7 +28,7 @@ impl Font {
             height,
             gl_id: None,
             tile_size,
-            explicit_background: None
+            explicit_background: None,
         }
     }
 
@@ -45,7 +45,11 @@ impl Font {
     }
 
     /// Loads a font file (texture) to obtain the width and height for you
-    pub fn load<S: ToString>(filename: S, tile_size: (u32, u32), explicit_background: Option<RGB>) -> Font {
+    pub fn load<S: ToString>(
+        filename: S,
+        tile_size: (u32, u32),
+        explicit_background: Option<RGB>,
+    ) -> Font {
         let img = Font::load_image(&filename.to_string());
         Font {
             bitmap_file: filename.to_string(),
@@ -53,7 +57,7 @@ impl Font {
             height: img.height(),
             gl_id: None,
             tile_size,
-            explicit_background
+            explicit_background,
         }
     }
 
@@ -96,14 +100,14 @@ impl Font {
                 let bg_r = (bg_rgb.r * 255.0) as u8;
                 let bg_g = (bg_rgb.g * 255.0) as u8;
                 let bg_b = (bg_rgb.b * 255.0) as u8;
-                let len = data.len()/4;
+                let len = data.len() / 4;
                 for i in 0..len {
-                    let idx = i*4;                    
-                    if data[idx] == bg_r && data[idx+1] == bg_g && data[idx+2] == bg_b {
+                    let idx = i * 4;
+                    if data[idx] == bg_r && data[idx + 1] == bg_g && data[idx + 2] == bg_b {
                         data[idx] = 0;
-                        data[idx+1] = 0;
-                        data[idx+2] = 0;
-                        data[idx+3] = 0;
+                        data[idx + 1] = 0;
+                        data[idx + 2] = 0;
+                        data[idx + 3] = 0;
                     }
                 }
             }
@@ -152,7 +156,7 @@ mod tests {
     #[test]
     // Tests that we make an RGB triplet at defaults and it is black.
     fn make_font_from_file() {
-        let f = Font::load("resources/terminal8x8.png", (8, 8));
+        let f = Font::load("resources/terminal8x8.png", (8, 8), None);
         assert_eq!(f.width, 128);
         assert_eq!(f.height, 128);
     }

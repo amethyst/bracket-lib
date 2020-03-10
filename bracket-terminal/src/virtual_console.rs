@@ -386,6 +386,10 @@ impl Console for VirtualConsole {
         self
     }
 
+    fn as_any_mut(&mut self) -> &mut dyn Any {
+        self
+    }
+
     /// Permits the creation of an arbitrary clipping rectangle. It's a really good idea
     /// to make sure that this rectangle is entirely valid.
     fn set_clipping(&mut self, clipping: Option<Rect>) {

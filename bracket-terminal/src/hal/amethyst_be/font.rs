@@ -13,16 +13,20 @@ pub struct Font {
     pub tile_size: (u32, u32),
     pub filename: String,
     pub ss: Option<Handle<SpriteSheet>>,
-    pub explicit_background: Option<RGB>
+    pub explicit_background: Option<RGB>,
 }
 
 impl Font {
-    pub fn load<S: ToString>(filename: S, tile_size: (u32, u32), explicit_background: Option<RGB>) -> Font {
+    pub fn load<S: ToString>(
+        filename: S,
+        tile_size: (u32, u32),
+        explicit_background: Option<RGB>,
+    ) -> Font {
         Font {
             tile_size,
             filename: filename.to_string(),
             ss: None,
-            explicit_background
+            explicit_background,
         }
     }
 

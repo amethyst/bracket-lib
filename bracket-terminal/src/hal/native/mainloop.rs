@@ -14,9 +14,17 @@ use std::time::Instant;
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
-fn on_resize(bterm: &mut BTerm, physical_size: glutin::dpi::PhysicalSize<u32>, dpi_scale_factor: f64) -> Result<()> {
-    bterm.resize_pixels(physical_size.width as u32, physical_size.height as u32);
+fn on_resize(
+    bterm: &mut BTerm,
+    physical_size: glutin::dpi::PhysicalSize<u32>,
+    dpi_scale_factor: f64,
+) -> Result<()> {
     let mut be = BACKEND.lock().unwrap();
+    bterm.resize_pixels(
+        physical_size.width as u32,
+        physical_size.height as u32,
+        be.resize_scaling,
+    );
     let gl = be.gl.as_ref().unwrap();
     unsafe {
         gl.viewport(
@@ -26,12 +34,13 @@ fn on_resize(bterm: &mut BTerm, physical_size: glutin::dpi::PhysicalSize<u32>, d
             physical_size.height as i32,
         );
     }
-    let new_fb = Framebuffer::build_fbo(gl, physical_size.width as i32, physical_size.height as i32)?;
+    let new_fb =
+        Framebuffer::build_fbo(gl, physical_size.width as i32, physical_size.height as i32)?;
     be.backing_buffer = Some(new_fb);
     if be.resize_scaling {
         bterm.on_event(BEvent::Resized {
             new_size: Point::new(physical_size.width, physical_size.height),
-            dpi_scale_factor: dpi_scale_factor as f32
+            dpi_scale_factor: dpi_scale_factor as f32,
         });
     }
 
@@ -67,7 +76,11 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     let el = unwrap.el;
     let wc = unwrap.wc;
 
-    on_resize(&mut bterm, wc.window().inner_size(), wc.window().scale_factor())?; // Additional resize to handle some X11 cases
+    on_resize(
+        &mut bterm,
+        wc.window().inner_size(),
+        wc.window().scale_factor(),
+    )?; // Additional resize to handle some X11 cases
 
     el.run(move |event, _, control_flow| {
         *control_flow = TICK_TYPE;
@@ -153,7 +166,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     on_resize(&mut bterm, **new_inner_size, sf).unwrap();
                     bterm.on_event(BEvent::ScaleFactorChanged {
                         new_size: Point::new(new_inner_size.width, new_inner_size.height),
-                        dpi_scale_factor : sf as f32
+                        dpi_scale_factor: sf as f32,
                     })
                 }
 
@@ -210,14 +223,14 @@ fn check_console_backing() {
 
 fn rebuild_consoles() {
     let mut consoles = CONSOLE_BACKING.lock().unwrap();
-    let bi = BACKEND_INTERNAL.lock().unwrap();
+    let mut bi = BACKEND_INTERNAL.lock().unwrap();
     for (i, c) in consoles.iter_mut().enumerate() {
         match c {
             ConsoleBacking::Simple { backing } => {
-                let sc = bi.consoles[i]
+                let mut sc = bi.consoles[i]
                     .console
-                    .as_any()
-                    .downcast_ref::<SimpleConsole>()
+                    .as_any_mut()
+                    .downcast_mut::<SimpleConsole>()
                     .unwrap();
                 if sc.is_dirty {
                     backing.rebuild_vertices(
@@ -230,13 +243,14 @@ fn rebuild_consoles() {
                         sc.scale_center,
                         sc.needs_resize_internal,
                     );
+                    sc.needs_resize_internal = false;
                 }
             }
             ConsoleBacking::Sparse { backing } => {
-                let sc = bi.consoles[i]
+                let mut sc = bi.consoles[i]
                     .console
-                    .as_any()
-                    .downcast_ref::<SparseConsole>()
+                    .as_any_mut()
+                    .downcast_mut::<SparseConsole>()
                     .unwrap();
                 if sc.is_dirty {
                     backing.rebuild_vertices(
@@ -248,6 +262,7 @@ fn rebuild_consoles() {
                         sc.scale_center,
                         &sc.tiles,
                     );
+                    sc.needs_resize_internal = false;
                 }
             }
         }

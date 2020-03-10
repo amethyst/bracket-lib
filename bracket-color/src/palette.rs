@@ -50,27 +50,27 @@ mod tests {
     fn add_check_color() {
         register_palette_color("red", RGB::from_f32(1.0, 0.0, 0.0));
         let red = palette_color(&"red").unwrap();
-        assert!( red == RGBA::from_f32(1.0, 0.0, 0.0, 1.0) )
+        assert!(red == RGBA::from_f32(1.0, 0.0, 0.0, 1.0))
     }
 
     #[test]
     fn check_w3c() {
         add_named_colors_to_palette();
-        assert!( palette_color(&"snow").unwrap() == RGBA::named(SNOW) );
-        assert!( palette_color(&"bisque").unwrap() == RGBA::named(BISQUE) );
+        assert!(palette_color(&"snow").unwrap() == RGBA::named(SNOW));
+        assert!(palette_color(&"bisque").unwrap() == RGBA::named(BISQUE));
     }
 
     #[test]
     fn clear_test() {
         add_named_colors_to_palette();
         clear_palette();
-        assert!( palette_color(&"snow").is_none() )
+        assert!(palette_color(&"snow").is_none())
     }
 
     #[test]
     fn no_such_color() {
         add_named_colors_to_palette();
-        assert!( palette_color(&"i like fish").is_none() )
+        assert!(palette_color(&"i like fish").is_none())
     }
 }
 

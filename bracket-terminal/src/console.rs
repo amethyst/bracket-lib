@@ -143,6 +143,10 @@ pub trait Console {
     /// natively.
     fn as_any(&self) -> &dyn Any;
 
+    /// Produces the implementor as an Any that can be matched to determine type and access
+    /// natively.
+    fn as_any_mut(&mut self) -> &mut dyn Any;
+
     /// Permits the creation of an arbitrary clipping rectangle. It's a really good idea
     /// to make sure that this rectangle is entirely valid.
     fn set_clipping(&mut self, clipping: Option<Rect>);

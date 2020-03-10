@@ -37,7 +37,7 @@ fn make_backing_texture(gl: &glow::Context, width: usize, height: usize) -> glow
             glow::NEAREST as i32,
         );
 
-        let data = vec![200u8; width * height * 4];
+        let data = vec![0u8; width * height * 4];
         gl.tex_image_2d(
             glow::TEXTURE_2D,
             0,
@@ -79,14 +79,27 @@ impl SimpleConsoleBackend {
         offset_y: f32,
         _scale: f32,
         _scale_center: (i32, i32),
+        needs_resize: bool,
     ) {
+        if needs_resize {
+            unsafe {
+                gl.delete_texture(self.charbuffer);
+                gl.delete_texture(self.foreground);
+                gl.delete_texture(self.background);
+                self.charbuffer = make_backing_texture(gl, width as usize, height as usize);
+                self.foreground = make_backing_texture(gl, width as usize, height as usize);
+                self.background = make_backing_texture(gl, width as usize, height as usize);
+                super::log(&format!("Textures rebuilt. {}x{}", width, height));
+            }
+        }
+
         unsafe {
             let mut data = vec![0u8; width as usize * height as usize * 4];
             let mut data2 = vec![0u8; width as usize * height as usize * 4];
             let mut data3 = vec![0u8; width as usize * height as usize * 4];
 
             for (i, t) in tiles.iter().enumerate() {
-                data[i * 4] = t.glyph;
+                data[i * 4] = t.glyph as u8;
                 data[(i * 4) + 1] = (t.fg.r * 255.0) as u8;
                 data[(i * 4) + 2] = (t.fg.g * 255.0) as u8;
                 data[(i * 4) + 3] = (t.fg.b * 255.0) as u8;
@@ -155,6 +168,9 @@ impl SimpleConsoleBackend {
         _height: u32,
     ) -> Result<()> {
         unsafe {
+            gl.active_texture(glow::TEXTURE0);
+            font.bind_texture(gl);
+
             gl.active_texture(glow::TEXTURE1);
             gl.bind_texture(glow::TEXTURE_2D, Some(self.charbuffer));
             shader.setInt(gl, "glyphBuffer", 1);

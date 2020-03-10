@@ -104,7 +104,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                 Event::Resize(x, y) => {
                     bterm.on_event(BEvent::Resized {
                         new_size: bracket_geometry::prelude::Point::new(x, y),
-                        dpi_scale_factor: 1.0
+                        dpi_scale_factor: 1.0,
                     });
                 }
                 _ => {}

@@ -90,7 +90,7 @@ fn check_console_backing() {
 }
 
 fn rebuild_consoles(bterm: &BTerm) {
-    let bi = BACKEND_INTERNAL.lock().unwrap();
+    let mut bi = BACKEND_INTERNAL.lock().unwrap();
     let be = BACKEND.lock().unwrap();
     let gl = be.gl.as_ref().unwrap();
     let mut consoles = CONSOLE_BACKING.lock().unwrap();
@@ -115,10 +115,10 @@ fn rebuild_consoles(bterm: &BTerm) {
 
         match c {
             ConsoleBacking::Simple { backing } => {
-                let sc = bi.consoles[i]
+                let mut sc = bi.consoles[i]
                     .console
-                    .as_any()
-                    .downcast_ref::<SimpleConsole>()
+                    .as_any_mut()
+                    .downcast_mut::<SimpleConsole>()
                     .unwrap();
                 if sc.is_dirty {
                     backing.rebuild_vertices(
@@ -130,14 +130,16 @@ fn rebuild_consoles(bterm: &BTerm) {
                         sc.offset_y,
                         sc.scale,
                         sc.scale_center,
+                        sc.needs_resize_internal,
                     );
+                    sc.needs_resize_internal = false;
                 }
             }
             ConsoleBacking::Sparse { backing } => {
-                let sc = bi.consoles[i]
+                let mut sc = bi.consoles[i]
                     .console
-                    .as_any()
-                    .downcast_ref::<SparseConsole>()
+                    .as_any_mut()
+                    .downcast_mut::<SparseConsole>()
                     .unwrap();
                 if sc.is_dirty {
                     backing.rebuild_vertices(
@@ -150,7 +152,9 @@ fn rebuild_consoles(bterm: &BTerm) {
                         sc.scale_center,
                         &sc.tiles,
                         has_background,
+                        sc.needs_resize_internal,
                     );
+                    sc.needs_resize_internal = false;
                 }
             }
         }

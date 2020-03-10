@@ -4,7 +4,11 @@ pub struct Font {
 }
 
 impl Font {
-    pub fn load<S: ToString>(_filename: S, _tile_size: (u32, u32), _explicit_background: Option<bracket_color::prelude::RGB>) -> Font {
+    pub fn load<S: ToString>(
+        _filename: S,
+        _tile_size: (u32, u32),
+        _explicit_background: Option<bracket_color::prelude::RGB>,
+    ) -> Font {
         Font { tile_size: (0, 0) }
     }
 

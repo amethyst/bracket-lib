@@ -17,7 +17,7 @@ impl GameState for State {
             Rect::with_exact(0, 0, char_size.0, char_size.1),
             ctx,
         );
-        for x in 0 .. char_size.0 as i32 {
+        for x in 0..char_size.0 as i32 {
             ctx.set_bg(x, 0, RGB::named(BLUE));
         }
 
@@ -56,7 +56,7 @@ fn main() -> BError {
     main_loop(context, gs)
 }
 
-const TALE_OF_TWO_CITIES_INTRO : &str = "PRESS: (1) 8x8, (2) VGA, (3) Cheep, (4) 10x16, (5) 6x6
+const TALE_OF_TWO_CITIES_INTRO : &str = "PRESS: (1) 8x8, (2) Cheep, (3) VGA, (4) 10x16, (5) 6x6
 
 I. The Period
 It was the best of times,

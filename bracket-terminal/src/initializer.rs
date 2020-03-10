@@ -2,8 +2,8 @@ use crate::prelude::{
     font::Font, init_raw, BTerm, CharacterTranslationMode, InitHints, SimpleConsole, SparseConsole,
     INPUT,
 };
-use bracket_color::prelude::RGB;
 use crate::Result;
+use bracket_color::prelude::RGB;
 use std::collections::HashMap;
 use std::convert::*;
 
@@ -11,7 +11,7 @@ use std::convert::*;
 struct BuilderFont {
     path: String,
     dimensions: (u32, u32),
-    explicit_background: Option<RGB>
+    explicit_background: Option<RGB>,
 }
 
 /// Internal enum defining a console to be loaded.
@@ -104,7 +104,7 @@ impl BTermBuilder {
         cb.fonts.push(BuilderFont {
             path: "terminal8x8.png".to_string(),
             dimensions: (8, 8),
-            explicit_background: None
+            explicit_background: None,
         });
         cb.consoles.push(ConsoleType::SimpleConsole {
             width: 80,
@@ -137,7 +137,7 @@ impl BTermBuilder {
         cb.fonts.push(BuilderFont {
             path: "terminal8x8.png".to_string(),
             dimensions: (8, 8),
-            explicit_background: None
+            explicit_background: None,
         });
         cb.consoles.push(ConsoleType::SimpleConsole {
             width: w,
@@ -165,7 +165,7 @@ impl BTermBuilder {
         cb.fonts.push(BuilderFont {
             path: "vga8x16.png".to_string(),
             dimensions: (8, 8),
-            explicit_background: None
+            explicit_background: None,
         });
         cb.consoles.push(ConsoleType::SimpleConsole {
             width: 80,
@@ -201,7 +201,7 @@ impl BTermBuilder {
         cb.fonts.push(BuilderFont {
             path: "vga8x16.png".to_string(),
             dimensions: (8, 8),
-            explicit_background: None
+            explicit_background: None,
         });
         cb.consoles.push(ConsoleType::SimpleConsole {
             width: w,
@@ -265,16 +265,22 @@ impl BTermBuilder {
                     .ok()
                     .expect("Must be convertible to a u32"),
             ),
-            explicit_background: None
+            explicit_background: None,
         });
         self
     }
 
     /// Adds a font registration to the BTerm builder.
-    pub fn with_font_bg<S: ToString, T, COLOR>(mut self, font_path: S, width: T, height: T, background: COLOR) -> Self
+    pub fn with_font_bg<S: ToString, T, COLOR>(
+        mut self,
+        font_path: S,
+        width: T,
+        height: T,
+        background: COLOR,
+    ) -> Self
     where
         T: TryInto<u32>,
-        COLOR: Into<RGB>
+        COLOR: Into<RGB>,
     {
         self.fonts.push(BuilderFont {
             path: font_path.to_string(),
@@ -285,7 +291,7 @@ impl BTermBuilder {
                     .ok()
                     .expect("Must be convertible to a u32"),
             ),
-            explicit_background: Some(background.into())
+            explicit_background: Some(background.into()),
         });
         self
     }
@@ -401,7 +407,11 @@ impl BTermBuilder {
         let mut font_map: HashMap<String, usize> = HashMap::new();
         for font in &self.fonts {
             let font_path = format!("{}/{}", self.resource_path, font.path);
-            let font_id = context.register_font(Font::load(font_path.clone(), font.dimensions, font.explicit_background));
+            let font_id = context.register_font(Font::load(
+                font_path.clone(),
+                font.dimensions,
+                font.explicit_background,
+            ));
             font_map.insert(font_path, font_id?);
         }
 

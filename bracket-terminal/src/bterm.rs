@@ -56,6 +56,8 @@ lazy_static! {
 pub struct BTerm {
     pub width_pixels: u32,
     pub height_pixels: u32,
+    pub original_height_pixels: u32,
+    pub original_width_pixels: u32,
     pub fps: f32,
     pub frame_time_ms: f32,
     pub active_console: usize,
@@ -336,12 +338,17 @@ impl BTerm {
 
     /// Internal - do not use.
     /// Passes a resize message down to all registered consoles.
-    pub(crate) fn resize_pixels<T>(&mut self, width: T, height: T)
+    pub(crate) fn resize_pixels<T>(&mut self, width: T, height: T, scaling_enabled: bool)
     where
         T: Into<u32>,
     {
         self.width_pixels = width.into();
         self.height_pixels = height.into();
+
+        if scaling_enabled {
+            self.original_width_pixels = self.width_pixels;
+            self.original_height_pixels = self.height_pixels;
+        }
 
         let mut bi = BACKEND_INTERNAL.lock().unwrap();
         for c in bi.consoles.iter_mut() {
@@ -693,7 +700,8 @@ impl BTerm {
             .set_translation_mode(translation)
     }
 
-    /// Change the active font for the layer
+    #[cfg(feature = "opengl")]
+    /// Change the active font for the layer. DO NOT USE WITH AMETHYST YET.
     pub fn set_active_font(&mut self, font_index: usize) {
         let mut be = BACKEND_INTERNAL.lock().unwrap();
         if font_index > be.fonts.len() {
@@ -704,16 +712,12 @@ impl BTerm {
         be.consoles[self.active_console].font_index = font_index;
 
         if old_font_size != new_font_size {
-            let x_mul = old_font_size.0 as f32 / new_font_size.0 as f32;
-            let y_mul = old_font_size.1 as f32 / new_font_size.1 as f32;
-            //println!("{}, {}", x_mul, y_mul);
-            let old_dims = be.consoles[self.active_console].console.get_char_size();
-            let new_x = (old_dims.0 as f32 * x_mul) as u32;
-            let new_y = (old_dims.1 as f32 * y_mul) as u32;
-            //println!("{}, {}", new_x, new_y);
+            let x_size = self.original_width_pixels / new_font_size.0;
+            let y_size = self.original_height_pixels / new_font_size.1;
+
             be.consoles[self.active_console]
                 .console
-                .set_char_size(new_x, new_y);
+                .set_char_size(x_size, y_size);
         }
     }
 

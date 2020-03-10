@@ -1,8 +1,8 @@
 use crate::prelude::embedding;
 use crate::Result;
+use bracket_color::prelude::RGB;
 use glow::HasContext;
 use image::{ColorType, GenericImageView};
-use bracket_color::prelude::RGB;
 
 #[derive(PartialEq, Clone)]
 /// BTerm's representation of a font or tileset file.
@@ -27,7 +27,7 @@ impl Font {
             height,
             gl_id: None,
             tile_size,
-            explicit_background: None
+            explicit_background: None,
         }
     }
 
@@ -44,7 +44,11 @@ impl Font {
     }
 
     /// Loads a font file (texture) to obtain the width and height for you
-    pub fn load<S: ToString>(filename: S, tile_size: (u32, u32), explicit_background: Option<RGB>) -> Font {
+    pub fn load<S: ToString>(
+        filename: S,
+        tile_size: (u32, u32),
+        explicit_background: Option<RGB>,
+    ) -> Font {
         let img = Font::load_image(&filename.to_string());
         Font {
             bitmap_file: filename.to_string(),
@@ -52,12 +56,13 @@ impl Font {
             height: img.height(),
             gl_id: None,
             tile_size,
-            explicit_background
+            explicit_background,
         }
     }
 
     /// Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
     pub fn setup_gl_texture(&mut self, gl: &glow::Context) -> Result<glow::WebTextureKey> {
+        super::log(&format!("GL initialized: {}", self.bitmap_file));
         let texture;
 
         unsafe {
@@ -86,25 +91,33 @@ impl Font {
             );
 
             let img_orig = Font::load_image(&self.bitmap_file);
-            let img = img_orig.flipv();
-            let data = img.raw_pixels();
-            let format = match img.color() {
-                ColorType::RGB(_) => glow::RGB,
-                ColorType::RGBA(_) => glow::RGBA,
-                _ => {
-                    panic!(
-                        "unexpected image format {:?} for {}",
-                        img.color(),
-                        self.bitmap_file
-                    );
+            let w = img_orig.width() as i32;
+            let h = img_orig.height() as i32;
+            let img_flip = img_orig.flipv();
+            let img = img_flip.to_rgba();
+            let mut data = img.into_raw();
+            if let Some(bg_rgb) = self.explicit_background {
+                let bg_r = (bg_rgb.r * 255.0) as u8;
+                let bg_g = (bg_rgb.g * 255.0) as u8;
+                let bg_b = (bg_rgb.b * 255.0) as u8;
+                let len = data.len() / 4;
+                for i in 0..len {
+                    let idx = i * 4;
+                    if data[idx] == bg_r && data[idx + 1] == bg_g && data[idx + 2] == bg_b {
+                        data[idx] = 0;
+                        data[idx + 1] = 0;
+                        data[idx + 2] = 0;
+                        data[idx + 3] = 0;
+                    }
                 }
-            };
+            }
+            let format = glow::RGBA;
             gl.tex_image_2d(
                 glow::TEXTURE_2D,
                 0,
                 format as i32,
-                img.width() as i32,
-                img.height() as i32,
+                w,
+                h,
                 0,
                 format,
                 glow::UNSIGNED_BYTE,

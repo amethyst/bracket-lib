@@ -32,6 +32,7 @@ pub struct SparseConsole {
 
     pub extra_clipping: Option<Rect>,
     pub translation: CharacterTranslationMode,
+    pub(crate) needs_resize_internal: bool,
 }
 
 impl SparseConsole {
@@ -49,6 +50,7 @@ impl SparseConsole {
             scale_center: (width as i32 / 2, height as i32 / 2),
             extra_clipping: None,
             translation: CharacterTranslationMode::Codepage437,
+            needs_resize_internal: false,
         };
 
         Box::new(new_console)
@@ -366,6 +368,10 @@ impl Console for SparseConsole {
         self
     }
 
+    fn as_any_mut(&mut self) -> &mut dyn Any {
+        self
+    }
+
     /// Permits the creation of an arbitrary clipping rectangle. It's a really good idea
     /// to make sure that this rectangle is entirely valid.
     fn set_clipping(&mut self, clipping: Option<Rect>) {
@@ -404,5 +410,6 @@ impl Console for SparseConsole {
     fn set_char_size(&mut self, width: u32, height: u32) {
         self.width = width;
         self.height = height;
+        self.needs_resize_internal = true;
     }
 }
