@@ -17,12 +17,16 @@ impl GameState for State {
             Rect::with_exact(0, 0, char_size.0, char_size.1),
             ctx,
         );
+        for x in 0 .. char_size.0 as i32 {
+            ctx.set_bg(x, 0, RGB::named(BLUE));
+        }
 
         if let Some(key) = ctx.key {
             match key {
                 VirtualKeyCode::Key1 => ctx.set_active_font(0),
                 VirtualKeyCode::Key2 => ctx.set_active_font(1),
                 VirtualKeyCode::Key3 => ctx.set_active_font(2),
+                VirtualKeyCode::Key4 => ctx.set_active_font(3),
                 _ => {}
             }
         }
@@ -30,13 +34,16 @@ impl GameState for State {
 }
 
 bracket_terminal::embedded_resource!(TILE_FONT, "../resources/cheepicus8x8.png");
+bracket_terminal::embedded_resource!(TILE_FONT2, "../resources/terminal_10x16.png");
 
 fn main() -> BError {
     bracket_terminal::link_resource!(TILE_FONT, "resources/cheepicus8x8.png");
+    bracket_terminal::link_resource!(TILE_FONT2, "resources/terminal_10x16.png");
     let context = BTermBuilder::simple80x50()
         .with_title("Hello Virtual Terminal Example")
         .with_font("cheepicus8x8.png", 8, 8)
-        .with_font("vga8x16.png", 8u32, 16u32)
+        .with_font("vga8x16.png", 8, 16)
+        .with_font("terminal_10x16.png", 10, 16)
         .build()?;
 
     let gs: State = State {
@@ -45,7 +52,7 @@ fn main() -> BError {
     main_loop(context, gs)
 }
 
-const TALE_OF_TWO_CITIES_INTRO : &str = "PRESS 1 FOR 8x8 FONT, 2 FOR CHEEPICUS FONT, 3 FOR VGA.
+const TALE_OF_TWO_CITIES_INTRO : &str = "PRESS 1 FOR 8x8 FONT, 2 FOR CHEEPICUS FONT, 3 FOR VGA, 4 BLACK BG.
 
 I. The Period
 It was the best of times,

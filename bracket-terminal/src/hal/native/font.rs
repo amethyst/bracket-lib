@@ -2,7 +2,7 @@ use super::BACKEND;
 use crate::prelude::embedding;
 use crate::Result;
 use glow::HasContext;
-use image::{ColorType, GenericImageView};
+use image::GenericImageView;
 
 #[derive(PartialEq, Clone)]
 /// BTerm's representation of a font or tileset file.
@@ -85,25 +85,16 @@ impl Font {
             );
 
             let img_orig = Font::load_image(&self.bitmap_file);
-            let img = img_orig.flipv();
-            let data = img.raw_pixels();
-            let format = match img.color() {
-                ColorType::RGB(_) => glow::RGB,
-                ColorType::RGBA(_) => glow::RGBA,
-                _ => {
-                    panic!(
-                        "unexpected image format {:?} for {}",
-                        img.color(),
-                        self.bitmap_file
-                    );
-                }
-            };
+            let img_flip = img_orig.flipv();
+            let img = img_flip.to_rgba();
+            let data = img.into_raw();
+            let format = glow::RGBA;
             gl.tex_image_2d(
                 glow::TEXTURE_2D,
                 0,
                 format as i32,
-                img.width() as i32,
-                img.height() as i32,
+                img_orig.width() as i32,
+                img_orig.height() as i32,
                 0,
                 format,
                 glow::UNSIGNED_BYTE,
