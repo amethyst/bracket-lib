@@ -14,7 +14,7 @@ use std::time::Instant;
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
-fn on_resize(bterm: &mut BTerm, physical_size: glutin::dpi::PhysicalSize<u32>) -> Result<()> {
+fn on_resize(bterm: &mut BTerm, physical_size: glutin::dpi::PhysicalSize<u32>, dpi_scale_factor: f64) -> Result<()> {
     bterm.resize_pixels(physical_size.width as u32, physical_size.height as u32);
     let mut be = BACKEND.lock().unwrap();
     let gl = be.gl.as_ref().unwrap();
@@ -31,6 +31,7 @@ fn on_resize(bterm: &mut BTerm, physical_size: glutin::dpi::PhysicalSize<u32>) -
     if be.resize_scaling {
         bterm.on_event(BEvent::Resized {
             new_size: Point::new(physical_size.width, physical_size.height),
+            dpi_scale_factor: dpi_scale_factor as f32
         });
     }
 
@@ -66,7 +67,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     let el = unwrap.el;
     let wc = unwrap.wc;
 
-    on_resize(&mut bterm, wc.window().inner_size())?; // Additional resize to handle some X11 cases
+    on_resize(&mut bterm, wc.window().inner_size(), wc.window().scale_factor())?; // Additional resize to handle some X11 cases
 
     el.run(move |event, _, control_flow| {
         *control_flow = TICK_TYPE;
@@ -115,7 +116,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     });
                 }
                 WindowEvent::Resized(physical_size) => {
-                    on_resize(&mut bterm, *physical_size).unwrap();
+                    on_resize(&mut bterm, *physical_size, wc.window().scale_factor()).unwrap();
                 }
                 WindowEvent::CloseRequested => {
                     // If not using events, just close. Otherwise, push the event
@@ -148,9 +149,11 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                 }
 
                 WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
-                    on_resize(&mut bterm, **new_inner_size).unwrap();
+                    let sf = wc.window().scale_factor();
+                    on_resize(&mut bterm, **new_inner_size, sf).unwrap();
                     bterm.on_event(BEvent::ScaleFactorChanged {
                         new_size: Point::new(new_inner_size.width, new_inner_size.height),
+                        dpi_scale_factor : sf as f32
                     })
                 }
 
