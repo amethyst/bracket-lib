@@ -27,6 +27,7 @@ uniform vec3 screenSize;
 uniform bool screenBurn;
 uniform bool showScanLines;
 uniform bool hasBackground;
+uniform vec2 font_dimensions_glyph;
 
 void main(){
     float consoleX = gl_FragCoord.x / font.r;
@@ -39,15 +40,15 @@ void main(){
     float spriteY = fract(consoleY);
 
     // Figure out where we are on the sprite sheet
-    mediump float glyphSizeX = 1.0f / 16.0f;
-    mediump float glyphSizeY = 1.0f / 16.0f;
+    mediump float glyphSizeX = 1.0f / font_dimensions_glyph.r;
+    mediump float glyphSizeY = 1.0f / font_dimensions_glyph.g;
 
     vec4 glyphLookup = texture(glyphBuffer, TexCoords);
 
     mediump float glyph = glyphLookup.r * 255.0f;
-    mediump float glyphX = mod(glyph, 16.0f);
-    mediump float glyphY = 16.0f - floor(glyph / 16.0f);
-    // So now we have it in 0..16 , 0..16.
+    mediump float glyphX = mod(glyph, font_dimensions_glyph.r);
+    mediump float glyphY = font_dimensions_glyph.g - floor(glyph / font_dimensions_glyph.r);
+    // So now we have it in 0..16 , 0..16. (Or whatever the font wants)
 
     vec4 rgb = texture(fgBuffer, TexCoords);
 

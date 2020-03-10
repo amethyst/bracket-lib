@@ -225,9 +225,12 @@ fn rebuild_consoles() {
     let mut consoles = CONSOLE_BACKING.lock().unwrap();
     let mut bi = BACKEND_INTERNAL.lock().unwrap();
     for (i, c) in consoles.iter_mut().enumerate() {
+        let font_index = bi.consoles[i].font_index;
+        let glyph_dimensions = bi.fonts[font_index].font_dimensions_glyphs;
+        let cons = &mut bi.consoles[i];
         match c {
             ConsoleBacking::Simple { backing } => {
-                let mut sc = bi.consoles[i]
+                let mut sc = cons
                     .console
                     .as_any_mut()
                     .downcast_mut::<SimpleConsole>()
@@ -242,6 +245,7 @@ fn rebuild_consoles() {
                         sc.scale,
                         sc.scale_center,
                         sc.needs_resize_internal,
+                        glyph_dimensions
                     );
                     sc.needs_resize_internal = false;
                 }
@@ -261,6 +265,7 @@ fn rebuild_consoles() {
                         sc.scale,
                         sc.scale_center,
                         &sc.tiles,
+                        glyph_dimensions
                     );
                     sc.needs_resize_internal = false;
                 }

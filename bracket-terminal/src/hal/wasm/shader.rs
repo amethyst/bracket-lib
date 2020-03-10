@@ -99,6 +99,12 @@ impl Shader {
 
     #[allow(non_snake_case)]
     /// ------------------------------------------------------------------------
+    pub unsafe fn setVec2(&self, gl: &glow::Context, name: &str, x: f32, y: f32) {
+        gl.uniform_2_f32(gl.get_uniform_location(self.ID, name), x, y);
+    }
+
+    #[allow(non_snake_case)]
+    /// ------------------------------------------------------------------------
     pub unsafe fn setMat4(&self, gl: &glow::Context, name: &str, mat: &[f32; 16]) {
         gl.uniform_matrix_4_f32_slice(gl.get_uniform_location(self.ID, name), false, mat);
     }

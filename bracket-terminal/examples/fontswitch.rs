@@ -36,18 +36,18 @@ impl GameState for State {
 
 bracket_terminal::embedded_resource!(TILE_FONT, "../resources/cheepicus8x8.png");
 bracket_terminal::embedded_resource!(TILE_FONT2, "../resources/terminal_10x16.png");
-bracket_terminal::embedded_resource!(TILE_FONT3, "../resources/mkv_curses_6x6.png");
+bracket_terminal::embedded_resource!(TILE_FONT3, "../resources/unicode_16x16.png");
 
 fn main() -> BError {
     bracket_terminal::link_resource!(TILE_FONT, "resources/cheepicus8x8.png");
     bracket_terminal::link_resource!(TILE_FONT2, "resources/terminal_10x16.png");
-    bracket_terminal::link_resource!(TILE_FONT3, "resources/mkv_curses_6x6.png");
+    bracket_terminal::link_resource!(TILE_FONT3, "resources/unicode_16x16.png");
     let context = BTermBuilder::simple80x50()
         .with_title("Hello Virtual Terminal Example")
         .with_font("cheepicus8x8.png", 8, 8)
         .with_font("vga8x16.png", 8, 16)
         .with_font("terminal_10x16.png", 10, 16)
-        .with_font_bg("mkv_curses_6x6.png", 6, 6, RGB::from_u8(255, 0, 255))
+        .with_font_bg("unicode_16x16.png", 16, 16, RGB::from_u8(255, 0, 255))
         .build()?;
 
     let gs: State = State {
@@ -56,7 +56,7 @@ fn main() -> BError {
     main_loop(context, gs)
 }
 
-const TALE_OF_TWO_CITIES_INTRO : &str = "PRESS: (1) 8x8, (2) Cheep, (3) VGA, (4) 10x16, (5) 6x6
+const TALE_OF_TWO_CITIES_INTRO : &str = "PRESS: (1) 8x8, (2) Cheep, (3) VGA, (4) 10x16, (5) 16x16
 
 I. The Period
 It was the best of times,
