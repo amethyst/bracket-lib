@@ -47,7 +47,7 @@ fn main() -> BError {
         .with_font("cheepicus8x8.png", 8, 8)
         .with_font("vga8x16.png", 8, 16)
         .with_font("terminal_10x16.png", 10, 16)
-        .with_font_bg("unicode_16x16.png", 16, 16, RGB::from_u8(255, 0, 255))
+        .with_font("unicode_16x16.png", 16, 16)
         .build()?;
 
     let gs: State = State {
