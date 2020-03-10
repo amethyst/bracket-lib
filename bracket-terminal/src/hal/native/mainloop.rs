@@ -18,13 +18,16 @@ fn on_resize(
     bterm: &mut BTerm,
     physical_size: glutin::dpi::PhysicalSize<u32>,
     dpi_scale_factor: f64,
+    send_event: bool
 ) -> Result<()> {
     let mut be = BACKEND.lock().unwrap();
-    bterm.resize_pixels(
-        physical_size.width as u32,
-        physical_size.height as u32,
-        be.resize_scaling,
-    );
+    if send_event {
+        bterm.resize_pixels(
+            physical_size.width as u32,
+            physical_size.height as u32,
+            be.resize_scaling,
+        );
+    }
     let gl = be.gl.as_ref().unwrap();
     unsafe {
         gl.viewport(
@@ -45,12 +48,12 @@ fn on_resize(
     }
 
     let mut bit = BACKEND_INTERNAL.lock().unwrap();
-    if be.resize_scaling {
+    if be.resize_scaling && send_event {
         let num_consoles = bit.consoles.len();
         for i in 0..num_consoles {
             let font_size = bit.fonts[bit.consoles[i].font_index].tile_size;
-            let chr_w = physical_size.width / font_size.0;
-            let chr_h = physical_size.height / font_size.1;
+            let chr_w = (physical_size.width as f64 / dpi_scale_factor) as u32 / font_size.0;
+            let chr_h = (physical_size.height as f64 / dpi_scale_factor) as u32 / font_size.1;
             bit.consoles[i].console.set_char_size(chr_w, chr_h);
         }
     }
@@ -80,6 +83,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         &mut bterm,
         wc.window().inner_size(),
         wc.window().scale_factor(),
+        false
     )?; // Additional resize to handle some X11 cases
 
     el.run(move |event, _, control_flow| {
@@ -129,7 +133,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     });
                 }
                 WindowEvent::Resized(physical_size) => {
-                    on_resize(&mut bterm, *physical_size, wc.window().scale_factor()).unwrap();
+                    on_resize(&mut bterm, *physical_size, wc.window().scale_factor(), true).unwrap();
                 }
                 WindowEvent::CloseRequested => {
                     // If not using events, just close. Otherwise, push the event
@@ -163,7 +167,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
                 WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
                     let sf = wc.window().scale_factor();
-                    on_resize(&mut bterm, **new_inner_size, sf).unwrap();
+                    on_resize(&mut bterm, **new_inner_size, sf, false).unwrap();
                     bterm.on_event(BEvent::ScaleFactorChanged {
                         new_size: Point::new(new_inner_size.width, new_inner_size.height),
                         dpi_scale_factor: sf as f32,

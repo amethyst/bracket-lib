@@ -25,6 +25,7 @@ impl State {
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
         let console_size = ctx.get_char_size();
+        println!("{:#?}", console_size);
         for y in 0..console_size.1 as i32 {
             for x in 0..console_size.0 as i32 {
                 let val = self.rng.rand::<u64>();
