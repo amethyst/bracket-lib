@@ -702,7 +702,7 @@ impl BTerm {
 
     #[cfg(feature = "opengl")]
     /// Change the active font for the layer. DO NOT USE WITH AMETHYST YET.
-    pub fn set_active_font(&mut self, font_index: usize) {
+    pub fn set_active_font(&mut self, font_index: usize, resize_to_natural_dimensions: bool) {
         let mut be = BACKEND_INTERNAL.lock().unwrap();
         if font_index > be.fonts.len() {
             panic!("Font index out of bounds.");
@@ -711,7 +711,7 @@ impl BTerm {
         let new_font_size = be.fonts[font_index].tile_size;
         be.consoles[self.active_console].font_index = font_index;
 
-        if old_font_size != new_font_size {
+        if old_font_size != new_font_size && resize_to_natural_dimensions {
             let x_size = self.original_width_pixels / new_font_size.0;
             let y_size = self.original_height_pixels / new_font_size.1;
 
