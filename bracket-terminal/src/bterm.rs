@@ -264,11 +264,12 @@ impl BTerm {
 
     /// Internal: mark a key press
     pub(crate) fn on_key(&mut self, key: VirtualKeyCode, scan_code: u32, pressed: bool) {
-        self.key = Some(key);
         let mut input = INPUT.lock().unwrap();
         if pressed {
+            self.key = Some(key);
             input.on_key_down(key, scan_code);
         } else {
+            self.key = None;
             input.on_key_up(key, scan_code);
         }
         input.push_event(BEvent::KeyboardInput {
