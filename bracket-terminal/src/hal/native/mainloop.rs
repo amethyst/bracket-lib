@@ -401,4 +401,39 @@ fn tock<GS: GameState>(
             be.gl.as_ref().unwrap().draw_arrays(glow::TRIANGLES, 0, 6);
         }
     }
+
+    {
+        let mut be = BACKEND.lock().unwrap();
+        if let Some(filename) = &be.request_screenshot {
+            let w = bterm.width_pixels;
+            let h = bterm.height_pixels;
+            let gl = be.gl.as_ref().unwrap();
+
+            let mut img = image::DynamicImage::new_rgba8(w, h);
+            let pixels = img.as_mut_rgba8().unwrap();
+
+            unsafe {
+                gl.pixel_store_i32(glow::PACK_ALIGNMENT, 1);
+                gl.read_pixels(
+                    0,
+                    0,
+                    w as i32,
+                    h as i32,
+                    glow::RGBA,
+                    glow::UNSIGNED_BYTE,
+                    pixels,
+                );
+            }
+
+            image::save_buffer(
+                &filename,
+                &image::imageops::flip_vertical(&img),
+                w,
+                h,
+                image::ColorType::RGBA(8),
+            )
+            .expect("Failed to save buffer to the specified path");
+        }
+        be.request_screenshot = None;
+    }
 }

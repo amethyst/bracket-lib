@@ -28,6 +28,7 @@ impl GameState for State {
                 VirtualKeyCode::Key3 => ctx.set_active_font(2, true),
                 VirtualKeyCode::Key4 => ctx.set_active_font(3, true),
                 VirtualKeyCode::Key5 => ctx.set_active_font(4, true),
+                VirtualKeyCode::S => ctx.screenshot("test.png"),
                 _ => {}
             }
         }

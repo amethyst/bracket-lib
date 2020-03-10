@@ -2,6 +2,7 @@ use crate::{
     prelude::{
         font::Font, init_raw, BEvent, CharacterTranslationMode, Console, FontCharType, GameState,
         InitHints, Shader, SimpleConsole, TextAlign, VirtualKeyCode, XpFile, XpLayer, INPUT,
+        BACKEND
     },
     Result,
 };
@@ -740,6 +741,11 @@ impl BTerm {
         crate::prelude::BACKEND.lock().unwrap().resize_request = Some((w, h));
         */
         //panic!("This will be supported when `winit` stops crashing on resize request.");
+    }
+
+    #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
+    pub fn screenshot<S: ToString>(&mut self, filename: S) {
+        BACKEND.lock().unwrap().request_screenshot = Some(filename.to_string());
     }
 }
 
