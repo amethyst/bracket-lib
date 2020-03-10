@@ -51,7 +51,7 @@ impl Point {
 
     #[inline]
     /// Helper for map index conversion
-    pub fn to_index<T>(&self, width: T) -> usize
+    pub fn to_index<T>(self, width: T) -> usize
     where
         T: TryInto<usize>,
     {
@@ -62,12 +62,12 @@ impl Point {
     }
 
     /// Converts the point to an i32 tuple
-    pub fn to_tuple(&self) -> (i32, i32) {
+    pub fn to_tuple(self) -> (i32, i32) {
         (self.x, self.y)
     }
 
     /// Converts the point to a usize tuple
-    pub fn to_unsigned_tuple(&self) -> (usize, usize) {
+    pub fn to_unsigned_tuple(self) -> (usize, usize) {
         (
             self.x.try_into().ok().unwrap(),
             self.y.try_into().ok().unwrap(),
@@ -75,12 +75,12 @@ impl Point {
     }
 
     /// Converts the point to an UltraViolet vec2
-    pub fn to_vec2(&self) -> Vec2 {
+    pub fn to_vec2(self) -> Vec2 {
         Vec2::new(self.x as f32, self.y as f32)
     }
 
     /// Converts the point to an UltraViolet vec2i
-    pub fn to_vec2i(&self) -> Vec2i {
+    pub fn to_vec2i(self) -> Vec2i {
         Vec2i::new(self.x, self.y)
     }
 
