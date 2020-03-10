@@ -26,12 +26,13 @@ fn on_resize(bterm: &mut BTerm, physical_size: glutin::dpi::PhysicalSize<u32>) -
             physical_size.height as i32,
         );
     }
-    let new_fb =
-        Framebuffer::build_fbo(gl, physical_size.width as i32, physical_size.height as i32)?;
+    let new_fb = Framebuffer::build_fbo(gl, physical_size.width as i32, physical_size.height as i32)?;
     be.backing_buffer = Some(new_fb);
-    bterm.on_event(BEvent::Resized {
-        new_size: Point::new(physical_size.width, physical_size.height),
-    });
+    if be.resize_scaling {
+        bterm.on_event(BEvent::Resized {
+            new_size: Point::new(physical_size.width, physical_size.height),
+        });
+    }
 
     let mut bit = BACKEND_INTERNAL.lock().unwrap();
     if be.resize_scaling {
