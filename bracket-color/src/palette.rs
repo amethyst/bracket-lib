@@ -42,31 +42,6 @@ macro_rules! w3c_color_helper {
     };
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::prelude::*;
-
-    #[test]
-    fn add_check_color() {
-        register_palette_color("red", RGB::from_f32(1.0, 0.0, 0.0));
-        let red = palette_color(&"red").unwrap();
-        assert!(red == RGBA::from_f32(1.0, 0.0, 0.0, 1.0))
-    }
-
-    #[test]
-    fn clear_test() {
-        add_named_colors_to_palette();
-        clear_palette();
-        assert!(palette_color(&"snow").is_none())
-    }
-
-    #[test]
-    fn no_such_color() {
-        add_named_colors_to_palette();
-        assert!(palette_color(&"i like fish").is_none())
-    }
-}
-
 // --- Below here was generated with a script ---
 
 /// Insert all named W3C colors into the palette
