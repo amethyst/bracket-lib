@@ -13,7 +13,8 @@ pub struct FancyTile {
     pub glyph: FontCharType,
     pub fg: RGBA,
     pub bg: RGBA,
-    pub rotation: f32
+    pub rotation: f32,
+    pub scale: (f32, f32)
 }
 
 /// A sparse console. Rather than storing every cell on the screen, it stores just cells that have
@@ -59,9 +60,9 @@ impl FancyConsole {
     }
 
     // Insert a single tile with "fancy" attributes
-    pub fn set_fancy(&mut self, x: f32, y: f32, z_order: i32, rotation: f32, fg: RGBA, bg: RGBA, glyph: FontCharType) {
+    pub fn set_fancy(&mut self, x: f32, y: f32, z_order: i32, rotation: f32, scale: (f32, f32), fg: RGBA, bg: RGBA, glyph: FontCharType) {
         self.is_dirty = true;
-        self.tiles.push(FancyTile { position: (x, self.height as f32 - y), z_order, glyph, fg, bg, rotation });
+        self.tiles.push(FancyTile { position: (x, self.height as f32 - y), z_order, glyph, fg, bg, rotation, scale });
     }
 }
 
@@ -114,7 +115,8 @@ impl Console for FancyConsole {
                         glyph,
                         fg: RGBA::from_f32(1.0, 1.0, 1.0, 1.0),
                         bg: RGBA::from_f32(0.0, 0.0, 0.0, 1.0),
-                        rotation: 0.0
+                        rotation: 0.0,
+                        scale: (1.0, 1.0)
                     }
                 }),
         );
@@ -142,7 +144,8 @@ impl Console for FancyConsole {
                         glyph,
                         fg,
                         bg,
-                        rotation: 0.0
+                        rotation: 0.0,
+                        scale: (1.0, 1.0)
                     }
                 }),
         );
@@ -153,7 +156,7 @@ impl Console for FancyConsole {
         self.is_dirty = true;
         if self.try_at(x, y).is_some() {
             let h = (self.height - 1) as f32;
-            self.tiles.push(FancyTile { position: (x as f32, h - y as f32), z_order: 0, glyph, fg, bg, rotation: 0.0 });
+            self.tiles.push(FancyTile { position: (x as f32, h - y as f32), z_order: 0, glyph, fg, bg, rotation: 0.0, scale: (1.0, 1.0) });
         }
     }
 

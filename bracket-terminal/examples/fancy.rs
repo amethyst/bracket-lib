@@ -29,9 +29,10 @@ impl GameState for State {
             &format!("Frame Time: {} ms", ctx.frame_time_ms),
             ColorPair::new(RGB::named(CYAN), RGB::named(BLACK)),
         );
-        
+
         let y = 20.0 + (f32::sin(self.x / 2.0) * 5.0);
-        draw_batch.set_fancy((self.x, y), 0, self.spin, ColorPair::new(RGB::named(YELLOW), RGB::named(BLACK)), to_cp437('@'));
+        let scale = f32::cos(self.x / 3.0) + 1.1;
+        draw_batch.set_fancy((self.x, y), 0, self.spin, (scale, scale), ColorPair::new(RGB::named(YELLOW), RGB::named(BLACK)), to_cp437('@'));
 
         // Submission
         draw_batch.submit(0).expect("Batch error");

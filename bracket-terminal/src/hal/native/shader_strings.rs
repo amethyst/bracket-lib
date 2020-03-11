@@ -161,6 +161,7 @@ layout (location = 1) in vec4 aColor;
 layout (location = 2) in vec4 bColor;
 layout (location = 3) in vec2 aTexCoord;
 layout (location = 4) in vec3 aRotate; // Angle, base X, base Y
+layout (location = 5) in vec2 aScale;
 
 out vec4 ourColor;
 out vec4 ourBackground;
@@ -180,6 +181,7 @@ void main()
     vec2 center_pos = aRotate.yz;
     vec2 base_pos = aPos.xy - center_pos;
     base_pos *= r2d(rot);
+    base_pos *= aScale;
     base_pos += center_pos;
 
 	gl_Position = vec4(base_pos, 0.0, 1.0);

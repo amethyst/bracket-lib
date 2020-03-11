@@ -39,7 +39,7 @@ impl FancyConsoleBackend {
 
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(vbo));
 
-            let stride = 16 * mem::size_of::<f32>() as i32;
+            let stride = 18 * mem::size_of::<f32>() as i32;
             // position attribute
             gl.vertex_attrib_pointer_f32(0, 3, glow::FLOAT, false, stride, 0);
             gl.enable_vertex_attrib_array(0);
@@ -83,6 +83,16 @@ impl FancyConsoleBackend {
                 (13 * mem::size_of::<f32>()) as i32,
             );
             gl.enable_vertex_attrib_array(4);
+            // scale attribute
+            gl.vertex_attrib_pointer_f32(
+                5,
+                2,
+                glow::FLOAT,
+                false,
+                stride,
+                (16 * mem::size_of::<f32>()) as i32,
+            );
+            gl.enable_vertex_attrib_array(5);
         };
 
         (vbo, vao, ebo)
@@ -100,12 +110,12 @@ impl FancyConsoleBackend {
         uy: f32,
         rotation: f32,
         screen_x : f32,
-        screen_y : f32
+        screen_y : f32,
+        scale : (f32,f32)
     ) {
         vertex_buffer.extend_from_slice(&[
-            x, y, 0.0, fg.r, fg.g, fg.b, fg.a, bg.r, bg.g, bg.b, bg.a, ux, uy, rotation, screen_x, screen_y
+            x, y, 0.0, fg.r, fg.g, fg.b, fg.a, bg.r, bg.g, bg.b, bg.a, ux, uy, rotation, screen_x, screen_y, scale.0, scale.1
         ]);
-        //println!("{},{} - {},{} = {},{}", x, y, screen_x, screen_y, screen_x-x, screen_y-y);
     }
 
     /// Helper to build vertices for the sparse grid.
@@ -161,7 +171,6 @@ impl FancyConsoleBackend {
             let rot_center_x = screen_x + (step_x / 2.0);
             let rot_center_y = screen_y + (step_y / 2.0);
 
-            //println!("Batch");
             FancyConsoleBackend::push_point(
                 &mut self.vertex_buffer,
                 screen_x + step_x,
@@ -173,6 +182,7 @@ impl FancyConsoleBackend {
                 t.rotation,
                 rot_center_x,
                 rot_center_y,
+                t.scale
             );
             FancyConsoleBackend::push_point(
                 &mut self.vertex_buffer,
@@ -185,6 +195,7 @@ impl FancyConsoleBackend {
                 t.rotation,
                 rot_center_x,
                 rot_center_y,
+                t.scale
             );
             FancyConsoleBackend::push_point(
                 &mut self.vertex_buffer,
@@ -197,6 +208,7 @@ impl FancyConsoleBackend {
                 t.rotation,
                 rot_center_x,
                 rot_center_y,
+                t.scale
             );
             FancyConsoleBackend::push_point(
                 &mut self.vertex_buffer,
@@ -209,6 +221,7 @@ impl FancyConsoleBackend {
                 t.rotation,
                 rot_center_x,
                 rot_center_y,
+                t.scale
             );
 
             self.index_buffer.push(index_count);

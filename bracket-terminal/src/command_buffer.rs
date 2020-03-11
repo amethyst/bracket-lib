@@ -144,7 +144,8 @@ pub enum DrawCommand {
         z_order: i32,
         rotation: f32,
         color: ColorPair,
-        glyph: FontCharType
+        glyph: FontCharType,
+        scale: (f32, f32)
     }
 }
 
@@ -201,8 +202,8 @@ impl DrawBatch {
     }
 
     /// Pushes a fancy terminal character
-    pub fn set_fancy(&mut self, position: (f32,f32), z_order: i32, rotation: f32, color: ColorPair, glyph: FontCharType) -> &mut Self {
-        self.batch.push((0, DrawCommand::SetFancy { position, z_order, rotation, color, glyph }));
+    pub fn set_fancy(&mut self, position: (f32,f32), z_order: i32, rotation: f32, scale: (f32,f32), color: ColorPair, glyph: FontCharType) -> &mut Self {
+        self.batch.push((0, DrawCommand::SetFancy { position, z_order, rotation, color, glyph, scale }));
         self
     }
 
@@ -538,8 +539,8 @@ pub fn render_draw_buffer(bterm: &mut BTerm) -> Result<()> {
         DrawCommand::SetFgAlpha { alpha } => bterm.set_all_fg_alpha(*alpha),
         DrawCommand::SetBgAlpha { alpha } => bterm.set_all_fg_alpha(*alpha),
         DrawCommand::SetAllAlpha { fg, bg } => bterm.set_all_alpha(*fg, *bg),
-        DrawCommand::SetFancy { position, z_order, color, glyph, rotation } => {
-            bterm.set_fancy(position.0, position.1, *z_order, *rotation, color.fg, color.bg, *glyph);
+        DrawCommand::SetFancy { position, z_order, color, glyph, rotation, scale } => {
+            bterm.set_fancy(position.0, position.1, *z_order, *rotation, *scale, color.fg, color.bg, *glyph);
         }
     });
     buffer.clear();
