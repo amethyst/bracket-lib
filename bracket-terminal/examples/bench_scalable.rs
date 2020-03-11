@@ -55,6 +55,7 @@ impl GameState for State {
     }
 }
 
+#[cfg(feature = "opengl")]
 fn main() -> BError {
     let context = BTermBuilder::simple(80, 45)
         .unwrap()
@@ -63,4 +64,9 @@ fn main() -> BError {
         .with_automatic_console_resize(true)
         .build()?;
     main_loop(context, State::new())
+}
+
+#[cfg(not(feature = "opengl"))]
+fn main() {
+    println!("OpenGL only.");
 }

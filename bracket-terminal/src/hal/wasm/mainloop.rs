@@ -10,9 +10,9 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     std::panic::set_hook(Box::new(console_error_panic_hook::hook));
 
     {
-        let be = BACKEND.lock().unwrap();
+        let be = BACKEND.lock();
         let gl = be.gl.as_ref().unwrap();
-        for f in BACKEND_INTERNAL.lock().unwrap().fonts.iter_mut() {
+        for f in BACKEND_INTERNAL.lock().fonts.iter_mut() {
             f.setup_gl_texture(gl)?;
         }
     }
@@ -59,9 +59,9 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 }
 
 fn check_console_backing() {
-    let bi = BACKEND_INTERNAL.lock().unwrap();
-    let mut be = BACKEND.lock().unwrap();
-    let mut consoles = CONSOLE_BACKING.lock().unwrap();
+    let bi = BACKEND_INTERNAL.lock();
+    let mut be = BACKEND.lock();
+    let mut consoles = CONSOLE_BACKING.lock();
     if consoles.is_empty() {
         // Easy case: there are no consoles so we need to make them all.
         for cons in &bi.consoles {
@@ -90,10 +90,10 @@ fn check_console_backing() {
 }
 
 fn rebuild_consoles(bterm: &BTerm) {
-    let mut bi = BACKEND_INTERNAL.lock().unwrap();
-    let be = BACKEND.lock().unwrap();
+    let mut bi = BACKEND_INTERNAL.lock();
+    let be = BACKEND.lock();
     let gl = be.gl.as_ref().unwrap();
-    let mut consoles = CONSOLE_BACKING.lock().unwrap();
+    let mut consoles = CONSOLE_BACKING.lock();
     for (i, c) in consoles.iter_mut().enumerate() {
         let font = &bi.fonts[bi.consoles[i].font_index];
         let shader = &bi.shaders[0];
@@ -162,10 +162,10 @@ fn rebuild_consoles(bterm: &BTerm) {
 }
 
 fn render_consoles() -> Result<()> {
-    let bi = BACKEND_INTERNAL.lock().unwrap();
-    let be = BACKEND.lock().unwrap();
+    let bi = BACKEND_INTERNAL.lock();
+    let be = BACKEND.lock();
     let gl = be.gl.as_ref().unwrap();
-    let mut consoles = CONSOLE_BACKING.lock().unwrap();
+    let mut consoles = CONSOLE_BACKING.lock();
     unsafe {
         gl.enable(glow::BLEND);
         gl.blend_func(glow::SRC_ALPHA, glow::ONE_MINUS_SRC_ALPHA);
@@ -238,7 +238,7 @@ fn tock<GS: GameState>(
     rebuild_consoles(bterm);
 
     {
-        let be = BACKEND.lock().unwrap();
+        let be = BACKEND.lock();
         let gl = be.gl.as_ref().unwrap();
 
         // Clear the screen
@@ -251,7 +251,7 @@ fn tock<GS: GameState>(
         // Setup render pass
 
         unsafe {
-            let bi = BACKEND_INTERNAL.lock().unwrap();
+            let bi = BACKEND_INTERNAL.lock();
             bi.shaders[0].useProgram(gl);
 
             gl.active_texture(glow::TEXTURE0);
@@ -268,7 +268,7 @@ fn tock<GS: GameState>(
 
     // If there is a GL callback, call it now
     {
-        let be = BACKEND.lock().unwrap();
+        let be = BACKEND.lock();
         if let Some(callback) = be.gl_callback.as_ref() {
             let gl = be.gl.as_ref().unwrap();
             callback(gamestate, gl);

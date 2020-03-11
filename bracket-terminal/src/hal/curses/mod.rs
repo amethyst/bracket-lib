@@ -1,7 +1,7 @@
 // Dummy platform to let it compile and do nothing. Only useful if you don't want a graphical backend.
 use crate::prelude::BTerm;
 use crate::Result;
-use std::sync::Mutex;
+use parking_lot::Mutex;
 
 pub use winit::event::VirtualKeyCode;
 

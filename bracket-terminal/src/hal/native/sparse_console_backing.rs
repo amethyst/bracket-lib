@@ -191,7 +191,7 @@ impl SparseConsoleBackend {
             index_count += 4;
         }
 
-        let be = BACKEND.lock().unwrap();
+        let be = BACKEND.lock();
         let gl = be.gl.as_ref().unwrap();
         unsafe {
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
@@ -211,7 +211,7 @@ impl SparseConsoleBackend {
     }
 
     pub fn gl_draw(&mut self, font: &Font, shader: &Shader, tiles: &[SparseTile]) -> Result<()> {
-        let be = BACKEND.lock().unwrap();
+        let be = BACKEND.lock();
         let gl = be.gl.as_ref().unwrap();
         unsafe {
             // bind Texture

@@ -111,7 +111,7 @@ impl SimpleState for BTermGemBridge {
         }
 
         {
-            let mut bi = BACKEND_INTERNAL.lock().unwrap();
+            let mut bi = BACKEND_INTERNAL.lock();
             let mut map_storage = data
                 .world
                 .write_storage::<TileMap<SimpleConsoleTile, FlatEncoder>>();
@@ -231,7 +231,7 @@ impl BTermGemBridge {
     }
 
     fn initialize_console_objects(&mut self, world: &mut World) {
-        let bi = BACKEND_INTERNAL.lock().unwrap();
+        let bi = BACKEND_INTERNAL.lock();
         for (i, cons) in bi.consoles.iter().enumerate() {
             let size = cons.console.get_char_size();
             if let Some(_concrete) = cons
@@ -302,7 +302,7 @@ pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> Result<()> {
 
     let mut cfg = amethyst::window::DisplayConfig::default();
     cfg.dimensions = Some((bterm.width_pixels, bterm.height_pixels));
-    cfg.title = BACKEND.lock().unwrap().window_title.clone();
+    cfg.title = BACKEND.lock().window_title.clone();
 
     let app_root = application_root_dir()?;
 

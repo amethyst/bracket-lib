@@ -31,7 +31,6 @@ pub fn virtual_key_code_to_scan(key: VirtualKeyCode) -> u32 {
         VirtualKeyCode::Key0 => 11,
         VirtualKeyCode::Minus => 12,
         VirtualKeyCode::Equals => 13,
-        VirtualKeyCode::Back => 14,
         VirtualKeyCode::Insert => 82,
         VirtualKeyCode::Home => 71,
         VirtualKeyCode::PageUp => 73,

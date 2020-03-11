@@ -1,4 +1,4 @@
-use std::sync::Mutex;
+use parking_lot::Mutex;
 
 pub use winit::event::VirtualKeyCode;
 

@@ -1,17 +1,17 @@
 use crate::named::*;
 use crate::prelude::RGBA;
 use std::collections::HashMap;
-use std::sync::Mutex;
+use parking_lot::Mutex;
 
 lazy_static! {
     static ref PALETTE: Mutex<HashMap<String, RGBA>> = Mutex::new(HashMap::new());
 }
 
 /// Register a palette color by name with the global registry.
+#[allow(clippy::needless_pass_by_value)]
 pub fn register_palette_color<S: ToString, COLOR: Into<RGBA>>(name: S, color: COLOR) {
     PALETTE
         .lock()
-        .unwrap()
         .insert(name.to_string(), color.into());
 }
 
@@ -19,7 +19,7 @@ pub fn register_palette_color<S: ToString, COLOR: Into<RGBA>>(name: S, color: CO
 #[allow(clippy::module_name_repetitions)]
 #[allow(clippy::needless_pass_by_value)]
 pub fn palette_color<S: ToString>(name: &S) -> Option<RGBA> {
-    let plock = PALETTE.lock().unwrap();
+    let plock = PALETTE.lock();
     if let Some(col) = plock.get(&name.to_string()) {
         Some(*col)
     } else {
@@ -30,12 +30,12 @@ pub fn palette_color<S: ToString>(name: &S) -> Option<RGBA> {
 /// Empties the palette
 #[allow(clippy::module_name_repetitions)]
 pub fn clear_palette() {
-    PALETTE.lock().unwrap().clear();
+    PALETTE.lock().clear();
 }
 
 macro_rules! w3c_color_helper {
     ( $( $n:literal, $name:expr ),* ) => {
-        let mut plock = PALETTE.lock().unwrap();
+        let mut plock = PALETTE.lock();
         $(
             plock.insert($n.to_string(), RGBA::named($name));
         )*

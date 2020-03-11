@@ -47,11 +47,11 @@ pub fn init_raw<S: ToString>(
 
     let quad_vao = quadrender::setup_quad(&gl);
 
-    let mut be = BACKEND.lock().unwrap();
+    let mut be = BACKEND.lock();
     be.gl = Some(gl);
     be.quad_vao = Some(quad_vao);
 
-    BACKEND_INTERNAL.lock().unwrap().shaders = shaders;
+    BACKEND_INTERNAL.lock().shaders = shaders;
 
     Ok(BTerm {
         width_pixels,

@@ -51,9 +51,9 @@ pub fn initialize_fonts(world: &mut World) -> Result<()> {
     use amethyst::renderer::rendy::*;
     use image::GenericImageView;
 
-    for font in BACKEND_INTERNAL.lock().unwrap().fonts.iter_mut() {
+    for font in BACKEND_INTERNAL.lock().fonts.iter_mut() {
         let resource = embedding::EMBED
-            .lock()?
+            .lock()
             .get_resource(font.filename.to_string());
 
         let handle;

@@ -1,4 +1,5 @@
 use bracket_terminal::prelude::*;
+#[cfg(feature = "opengl")]
 use glow::HasContext;
 use std::mem;
 
@@ -40,6 +41,7 @@ const FRAGMENT_SHADER_SOURCE: &str = r#"#version 300 es
     }
 "#;
 
+#[cfg(feature = "opengl")]
 fn gl_setup(gl: &glow::Context, state: &mut State) {
     state.my_shader = Some(Shader::new(
         gl,
@@ -76,6 +78,7 @@ fn gl_setup(gl: &glow::Context, state: &mut State) {
     }
 }
 
+#[cfg(feature = "opengl")]
 fn gl_render(gs: &mut dyn std::any::Any, gl: &glow::Context) {
     let state = gs.downcast_ref::<State>().unwrap();
     unsafe {
@@ -103,9 +106,10 @@ struct State {
 }
 
 impl GameState for State {
+    #[cfg(feature = "opengl")]
     fn tick(&mut self, ctx: &mut BTerm) {
         if !self.setup_gl {
-            let mut be = BACKEND.lock().unwrap();
+            let mut be = BACKEND.lock();
             let gl = be.gl.as_ref().unwrap();
             self.setup_gl = true;
 
@@ -114,6 +118,11 @@ impl GameState for State {
         }
 
         ctx.print(1, 1, "Hello, the triangle is a native OpenGL call.");
+    }
+
+    #[cfg(not(feature = "opengl"))]
+    fn tick(&mut self, ctx: &mut BTerm) {
+        ctx.print(1, 1, "This example is OpenGL (native or WASM) only.");
     }
 }
 

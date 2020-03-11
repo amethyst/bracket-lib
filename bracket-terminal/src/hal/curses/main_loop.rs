@@ -40,7 +40,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         let mut buttons_this_frame = (false, false, false);
         keys_this_frame.clear();
         loop {
-            let input = BACKEND.lock().unwrap().window.as_ref().unwrap().getch();
+            let input = BACKEND.lock().window.as_ref().unwrap().getch();
             if let Some(input) = input {
                 match input {
                     pancurses::Input::Character(c) => {
@@ -114,13 +114,13 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
         gamestate.tick(&mut bterm);
 
-        let be = BACKEND.lock().unwrap();
+        let be = BACKEND.lock();
         let window = be.window.as_ref().unwrap();
 
         window.clear();
 
         // Tell each console to draw itself
-        for cons in &mut BACKEND_INTERNAL.lock().unwrap().consoles {
+        for cons in &mut BACKEND_INTERNAL.lock().consoles {
             let cons_any = cons.console.as_any();
             if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
                 let mut idx = 0;

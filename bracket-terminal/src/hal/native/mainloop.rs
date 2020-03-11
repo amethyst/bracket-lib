@@ -20,7 +20,7 @@ fn on_resize(
     dpi_scale_factor: f64,
     send_event: bool,
 ) -> Result<()> {
-    let mut be = BACKEND.lock().unwrap();
+    let mut be = BACKEND.lock();
     if send_event {
         bterm.resize_pixels(
             physical_size.width as u32,
@@ -47,7 +47,7 @@ fn on_resize(
         });
     }
 
-    let mut bit = BACKEND_INTERNAL.lock().unwrap();
+    let mut bit = BACKEND_INTERNAL.lock();
     if be.resize_scaling && send_event {
         let num_consoles = bit.consoles.len();
         for i in 0..num_consoles {
@@ -67,13 +67,13 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     let mut prev_ms = now.elapsed().as_millis();
     let mut frames = 0;
 
-    for f in BACKEND_INTERNAL.lock().unwrap().fonts.iter_mut() {
+    for f in BACKEND_INTERNAL.lock().fonts.iter_mut() {
         f.setup_gl_texture()?;
     }
 
     // We're doing a little dance here to get around lifetime/borrow checking.
     // Removing the context data from BTerm in an atomic swap, so it isn't borrowed after move.
-    let wrap = { std::mem::replace(&mut BACKEND.lock().unwrap().context_wrapper, None) };
+    let wrap = { std::mem::replace(&mut BACKEND.lock().context_wrapper, None) };
     let unwrap = wrap.unwrap();
 
     let el = unwrap.el;
@@ -93,7 +93,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
             *control_flow = ControlFlow::Exit;
         }
 
-        /*let rr = BACKEND.lock().unwrap().resize_request;
+        /*let rr = BACKEND.lock().resize_request;
         if let Some(rr) = rr {
             wc.window().set_inner_size(glutin::dpi::PhysicalSize::new(rr.0, rr.1));
         }*/
@@ -115,7 +115,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     &now,
                 );
                 wc.swap_buffers().unwrap();
-                crate::hal::fps_sleep(BACKEND.lock().unwrap().frame_sleep_time, &now, prev_ms);
+                crate::hal::fps_sleep(BACKEND.lock().frame_sleep_time, &now, prev_ms);
             }
             Event::DeviceEvent {
                 event: DeviceEvent::ModifiersChanged(modifiers),
@@ -138,7 +138,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                 }
                 WindowEvent::CloseRequested => {
                     // If not using events, just close. Otherwise, push the event
-                    if !INPUT.lock().unwrap().use_events {
+                    if !INPUT.lock().use_events {
                         *control_flow = ControlFlow::Exit;
                     } else {
                         bterm.on_event(BEvent::CloseRequested);
@@ -197,11 +197,11 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 }
 
 fn check_console_backing() {
-    let mut be = BACKEND.lock().unwrap();
-    let mut consoles = CONSOLE_BACKING.lock().unwrap();
+    let mut be = BACKEND.lock();
+    let mut consoles = CONSOLE_BACKING.lock();
     if consoles.is_empty() {
         // Easy case: there are no consoles so we need to make them all.
-        for cons in &BACKEND_INTERNAL.lock().unwrap().consoles {
+        for cons in &BACKEND_INTERNAL.lock().consoles {
             let cons_any = cons.console.as_any();
             if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
                 consoles.push(ConsoleBacking::Simple {
@@ -227,8 +227,8 @@ fn check_console_backing() {
 }
 
 fn rebuild_consoles() {
-    let mut consoles = CONSOLE_BACKING.lock().unwrap();
-    let mut bi = BACKEND_INTERNAL.lock().unwrap();
+    let mut consoles = CONSOLE_BACKING.lock();
+    let mut bi = BACKEND_INTERNAL.lock();
     for (i, c) in consoles.iter_mut().enumerate() {
         let font_index = bi.consoles[i].font_index;
         let glyph_dimensions = bi.fonts[font_index].font_dimensions_glyphs;
@@ -280,8 +280,8 @@ fn rebuild_consoles() {
 }
 
 fn render_consoles() -> Result<()> {
-    let bi = BACKEND_INTERNAL.lock().unwrap();
-    let mut consoles = CONSOLE_BACKING.lock().unwrap();
+    let bi = BACKEND_INTERNAL.lock();
+    let mut consoles = CONSOLE_BACKING.lock();
     for (i, c) in consoles.iter_mut().enumerate() {
         let cons = &bi.consoles[i];
         let font = &bi.fonts[cons.font_index];
@@ -340,7 +340,7 @@ fn tock<GS: GameState>(
 
     // Bind to the backing buffer
     if bterm.post_scanlines {
-        let be = BACKEND.lock().unwrap();
+        let be = BACKEND.lock();
         be.backing_buffer
             .as_ref()
             .unwrap()
@@ -349,7 +349,7 @@ fn tock<GS: GameState>(
 
     // Clear the screen
     unsafe {
-        let be = BACKEND.lock().unwrap();
+        let be = BACKEND.lock();
         be.gl.as_ref().unwrap().clear_color(0.0, 0.0, 0.0, 1.0);
         be.gl.as_ref().unwrap().clear(glow::COLOR_BUFFER_BIT);
     }
@@ -362,7 +362,7 @@ fn tock<GS: GameState>(
 
     // If there is a GL callback, call it now
     {
-        let be = BACKEND.lock().unwrap();
+        let be = BACKEND.lock();
         if let Some(callback) = be.gl_callback.as_ref() {
             let gl = be.gl.as_ref().unwrap();
             callback(gamestate, gl);
@@ -371,13 +371,13 @@ fn tock<GS: GameState>(
 
     if bterm.post_scanlines {
         // Now we return to the primary screen
-        let be = BACKEND.lock().unwrap();
+        let be = BACKEND.lock();
         be.backing_buffer
             .as_ref()
             .unwrap()
             .default(be.gl.as_ref().unwrap());
         unsafe {
-            let bi = BACKEND_INTERNAL.lock().unwrap();
+            let bi = BACKEND_INTERNAL.lock();
             if bterm.post_scanlines {
                 bi.shaders[3].useProgram(be.gl.as_ref().unwrap());
                 bi.shaders[3].setVec3(
@@ -404,7 +404,7 @@ fn tock<GS: GameState>(
     }
 
     {
-        let mut be = BACKEND.lock().unwrap();
+        let mut be = BACKEND.lock();
         if let Some(filename) = &be.request_screenshot {
             let w = bterm.width_pixels;
             let h = bterm.height_pixels;

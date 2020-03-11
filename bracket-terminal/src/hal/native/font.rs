@@ -35,10 +35,7 @@ impl Font {
     }
 
     fn load_image(filename: &str) -> image::DynamicImage {
-        let resource = embedding::EMBED
-            .lock()
-            .unwrap()
-            .get_resource(filename.to_string());
+        let resource = embedding::EMBED.lock().get_resource(filename.to_string());
         match resource {
             None => image::open(std::path::Path::new(&filename.to_string()))
                 .expect("Failed to load texture"),
@@ -66,7 +63,7 @@ impl Font {
 
     /// Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
     pub fn setup_gl_texture(&mut self) -> Result<u32> {
-        let be = BACKEND.lock().unwrap();
+        let be = BACKEND.lock();
         let gl = be.gl.as_ref().unwrap();
         let texture;
 

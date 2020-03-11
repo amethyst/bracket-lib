@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use std::sync::Mutex;
+use parking_lot::Mutex;
 
 const TERMINAL_8_8_BYTES: &[u8] = include_bytes!("../resources/terminal8x8.png");
 const TERMINAL_8_16_BYTES: &[u8] = include_bytes!("../resources/vga8x16.png");

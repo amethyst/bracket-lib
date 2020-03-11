@@ -12,7 +12,7 @@ pub static mut GLOBAL_MODIFIERS: (bool, bool, bool) = (false, false, false);
 /// Handler for on_key events from the browser. Sets the global variables, which are then
 /// referenced by the main loop.
 pub fn on_key(key: web_sys::KeyboardEvent) {
-    let mut input = INPUT.lock().unwrap();
+    let mut input = INPUT.lock();
     input.push_event(BEvent::Character {
         c: std::char::from_u32(key.char_code()).unwrap(),
     });
@@ -38,7 +38,7 @@ pub fn on_key(key: web_sys::KeyboardEvent) {
 }
 
 pub fn on_key_up(key: web_sys::KeyboardEvent) {
-    let mut input = INPUT.lock().unwrap();
+    let mut input = INPUT.lock();
     input.push_event(BEvent::Character {
         c: std::char::from_u32(key.char_code()).unwrap(),
     });

@@ -1,7 +1,7 @@
 use crate::prelude::BTerm;
 use crate::prelude::InitHints;
 use crate::Result;
-use std::sync::Mutex;
+use parking_lot::Mutex;
 
 pub struct PlatformGL {
     pub window_title: String,
@@ -24,7 +24,7 @@ pub fn init_raw<S: ToString>(
     window_title: S,
     platform_hints: InitHints,
 ) -> Result<BTerm> {
-    let mut be = BACKEND.lock().unwrap();
+    let mut be = BACKEND.lock();
     be.window_title = window_title.to_string();
     be.platform_hints = platform_hints;
 

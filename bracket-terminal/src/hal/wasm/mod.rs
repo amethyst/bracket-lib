@@ -14,8 +14,8 @@ mod sparse_console_backing;
 pub use sparse_console_backing::*;
 pub mod font;
 pub mod shader;
+use parking_lot::Mutex;
 use std::any::Any;
-use std::sync::Mutex;
 
 pub type GlCallback = fn(&mut dyn Any, &glow::Context);
 

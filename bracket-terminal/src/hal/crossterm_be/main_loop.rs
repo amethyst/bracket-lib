@@ -125,8 +125,8 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
         gamestate.tick(&mut bterm);
 
-        let be = BACKEND.lock().unwrap();
-        let mut bi = BACKEND_INTERNAL.lock().unwrap();
+        let be = BACKEND.lock();
+        let mut bi = BACKEND_INTERNAL.lock();
 
         // Tell each console to draw itself
         for cons in &mut bi.consoles {
@@ -217,7 +217,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         crate::hal::fps_sleep(be.frame_sleep_time, &now, prev_ms);
     }
 
-    let be = BACKEND.lock().unwrap();
+    let be = BACKEND.lock();
     execute!(stdout(), SetSize(be.old_width, be.old_height)).expect("Unable to resize");
     reset_terminal();
     Ok(())

@@ -33,7 +33,7 @@ pub fn init_raw<S: ToString>(
         }
     }
 
-    let mut be = BACKEND.lock().unwrap();
+    let mut be = BACKEND.lock();
     be.window = Some(window);
     be.color_map = color_map;
     be.frame_sleep_time = crate::hal::convert_fps_to_wait(platform_hints.frame_sleep_time);

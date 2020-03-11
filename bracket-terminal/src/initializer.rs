@@ -457,7 +457,7 @@ impl BTermBuilder {
         }
 
         if self.advanced_input {
-            INPUT.lock().unwrap().activate_event_queue();
+            INPUT.lock().activate_event_queue();
         }
 
         Ok(context)

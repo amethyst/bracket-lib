@@ -256,7 +256,7 @@ impl SimpleConsoleBackend {
             screen_y += step_y;
         }
 
-        let be = BACKEND.lock().unwrap();
+        let be = BACKEND.lock();
         let gl = be.gl.as_ref().unwrap();
         unsafe {
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
@@ -276,7 +276,7 @@ impl SimpleConsoleBackend {
     }
 
     pub fn gl_draw(&mut self, font: &Font, shader: &Shader, width: u32, height: u32) -> Result<()> {
-        let be = BACKEND.lock().unwrap();
+        let be = BACKEND.lock();
         let gl = be.gl.as_ref().unwrap();
         unsafe {
             // bind Texture

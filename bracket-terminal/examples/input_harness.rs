@@ -7,7 +7,7 @@ struct State {}
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
         ctx.cls();
-        let mut input = INPUT.lock().unwrap();
+        let mut input = INPUT.lock();
         let mouse_pixels = input.mouse_pixel_pos();
         ctx.print(
             1,

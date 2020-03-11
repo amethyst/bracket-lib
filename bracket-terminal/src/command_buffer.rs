@@ -7,8 +7,8 @@ use crate::Result;
 use bracket_color::prelude::{ColorPair, RGBA};
 use bracket_geometry::prelude::{Point, Rect};
 use object_pool::{Pool, Reusable};
+use parking_lot::Mutex;
 use std::sync::Arc;
-use std::sync::Mutex;
 
 lazy_static! {
     static ref COMMAND_BUFFER: Mutex<Vec<(usize, DrawCommand)>> =
@@ -25,7 +25,7 @@ lazy_static! {
 /// Clears the global command buffer. This is called internally by BTerm at the end of each
 /// frame. You really shouldn't need to call this yourself.
 pub fn clear_command_buffer() -> Result<()> {
-    COMMAND_BUFFER.lock()?.clear();
+    COMMAND_BUFFER.lock().clear();
     Ok(())
 }
 
@@ -157,7 +157,7 @@ impl DrawBatch {
         self.batch.iter_mut().enumerate().for_each(|(i, (z, _))| {
             *z = z_order + i;
         });
-        COMMAND_BUFFER.lock()?.append(&mut self.batch);
+        COMMAND_BUFFER.lock().append(&mut self.batch);
         Ok(())
     }
 
@@ -440,7 +440,7 @@ impl DrawBatch {
 
 /// Submits the current batch to the BTerm buffer and empties it
 pub fn render_draw_buffer(bterm: &mut BTerm) -> Result<()> {
-    let mut buffer = COMMAND_BUFFER.lock()?;
+    let mut buffer = COMMAND_BUFFER.lock();
     buffer.sort_unstable_by(|a, b| a.0.cmp(&b.0));
     buffer.iter().for_each(|(_, cmd)| match cmd {
         DrawCommand::ClearScreen => bterm.cls(),
