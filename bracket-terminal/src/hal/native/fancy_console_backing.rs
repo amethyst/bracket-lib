@@ -5,6 +5,7 @@ use crate::Result;
 use bracket_color::prelude::RGBA;
 use glow::HasContext;
 use std::mem;
+use bracket_geometry::prelude::PointF;
 
 pub struct FancyConsoleBackend {
     vertex_buffer: Vec<f32>,
@@ -111,10 +112,10 @@ impl FancyConsoleBackend {
         rotation: f32,
         screen_x : f32,
         screen_y : f32,
-        scale : (f32,f32)
+        scale : PointF
     ) {
         vertex_buffer.extend_from_slice(&[
-            x, y, 0.0, fg.r, fg.g, fg.b, fg.a, bg.r, bg.g, bg.b, bg.a, ux, uy, rotation, screen_x, screen_y, scale.0, scale.1
+            x, y, 0.0, fg.r, fg.g, fg.b, fg.a, bg.r, bg.g, bg.b, bg.a, ux, uy, rotation, screen_x, screen_y, scale.x, scale.y
         ]);
     }
 
@@ -151,8 +152,8 @@ impl FancyConsoleBackend {
         let screen_y_start: f32 = -1.0 * scale + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
 
         for t in tiles.iter() {
-            let x = t.position.0;
-            let y = t.position.1;
+            let x = t.position.x;
+            let y = t.position.y;
 
             let screen_x = ((step_x * x) + screen_x_start) + offset_x;
             let screen_y = ((step_y * y) + screen_y_start) + offset_y;

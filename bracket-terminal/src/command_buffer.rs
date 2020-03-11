@@ -5,7 +5,7 @@
 use crate::prelude::{BTerm, FontCharType, TextAlign};
 use crate::Result;
 use bracket_color::prelude::{ColorPair, RGBA};
-use bracket_geometry::prelude::{Point, Rect};
+use bracket_geometry::prelude::{Point, Rect, PointF};
 use object_pool::{Pool, Reusable};
 use parking_lot::Mutex;
 use std::sync::Arc;
@@ -140,12 +140,12 @@ pub enum DrawCommand {
         bg: f32,
     },
     SetFancy {
-        position: (f32, f32),
+        position: PointF,
         z_order: i32,
         rotation: f32,
         color: ColorPair,
         glyph: FontCharType,
-        scale: (f32, f32)
+        scale: PointF
     }
 }
 
@@ -202,7 +202,7 @@ impl DrawBatch {
     }
 
     /// Pushes a fancy terminal character
-    pub fn set_fancy(&mut self, position: (f32,f32), z_order: i32, rotation: f32, scale: (f32,f32), color: ColorPair, glyph: FontCharType) -> &mut Self {
+    pub fn set_fancy(&mut self, position: PointF, z_order: i32, rotation: f32, scale: PointF, color: ColorPair, glyph: FontCharType) -> &mut Self {
         self.batch.push((0, DrawCommand::SetFancy { position, z_order, rotation, color, glyph, scale }));
         self
     }
@@ -540,7 +540,7 @@ pub fn render_draw_buffer(bterm: &mut BTerm) -> Result<()> {
         DrawCommand::SetBgAlpha { alpha } => bterm.set_all_fg_alpha(*alpha),
         DrawCommand::SetAllAlpha { fg, bg } => bterm.set_all_alpha(*fg, *bg),
         DrawCommand::SetFancy { position, z_order, color, glyph, rotation, scale } => {
-            bterm.set_fancy(position.0, position.1, *z_order, *rotation, *scale, color.fg, color.bg, *glyph);
+            bterm.set_fancy(*position, *z_order, *rotation, *scale, color.fg, color.bg, *glyph);
         }
     });
     buffer.clear();

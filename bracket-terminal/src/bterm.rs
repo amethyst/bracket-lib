@@ -7,7 +7,7 @@ use crate::{
     Result,
 };
 use bracket_color::prelude::RGBA;
-use bracket_geometry::prelude::{Point, Rect};
+use bracket_geometry::prelude::{Point, Rect, PointF};
 use parking_lot::Mutex;
 use std::convert::*;
 
@@ -431,7 +431,7 @@ impl BTerm {
 
     /// Set a tile with "fancy" additional attributes
     #[cfg(feature = "opengl")]
-    pub fn set_fancy<COLOR, COLOR2, GLYPH>(&mut self, x: f32, y: f32, z_order: i32, rotation: f32, scale:(f32,f32), fg: COLOR, bg: COLOR2, glyph: GLYPH)
+    pub fn set_fancy<COLOR, COLOR2, GLYPH>(&mut self, position: PointF, z_order: i32, rotation: f32, scale:PointF, fg: COLOR, bg: COLOR2, glyph: GLYPH)
     where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
@@ -440,13 +440,13 @@ impl BTerm {
         let mut be = BACKEND_INTERNAL.lock();
         let cons_any = be.consoles[self.active_console].console.as_any_mut();
         if let Some(fc) = cons_any.downcast_mut::<FancyConsole>() {
-            fc.set_fancy(x, y, z_order, rotation, scale, fg.into(), bg.into(), glyph.try_into().ok().unwrap());
+            fc.set_fancy(position, z_order, rotation, scale, fg.into(), bg.into(), glyph.try_into().ok().unwrap());
         }
     }
 
     /// Set a tile with "fancy" additional attributes
     #[cfg(not(feature = "opengl"))]
-    pub fn set_fancy<COLOR, COLOR2, GLYPH>(&mut self, _x: f32, _y: f32, _z_order: i32, _rotation: f32, _scale: (f32,f32), _fg: COLOR, _bg: COLOR2, _glyph: GLYPH)
+    pub fn set_fancy<COLOR, COLOR2, GLYPH>(&mut self, _position: PointF, _z_order: i32, _rotation: f32, _scale: PointF, _fg: COLOR, _bg: COLOR2, _glyph: GLYPH)
     where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,

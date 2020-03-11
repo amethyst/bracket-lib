@@ -2,6 +2,8 @@ use std::convert::{From, TryInto};
 use std::ops;
 use ultraviolet::{Vec2, Vec2i};
 
+pub type PointF = Vec2;
+
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Eq, PartialEq, Copy, Clone, Debug, Hash)]
 /// Helper struct defining a 2D point in space.

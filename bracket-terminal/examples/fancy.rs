@@ -32,7 +32,14 @@ impl GameState for State {
 
         let y = 20.0 + (f32::sin(self.x / 2.0) * 5.0);
         let scale = f32::cos(self.x / 3.0) + 1.1;
-        draw_batch.set_fancy((self.x, y), 0, self.spin, (scale, scale), ColorPair::new(RGB::named(YELLOW), RGB::named(BLACK)), to_cp437('@'));
+        draw_batch.set_fancy(
+            PointF{x: self.x, y}, 
+            0, 
+            self.spin, 
+            PointF{x:scale, y:scale}, 
+            ColorPair::new(RGB::named(YELLOW), RGB::named(BLACK)), 
+            to_cp437('@')
+        );
 
         // Submission
         draw_batch.submit(0).expect("Batch error");

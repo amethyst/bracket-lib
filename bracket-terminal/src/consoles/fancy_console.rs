@@ -3,18 +3,18 @@ use crate::prelude::{
     TextAlign, XpLayer,
 };
 use bracket_color::prelude::{XpColor, RGBA};
-use bracket_geometry::prelude::Rect;
+use bracket_geometry::prelude::{Rect, PointF};
 use std::any::Any;
 
 /// Internal storage structure for sparse tiles.
 pub struct FancyTile {
-    pub position: (f32, f32),
+    pub position: PointF,
     pub z_order: i32,
     pub glyph: FontCharType,
     pub fg: RGBA,
     pub bg: RGBA,
     pub rotation: f32,
-    pub scale: (f32, f32)
+    pub scale: PointF
 }
 
 /// A sparse console. Rather than storing every cell on the screen, it stores just cells that have
@@ -60,9 +60,11 @@ impl FancyConsole {
     }
 
     // Insert a single tile with "fancy" attributes
-    pub fn set_fancy(&mut self, x: f32, y: f32, z_order: i32, rotation: f32, scale: (f32, f32), fg: RGBA, bg: RGBA, glyph: FontCharType) {
+    #[allow(clippy::too_many_arguments)]
+    pub fn set_fancy(&mut self, position: PointF, z_order: i32, rotation: f32, scale: PointF, fg: RGBA, bg: RGBA, glyph: FontCharType) {
         self.is_dirty = true;
-        self.tiles.push(FancyTile { position: (x, self.height as f32 - y), z_order, glyph, fg, bg, rotation, scale });
+        let invert_pos = PointF{x: position.x, y: self.height as f32 - position.y};
+        self.tiles.push(FancyTile { position: invert_pos, z_order, glyph, fg, bg, rotation, scale });
     }
 }
 
@@ -110,13 +112,13 @@ impl Console for FancyConsole {
                 .enumerate()
                 .map(|(i, glyph)| {
                     FancyTile {
-                        position: (i as f32 +x as f32, h - y as f32),
+                        position: PointF{ x: i as f32 +x as f32, y : h - y as f32},
                         z_order: 0,
                         glyph,
                         fg: RGBA::from_f32(1.0, 1.0, 1.0, 1.0),
                         bg: RGBA::from_f32(0.0, 0.0, 0.0, 1.0),
                         rotation: 0.0,
-                        scale: (1.0, 1.0)
+                        scale: PointF{x: 1.0, y: 1.0}
                     }
                 }),
         );
@@ -140,12 +142,12 @@ impl Console for FancyConsole {
                 .map(|(i, glyph)| {
                     FancyTile {
                         z_order: 0,
-                        position: (i as f32 +x as f32, h - y as f32),
+                        position: PointF{x: i as f32 +x as f32, y: h - y as f32},
                         glyph,
                         fg,
                         bg,
                         rotation: 0.0,
-                        scale: (1.0, 1.0)
+                        scale: PointF{x:1.0, y:1.0}
                     }
                 }),
         );
@@ -156,7 +158,7 @@ impl Console for FancyConsole {
         self.is_dirty = true;
         if self.try_at(x, y).is_some() {
             let h = (self.height - 1) as f32;
-            self.tiles.push(FancyTile { position: (x as f32, h - y as f32), z_order: 0, glyph, fg, bg, rotation: 0.0, scale: (1.0, 1.0) });
+            self.tiles.push(FancyTile { position: PointF{x:x as f32, y:h - y as f32}, z_order: 0, glyph, fg, bg, rotation: 0.0, scale: PointF{x:1.0, y:1.0} });
         }
     }
 
@@ -332,8 +334,8 @@ impl Console for FancyConsole {
         }
 
         for c in &self.tiles {
-            let x = c.position.0 as usize;
-            let y = c.position.1 as usize;
+            let x = c.position.x as usize;
+            let y = c.position.y as usize;
             let cell = layer.get_mut(x as usize, y as usize).unwrap();
             cell.ch = u32::from(c.glyph);
             cell.fg = c.fg.to_xp();
