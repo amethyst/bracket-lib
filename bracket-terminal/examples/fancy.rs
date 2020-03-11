@@ -3,7 +3,8 @@ bracket_terminal::add_wasm_support!();
 use bracket_terminal::prelude::*;
 
 struct State {
-    x : f32
+    x : f32,
+    spin: f32
 }
 
 impl GameState for State {
@@ -13,6 +14,7 @@ impl GameState for State {
         // Show frame rate
         draw_batch.target(1);
         draw_batch.cls();
+        
         draw_batch.draw_double_box(
             Rect::with_size(39, 0, 20, 3),
             ColorPair::new(RGB::named(WHITE), RGB::named(BLACK)),
@@ -27,7 +29,9 @@ impl GameState for State {
             &format!("Frame Time: {} ms", ctx.frame_time_ms),
             ColorPair::new(RGB::named(CYAN), RGB::named(BLACK)),
         );
-        draw_batch.set_fancy((self.x, 20.0), 0, ColorPair::new(RGB::named(YELLOW), RGB::named(BLACK)), to_cp437('@'));
+        
+        let y = 20.0 + (f32::sin(self.x / 2.0) * 5.0);
+        draw_batch.set_fancy((self.x, y), 0, self.spin, ColorPair::new(RGB::named(YELLOW), RGB::named(BLACK)), to_cp437('@'));
 
         // Submission
         draw_batch.submit(0).expect("Batch error");
@@ -38,18 +42,19 @@ impl GameState for State {
         if self.x > 80.0 {
             self.x = 0.0;
         }
+        self.spin += 0.2;
     }
 }
 
 fn main() -> BError {
     let context = BTermBuilder::simple80x50()
-        .with_font("vga8x16.png", 8u32, 16u32)
-        .with_fancy_console(80u32, 25u32, "vga8x16.png")
+        .with_fancy_console(80, 50, "terminal8x8.png")
         .with_title("Bracket Terminal - Sparse Consoles")
         .build()?;
 
     let gs = State {
-        x: 0.0
+        x: 0.0,
+        spin: 0.0
     };
 
     main_loop(context, gs)

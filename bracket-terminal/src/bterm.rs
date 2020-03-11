@@ -253,7 +253,7 @@ impl BTerm {
         super::rex::xp_to_console(xp, &mut bi.consoles[self.active_console].console, x, y);
     }
 
-    /// Saves the entire console stack to a REX Paint xp file. If your consoles are of
+    /// Saves the entire console stack to a REX Paint XP file. If your consoles are of
     /// varying sizes, the file format supports it - but REX doesn't. So you may want to
     /// avoid that. You can also get individual layers with to_xp_layer.
     pub fn to_xp_file(&self, width: usize, height: usize) -> XpFile {
@@ -431,7 +431,7 @@ impl BTerm {
 
     /// Set a tile with "fancy" additional attributes
     #[cfg(feature = "opengl")]
-    pub fn set_fancy<COLOR, COLOR2, GLYPH>(&mut self, x: f32, y: f32, z_order: i32, fg: COLOR, bg: COLOR2, glyph: GLYPH)
+    pub fn set_fancy<COLOR, COLOR2, GLYPH>(&mut self, x: f32, y: f32, z_order: i32, rotation: f32, fg: COLOR, bg: COLOR2, glyph: GLYPH)
     where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
@@ -440,13 +440,13 @@ impl BTerm {
         let mut be = BACKEND_INTERNAL.lock();
         let cons_any = be.consoles[self.active_console].console.as_any_mut();
         if let Some(fc) = cons_any.downcast_mut::<FancyConsole>() {
-            fc.set_fancy(x, y, z_order, fg.into(), bg.into(), glyph.try_into().ok().unwrap());
+            fc.set_fancy(x, y, z_order, rotation, fg.into(), bg.into(), glyph.try_into().ok().unwrap());
         }
     }
 
     /// Set a tile with "fancy" additional attributes
     #[cfg(not(feature = "opengl"))]
-    pub fn set_fancy<COLOR, COLOR2, GLYPH>(&mut self, _x: f32, _y: f32, _z_order: i32, _fg: COLOR, _bg: COLOR2, _glyph: GLYPH)
+    pub fn set_fancy<COLOR, COLOR2, GLYPH>(&mut self, _x: f32, _y: f32, _z_order: i32, _rotation: f32, _fg: COLOR, _bg: COLOR2, _glyph: GLYPH)
     where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,

@@ -64,11 +64,10 @@ pub fn init_raw<S: ToString>(
         shader_strings::SCANLINES_VS,
         shader_strings::SCANLINES_FS,
     ));
-    // TODO: Replace with fancy console handler
     shaders.push(Shader::new(
         &gl,
-        shader_strings::CONSOLE_WITH_BG_VS,
-        shader_strings::CONSOLE_WITH_BG_FS,
+        shader_strings::FANCY_CONSOLE_VS,
+        shader_strings::FANCY_CONSOLE_FS,
     ));
 
     // Build the backing frame-buffer
@@ -79,7 +78,7 @@ pub fn init_raw<S: ToString>(
         (height_pixels as f64 * initial_dpi_factor) as i32,
     )?;
 
-    // Build a simple quad rendering vao
+    // Build a simple quad rendering VAO
     let quad_vao = setup_quad(&gl);
 
     let mut be = BACKEND.lock();
