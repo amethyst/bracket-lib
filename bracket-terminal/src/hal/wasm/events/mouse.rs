@@ -11,7 +11,6 @@ pub fn on_mouse_move(mouse: web_sys::MouseEvent) {
         if off_x != GLOBAL_MOUSE_POS.0 || off_y != GLOBAL_MOUSE_POS.1 {
             INPUT
                 .lock()
-                .unwrap()
                 .on_mouse_pixel_position(off_x as f64, off_y as f64);
             GLOBAL_MOUSE_POS = (off_x, off_y);
         }

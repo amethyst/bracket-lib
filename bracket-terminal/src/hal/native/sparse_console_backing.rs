@@ -1,6 +1,6 @@
 use super::BACKEND;
 use crate::hal::{font::Font, shader::Shader};
-use crate::sparse_console::SparseTile;
+use crate::prelude::SparseTile;
 use crate::Result;
 use bracket_color::prelude::RGBA;
 use glow::HasContext;
