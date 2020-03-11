@@ -9,6 +9,8 @@ mod simple_console_backing;
 pub use simple_console_backing::*;
 mod sparse_console_backing;
 pub use sparse_console_backing::*;
+mod fancy_console_backing;
+pub use fancy_console_backing::*;
 pub mod font;
 pub mod shader;
 use parking_lot::Mutex;
@@ -21,6 +23,7 @@ pub type GlCallback = fn(&mut dyn Any, &glow::Context);
 pub enum ConsoleBacking {
     Simple { backing: SimpleConsoleBackend },
     Sparse { backing: SparseConsoleBackend },
+    Fancy { backing: FancyConsoleBackend }
 }
 
 lazy_static! {

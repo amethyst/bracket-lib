@@ -1,6 +1,6 @@
 use crate::prelude::{
     font::Font, init_raw, BTerm, CharacterTranslationMode, InitHints, SimpleConsole, SparseConsole,
-    INPUT,
+    INPUT, FancyConsole
 };
 use crate::Result;
 use bracket_color::prelude::RGB;
@@ -29,6 +29,12 @@ enum ConsoleType {
         translator: CharacterTranslationMode,
     },
     SparseConsoleNoBg {
+        width: u32,
+        height: u32,
+        font: String,
+        translator: CharacterTranslationMode,
+    },
+    FancyConsole {
         width: u32,
         height: u32,
         font: String,
@@ -362,6 +368,24 @@ impl BTermBuilder {
         self
     }
 
+    /// Adds a fancy (supporting per-glyph offsets, rotation, etc.) console. OpenGL only for now.
+    #[cfg(feature = "opengl")]
+    pub fn with_fancy_console<S: ToString, T>(mut self, width: T, height: T, font: S) -> Self
+    where
+        T: TryInto<u32>,
+    {
+        self.consoles.push(ConsoleType::FancyConsole {
+            width: width.try_into().ok().expect("Must be convertible to a u32"),
+            height: height
+                .try_into()
+                .ok()
+                .expect("Must be convertible to a u32"),
+            font: font.to_string(),
+            translator: CharacterTranslationMode::Codepage437,
+        });
+        self
+    }
+
     /// Enables you to override the vsync default for native rendering.
     pub fn with_vsync(mut self, vsync: bool) -> Self {
         self.platform_hints.vsync = vsync;
@@ -455,6 +479,18 @@ impl BTermBuilder {
                     let font_id = font_map[&font_path];
                     let cid = context
                         .register_console_no_bg(SparseConsole::init(*width, *height), font_id);
+                    context.set_translation_mode(cid, *translator);
+                }
+                ConsoleType::FancyConsole {
+                    width,
+                    height,
+                    font,
+                    translator,
+                } => {
+                    let font_path = format!("{}/{}", self.resource_path, font);
+                    let font_id = font_map[&font_path];
+                    let cid = context
+                        .register_fancy_console(FancyConsole::init(*width, *height), font_id);
                     context.set_translation_mode(cid, *translator);
                 }
             }

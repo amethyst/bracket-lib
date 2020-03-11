@@ -1,12 +1,12 @@
 use super::BACKEND;
 use crate::hal::{font::Font, shader::Shader};
-use crate::prelude::SparseTile;
+use crate::prelude::FancyTile;
 use crate::Result;
 use bracket_color::prelude::RGBA;
 use glow::HasContext;
 use std::mem;
 
-pub struct SparseConsoleBackend {
+pub struct FancyConsoleBackend {
     vertex_buffer: Vec<f32>,
     index_buffer: Vec<i32>,
     vbo: u32,
@@ -14,10 +14,10 @@ pub struct SparseConsoleBackend {
     ebo: u32,
 }
 
-impl SparseConsoleBackend {
-    pub fn new(_width: usize, _height: usize, gl: &glow::Context) -> SparseConsoleBackend {
-        let (vbo, vao, ebo) = SparseConsoleBackend::init_gl_for_console(gl);
-        SparseConsoleBackend {
+impl FancyConsoleBackend {
+    pub fn new(_width: usize, _height: usize, gl: &glow::Context) -> FancyConsoleBackend {
+        let (vbo, vao, ebo) = FancyConsoleBackend::init_gl_for_console(gl);
+        FancyConsoleBackend {
             vertex_buffer: Vec::new(),
             index_buffer: Vec::new(),
             vbo,
@@ -53,7 +53,7 @@ impl SparseConsoleBackend {
                 (3 * mem::size_of::<f32>()) as i32,
             );
             gl.enable_vertex_attrib_array(1);
-            // background color attribute
+            // background attribute
             gl.vertex_attrib_pointer_f32(
                 2,
                 4,
@@ -103,7 +103,7 @@ impl SparseConsoleBackend {
         offset_y: f32,
         scale: f32,
         scale_center: (i32, i32),
-        tiles: &[SparseTile],
+        tiles: &[FancyTile],
         font_dimensions_glyphs: (u32, u32),
     ) {
         if tiles.is_empty() {
@@ -122,16 +122,15 @@ impl SparseConsoleBackend {
         let step_y: f32 = scale * 2.0 / height as f32;
 
         let mut index_count: i32 = 0;
-        let screen_x_start: f32 = -1.0 * scale
-            - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
-        let screen_y_start: f32 = -1.0 * scale
-            + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
-        for t in tiles.iter() {
-            let x = t.idx % width as usize;
-            let y = t.idx / width as usize;
+             let screen_x_start: f32 = -1.0 * scale - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
+        let screen_y_start: f32 = -1.0 * scale + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
 
-            let screen_x = ((step_x * x as f32) + screen_x_start) + offset_x;
-            let screen_y = ((step_y * y as f32) + screen_y_start) + offset_y;
+        for t in tiles.iter() {
+            let x = t.position.0;
+            let y = t.position.1;
+
+            let screen_x = ((step_x * x) + screen_x_start) + offset_x;
+            let screen_y = ((step_y * y) + screen_y_start) + offset_y;
             let fg = t.fg;
             let bg = t.bg;
             let glyph = t.glyph;
@@ -144,7 +143,7 @@ impl SparseConsoleBackend {
             let glyph_top = f32::from(glyph_y) * glyph_size_y;
             let glyph_bottom = f32::from(glyph_y - 1) * glyph_size_y;
 
-            SparseConsoleBackend::push_point(
+            FancyConsoleBackend::push_point(
                 &mut self.vertex_buffer,
                 screen_x + step_x,
                 screen_y + step_y,
@@ -153,7 +152,7 @@ impl SparseConsoleBackend {
                 glyph_right,
                 glyph_top,
             );
-            SparseConsoleBackend::push_point(
+            FancyConsoleBackend::push_point(
                 &mut self.vertex_buffer,
                 screen_x + step_x,
                 screen_y,
@@ -162,7 +161,7 @@ impl SparseConsoleBackend {
                 glyph_right,
                 glyph_bottom,
             );
-            SparseConsoleBackend::push_point(
+            FancyConsoleBackend::push_point(
                 &mut self.vertex_buffer,
                 screen_x,
                 screen_y,
@@ -171,7 +170,7 @@ impl SparseConsoleBackend {
                 glyph_left,
                 glyph_bottom,
             );
-            SparseConsoleBackend::push_point(
+            FancyConsoleBackend::push_point(
                 &mut self.vertex_buffer,
                 screen_x,
                 screen_y + step_y,
@@ -210,7 +209,7 @@ impl SparseConsoleBackend {
         }
     }
 
-    pub fn gl_draw(&mut self, font: &Font, shader: &Shader, tiles: &[SparseTile]) -> Result<()> {
+    pub fn gl_draw(&mut self, font: &Font, shader: &Shader, tiles: &[FancyTile]) -> Result<()> {
         let be = BACKEND.lock();
         let gl = be.gl.as_ref().unwrap();
         unsafe {

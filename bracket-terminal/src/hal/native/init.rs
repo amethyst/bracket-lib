@@ -64,6 +64,12 @@ pub fn init_raw<S: ToString>(
         shader_strings::SCANLINES_VS,
         shader_strings::SCANLINES_FS,
     ));
+    // TODO: Replace with fancy console handler
+    shaders.push(Shader::new(
+        &gl,
+        shader_strings::CONSOLE_WITH_BG_VS,
+        shader_strings::CONSOLE_WITH_BG_FS,
+    ));
 
     // Build the backing frame-buffer
     let initial_dpi_factor = windowed_context.window().scale_factor();

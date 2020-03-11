@@ -2,7 +2,7 @@ use crate::{
     prelude::{
         font::Font, init_raw, BEvent, CharacterTranslationMode, Console, FontCharType, GameState,
         InitHints, Shader, SimpleConsole, TextAlign, VirtualKeyCode, XpFile, XpLayer, BACKEND,
-        INPUT,
+        INPUT, FancyConsole
     },
     Result,
 };
@@ -171,6 +171,22 @@ impl BTerm {
             console: new_console,
             font_index,
             shader_index: 1,
+        });
+        bi.consoles.len() - 1
+    }
+
+    /// Registers a new console terminal for output, and returns its handle number. This variant requests
+    /// that the new console not render background colors, so it can be layered on top of other consoles.
+    pub fn register_fancy_console(
+        &mut self,
+        new_console: Box<dyn Console>,
+        font_index: usize,
+    ) -> usize {
+        let mut bi = BACKEND_INTERNAL.lock();
+        bi.consoles.push(DisplayConsole {
+            console: new_console,
+            font_index,
+            shader_index: 4,
         });
         bi.consoles.len() - 1
     }
@@ -411,6 +427,32 @@ impl BTerm {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
             .set(x, y, fg.into(), bg.into(), glyph.try_into().ok().unwrap());
+    }
+
+    /// Set a tile with "fancy" additional attributes
+    #[cfg(feature = "opengl")]
+    pub fn set_fancy<COLOR, COLOR2, GLYPH>(&mut self, x: f32, y: f32, z_order: i32, fg: COLOR, bg: COLOR2, glyph: GLYPH)
+    where
+        COLOR: Into<RGBA>,
+        COLOR2: Into<RGBA>,
+        GLYPH: TryInto<FontCharType>,
+    {
+        let mut be = BACKEND_INTERNAL.lock();
+        let cons_any = be.consoles[self.active_console].console.as_any_mut();
+        if let Some(fc) = cons_any.downcast_mut::<FancyConsole>() {
+            fc.set_fancy(x, y, z_order, fg.into(), bg.into(), glyph.try_into().ok().unwrap());
+        }
+    }
+
+    /// Set a tile with "fancy" additional attributes
+    #[cfg(not(feature = "opengl"))]
+    pub fn set_fancy<COLOR, COLOR2, GLYPH>(&mut self, _x: f32, _y: f32, _z_order: i32, _fg: COLOR, _bg: COLOR2, _glyph: GLYPH)
+    where
+        COLOR: Into<RGBA>,
+        COLOR2: Into<RGBA>,
+        GLYPH: TryInto<FontCharType>,
+    {
+        // Does nothing
     }
 
     /// Sets the background color only of a specified tile.

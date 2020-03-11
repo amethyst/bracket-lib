@@ -56,6 +56,12 @@ impl FancyConsole {
 
         Box::new(new_console)
     }
+
+    // Insert a single tile with "fancy" attributes
+    pub fn set_fancy(&mut self, x: f32, y: f32, z_order: i32, fg: RGBA, bg: RGBA, glyph: FontCharType) {
+        self.is_dirty = true;
+        self.tiles.push(FancyTile { position: (x, self.height as f32 - y), z_order, glyph, fg, bg });
+    }
 }
 
 impl Console for FancyConsole {
@@ -88,7 +94,6 @@ impl Console for FancyConsole {
     fn print(&mut self, x: i32, y: i32, output: &str) {
         self.is_dirty = true;
 
-        let bounds = self.get_char_size();
         let bytes = match self.translation {
             CharacterTranslationMode::Codepage437 => string_to_cp437(output),
             CharacterTranslationMode::Unicode => {
@@ -96,14 +101,14 @@ impl Console for FancyConsole {
             }
         };
 
+        let h = (self.height - 1) as f32;
         self.tiles.extend(
             bytes
                 .into_iter()
                 .enumerate()
-                .filter(|(i, _)| (*i as i32 + x) < bounds.0 as i32)
-                .map(|(_i, glyph)| {
+                .map(|(i, glyph)| {
                     FancyTile {
-                        position: (x as f32, y as f32),
+                        position: (i as f32 +x as f32, h - y as f32),
                         z_order: 0,
                         glyph,
                         fg: RGBA::from_f32(1.0, 1.0, 1.0, 1.0),
@@ -117,22 +122,21 @@ impl Console for FancyConsole {
     fn print_color(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, output: &str) {
         self.is_dirty = true;
 
-        let bounds = self.get_char_size();
         let bytes = match self.translation {
             CharacterTranslationMode::Codepage437 => string_to_cp437(output),
             CharacterTranslationMode::Unicode => {
                 output.chars().map(|c| c as FontCharType).collect()
             }
         };
+        let h = (self.height - 1) as f32;
         self.tiles.extend(
             bytes
                 .into_iter()
                 .enumerate()
-                .filter(|(i, _)| (*i as i32 + x) < bounds.0 as i32)
-                .map(|(_i, glyph)| {
+                .map(|(i, glyph)| {
                     FancyTile {
                         z_order: 0,
-                        position: (x as f32, y as f32),
+                        position: (i as f32 +x as f32, h - y as f32),
                         glyph,
                         fg,
                         bg
@@ -145,7 +149,8 @@ impl Console for FancyConsole {
     fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: FontCharType) {
         self.is_dirty = true;
         if self.try_at(x, y).is_some() {
-            self.tiles.push(FancyTile { position: (x as f32, y as f32), z_order: 0, glyph, fg, bg });
+            let h = (self.height - 1) as f32;
+            self.tiles.push(FancyTile { position: (x as f32, h - y as f32), z_order: 0, glyph, fg, bg });
         }
     }
 

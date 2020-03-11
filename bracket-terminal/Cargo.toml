@@ -80,3 +80,8 @@ required-features = [ "opengl" ]
 name = "squishy"
 path = "examples/squishy.rs"
 required-features = [ "opengl" ]
+
+[[example]]
+name = "fancy"
+path = "examples/fancy.rs"
+required-features = [ "opengl" ]
