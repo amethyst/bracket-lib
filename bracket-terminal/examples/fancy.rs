@@ -55,10 +55,13 @@ impl GameState for State {
 }
 
 fn main() -> BError {
-    let context = BTermBuilder::simple80x50()
+    let mut context = BTermBuilder::simple80x50()
         .with_fancy_console(80, 50, "terminal8x8.png")
         .with_title("Bracket Terminal - Sparse Consoles")
         .build()?;
+
+    context.with_post_scanlines(true);
+    context.with_post_scanlines(true);
 
     let gs = State {
         x: 0.0,

@@ -237,6 +237,22 @@ fn tock<GS: GameState>(
     // Console structure - doesn't really have to be every frame...
     rebuild_consoles();
 
+    // Bind to the backing buffer
+    if bterm.post_scanlines {
+        let be = BACKEND.lock();
+        be.backing_buffer
+            .as_ref()
+            .unwrap()
+            .bind(be.gl.as_ref().unwrap());
+    }
+
+    // Clear the screen
+    unsafe {
+        let be = BACKEND.lock();
+        be.gl.as_ref().unwrap().clear_color(0.0, 0.0, 0.0, 1.0);
+        be.gl.as_ref().unwrap().clear(glow::COLOR_BUFFER_BIT);
+    }
+
     // Tell each console to draw itself
     render_consoles().unwrap();
 
