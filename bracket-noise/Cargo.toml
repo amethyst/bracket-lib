@@ -19,4 +19,4 @@ bracket-random = { path = "../bracket-random" }
 
 [dev-dependencies]
 crossterm = "0.16.0"
-bracket-color = { path = "../bracket-color" }
+bracket-color = { path = "../bracket-color", features = [ "rex", "palette" ] }

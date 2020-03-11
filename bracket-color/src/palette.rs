@@ -54,13 +54,6 @@ mod tests {
     }
 
     #[test]
-    fn check_w3c() {
-        add_named_colors_to_palette();
-        assert!(palette_color(&"snow").unwrap() == RGBA::named(SNOW));
-        assert!(palette_color(&"bisque").unwrap() == RGBA::named(BISQUE));
-    }
-
-    #[test]
     fn clear_test() {
         add_named_colors_to_palette();
         clear_palette();
