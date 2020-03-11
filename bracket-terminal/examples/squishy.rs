@@ -58,7 +58,7 @@ impl GameState for State {
         );
 
         self.width += 1;
-        self.width = self.width % 200;
+        self.width %= 200;
         ctx.set_char_size(self.width, 45);
         if let Some(key) = ctx.key {
             if key == VirtualKeyCode::W {
