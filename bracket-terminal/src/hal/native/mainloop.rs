@@ -439,6 +439,7 @@ fn tock<GS: GameState>(
         }
     }
 
+    // Screenshot handler
     {
         let mut be = BACKEND.lock();
         if let Some(filename) = &be.request_screenshot {

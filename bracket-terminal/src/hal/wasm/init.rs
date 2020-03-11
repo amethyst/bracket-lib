@@ -41,15 +41,41 @@ pub fn init_raw<S: ToString>(
 
     shaders.push(Shader::new(
         &gl,
-        shader_strings::UBERSHADER_VS,
-        shader_strings::UBERSHADER_FS,
+        shader_strings::CONSOLE_WITH_BG_VS,
+        shader_strings::CONSOLE_WITH_BG_FS,
+    ));
+    shaders.push(Shader::new(
+        &gl,
+        shader_strings::CONSOLE_NO_BG_VS,
+        shader_strings::CONSOLE_NO_BG_FS,
+    ));
+    shaders.push(Shader::new(
+        &gl,
+        shader_strings::BACKING_VS,
+        shader_strings::BACKING_FS,
+    ));
+    shaders.push(Shader::new(
+        &gl,
+        shader_strings::SCANLINES_VS,
+        shader_strings::SCANLINES_FS,
+    ));
+    shaders.push(Shader::new(
+        &gl,
+        shader_strings::FANCY_CONSOLE_VS,
+        shader_strings::FANCY_CONSOLE_FS,
     ));
 
     let quad_vao = quadrender::setup_quad(&gl);
+    let backing_fbo = Framebuffer::build_fbo(
+        &gl,
+        width_pixels as i32,
+        height_pixels as i32,
+    );
 
     let mut be = BACKEND.lock();
     be.gl = Some(gl);
     be.quad_vao = Some(quad_vao);
+    be.backing_buffer = Some(backing_fbo);
 
     BACKEND_INTERNAL.lock().shaders = shaders;
 

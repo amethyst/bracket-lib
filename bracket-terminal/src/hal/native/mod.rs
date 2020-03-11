@@ -36,7 +36,7 @@ lazy_static! {
         gl_callback: None,
         resize_scaling: false,
         resize_request: None,
-        request_screenshot: None
+        request_screenshot: None,
     });
 }
 

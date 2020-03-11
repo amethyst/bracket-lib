@@ -12,8 +12,12 @@ mod simple_console_backing;
 pub use simple_console_backing::*;
 mod sparse_console_backing;
 pub use sparse_console_backing::*;
+mod fancy_console_backing;
+pub use fancy_console_backing::*;
 pub mod font;
 pub mod shader;
+mod framebuffer;
+pub use framebuffer::Framebuffer;
 use parking_lot::Mutex;
 use std::any::Any;
 
@@ -38,6 +42,7 @@ impl InitHints {
 pub struct PlatformGL {
     pub gl: Option<glow::Context>,
     pub quad_vao: Option<glow::WebVertexArrayKey>,
+    pub backing_buffer: Option<super::Framebuffer>,
     pub gl_callback: Option<GlCallback>,
 }
 
@@ -45,7 +50,8 @@ lazy_static! {
     pub static ref BACKEND: Mutex<PlatformGL> = Mutex::new(PlatformGL {
         gl: None,
         quad_vao: None,
-        gl_callback: None
+        gl_callback: None,
+        backing_buffer: None
     });
 }
 
@@ -55,6 +61,7 @@ unsafe impl Sync for PlatformGL {}
 pub enum ConsoleBacking {
     Simple { backing: SimpleConsoleBackend },
     Sparse { backing: SparseConsoleBackend },
+    Fancy { backing: FancyConsoleBackend }
 }
 
 lazy_static! {

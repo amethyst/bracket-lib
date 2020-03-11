@@ -18,7 +18,8 @@ REM CALL :StageExample input_harness, input_harness
 REM CALL :StageExample virtual_console, virtual_console
 REM CALL :StageExample alpha, alpha
 REM CALL :StageExample colorfont, colorfont
-CALL :StageExample fontswitch, fontswitch
+REM CALL :StageExample fontswitch, fontswitch
+CALL :StageExample fancy, fancy
 
 
 REM Submit to server
