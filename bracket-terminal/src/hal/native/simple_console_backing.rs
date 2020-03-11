@@ -157,7 +157,7 @@ impl SimpleConsoleBackend {
         scale: f32,
         scale_center: (i32, i32),
         needs_resize: bool,
-        font_dimensions_glyphs : (u32, u32)
+        font_dimensions_glyphs: (u32, u32),
     ) {
         if needs_resize {
             let vertex_capacity: usize = (13 * width as usize * height as usize) * 4;
@@ -183,15 +183,18 @@ impl SimpleConsoleBackend {
         let step_y: f32 = scale * 2.0f32 / height as f32;
 
         let mut index_count: i32 = 0;
-        let mut screen_y: f32 = -1.0 * scale + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
+        let mut screen_y: f32 = -1.0 * scale
+            + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
         for y in 0..height {
-            let mut screen_x: f32 = -1.0 * scale - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
+            let mut screen_x: f32 = -1.0 * scale
+                - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
             for x in 0..width {
                 let fg = tiles[((y * width) + x) as usize].fg;
                 let bg = tiles[((y * width) + x) as usize].bg;
                 let glyph = tiles[((y * width) + x) as usize].glyph;
                 let glyph_x = glyph % font_dimensions_glyphs.0 as u16;
-                let glyph_y = font_dimensions_glyphs.1 as u16 - (glyph / font_dimensions_glyphs.0 as u16);
+                let glyph_y =
+                    font_dimensions_glyphs.1 as u16 - (glyph / font_dimensions_glyphs.0 as u16);
 
                 let glyph_left = f32::from(glyph_x) * glyph_size_x;
                 let glyph_right = f32::from(glyph_x + 1) * glyph_size_x;

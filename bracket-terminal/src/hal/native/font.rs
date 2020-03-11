@@ -16,7 +16,7 @@ pub struct Font {
 
     pub tile_size: (u32, u32),
     pub explicit_background: Option<RGB>,
-    pub font_dimensions_glyphs : (u32, u32)
+    pub font_dimensions_glyphs: (u32, u32),
 }
 
 #[allow(non_snake_case)]
@@ -30,7 +30,7 @@ impl Font {
             gl_id: None,
             tile_size,
             explicit_background: None,
-            font_dimensions_glyphs: ( tile_size.0 / width, tile_size.1 / height )
+            font_dimensions_glyphs: (tile_size.0 / width, tile_size.1 / height),
         }
     }
 
@@ -60,7 +60,7 @@ impl Font {
             gl_id: None,
             tile_size,
             explicit_background,
-            font_dimensions_glyphs: ( img.width() / tile_size.0, img.height() / tile_size.1 )
+            font_dimensions_glyphs: (img.width() / tile_size.0, img.height() / tile_size.1),
         }
     }
 

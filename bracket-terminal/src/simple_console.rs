@@ -392,7 +392,7 @@ impl Console for SimpleConsole {
         for y in 0..i32::min(self.height as i32, height as i32) {
             for x in 0..i32::min(self.width as i32, width as i32) {
                 let idx = self.at(x, y);
-                let new_idx = (((height as i32 -1 - y) * width as i32) + x) as usize;
+                let new_idx = (((height as i32 - 1 - y) * width as i32) + x) as usize;
                 new_tiles[new_idx] = self.tiles[idx];
             }
         }

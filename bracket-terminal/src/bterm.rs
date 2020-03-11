@@ -1,8 +1,8 @@
 use crate::{
     prelude::{
         font::Font, init_raw, BEvent, CharacterTranslationMode, Console, FontCharType, GameState,
-        InitHints, Shader, SimpleConsole, TextAlign, VirtualKeyCode, XpFile, XpLayer, INPUT,
-        BACKEND
+        InitHints, Shader, SimpleConsole, TextAlign, VirtualKeyCode, XpFile, XpLayer, BACKEND,
+        INPUT,
     },
     Result,
 };

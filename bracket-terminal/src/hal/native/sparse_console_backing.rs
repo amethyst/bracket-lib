@@ -104,7 +104,7 @@ impl SparseConsoleBackend {
         scale: f32,
         scale_center: (i32, i32),
         tiles: &[SparseTile],
-        font_dimensions_glyphs : (u32, u32)
+        font_dimensions_glyphs: (u32, u32),
     ) {
         if tiles.is_empty() {
             return;
@@ -136,7 +136,8 @@ impl SparseConsoleBackend {
             let bg = t.bg;
             let glyph = t.glyph;
             let glyph_x = glyph % font_dimensions_glyphs.0 as u16;
-            let glyph_y = font_dimensions_glyphs.1 as u16 - (glyph / font_dimensions_glyphs.0 as u16);
+            let glyph_y =
+                font_dimensions_glyphs.1 as u16 - (glyph / font_dimensions_glyphs.0 as u16);
 
             let glyph_left = f32::from(glyph_x) * glyph_size_x;
             let glyph_right = f32::from(glyph_x + 1) * glyph_size_x;

@@ -192,7 +192,12 @@ impl SimpleConsoleBackend {
             );
             shader.setBool(gl, "hasBackground", true);
             shader.setVec3(gl, "offset", self.offset_x, self.offset_y, 0.0);
-            shader.setVec2(gl, "font_dimensions_glyph", font.font_dimensions_glyphs.0 as f32, font.font_dimensions_glyphs.1 as f32);
+            shader.setVec2(
+                gl,
+                "font_dimensions_glyph",
+                font.font_dimensions_glyphs.0 as f32,
+                font.font_dimensions_glyphs.1 as f32,
+            );
             //super::log(&format!("{}x{}", font.font_dimensions_glyphs.0, font.font_dimensions_glyphs.1));
             gl.draw_arrays(glow::TRIANGLES, 0, 6);
         }

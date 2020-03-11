@@ -50,7 +50,7 @@ pub struct PlatformGL {
     pub gl_callback: Option<GlCallback>,
     pub resize_scaling: bool,
     pub resize_request: Option<(u32, u32)>,
-    pub request_screenshot: Option<String>
+    pub request_screenshot: Option<String>,
 }
 
 unsafe impl Send for PlatformGL {}

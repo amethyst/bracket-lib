@@ -18,7 +18,7 @@ fn on_resize(
     bterm: &mut BTerm,
     physical_size: glutin::dpi::PhysicalSize<u32>,
     dpi_scale_factor: f64,
-    send_event: bool
+    send_event: bool,
 ) -> Result<()> {
     let mut be = BACKEND.lock().unwrap();
     if send_event {
@@ -83,7 +83,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         &mut bterm,
         wc.window().inner_size(),
         wc.window().scale_factor(),
-        false
+        false,
     )?; // Additional resize to handle some X11 cases
 
     el.run(move |event, _, control_flow| {
@@ -133,7 +133,8 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     });
                 }
                 WindowEvent::Resized(physical_size) => {
-                    on_resize(&mut bterm, *physical_size, wc.window().scale_factor(), true).unwrap();
+                    on_resize(&mut bterm, *physical_size, wc.window().scale_factor(), true)
+                        .unwrap();
                 }
                 WindowEvent::CloseRequested => {
                     // If not using events, just close. Otherwise, push the event
@@ -249,7 +250,7 @@ fn rebuild_consoles() {
                         sc.scale,
                         sc.scale_center,
                         sc.needs_resize_internal,
-                        glyph_dimensions
+                        glyph_dimensions,
                     );
                     sc.needs_resize_internal = false;
                 }
@@ -269,7 +270,7 @@ fn rebuild_consoles() {
                         sc.scale,
                         sc.scale_center,
                         &sc.tiles,
-                        glyph_dimensions
+                        glyph_dimensions,
                     );
                     sc.needs_resize_internal = false;
                 }
