@@ -9,7 +9,6 @@ macro_rules! link_resource {
     ($resource_name : ident, $filename : expr) => {
         rltk::EMBED
             .lock()
-            .unwrap()
             .add_resource($filename.to_string(), $resource_name);
     };
 }
