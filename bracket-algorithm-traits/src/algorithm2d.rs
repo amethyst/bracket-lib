@@ -1,3 +1,18 @@
+//! # `Algorithm2D`
+//!
+//! `Algorithm2D` provides a translation layer between your map definition and `bracket-lib`. It
+//! seems to provide sane defaults, to minimize the work *if* you want to use my defaults for things
+//! like 2D array striding. If you don't, you can override more.
+//!
+//! At the minimum, override `dimensions` to provide a `Point` containing the upper boundaries of your map.
+//! The library can derive other traits from this.
+//!
+//! You can override `in_bounds` to change how you test if a coordinate is valid.
+//!
+//! You can override `point2d_to_index` to define how an X/Y point is mapped to a unique index.
+//!
+//! You can override `index_to_point2d` to override how a unique index is mapped to an X/Y coordinate.
+
 use crate::prelude::BaseMap;
 use bracket_geometry::prelude::Point;
 use std::convert::TryInto;

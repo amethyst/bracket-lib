@@ -1,3 +1,16 @@
+//! # `BaseMap`
+//! 
+//! `BaseMap` provides map traits required for path-finding and field-of-view operations. Implement these
+//! if you want to use these features from `bracket-lib`.
+//! 
+//! `is_opaque` specifies is you can see through a tile, required for field-of-view.
+//! 
+//! `get_available_exits` lists the indices to which one can travel from a given tile, along with a relative
+//! cost of each exit. Required for path-finding.
+//! 
+//! `get_pathing_distance` allows you to implement your heuristic for determining remaining distance to a
+//! target.
+
 /// Implement this trait to support path-finding functions.
 pub trait BaseMap {
     /// True is you cannot see through the tile, false otherwise. Default implementation
