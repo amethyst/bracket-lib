@@ -3,9 +3,9 @@ use crate::hal::{font::Font, shader::Shader};
 use crate::prelude::FancyTile;
 use crate::Result;
 use bracket_color::prelude::RGBA;
+use bracket_geometry::prelude::PointF;
 use glow::HasContext;
 use std::mem;
-use bracket_geometry::prelude::PointF;
 
 pub struct FancyConsoleBackend {
     vertex_buffer: Vec<f32>,
@@ -27,7 +27,13 @@ impl FancyConsoleBackend {
         }
     }
 
-    fn init_gl_for_console(gl: &glow::Context) -> (glow::WebBufferKey, glow::WebVertexArrayKey, glow::WebBufferKey) {
+    fn init_gl_for_console(
+        gl: &glow::Context,
+    ) -> (
+        glow::WebBufferKey,
+        glow::WebVertexArrayKey,
+        glow::WebBufferKey,
+    ) {
         let (vbo, vao, ebo);
 
         unsafe {
@@ -110,12 +116,13 @@ impl FancyConsoleBackend {
         ux: f32,
         uy: f32,
         rotation: f32,
-        screen_x : f32,
-        screen_y : f32,
-        scale : PointF
+        screen_x: f32,
+        screen_y: f32,
+        scale: PointF,
     ) {
         vertex_buffer.extend_from_slice(&[
-            x, y, 0.0, fg.r, fg.g, fg.b, fg.a, bg.r, bg.g, bg.b, bg.a, ux, uy, rotation, screen_x, screen_y, scale.x, scale.y
+            x, y, 0.0, fg.r, fg.g, fg.b, fg.a, bg.r, bg.g, bg.b, bg.a, ux, uy, rotation, screen_x,
+            screen_y, scale.x, scale.y,
         ]);
     }
 
@@ -148,8 +155,10 @@ impl FancyConsoleBackend {
         let step_y: f32 = scale * 2.0 / height as f32;
 
         let mut index_count: i32 = 0;
-             let screen_x_start: f32 = -1.0 * scale - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
-        let screen_y_start: f32 = -1.0 * scale + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
+        let screen_x_start: f32 = -1.0 * scale
+            - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
+        let screen_y_start: f32 = -1.0 * scale
+            + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
 
         for t in tiles.iter() {
             let x = t.position.x;
@@ -183,7 +192,7 @@ impl FancyConsoleBackend {
                 t.rotation,
                 rot_center_x,
                 rot_center_y,
-                t.scale
+                t.scale,
             );
             FancyConsoleBackend::push_point(
                 &mut self.vertex_buffer,
@@ -196,7 +205,7 @@ impl FancyConsoleBackend {
                 t.rotation,
                 rot_center_x,
                 rot_center_y,
-                t.scale
+                t.scale,
             );
             FancyConsoleBackend::push_point(
                 &mut self.vertex_buffer,
@@ -209,7 +218,7 @@ impl FancyConsoleBackend {
                 t.rotation,
                 rot_center_x,
                 rot_center_y,
-                t.scale
+                t.scale,
             );
             FancyConsoleBackend::push_point(
                 &mut self.vertex_buffer,
@@ -222,7 +231,7 @@ impl FancyConsoleBackend {
                 t.rotation,
                 rot_center_x,
                 rot_center_y,
-                t.scale
+                t.scale,
             );
 
             self.index_buffer.push(index_count);

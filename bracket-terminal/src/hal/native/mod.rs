@@ -23,7 +23,7 @@ pub type GlCallback = fn(&mut dyn Any, &glow::Context);
 pub enum ConsoleBacking {
     Simple { backing: SimpleConsoleBackend },
     Sparse { backing: SparseConsoleBackend },
-    Fancy { backing: FancyConsoleBackend }
+    Fancy { backing: FancyConsoleBackend },
 }
 
 lazy_static! {

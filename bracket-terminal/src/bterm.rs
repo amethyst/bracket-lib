@@ -1,13 +1,13 @@
 use crate::{
     prelude::{
-        font::Font, init_raw, BEvent, CharacterTranslationMode, Console, FontCharType, GameState,
-        InitHints, Shader, SimpleConsole, TextAlign, VirtualKeyCode, XpFile, XpLayer, BACKEND,
-        INPUT, FancyConsole
+        font::Font, init_raw, BEvent, CharacterTranslationMode, Console, FancyConsole,
+        FontCharType, GameState, InitHints, Shader, SimpleConsole, TextAlign, VirtualKeyCode,
+        XpFile, XpLayer, BACKEND, INPUT,
     },
     Result,
 };
 use bracket_color::prelude::RGBA;
-use bracket_geometry::prelude::{Point, Rect, PointF};
+use bracket_geometry::prelude::{Point, PointF, Rect};
 use parking_lot::Mutex;
 use std::convert::*;
 
@@ -431,8 +431,17 @@ impl BTerm {
 
     /// Set a tile with "fancy" additional attributes
     #[cfg(feature = "opengl")]
-    pub fn set_fancy<COLOR, COLOR2, GLYPH>(&mut self, position: PointF, z_order: i32, rotation: f32, scale:PointF, fg: COLOR, bg: COLOR2, glyph: GLYPH)
-    where
+    #[allow(clippy::too_many_arguments)]
+    pub fn set_fancy<COLOR, COLOR2, GLYPH>(
+        &mut self,
+        position: PointF,
+        z_order: i32,
+        rotation: f32,
+        scale: PointF,
+        fg: COLOR,
+        bg: COLOR2,
+        glyph: GLYPH,
+    ) where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
         GLYPH: TryInto<FontCharType>,
@@ -440,14 +449,30 @@ impl BTerm {
         let mut be = BACKEND_INTERNAL.lock();
         let cons_any = be.consoles[self.active_console].console.as_any_mut();
         if let Some(fc) = cons_any.downcast_mut::<FancyConsole>() {
-            fc.set_fancy(position, z_order, rotation, scale, fg.into(), bg.into(), glyph.try_into().ok().unwrap());
+            fc.set_fancy(
+                position,
+                z_order,
+                rotation,
+                scale,
+                fg.into(),
+                bg.into(),
+                glyph.try_into().ok().unwrap(),
+            );
         }
     }
 
     /// Set a tile with "fancy" additional attributes
     #[cfg(not(feature = "opengl"))]
-    pub fn set_fancy<COLOR, COLOR2, GLYPH>(&mut self, _position: PointF, _z_order: i32, _rotation: f32, _scale: PointF, _fg: COLOR, _bg: COLOR2, _glyph: GLYPH)
-    where
+    pub fn set_fancy<COLOR, COLOR2, GLYPH>(
+        &mut self,
+        _position: PointF,
+        _z_order: i32,
+        _rotation: f32,
+        _scale: PointF,
+        _fg: COLOR,
+        _bg: COLOR2,
+        _glyph: GLYPH,
+    ) where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
         GLYPH: TryInto<FontCharType>,

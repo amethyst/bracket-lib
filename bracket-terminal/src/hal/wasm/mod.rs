@@ -15,8 +15,8 @@ pub use sparse_console_backing::*;
 mod fancy_console_backing;
 pub use fancy_console_backing::*;
 pub mod font;
-pub mod shader;
 mod framebuffer;
+pub mod shader;
 pub use framebuffer::Framebuffer;
 use parking_lot::Mutex;
 use std::any::Any;
@@ -61,7 +61,7 @@ unsafe impl Sync for PlatformGL {}
 pub enum ConsoleBacking {
     Simple { backing: SimpleConsoleBackend },
     Sparse { backing: SparseConsoleBackend },
-    Fancy { backing: FancyConsoleBackend }
+    Fancy { backing: FancyConsoleBackend },
 }
 
 lazy_static! {

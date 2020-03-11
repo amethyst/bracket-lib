@@ -66,11 +66,7 @@ pub fn init_raw<S: ToString>(
     ));
 
     let quad_vao = quadrender::setup_quad(&gl);
-    let backing_fbo = Framebuffer::build_fbo(
-        &gl,
-        width_pixels as i32,
-        height_pixels as i32,
-    );
+    let backing_fbo = Framebuffer::build_fbo(&gl, width_pixels as i32, height_pixels as i32);
 
     let mut be = BACKEND.lock();
     be.gl = Some(gl);

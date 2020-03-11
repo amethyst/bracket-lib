@@ -1,6 +1,6 @@
 use crate::prelude::{
-    font::Font, init_raw, BTerm, CharacterTranslationMode, InitHints, SimpleConsole, SparseConsole,
-    INPUT, FancyConsole
+    font::Font, init_raw, BTerm, CharacterTranslationMode, FancyConsole, InitHints, SimpleConsole,
+    SparseConsole, INPUT,
 };
 use crate::Result;
 use bracket_color::prelude::RGB;

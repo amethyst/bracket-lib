@@ -1,6 +1,8 @@
 use super::events::*;
 use super::*;
-use crate::prelude::{BEvent, BTerm, GameState, SimpleConsole, SparseConsole, BACKEND_INTERNAL, FancyConsole};
+use crate::prelude::{
+    BEvent, BTerm, FancyConsole, GameState, SimpleConsole, SparseConsole, BACKEND_INTERNAL,
+};
 use crate::{clear_input_state, Result};
 use glow::HasContext;
 

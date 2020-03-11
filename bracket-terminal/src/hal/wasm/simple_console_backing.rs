@@ -39,7 +39,13 @@ impl SimpleConsoleBackend {
         result
     }
 
-    fn init_gl_for_console(gl: &glow::Context) -> (glow::WebBufferKey, glow::WebVertexArrayKey, glow::WebBufferKey) {
+    fn init_gl_for_console(
+        gl: &glow::Context,
+    ) -> (
+        glow::WebBufferKey,
+        glow::WebVertexArrayKey,
+        glow::WebBufferKey,
+    ) {
         let (texture, vbo, vao, ebo);
 
         unsafe {

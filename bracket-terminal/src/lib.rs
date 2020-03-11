@@ -4,6 +4,7 @@ mod bterm;
 mod codepage437;
 mod command_buffer;
 pub mod console;
+mod consoles;
 pub mod embedding;
 mod format_string;
 mod gamestate;
@@ -13,7 +14,6 @@ mod initializer;
 mod input;
 mod multi_tile_sprite;
 pub mod rex;
-mod consoles;
 mod textblock;
 
 pub(crate) type Error = Box<dyn std::error::Error>;
@@ -28,6 +28,7 @@ pub mod prelude {
     pub use crate::command_buffer::*;
     pub use crate::console;
     pub use crate::console::{CharacterTranslationMode, Console, TextAlign, Tile};
+    pub use crate::consoles::*;
     pub use crate::embedding;
     pub use crate::embedding::EMBED;
     pub use crate::gamestate::GameState;
@@ -38,7 +39,6 @@ pub mod prelude {
     pub use crate::multi_tile_sprite::*;
     pub use crate::rex;
     pub use crate::rex::*;
-    pub use crate::consoles::*;
     pub use crate::textblock::*;
     pub use crate::FontCharType;
     pub use bracket_color::prelude::*;

@@ -3,8 +3,8 @@ bracket_terminal::add_wasm_support!();
 use bracket_terminal::prelude::*;
 
 struct State {
-    x : f32,
-    spin: f32
+    x: f32,
+    spin: f32,
 }
 
 impl GameState for State {
@@ -14,7 +14,7 @@ impl GameState for State {
         // Show frame rate
         draw_batch.target(1);
         draw_batch.cls();
-        
+
         draw_batch.draw_double_box(
             Rect::with_size(39, 0, 20, 3),
             ColorPair::new(RGB::named(WHITE), RGB::named(BLACK)),
@@ -33,12 +33,12 @@ impl GameState for State {
         let y = 20.0 + (f32::sin(self.x / 2.0) * 5.0);
         let scale = f32::cos(self.x / 3.0) + 1.1;
         draw_batch.set_fancy(
-            PointF{x: self.x, y}, 
-            0, 
-            self.spin, 
-            PointF{x:scale, y:scale}, 
-            ColorPair::new(RGB::named(YELLOW), RGB::named(BLACK)), 
-            to_cp437('@')
+            PointF { x: self.x, y },
+            0,
+            self.spin,
+            PointF { x: scale, y: scale },
+            ColorPair::new(RGB::named(YELLOW), RGB::named(BLACK)),
+            to_cp437('@'),
         );
 
         // Submission
@@ -63,10 +63,7 @@ fn main() -> BError {
     context.with_post_scanlines(true);
     context.with_post_scanlines(true);
 
-    let gs = State {
-        x: 0.0,
-        spin: 0.0
-    };
+    let gs = State { x: 0.0, spin: 0.0 };
 
     main_loop(context, gs)
 }

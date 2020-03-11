@@ -34,9 +34,7 @@ impl Font {
     }
 
     fn load_image(filename: &str) -> image::DynamicImage {
-        let resource = embedding::EMBED
-            .lock()
-            .get_resource(filename.to_string());
+        let resource = embedding::EMBED.lock().get_resource(filename.to_string());
         match resource {
             None => image::open(std::path::Path::new(&filename.to_string()))
                 .expect("Failed to load texture"),

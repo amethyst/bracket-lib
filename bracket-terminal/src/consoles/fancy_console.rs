@@ -1,9 +1,9 @@
 use crate::prelude::{
-    string_to_cp437, CharacterTranslationMode, ColoredTextSpans, Console, FontCharType,
-    TextAlign, XpLayer,
+    string_to_cp437, CharacterTranslationMode, ColoredTextSpans, Console, FontCharType, TextAlign,
+    XpLayer,
 };
 use bracket_color::prelude::{XpColor, RGBA};
-use bracket_geometry::prelude::{Rect, PointF};
+use bracket_geometry::prelude::{PointF, Rect};
 use std::any::Any;
 
 /// Internal storage structure for sparse tiles.
@@ -14,7 +14,7 @@ pub struct FancyTile {
     pub fg: RGBA,
     pub bg: RGBA,
     pub rotation: f32,
-    pub scale: PointF
+    pub scale: PointF,
 }
 
 /// A sparse console. Rather than storing every cell on the screen, it stores just cells that have
@@ -61,10 +61,30 @@ impl FancyConsole {
 
     // Insert a single tile with "fancy" attributes
     #[allow(clippy::too_many_arguments)]
-    pub fn set_fancy(&mut self, position: PointF, z_order: i32, rotation: f32, scale: PointF, fg: RGBA, bg: RGBA, glyph: FontCharType) {
+    pub fn set_fancy(
+        &mut self,
+        position: PointF,
+        z_order: i32,
+        rotation: f32,
+        scale: PointF,
+        fg: RGBA,
+        bg: RGBA,
+        glyph: FontCharType,
+    ) {
         self.is_dirty = true;
-        let invert_pos = PointF{x: position.x, y: self.height as f32 - position.y};
-        self.tiles.push(FancyTile { position: invert_pos, z_order, glyph, fg, bg, rotation, scale });
+        let invert_pos = PointF {
+            x: position.x,
+            y: self.height as f32 - position.y,
+        };
+        self.tiles.push(FancyTile {
+            position: invert_pos,
+            z_order,
+            glyph,
+            fg,
+            bg,
+            rotation,
+            scale,
+        });
     }
 }
 
@@ -106,22 +126,19 @@ impl Console for FancyConsole {
         };
 
         let h = (self.height - 1) as f32;
-        self.tiles.extend(
-            bytes
-                .into_iter()
-                .enumerate()
-                .map(|(i, glyph)| {
-                    FancyTile {
-                        position: PointF{ x: i as f32 +x as f32, y : h - y as f32},
-                        z_order: 0,
-                        glyph,
-                        fg: RGBA::from_f32(1.0, 1.0, 1.0, 1.0),
-                        bg: RGBA::from_f32(0.0, 0.0, 0.0, 1.0),
-                        rotation: 0.0,
-                        scale: PointF{x: 1.0, y: 1.0}
-                    }
-                }),
-        );
+        self.tiles
+            .extend(bytes.into_iter().enumerate().map(|(i, glyph)| FancyTile {
+                position: PointF {
+                    x: i as f32 + x as f32,
+                    y: h - y as f32,
+                },
+                z_order: 0,
+                glyph,
+                fg: RGBA::from_f32(1.0, 1.0, 1.0, 1.0),
+                bg: RGBA::from_f32(0.0, 0.0, 0.0, 1.0),
+                rotation: 0.0,
+                scale: PointF { x: 1.0, y: 1.0 },
+            }));
     }
 
     /// Prints a string to an x/y position, with foreground and background colors.
@@ -135,22 +152,19 @@ impl Console for FancyConsole {
             }
         };
         let h = (self.height - 1) as f32;
-        self.tiles.extend(
-            bytes
-                .into_iter()
-                .enumerate()
-                .map(|(i, glyph)| {
-                    FancyTile {
-                        z_order: 0,
-                        position: PointF{x: i as f32 +x as f32, y: h - y as f32},
-                        glyph,
-                        fg,
-                        bg,
-                        rotation: 0.0,
-                        scale: PointF{x:1.0, y:1.0}
-                    }
-                }),
-        );
+        self.tiles
+            .extend(bytes.into_iter().enumerate().map(|(i, glyph)| FancyTile {
+                z_order: 0,
+                position: PointF {
+                    x: i as f32 + x as f32,
+                    y: h - y as f32,
+                },
+                glyph,
+                fg,
+                bg,
+                rotation: 0.0,
+                scale: PointF { x: 1.0, y: 1.0 },
+            }));
     }
 
     /// Sets a single cell in the console
@@ -158,7 +172,18 @@ impl Console for FancyConsole {
         self.is_dirty = true;
         if self.try_at(x, y).is_some() {
             let h = (self.height - 1) as f32;
-            self.tiles.push(FancyTile { position: PointF{x:x as f32, y:h - y as f32}, z_order: 0, glyph, fg, bg, rotation: 0.0, scale: PointF{x:1.0, y:1.0} });
+            self.tiles.push(FancyTile {
+                position: PointF {
+                    x: x as f32,
+                    y: h - y as f32,
+                },
+                z_order: 0,
+                glyph,
+                fg,
+                bg,
+                rotation: 0.0,
+                scale: PointF { x: 1.0, y: 1.0 },
+            });
         }
     }
 
