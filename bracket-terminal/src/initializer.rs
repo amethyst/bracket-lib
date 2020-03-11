@@ -226,6 +226,10 @@ impl BTermBuilder {
     }
 
     /// Overrides the default assumption for tile sizes. Needed for a raw initialization.
+    /// If you have lots of fonts, the library will pick one (generally the first) to try
+    /// and determine what dimensions you want to use when figuring out your window size.
+    /// This method is used to override that assumption.
+    /// It's a great idea to use this when using multiple layers and fonts.
     pub fn with_tile_dimensions<T>(mut self, width: T, height: T) -> Self
     where
         T: TryInto<u32>,
