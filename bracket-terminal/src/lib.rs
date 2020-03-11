@@ -3,7 +3,6 @@ extern crate lazy_static;
 mod bterm;
 mod codepage437;
 mod command_buffer;
-pub mod console;
 mod consoles;
 pub mod embedding;
 mod format_string;
@@ -20,14 +19,13 @@ pub(crate) type Error = Box<dyn std::error::Error>;
 pub(crate) type Result<T> = core::result::Result<T, Error>;
 pub(crate) use input::clear_input_state;
 pub type FontCharType = u16;
+pub use consoles::console;
 
 pub mod prelude {
 
     pub use crate::bterm::*;
     pub use crate::codepage437::*;
     pub use crate::command_buffer::*;
-    pub use crate::console;
-    pub use crate::console::{CharacterTranslationMode, Console, TextAlign, Tile};
     pub use crate::consoles::*;
     pub use crate::embedding;
     pub use crate::embedding::EMBED;
