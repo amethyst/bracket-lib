@@ -58,6 +58,7 @@ fn main() -> BError {
     let mut context = BTermBuilder::simple80x50()
         .with_fancy_console(80, 50, "terminal8x8.png")
         .with_title("Bracket Terminal - Sparse Consoles")
+        .with_vsync(false)
         .build()?;
 
     context.with_post_scanlines(true);
