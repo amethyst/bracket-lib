@@ -51,6 +51,7 @@ Everything is exported via the `bracket_color::prelude` namespace.
 
 * If you enable the `serde` feature flag, the RGB, HSV and ColorPair structures are derived as `Serde` serializable/de-serializable.
 * The `rex` feature flag enables [RexPaint](https://www.gridsagegames.com/rexpaint/) support.
+* The `palette` feature flag enables a static (thread-safe) palette map, linking named colors to colors. It's empty by default (the `add_named_colors_to_palette` adds all of the constant named colors for you, in lower case).
 
 ## Examples
 
