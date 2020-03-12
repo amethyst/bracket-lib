@@ -1,8 +1,6 @@
-use super::command_buffer::DrawBatch;
-use super::prelude::ColorPair;
-use super::prelude::Point;
-use crate::prelude::{string_to_cp437, Console, FontCharType, Tile};
-use bracket_color::prelude::{RGB, RGBA};
+use crate::prelude::{DrawBatch, string_to_cp437, Console, FontCharType, Tile};
+use bracket_geometry::prelude::Point;
+use bracket_color::prelude::{RGB, RGBA, ColorPair};
 
 pub struct TextBlock {
     x: i32,

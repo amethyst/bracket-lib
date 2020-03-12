@@ -68,6 +68,7 @@ mod lines;
 mod point;
 mod point3;
 mod rect;
+mod rectf;
 
 pub mod prelude {
     pub use crate::angles::*;
@@ -79,4 +80,5 @@ pub mod prelude {
     pub use crate::point::*;
     pub use crate::point3::*;
     pub use crate::rect::*;
+    pub use crate::rectf::*;
 }

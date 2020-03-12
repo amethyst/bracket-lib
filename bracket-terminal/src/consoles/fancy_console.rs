@@ -1,6 +1,6 @@
 use crate::prelude::{
     string_to_cp437, CharacterTranslationMode, ColoredTextSpans, Console, FontCharType, TextAlign,
-    XpLayer,
+    XpLayer, to_cp437
 };
 use bracket_color::prelude::{XpColor, RGBA};
 use bracket_geometry::prelude::{PointF, Rect};
@@ -337,7 +337,7 @@ impl Console for FancyConsole {
                     fg,
                     bg,
                     match self.translation {
-                        CharacterTranslationMode::Codepage437 => crate::codepage437::to_cp437(ch),
+                        CharacterTranslationMode::Codepage437 => to_cp437(ch),
                         CharacterTranslationMode::Unicode => ch as FontCharType,
                     },
                 );

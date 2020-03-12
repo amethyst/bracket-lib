@@ -3,7 +3,7 @@
 
 use crate::prelude::{
     string_to_cp437, BTerm, CharacterTranslationMode, ColoredTextSpans, Console, DrawBatch,
-    FontCharType, TextAlign, Tile, XpLayer,
+    FontCharType, TextAlign, Tile, XpLayer, to_cp437
 };
 use bracket_color::prelude::*;
 use bracket_geometry::prelude::{Point, Rect};
@@ -345,7 +345,7 @@ impl Console for VirtualConsole {
                     fg,
                     bg,
                     match self.translation {
-                        CharacterTranslationMode::Codepage437 => crate::codepage437::to_cp437(ch),
+                        CharacterTranslationMode::Codepage437 => to_cp437(ch),
                         CharacterTranslationMode::Unicode => ch as FontCharType,
                     },
                 );

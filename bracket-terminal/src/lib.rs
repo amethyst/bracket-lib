@@ -1,19 +1,13 @@
 #[macro_use]
 extern crate lazy_static;
 mod bterm;
-mod codepage437;
-mod command_buffer;
 mod consoles;
 pub mod embedding;
-mod format_string;
 mod gamestate;
-mod gui_helpers;
 mod hal;
 mod initializer;
 mod input;
-mod multi_tile_sprite;
 pub mod rex;
-mod textblock;
 
 pub(crate) type Error = Box<dyn std::error::Error>;
 pub(crate) type Result<T> = core::result::Result<T, Error>;
@@ -24,25 +18,19 @@ pub use consoles::console;
 pub mod prelude {
 
     pub use crate::bterm::*;
-    pub use crate::codepage437::*;
-    pub use crate::command_buffer::*;
     pub use crate::consoles::*;
     pub use crate::embedding;
     pub use crate::embedding::EMBED;
     pub use crate::gamestate::GameState;
-    pub use crate::gui_helpers::*;
     pub use crate::hal::{font, init_raw, BTermPlatform, InitHints, Shader, BACKEND};
     pub use crate::initializer::*;
     pub use crate::input::{BEvent, Input, INPUT};
-    pub use crate::multi_tile_sprite::*;
     pub use crate::rex;
     pub use crate::rex::*;
-    pub use crate::textblock::*;
     pub use crate::FontCharType;
     pub use bracket_color::prelude::*;
     pub use bracket_geometry::prelude::*;
     pub type BError = std::result::Result<(), Box<dyn std::error::Error>>;
-    pub(crate) use crate::format_string::*;
 
     #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
     pub use glutin::event::VirtualKeyCode;

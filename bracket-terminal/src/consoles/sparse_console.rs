@@ -316,7 +316,7 @@ impl Console for SparseConsole {
                     fg,
                     bg,
                     match self.translation {
-                        CharacterTranslationMode::Codepage437 => crate::codepage437::to_cp437(ch),
+                        CharacterTranslationMode::Codepage437 => to_cp437(ch),
                         CharacterTranslationMode::Unicode => ch as FontCharType,
                     },
                 );
