@@ -56,8 +56,8 @@ impl GameState for State {
 
 fn main() -> BError {
     let mut context = BTermBuilder::simple80x50()
-        .with_fancy_console(80, 50, "terminal8x8.png")
-        .with_title("Bracket Terminal - Fancy Consoles")
+        .with_sprite_console(640, 400)
+        .with_title("Bracket Terminal - Sprite Console")
         .with_vsync(false)
         .build()?;
 

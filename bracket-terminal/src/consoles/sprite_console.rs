@@ -1,16 +1,17 @@
 use crate::prelude::{
     CharacterTranslationMode, Console, FontCharType, TextAlign,
-    XpLayer,
+    XpLayer
 };
 use bracket_color::prelude::{RGBA, ColorPair};
 use bracket_geometry::prelude::{RectF, Rect};
 use std::any::Any;
 
 /// Internal storage structure for sparse tiles.
-pub struct Sprite {
+pub struct RenderSprite {
     pub dimensions: RectF,
     pub z_order: i32,
-    pub tint : ColorPair
+    pub tint : ColorPair,
+    pub index : (usize, usize)
 }
 
 /// A sparse console. Rather than storing every cell on the screen, it stores just cells that have
@@ -19,7 +20,7 @@ pub struct SpriteConsole {
     pub width: u32,
     pub height: u32,
 
-    pub sprites: Vec<Sprite>,
+    pub sprites: Vec<RenderSprite>,
     pub is_dirty: bool,
 
     // To handle offset tiles for people who want thin walls between tiles
@@ -53,6 +54,11 @@ impl SpriteConsole {
         };
 
         Box::new(new_console)
+    }
+
+    pub fn render_sprite(&mut self, sprite: RenderSprite) {
+        self.sprites.push(sprite);
+        self.is_dirty = true;
     }
 }
 

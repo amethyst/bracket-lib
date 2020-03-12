@@ -2,7 +2,7 @@ use crate::{
     prelude::{
         font::Font, init_raw, BEvent, CharacterTranslationMode, Console, FancyConsole,
         FontCharType, GameState, InitHints, Shader, SimpleConsole, TextAlign, VirtualKeyCode,
-        XpFile, XpLayer, BACKEND, INPUT,
+        XpFile, XpLayer, BACKEND, INPUT, SpriteSheet
     },
     Result,
 };
@@ -23,6 +23,7 @@ pub struct BTermInternal {
     pub fonts: Vec<Font>,
     pub shaders: Vec<Shader>,
     pub consoles: Vec<DisplayConsole>,
+    pub sprite_sheets: Vec<SpriteSheet>
 }
 
 impl BTermInternal {
@@ -31,6 +32,7 @@ impl BTermInternal {
             fonts: Vec::new(),
             shaders: Vec::new(),
             consoles: Vec::new(),
+            sprite_sheets: Vec::new()
         }
     }
 }
@@ -41,6 +43,7 @@ impl Default for BTermInternal {
             fonts: Vec::new(),
             shaders: Vec::new(),
             consoles: Vec::new(),
+            sprite_sheets: Vec::new()
         }
     }
 }
@@ -187,6 +190,20 @@ impl BTerm {
             console: new_console,
             font_index,
             shader_index: 4,
+        });
+        bi.consoles.len() - 1
+    }
+
+    /// Registers a new Sprite-based console
+    pub fn register_sprite_console(
+        &mut self,
+        new_console: Box<dyn Console>
+    ) -> usize {
+        let mut bi = BACKEND_INTERNAL.lock();
+        bi.consoles.push(DisplayConsole {
+            console: new_console,
+            font_index: 0,
+            shader_index: 5,
         });
         bi.consoles.len() - 1
     }
@@ -811,9 +828,19 @@ impl BTerm {
         //panic!("This will be supported when `winit` stops crashing on resize request.");
     }
 
+    /// Take a screenshot - Native only
     #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
     pub fn screenshot<S: ToString>(&mut self, filename: S) {
         BACKEND.lock().request_screenshot = Some(filename.to_string());
+    }
+
+    /// Register a sprite sheet (OpenGL - native or WASM - only)
+    #[cfg(feature = "opengl")]
+    pub fn register_spritesheet(&mut self, ss : SpriteSheet) -> usize {
+        let mut bi = BACKEND_INTERNAL.lock();
+        let id = bi.sprite_sheets.len();
+        bi.sprite_sheets.push(ss);
+        id
     }
 }
 

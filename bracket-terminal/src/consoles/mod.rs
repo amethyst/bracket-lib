@@ -6,6 +6,7 @@ mod sprite_console;
 pub mod console;
 mod text;
 mod command_buffer;
+mod sprites;
 
 pub use fancy_console::*;
 pub use simple_console::*;
@@ -15,3 +16,4 @@ pub use sprite_console::*;
 pub use console::*;
 pub use text::*;
 pub use command_buffer::*;
+pub use sprites::*;

@@ -1,6 +1,6 @@
 use crate::prelude::{
     font::Font, init_raw, BTerm, CharacterTranslationMode, FancyConsole, InitHints, SimpleConsole,
-    SparseConsole, INPUT,
+    SparseConsole, INPUT, SpriteSheet, SpriteConsole
 };
 use crate::Result;
 use bracket_color::prelude::RGB;
@@ -40,6 +40,10 @@ enum ConsoleType {
         font: String,
         translator: CharacterTranslationMode,
     },
+    SpriteConsole {
+        width: u32,
+        height: u32
+    }
 }
 
 /// Provides a builder mechanism for initializing BTerm. You can chain builders together,
@@ -56,6 +60,7 @@ pub struct BTermBuilder {
     tile_height: u32,
     platform_hints: InitHints,
     advanced_input: bool,
+    sprite_sheets : Vec<SpriteSheet>
 }
 
 impl Default for BTermBuilder {
@@ -71,6 +76,7 @@ impl Default for BTermBuilder {
             tile_width: 8,
             platform_hints: InitHints::new(),
             advanced_input: false,
+            sprite_sheets: Vec::new(),
         }
     }
 }
@@ -90,6 +96,7 @@ impl BTermBuilder {
             tile_width: 8,
             platform_hints: InitHints::new(),
             advanced_input: false,
+            sprite_sheets: Vec::new(),
         }
     }
 
@@ -106,6 +113,7 @@ impl BTermBuilder {
             tile_width: 8,
             platform_hints: InitHints::new(),
             advanced_input: false,
+            sprite_sheets: Vec::new(),
         };
         cb.fonts.push(BuilderFont {
             path: "terminal8x8.png".to_string(),
@@ -139,6 +147,7 @@ impl BTermBuilder {
             tile_width: 8,
             platform_hints: InitHints::new(),
             advanced_input: false,
+            sprite_sheets: Vec::new(),
         };
         cb.fonts.push(BuilderFont {
             path: "terminal8x8.png".to_string(),
@@ -167,6 +176,7 @@ impl BTermBuilder {
             tile_width: 8,
             platform_hints: InitHints::new(),
             advanced_input: false,
+            sprite_sheets: Vec::new(),
         };
         cb.fonts.push(BuilderFont {
             path: "vga8x16.png".to_string(),
@@ -203,6 +213,7 @@ impl BTermBuilder {
             tile_width: 8,
             platform_hints: InitHints::new(),
             advanced_input: false,
+            sprite_sheets: Vec::new(),
         };
         cb.fonts.push(BuilderFont {
             path: "vga8x16.png".to_string(),
@@ -386,6 +397,18 @@ impl BTermBuilder {
         self
     }
 
+    /// Adds a sprite console
+    #[cfg(feature = "opengl")]
+    pub fn with_sprite_console<T>(mut self, width: T, height: T) -> Self
+    where T : TryInto<u32>
+    {
+        self.consoles.push(ConsoleType::SpriteConsole{
+            width: width.try_into().ok().expect("Must be convertible to a u32"),
+            height: height.try_into().ok().expect("Must be convertible to a u32")
+        });
+        self
+    }
+
     /// Enables you to override the vsync default for native rendering.
     pub fn with_vsync(mut self, vsync: bool) -> Self {
         self.platform_hints.vsync = vsync;
@@ -423,6 +446,13 @@ impl BTermBuilder {
         self
     }
 
+    /// Register a sprite sheet
+    #[cfg(feature = "opengl")]
+    pub fn with_sprite_sheet(mut self, ss: SpriteSheet) -> Self {
+        self.sprite_sheets.push(ss);
+        self
+    }
+
     /// Combine all of the builder parameters, and return an BTerm context ready to go.
     pub fn build(self) -> Result<BTerm> {
         let mut context = init_raw(
@@ -441,6 +471,10 @@ impl BTermBuilder {
                 font.explicit_background,
             ));
             font_map.insert(font_path, font_id?);
+        }
+
+        for ss in self.sprite_sheets {
+            context.register_spritesheet(ss);
         }
 
         for console in &self.consoles {
@@ -492,6 +526,12 @@ impl BTermBuilder {
                     let cid = context
                         .register_fancy_console(FancyConsole::init(*width, *height), font_id);
                     context.set_translation_mode(cid, *translator);
+                }
+                ConsoleType::SpriteConsole {
+                    width,
+                    height
+                } => {
+                    let cid = context.register_sprite_console(SpriteConsole::init(*width, *height));
                 }
             }
         }
