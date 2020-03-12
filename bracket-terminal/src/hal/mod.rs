@@ -1,4 +1,10 @@
 // Enable modules based on target architecture
+#[cfg(feature = "opengl")]
+mod gl_common;
+
+#[cfg(feature = "opengl")]
+pub use gl_common::*;
+
 #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
 mod native;
 
@@ -54,8 +60,6 @@ mod dummy;
     not(feature = "crossterm")
 ))]
 pub use dummy::*;
-
-pub use shader::Shader;
 
 /// Provides a base abstract platform for BTerm to run on, with specialized content.
 pub struct BTermPlatform {

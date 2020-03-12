@@ -1,6 +1,6 @@
 use super::BACKEND;
-use crate::hal::native::{setup_quad, shader::Shader, shader_strings, WrappedContext};
-use crate::hal::Framebuffer;
+use crate::hal::native::{shader_strings, WrappedContext};
+use crate::hal::{Framebuffer, Shader, setup_quad};
 use crate::prelude::{BTerm, InitHints, BACKEND_INTERNAL};
 use crate::Result;
 use glutin::{dpi::LogicalSize, event_loop::EventLoop, window::WindowBuilder, ContextBuilder};

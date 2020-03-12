@@ -1,5 +1,5 @@
 use crate::prelude::{
-    font::Font, init_raw, BTerm, CharacterTranslationMode, FancyConsole, InitHints, SimpleConsole,
+    Font, init_raw, BTerm, CharacterTranslationMode, FancyConsole, InitHints, SimpleConsole,
     SparseConsole, INPUT, SpriteSheet, SpriteConsole
 };
 use crate::Result;
@@ -473,6 +473,7 @@ impl BTermBuilder {
             font_map.insert(font_path, font_id?);
         }
 
+        #[cfg(feature = "opengl")]
         for ss in self.sprite_sheets {
             context.register_spritesheet(ss);
         }

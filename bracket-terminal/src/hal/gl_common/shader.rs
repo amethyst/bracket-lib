@@ -1,11 +1,12 @@
-use crate::prelude::console::log;
+use crate::console::log;
 use glow::HasContext;
 use std::str;
 use ultraviolet::Vec3;
+use super::ShaderId;
 
 #[allow(non_snake_case)]
 pub struct Shader {
-    pub ID: u32,
+    pub ID: ShaderId,
 }
 
 /// NOTE: mixture of `shader_s.h` and `shader_m.h` (the latter just contains
@@ -57,8 +58,6 @@ impl Shader {
     #[allow(non_snake_case)]
     /// activate the shader
     /// ------------------------------------------------------------------------
-    /// # Safety
-    /// OpenGL calls are inherently unsafe and have to be wrapped.
     pub unsafe fn useProgram(&self, gl: &glow::Context) {
         gl.use_program(Some(self.ID))
     }
@@ -66,32 +65,24 @@ impl Shader {
     #[allow(non_snake_case)]
     /// utility uniform functions
     /// ------------------------------------------------------------------------
-    /// # Safety
-    /// OpenGL calls are inherently unsafe and have to be wrapped.
     pub unsafe fn setBool(&self, gl: &glow::Context, name: &str, value: bool) {
         gl.uniform_1_i32(gl.get_uniform_location(self.ID, name), value as i32);
     }
 
     #[allow(non_snake_case)]
     /// ------------------------------------------------------------------------
-    /// # Safety
-    /// OpenGL calls are inherently unsafe and have to be wrapped.
     pub unsafe fn setInt(&self, gl: &glow::Context, name: &str, value: i32) {
         gl.uniform_1_i32(gl.get_uniform_location(self.ID, name), value);
     }
 
     #[allow(non_snake_case)]
     /// ------------------------------------------------------------------------
-    /// # Safety
-    /// OpenGL calls are inherently unsafe and have to be wrapped.
     pub unsafe fn setFloat(&self, gl: &glow::Context, name: &str, value: f32) {
         gl.uniform_1_f32(gl.get_uniform_location(self.ID, name), value);
     }
 
     #[allow(non_snake_case)]
     /// ------------------------------------------------------------------------
-    /// # Safety
-    /// OpenGL calls are inherently unsafe and have to be wrapped.
     pub unsafe fn setVector3(&self, gl: &glow::Context, name: &str, value: &Vec3) {
         gl.uniform_3_f32(
             gl.get_uniform_location(self.ID, name),
@@ -103,16 +94,18 @@ impl Shader {
 
     #[allow(non_snake_case)]
     /// ------------------------------------------------------------------------
-    /// # Safety
-    /// OpenGL calls are inherently unsafe and have to be wrapped.
     pub unsafe fn setVec3(&self, gl: &glow::Context, name: &str, x: f32, y: f32, z: f32) {
         gl.uniform_3_f32(gl.get_uniform_location(self.ID, name), x, y, z);
     }
 
     #[allow(non_snake_case)]
     /// ------------------------------------------------------------------------
-    /// # Safety
-    /// OpenGL calls are inherently unsafe and have to be wrapped.
+    pub unsafe fn setVec2(&self, gl: &glow::Context, name: &str, x: f32, y: f32) {
+        gl.uniform_2_f32(gl.get_uniform_location(self.ID, name), x, y);
+    }
+
+    #[allow(non_snake_case)]
+    /// ------------------------------------------------------------------------
     pub unsafe fn setMat4(&self, gl: &glow::Context, name: &str, mat: &[f32; 16]) {
         gl.uniform_matrix_4_f32_slice(gl.get_uniform_location(self.ID, name), false, mat);
     }

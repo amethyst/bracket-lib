@@ -1,13 +1,12 @@
 use super::BACKEND;
 use crate::hal::{Font, Shader};
-use crate::prelude::FancyTile;
+use crate::prelude::RenderSprite;
 use crate::Result;
 use bracket_color::prelude::RGBA;
-use bracket_geometry::prelude::PointF;
 use glow::HasContext;
 use std::mem;
 
-pub struct FancyConsoleBackend {
+pub struct SpriteConsoleBackend {
     vertex_buffer: Vec<f32>,
     index_buffer: Vec<i32>,
     vbo: u32,
@@ -15,10 +14,10 @@ pub struct FancyConsoleBackend {
     ebo: u32,
 }
 
-impl FancyConsoleBackend {
-    pub fn new(_width: usize, _height: usize, gl: &glow::Context) -> FancyConsoleBackend {
-        let (vbo, vao, ebo) = FancyConsoleBackend::init_gl_for_console(gl);
-        FancyConsoleBackend {
+impl SpriteConsoleBackend {
+    pub fn new(_width: usize, _height: usize, gl: &glow::Context) -> SpriteConsoleBackend {
+        let (vbo, vao, ebo) = SpriteConsoleBackend::init_gl_for_console(gl);
+        SpriteConsoleBackend {
             vertex_buffer: Vec::new(),
             index_buffer: Vec::new(),
             vbo,
@@ -40,7 +39,7 @@ impl FancyConsoleBackend {
 
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(vbo));
 
-            let stride = 18 * mem::size_of::<f32>() as i32;
+            let stride = 13 * mem::size_of::<f32>() as i32;
             // position attribute
             gl.vertex_attrib_pointer_f32(0, 3, glow::FLOAT, false, stride, 0);
             gl.enable_vertex_attrib_array(0);
@@ -54,7 +53,7 @@ impl FancyConsoleBackend {
                 (3 * mem::size_of::<f32>()) as i32,
             );
             gl.enable_vertex_attrib_array(1);
-            // background attribute
+            // background color attribute
             gl.vertex_attrib_pointer_f32(
                 2,
                 4,
@@ -74,33 +73,12 @@ impl FancyConsoleBackend {
                 (11 * mem::size_of::<f32>()) as i32,
             );
             gl.enable_vertex_attrib_array(3);
-            // rotation attribute
-            gl.vertex_attrib_pointer_f32(
-                4,
-                3,
-                glow::FLOAT,
-                false,
-                stride,
-                (13 * mem::size_of::<f32>()) as i32,
-            );
-            gl.enable_vertex_attrib_array(4);
-            // scale attribute
-            gl.vertex_attrib_pointer_f32(
-                5,
-                2,
-                glow::FLOAT,
-                false,
-                stride,
-                (16 * mem::size_of::<f32>()) as i32,
-            );
-            gl.enable_vertex_attrib_array(5);
         };
 
         (vbo, vao, ebo)
     }
 
     /// Helper to push a point to the shader.
-    #[allow(clippy::too_many_arguments)]
     fn push_point(
         vertex_buffer: &mut Vec<f32>,
         x: f32,
@@ -109,14 +87,9 @@ impl FancyConsoleBackend {
         bg: RGBA,
         ux: f32,
         uy: f32,
-        rotation: f32,
-        screen_x: f32,
-        screen_y: f32,
-        scale: PointF,
     ) {
         vertex_buffer.extend_from_slice(&[
-            x, y, 0.0, fg.r, fg.g, fg.b, fg.a, bg.r, bg.g, bg.b, bg.a, ux, uy, rotation, screen_x,
-            screen_y, scale.x, scale.y,
+            x, y, 0.0, fg.r, fg.g, fg.b, fg.a, bg.r, bg.g, bg.b, bg.a, ux, uy,
         ]);
     }
 
@@ -130,9 +103,10 @@ impl FancyConsoleBackend {
         offset_y: f32,
         scale: f32,
         scale_center: (i32, i32),
-        tiles: &[FancyTile],
+        tiles: &[RenderSprite],
         font_dimensions_glyphs: (u32, u32),
     ) {
+        /*
         if tiles.is_empty() {
             return;
         }
@@ -153,13 +127,12 @@ impl FancyConsoleBackend {
             - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
         let screen_y_start: f32 = -1.0 * scale
             + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
-
         for t in tiles.iter() {
-            let x = t.position.x;
-            let y = t.position.y;
+            let x = t.idx % width as usize;
+            let y = t.idx / width as usize;
 
-            let screen_x = ((step_x * x) + screen_x_start) + offset_x;
-            let screen_y = ((step_y * y) + screen_y_start) + offset_y;
+            let screen_x = ((step_x * x as f32) + screen_x_start) + offset_x;
+            let screen_y = ((step_y * y as f32) + screen_y_start) + offset_y;
             let fg = t.fg;
             let bg = t.bg;
             let glyph = t.glyph;
@@ -172,10 +145,7 @@ impl FancyConsoleBackend {
             let glyph_top = f32::from(glyph_y) * glyph_size_y;
             let glyph_bottom = f32::from(glyph_y - 1) * glyph_size_y;
 
-            let rot_center_x = screen_x + (step_x / 2.0);
-            let rot_center_y = screen_y + (step_y / 2.0);
-
-            FancyConsoleBackend::push_point(
+            SpriteConsoleBackend::push_point(
                 &mut self.vertex_buffer,
                 screen_x + step_x,
                 screen_y + step_y,
@@ -183,12 +153,8 @@ impl FancyConsoleBackend {
                 bg,
                 glyph_right,
                 glyph_top,
-                t.rotation,
-                rot_center_x,
-                rot_center_y,
-                t.scale,
             );
-            FancyConsoleBackend::push_point(
+            SpriteConsoleBackend::push_point(
                 &mut self.vertex_buffer,
                 screen_x + step_x,
                 screen_y,
@@ -196,12 +162,8 @@ impl FancyConsoleBackend {
                 bg,
                 glyph_right,
                 glyph_bottom,
-                t.rotation,
-                rot_center_x,
-                rot_center_y,
-                t.scale,
             );
-            FancyConsoleBackend::push_point(
+            SpriteConsoleBackend::push_point(
                 &mut self.vertex_buffer,
                 screen_x,
                 screen_y,
@@ -209,12 +171,8 @@ impl FancyConsoleBackend {
                 bg,
                 glyph_left,
                 glyph_bottom,
-                t.rotation,
-                rot_center_x,
-                rot_center_y,
-                t.scale,
             );
-            FancyConsoleBackend::push_point(
+            SpriteConsoleBackend::push_point(
                 &mut self.vertex_buffer,
                 screen_x,
                 screen_y + step_y,
@@ -222,10 +180,6 @@ impl FancyConsoleBackend {
                 bg,
                 glyph_left,
                 glyph_top,
-                t.rotation,
-                rot_center_x,
-                rot_center_y,
-                t.scale,
             );
 
             self.index_buffer.push(index_count);
@@ -254,10 +208,10 @@ impl FancyConsoleBackend {
                 &self.index_buffer.align_to::<u8>().1,
                 glow::STATIC_DRAW,
             );
-        }
+        }*/
     }
 
-    pub fn gl_draw(&mut self, font: &Font, shader: &Shader, tiles: &[FancyTile]) -> Result<()> {
+    pub fn gl_draw(&mut self, font: &Font, shader: &Shader, tiles: &[RenderSprite]) -> Result<()> {
         let be = BACKEND.lock();
         let gl = be.gl.as_ref().unwrap();
         unsafe {

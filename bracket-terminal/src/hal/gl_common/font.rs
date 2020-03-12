@@ -1,9 +1,10 @@
-use super::BACKEND;
 use crate::prelude::embedding;
 use crate::Result;
 use bracket_color::prelude::RGB;
 use glow::HasContext;
-use image::GenericImageView;
+use image::{ColorType, GenericImageView};
+use super::TextureId;
+use crate::console::log;
 
 #[derive(PartialEq, Clone)]
 /// BTerm's representation of a font or tileset file.
@@ -12,7 +13,7 @@ pub struct Font {
     pub width: u32,
     pub height: u32,
 
-    pub gl_id: Option<u32>,
+    pub gl_id: Option<TextureId>,
 
     pub tile_size: (u32, u32),
     pub explicit_background: Option<RGB>,
@@ -62,13 +63,12 @@ impl Font {
     }
 
     /// Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
-    pub fn setup_gl_texture(&mut self) -> Result<u32> {
-        let be = BACKEND.lock();
-        let gl = be.gl.as_ref().unwrap();
+    pub fn setup_gl_texture(&mut self, gl: &glow::Context) -> Result<TextureId> {
+        log(&format!("GL initialized: {}", self.bitmap_file));
         let texture;
 
         unsafe {
-            texture = gl.create_texture()?;
+            texture = gl.create_texture().unwrap();
             gl.bind_texture(glow::TEXTURE_2D, Some(texture));
             gl.tex_parameter_i32(
                 glow::TEXTURE_2D,
@@ -93,6 +93,8 @@ impl Font {
             );
 
             let img_orig = Font::load_image(&self.bitmap_file);
+            let w = img_orig.width() as i32;
+            let h = img_orig.height() as i32;
             let img_flip = img_orig.flipv();
             let img = img_flip.to_rgba();
             let mut data = img.into_raw();
@@ -116,8 +118,8 @@ impl Font {
                 glow::TEXTURE_2D,
                 0,
                 format as i32,
-                img_orig.width() as i32,
-                img_orig.height() as i32,
+                w,
+                h,
                 0,
                 format,
                 glow::UNSIGNED_BYTE,
@@ -156,7 +158,7 @@ mod tests {
     #[test]
     // Tests that we make an RGB triplet at defaults and it is black.
     fn make_font_from_file() {
-        let f = Font::load("resources/terminal8x8.png", (8, 8), None);
+        let f = Font::load("resources/terminal8x8.png", (8, 8));
         assert_eq!(f.width, 128);
         assert_eq!(f.height, 128);
     }

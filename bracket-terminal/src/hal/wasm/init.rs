@@ -1,5 +1,6 @@
 use crate::prelude::{BTerm, InitHints, BACKEND_INTERNAL};
 use crate::Result;
+use crate::hal::{Framebuffer, Shader, setup_quad};
 
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
@@ -65,7 +66,7 @@ pub fn init_raw<S: ToString>(
         shader_strings::FANCY_CONSOLE_FS,
     ));
 
-    let quad_vao = quadrender::setup_quad(&gl);
+    let quad_vao = setup_quad(&gl);
     let backing_fbo = Framebuffer::build_fbo(&gl, width_pixels as i32, height_pixels as i32);
 
     let mut be = BACKEND.lock();

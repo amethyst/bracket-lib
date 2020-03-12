@@ -5,9 +5,11 @@ pub use winit::event::VirtualKeyCode;
 mod main_loop;
 pub use main_loop::*;
 
-pub mod font;
+mod font;
+pub use font::*;
 mod init;
-pub mod shader;
+mod shader;
+pub use shader::*;
 pub use init::*;
 mod scancode_helper;
 pub use scancode_helper::virtual_key_code_to_scan;

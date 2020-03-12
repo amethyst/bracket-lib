@@ -1,5 +1,5 @@
 use super::BACKEND;
-use crate::hal::{font::Font, shader::Shader};
+use crate::hal::{Font, Shader};
 use crate::prelude::Tile;
 use crate::Result;
 use bracket_color::prelude::RGBA;
