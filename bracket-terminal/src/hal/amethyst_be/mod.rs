@@ -1,7 +1,9 @@
 // Platform to integrate into Amethyst
-pub mod font;
+mod font;
+pub use font::*;
 mod init;
-pub mod shader;
+mod shader;
+pub use shader::*;
 pub use init::*;
 mod mainloop;
 pub use mainloop::*;
