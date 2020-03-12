@@ -531,7 +531,7 @@ impl BTermBuilder {
                     width,
                     height
                 } => {
-                    let cid = context.register_sprite_console(SpriteConsole::init(*width, *height));
+                    context.register_sprite_console(SpriteConsole::init(*width, *height));
                 }
             }
         }

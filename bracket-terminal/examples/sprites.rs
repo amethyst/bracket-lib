@@ -20,7 +20,7 @@ fn main() -> BError {
     let mut context = BTermBuilder::simple80x50()
         .with_sprite_console(640, 400)
         .with_title("Bracket Terminal - Sprite Console")
-        .with_spritesheet(
+        .with_sprite_sheet(
             SpriteSheet::new("sprite_dood.png")
             .add_sprite(Rect::with_size(0, 0, 83, 105))
             .add_sprite(Rect::with_size(83, 0, 83, 105))
