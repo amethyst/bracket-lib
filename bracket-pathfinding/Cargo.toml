@@ -31,3 +31,7 @@ criterion = "0.3.1"
 [[bench]]
 name = "fov_benchmark"
 harness = false
+
+[[bench]]
+name = "astar_benchmark"
+harness = false
