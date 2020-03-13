@@ -22,6 +22,12 @@ enum ConsoleType {
         font: String,
         translator: CharacterTranslationMode,
     },
+    SimpleConsoleNoBg {
+        width: u32,
+        height: u32,
+        font: String,
+        translator: CharacterTranslationMode,
+    },
     SparseConsole {
         width: u32,
         height: u32,
@@ -335,6 +341,23 @@ impl BTermBuilder {
         self
     }
 
+    /// Adds a simple console layer to the BTerm builder, with no background.
+    pub fn with_simple_console_no_bg<S: ToString, T>(mut self, width: T, height: T, font: S) -> Self
+    where
+        T: TryInto<u32>,
+    {
+        self.consoles.push(ConsoleType::SimpleConsoleNoBg {
+            width: width.try_into().ok().expect("Must be convertible to a u32"),
+            height: height
+                .try_into()
+                .ok()
+                .expect("Must be convertible to a u32"),
+            font: font.to_string(),
+            translator: CharacterTranslationMode::Codepage437,
+        });
+        self
+    }
+
     /// Adds a simple console, hard-coded to the baked-in 8x8 terminal font. This does NOT register the font.
     pub fn with_simple8x8(mut self) -> Self {
         self.consoles.push(ConsoleType::SimpleConsole {
@@ -496,6 +519,18 @@ impl BTermBuilder {
                     let font_id = font_map[&font_path];
                     let cid =
                         context.register_console(SimpleConsole::init(*width, *height), font_id);
+                    context.set_translation_mode(cid, *translator);
+                }
+                ConsoleType::SimpleConsoleNoBg {
+                    width,
+                    height,
+                    font,
+                    translator,
+                } => {
+                    let font_path = format!("{}/{}", self.resource_path, font);
+                    let font_id = font_map[&font_path];
+                    let cid =
+                        context.register_console_no_bg(SimpleConsole::init(*width, *height), font_id);
                     context.set_translation_mode(cid, *translator);
                 }
                 ConsoleType::SparseConsole {

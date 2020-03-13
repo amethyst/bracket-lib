@@ -17,7 +17,7 @@ struct State {
 
 impl GameState for State {
     fn tick(&mut self, ctx: &mut BTerm) {
-        ctx.set_active_console(0);
+        ctx.set_active_console(1);
         ctx.cls();
         ctx.print(1, 1, "Watch them go!");
         ctx.printer(
@@ -28,7 +28,7 @@ impl GameState for State {
             None,
         );
 
-        ctx.set_active_console(1);
+        ctx.set_active_console(0);
         ctx.cls();
 
         for dood in self.doods.iter() {
@@ -58,8 +58,10 @@ bracket_terminal::embedded_resource!(NYAN_CAT, "../resources/sprite_dood.png");
 fn main() -> BError {
     bracket_terminal::link_resource!(NYAN_CAT, "resources/sprite_dood.png");
 
-    let context = BTermBuilder::simple80x50()
+    let context = BTermBuilder::new()
         .with_sprite_console(640, 400, 0)
+        .with_font("terminal8x8.png", 8, 8)
+        .with_simple_console_no_bg(80, 50, "terminal8x8.png")
         .with_title("Bracket Terminal - Sprite Console")
         .with_sprite_sheet(
             SpriteSheet::new("resources/sprite_dood.png")
