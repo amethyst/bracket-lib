@@ -6,14 +6,9 @@ mod events;
 pub use events::*;
 mod mainloop;
 pub use mainloop::*;
-mod simple_console_backing;
-pub use simple_console_backing::*;
-mod sparse_console_backing;
-pub use sparse_console_backing::*;
-mod fancy_console_backing;
-pub use fancy_console_backing::*;
 use parking_lot::Mutex;
 use std::any::Any;
+use crate::hal::{SimpleConsoleBackend, SparseConsoleBackend, FancyConsoleBackend, SpriteConsoleBackend};
 
 pub type GlCallback = fn(&mut dyn Any, &glow::Context);
 
@@ -56,6 +51,7 @@ pub enum ConsoleBacking {
     Simple { backing: SimpleConsoleBackend },
     Sparse { backing: SparseConsoleBackend },
     Fancy { backing: FancyConsoleBackend },
+    Sprite { backing: SpriteConsoleBackend },
 }
 
 lazy_static! {

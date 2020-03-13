@@ -20,6 +20,7 @@ CALL :StageExample alpha, alpha
 CALL :StageExample colorfont, colorfont
 CALL :StageExample fontswitch, fontswitch
 CALL :StageExample fancy, fancy
+CALL :StageExample sprites, sprites
 
 
 REM Submit to server

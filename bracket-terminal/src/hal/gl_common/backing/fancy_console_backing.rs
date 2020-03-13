@@ -25,7 +25,7 @@ impl FancyConsoleBackend {
         }
     }
 
-    fn init_gl_for_console(gl: &glow::Context) -> (u32, u32, u32) {
+    fn init_gl_for_console(gl: &glow::Context) -> (BufferId, VertexArrayId, BufferId) {
         vao_float_builder(
             gl,
             &[
