@@ -199,3 +199,52 @@ void main()
 	ourBackground = bColor;
 	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
 }"#;
+
+pub static SPRITE_CONSOLE_FS: &str = r#"#version 300 es
+precision mediump float;
+out vec4 FragColor;
+
+in vec4 ourColor;
+in vec2 TexCoord;
+
+// texture sampler
+uniform sampler2D texture1;
+
+void main()
+{
+    vec4 original = texture(texture1, TexCoord);
+    vec4 fg = original * ourColor;
+	FragColor = fg;
+}
+"#;
+
+pub static SPRITE_CONSOLE_VS: &str = r#"#version 300 es
+precision mediump float;
+layout (location = 0) in vec2 aRelativePos;
+layout (location = 1) in vec3 aTransform;
+layout (location = 2) in vec4 aColor;
+layout (location = 3) in vec2 aTexCoord;
+layout (location = 4) in vec2 aScale;
+
+out vec4 ourColor;
+out vec2 TexCoord;
+
+mat2 r2d(float a) {
+	float c = cos(a), s = sin(a);
+    return mat2(
+        c, s,
+        -s, c
+    );
+}
+
+void main()
+{
+    vec2 base_pos = aRelativePos;
+    base_pos *= r2d(aTransform.z);
+    base_pos *= aScale;
+    base_pos += aTransform.xy;
+
+	gl_Position = vec4(base_pos, 1.0, 1.0);
+	ourColor = aColor;
+	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
+}"#;

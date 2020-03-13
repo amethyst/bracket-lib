@@ -9,7 +9,6 @@ pub struct RenderSprite {
     pub z_order: i32,
     pub tint: RGBA,
     pub index: usize,
-    pub rotation: f32,
 }
 
 /// A sparse console. Rather than storing every cell on the screen, it stores just cells that have

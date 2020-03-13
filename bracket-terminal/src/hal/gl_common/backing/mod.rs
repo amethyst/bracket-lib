@@ -6,6 +6,8 @@ mod fancy_console_backing;
 pub(crate) use fancy_console_backing::*;
 mod sprite_console_backing;
 pub(crate) use sprite_console_backing::*;
+mod shared_main_loop;
+pub(crate) use shared_main_loop::*;
 
 pub(crate) enum ConsoleBacking {
     Simple { backing: SimpleConsoleBackend },

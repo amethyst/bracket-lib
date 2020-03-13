@@ -1,4 +1,6 @@
-use crate::hal::{BACKEND, vao_float_builder, BufferId, Font, Shader, VertexArrayEntry, VertexArrayId};
+use crate::hal::{
+    vao_float_builder, BufferId, Font, Shader, VertexArrayEntry, VertexArrayId, BACKEND,
+};
 use crate::prelude::{RenderSprite, SpriteSheet};
 use crate::Result;
 use bracket_color::prelude::RGBA;
@@ -29,7 +31,7 @@ impl SpriteConsoleBackend {
             gl,
             &[
                 VertexArrayEntry { index: 0, size: 2 }, // Position
-                VertexArrayEntry { index: 1, size: 3 }, // Transform (x/y/rot)
+                VertexArrayEntry { index: 1, size: 2 }, // Transform (x/y)
                 VertexArrayEntry { index: 2, size: 4 }, // Color
                 VertexArrayEntry { index: 3, size: 2 }, // Texture Coordinate
                 VertexArrayEntry { index: 4, size: 2 }, // Scale
@@ -45,15 +47,13 @@ impl SpriteConsoleBackend {
         rel_y: f32,
         trans_x: f32,
         trans_y: f32,
-        rotation: f32,
         fg: RGBA,
         ux: f32,
         uy: f32,
         scale: (f32, f32),
     ) {
         vertex_buffer.extend_from_slice(&[
-            rel_x, rel_y, trans_x, trans_y, rotation, fg.r, fg.g, fg.b, fg.a, ux, uy, scale.0,
-            scale.1,
+            rel_x, rel_y, trans_x, trans_y, fg.r, fg.g, fg.b, fg.a, ux, uy, scale.0, scale.1,
         ]);
     }
 
@@ -99,7 +99,6 @@ impl SpriteConsoleBackend {
                 (render_width / sprite_width) * scale_x,
                 (render_height / sprite_height) * scale_y,
             );
-            //println!("{},{},{}", render_width, sprite_width, render_width / sprite_width);
 
             let mut sd = s.destination;
             sd.y2 = height as i32 - s.destination.y1;
@@ -111,7 +110,6 @@ impl SpriteConsoleBackend {
                 0.5,
                 (sd.x2 as f32 * scale_x) - offset_x,
                 (sd.y2 as f32 * scale_y) - offset_y,
-                s.rotation,
                 s.tint,
                 sprite_right,
                 sprite_top,
@@ -123,7 +121,6 @@ impl SpriteConsoleBackend {
                 -0.5,
                 (sd.x2 as f32 * scale_x) - offset_x,
                 (sd.y1 as f32 * scale_y) - offset_y,
-                s.rotation,
                 s.tint,
                 sprite_right,
                 sprite_bottom,
@@ -135,7 +132,6 @@ impl SpriteConsoleBackend {
                 -0.5,
                 (sd.x1 as f32 * scale_x) - offset_x,
                 (sd.y1 as f32 * scale_y) - offset_y,
-                s.rotation,
                 s.tint,
                 sprite_left,
                 sprite_bottom,
@@ -147,7 +143,6 @@ impl SpriteConsoleBackend {
                 0.5,
                 (sd.x1 as f32 * scale_x) - offset_x,
                 (sd.y2 as f32 * scale_y) - offset_y,
-                s.rotation,
                 s.tint,
                 sprite_left,
                 sprite_top,

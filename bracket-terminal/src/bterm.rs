@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+#[allow(unused_imports)]
 use crate::{
     prelude::{
         init_raw, BEvent, CharacterTranslationMode, Console, FancyConsole, Font, FontCharType,
@@ -842,14 +844,7 @@ impl BTerm {
 
     /// Add a sprite to the current console
     #[cfg(feature = "opengl")]
-    pub fn add_sprite(
-        &mut self,
-        destination: Rect,
-        z_order: i32,
-        tint: RGBA,
-        index: usize,
-        rotation: f32,
-    ) {
+    pub fn add_sprite(&mut self, destination: Rect, z_order: i32, tint: RGBA, index: usize) {
         let mut bi = BACKEND_INTERNAL.lock();
         let as_any = bi.consoles[self.active_console].console.as_any_mut();
         if let Some(cons) = as_any.downcast_mut::<SpriteConsole>() {
@@ -858,7 +853,6 @@ impl BTerm {
                 z_order,
                 tint,
                 index,
-                rotation,
             });
         }
     }

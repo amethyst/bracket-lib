@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use crate::Result;
 use glow::HasContext;
 

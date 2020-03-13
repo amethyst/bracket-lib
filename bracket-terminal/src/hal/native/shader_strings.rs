@@ -209,7 +209,7 @@ void main()
 
 pub static SPRITE_CONSOLE_VS: &str = r#"#version 330 core
 layout (location = 0) in vec2 aRelativePos;
-layout (location = 1) in vec3 aTransform;
+layout (location = 1) in vec2 aTransform;
 layout (location = 2) in vec4 aColor;
 layout (location = 3) in vec2 aTexCoord;
 layout (location = 4) in vec2 aScale;
@@ -217,22 +217,13 @@ layout (location = 4) in vec2 aScale;
 out vec4 ourColor;
 out vec2 TexCoord;
 
-mat2 r2d(float a) {
-	float c = cos(a), s = sin(a);
-    return mat2(
-        c, s,
-        -s, c
-    );
-}
-
 void main()
 {
     vec2 base_pos = aRelativePos;
-    base_pos *= r2d(aTransform.z);
-    base_pos *= aScale;
-    base_pos += aTransform.xy;
+    vec2 scaled = base_pos * aScale;
+    vec2 translated = scaled + aTransform.xy;
 
-	gl_Position = vec4(base_pos, 1.0, 1.0);
+	gl_Position = vec4(translated, 1.0, 1.0);
 	ourColor = aColor;
 	TexCoord = vec2(aTexCoord.x, aTexCoord.y);
 }"#;

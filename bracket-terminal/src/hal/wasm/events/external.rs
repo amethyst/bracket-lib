@@ -5,6 +5,7 @@ use wasm_bindgen::JsCast;
 
 pub static mut GLOBAL_BUTTON: Option<String> = None;
 
+#[allow(dead_code)]
 pub fn register_html_button<S: ToString>(element_id: S) {
     let button = web_sys::window()
         .unwrap()
@@ -23,6 +24,7 @@ pub fn register_html_button<S: ToString>(element_id: S) {
     html_callback.forget();
 }
 
+#[allow(dead_code)]
 pub fn on_external_element_click(event: web_sys::Event) {
     //set_command(Command::MoveLeft);
     unsafe {

@@ -1,4 +1,6 @@
-use crate::hal::{BACKEND, vao_float_builder, BufferId, Font, Shader, VertexArrayEntry, VertexArrayId};
+use crate::hal::{
+    vao_float_builder, BufferId, Font, Shader, VertexArrayEntry, VertexArrayId, BACKEND,
+};
 use crate::prelude::SparseTile;
 use crate::Result;
 use bracket_color::prelude::RGBA;

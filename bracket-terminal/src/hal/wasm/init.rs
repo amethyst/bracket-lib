@@ -1,4 +1,3 @@
-use crate::hal::{setup_quad, Framebuffer, Shader};
 use crate::prelude::{BTerm, InitHints, BACKEND_INTERNAL};
 use crate::Result;
 
@@ -64,6 +63,11 @@ pub fn init_raw<S: ToString>(
         &gl,
         shader_strings::FANCY_CONSOLE_VS,
         shader_strings::FANCY_CONSOLE_FS,
+    ));
+    shaders.push(Shader::new(
+        &gl,
+        shader_strings::SPRITE_CONSOLE_VS,
+        shader_strings::SPRITE_CONSOLE_FS,
     ));
 
     let quad_vao = setup_quad(&gl);

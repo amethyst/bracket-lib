@@ -5,10 +5,10 @@ pub use init::*;
 mod events;
 pub use events::*;
 mod mainloop;
+use crate::hal::ConsoleBacking;
 pub use mainloop::*;
 use parking_lot::Mutex;
 use std::any::Any;
-use crate::hal::{SimpleConsoleBackend, SparseConsoleBackend, FancyConsoleBackend, SpriteConsoleBackend, ConsoleBacking};
 
 pub type GlCallback = fn(&mut dyn Any, &glow::Context);
 
@@ -48,7 +48,7 @@ unsafe impl Send for PlatformGL {}
 unsafe impl Sync for PlatformGL {}
 
 lazy_static! {
-    static ref CONSOLE_BACKING: Mutex<Vec<ConsoleBacking>> = Mutex::new(Vec::new());
+    pub(crate) static ref CONSOLE_BACKING: Mutex<Vec<ConsoleBacking>> = Mutex::new(Vec::new());
 }
 
 use wasm_bindgen::prelude::*;

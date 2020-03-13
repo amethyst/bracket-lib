@@ -2,10 +2,10 @@ mod init;
 pub mod shader_strings;
 pub use init::*;
 mod mainloop;
+use crate::hal::ConsoleBacking;
 pub use mainloop::*;
 use parking_lot::Mutex;
 use std::any::Any;
-use crate::hal::{SimpleConsoleBackend, SparseConsoleBackend, FancyConsoleBackend, SpriteConsoleBackend, ConsoleBacking};
 
 pub type GlCallback = fn(&mut dyn Any, &glow::Context);
 
@@ -24,7 +24,7 @@ lazy_static! {
 }
 
 lazy_static! {
-    static ref CONSOLE_BACKING: Mutex<Vec<ConsoleBacking>> = Mutex::new(Vec::new());
+    pub(crate) static ref CONSOLE_BACKING: Mutex<Vec<ConsoleBacking>> = Mutex::new(Vec::new());
 }
 
 pub struct PlatformGL {
