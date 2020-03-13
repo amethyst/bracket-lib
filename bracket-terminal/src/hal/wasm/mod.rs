@@ -8,7 +8,7 @@ mod mainloop;
 pub use mainloop::*;
 use parking_lot::Mutex;
 use std::any::Any;
-use crate::hal::{SimpleConsoleBackend, SparseConsoleBackend, FancyConsoleBackend, SpriteConsoleBackend};
+use crate::hal::{SimpleConsoleBackend, SparseConsoleBackend, FancyConsoleBackend, SpriteConsoleBackend, ConsoleBacking};
 
 pub type GlCallback = fn(&mut dyn Any, &glow::Context);
 
@@ -46,13 +46,6 @@ lazy_static! {
 
 unsafe impl Send for PlatformGL {}
 unsafe impl Sync for PlatformGL {}
-
-pub enum ConsoleBacking {
-    Simple { backing: SimpleConsoleBackend },
-    Sparse { backing: SparseConsoleBackend },
-    Fancy { backing: FancyConsoleBackend },
-    Sprite { backing: SpriteConsoleBackend },
-}
 
 lazy_static! {
     static ref CONSOLE_BACKING: Mutex<Vec<ConsoleBacking>> = Mutex::new(Vec::new());
