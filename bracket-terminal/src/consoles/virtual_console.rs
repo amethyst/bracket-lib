@@ -2,8 +2,8 @@
 //! which can then be "windowed" into actual consoles.
 
 use crate::prelude::{
-    string_to_cp437, BTerm, CharacterTranslationMode, ColoredTextSpans, Console, DrawBatch,
-    FontCharType, TextAlign, Tile, XpLayer, to_cp437
+    string_to_cp437, to_cp437, BTerm, CharacterTranslationMode, ColoredTextSpans, Console,
+    DrawBatch, FontCharType, TextAlign, Tile, XpLayer,
 };
 use bracket_color::prelude::*;
 use bracket_geometry::prelude::{Point, Rect};

@@ -68,7 +68,10 @@ impl RectF {
 
     // Returns the center of the rectangle
     pub fn center(&self) -> PointF {
-        PointF{x:(self.x1 + self.x2) / 2.0, y:(self.y1 + self.y2) / 2.0}
+        PointF {
+            x: (self.x1 + self.x2) / 2.0,
+            y: (self.y1 + self.y2) / 2.0,
+        }
     }
 
     // Returns true if a point is inside the rectangle

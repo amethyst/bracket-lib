@@ -22,7 +22,7 @@ pub mod prelude {
     pub use crate::embedding;
     pub use crate::embedding::EMBED;
     pub use crate::gamestate::GameState;
-    pub use crate::hal::{Font, init_raw, BTermPlatform, InitHints, Shader, BACKEND};
+    pub use crate::hal::{init_raw, BTermPlatform, Font, InitHints, Shader, BACKEND};
     pub use crate::initializer::*;
     pub use crate::input::{BEvent, Input, INPUT};
     pub use crate::rex;

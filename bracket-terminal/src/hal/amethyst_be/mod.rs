@@ -3,8 +3,8 @@ mod font;
 pub use font::*;
 mod init;
 mod shader;
-pub use shader::*;
 pub use init::*;
+pub use shader::*;
 mod mainloop;
 pub use mainloop::*;
 

@@ -1,8 +1,8 @@
 use crate::{
     prelude::{
-        Font, init_raw, BEvent, CharacterTranslationMode, Console, FancyConsole,
-        FontCharType, GameState, InitHints, Shader, SimpleConsole, TextAlign, VirtualKeyCode,
-        XpFile, XpLayer, BACKEND, INPUT, SpriteSheet
+        init_raw, BEvent, CharacterTranslationMode, Console, FancyConsole, Font, FontCharType,
+        GameState, InitHints, RenderSprite, Shader, SimpleConsole, SpriteConsole, SpriteSheet,
+        TextAlign, VirtualKeyCode, XpFile, XpLayer, BACKEND, INPUT,
     },
     Result,
 };
@@ -23,7 +23,7 @@ pub struct BTermInternal {
     pub fonts: Vec<Font>,
     pub shaders: Vec<Shader>,
     pub consoles: Vec<DisplayConsole>,
-    pub sprite_sheets: Vec<SpriteSheet>
+    pub sprite_sheets: Vec<SpriteSheet>,
 }
 
 impl BTermInternal {
@@ -32,7 +32,7 @@ impl BTermInternal {
             fonts: Vec::new(),
             shaders: Vec::new(),
             consoles: Vec::new(),
-            sprite_sheets: Vec::new()
+            sprite_sheets: Vec::new(),
         }
     }
 }
@@ -43,7 +43,7 @@ impl Default for BTermInternal {
             fonts: Vec::new(),
             shaders: Vec::new(),
             consoles: Vec::new(),
-            sprite_sheets: Vec::new()
+            sprite_sheets: Vec::new(),
         }
     }
 }
@@ -195,10 +195,7 @@ impl BTerm {
     }
 
     /// Registers a new Sprite-based console
-    pub fn register_sprite_console(
-        &mut self,
-        new_console: Box<dyn Console>
-    ) -> usize {
+    pub fn register_sprite_console(&mut self, new_console: Box<dyn Console>) -> usize {
         let mut bi = BACKEND_INTERNAL.lock();
         bi.consoles.push(DisplayConsole {
             console: new_console,
@@ -836,11 +833,34 @@ impl BTerm {
 
     /// Register a sprite sheet (OpenGL - native or WASM - only)
     #[cfg(feature = "opengl")]
-    pub fn register_spritesheet(&mut self, ss : SpriteSheet) -> usize {
+    pub fn register_spritesheet(&mut self, ss: SpriteSheet) -> usize {
         let mut bi = BACKEND_INTERNAL.lock();
         let id = bi.sprite_sheets.len();
         bi.sprite_sheets.push(ss);
         id
+    }
+
+    /// Add a sprite to the current console
+    #[cfg(feature = "opengl")]
+    pub fn add_sprite(
+        &mut self,
+        destination: Rect,
+        z_order: i32,
+        tint: RGBA,
+        index: usize,
+        rotation: f32,
+    ) {
+        let mut bi = BACKEND_INTERNAL.lock();
+        let as_any = bi.consoles[self.active_console].console.as_any_mut();
+        if let Some(cons) = as_any.downcast_mut::<SpriteConsole>() {
+            cons.render_sprite(RenderSprite {
+                destination,
+                z_order,
+                tint,
+                index,
+                rotation,
+            });
+        }
     }
 }
 

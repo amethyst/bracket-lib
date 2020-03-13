@@ -1,10 +1,10 @@
+use super::TextureId;
+use crate::console::log;
 use crate::prelude::embedding;
 use crate::Result;
 use bracket_color::prelude::RGB;
 use glow::HasContext;
-use image::{ColorType, GenericImageView};
-use super::TextureId;
-use crate::console::log;
+use image::GenericImageView;
 
 #[derive(PartialEq, Clone)]
 /// BTerm's representation of a font or tileset file.
@@ -95,6 +95,8 @@ impl Font {
             let img_orig = Font::load_image(&self.bitmap_file);
             let w = img_orig.width() as i32;
             let h = img_orig.height() as i32;
+            self.width = w as u32;
+            self.height = h as u32;
             let img_flip = img_orig.flipv();
             let img = img_flip.to_rgba();
             let mut data = img.into_raw();

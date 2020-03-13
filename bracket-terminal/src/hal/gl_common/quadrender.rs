@@ -1,5 +1,5 @@
-use glow::HasContext;
 use super::VertexArrayId;
+use glow::HasContext;
 
 /// Sets up a simple VAO/VBO to render a single quad
 /// Used for presenting the backing buffer and in post-process chains.

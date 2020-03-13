@@ -9,8 +9,8 @@ mod font;
 pub use font::*;
 mod init;
 mod shader;
-pub use shader::*;
 pub use init::*;
+pub use shader::*;
 mod scancode_helper;
 pub use scancode_helper::virtual_key_code_to_scan;
 

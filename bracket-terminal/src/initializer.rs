@@ -1,6 +1,6 @@
 use crate::prelude::{
-    Font, init_raw, BTerm, CharacterTranslationMode, FancyConsole, InitHints, SimpleConsole,
-    SparseConsole, INPUT, SpriteSheet, SpriteConsole
+    init_raw, BTerm, CharacterTranslationMode, FancyConsole, Font, InitHints, SimpleConsole,
+    SparseConsole, SpriteConsole, SpriteSheet, INPUT,
 };
 use crate::Result;
 use bracket_color::prelude::RGB;
@@ -42,8 +42,9 @@ enum ConsoleType {
     },
     SpriteConsole {
         width: u32,
-        height: u32
-    }
+        height: u32,
+        sprite_sheet: usize,
+    },
 }
 
 /// Provides a builder mechanism for initializing BTerm. You can chain builders together,
@@ -60,7 +61,7 @@ pub struct BTermBuilder {
     tile_height: u32,
     platform_hints: InitHints,
     advanced_input: bool,
-    sprite_sheets : Vec<SpriteSheet>
+    sprite_sheets: Vec<SpriteSheet>,
 }
 
 impl Default for BTermBuilder {
@@ -399,12 +400,17 @@ impl BTermBuilder {
 
     /// Adds a sprite console
     #[cfg(feature = "opengl")]
-    pub fn with_sprite_console<T>(mut self, width: T, height: T) -> Self
-    where T : TryInto<u32>
+    pub fn with_sprite_console<T>(mut self, width: T, height: T, sprite_sheet: usize) -> Self
+    where
+        T: TryInto<u32>,
     {
-        self.consoles.push(ConsoleType::SpriteConsole{
+        self.consoles.push(ConsoleType::SpriteConsole {
             width: width.try_into().ok().expect("Must be convertible to a u32"),
-            height: height.try_into().ok().expect("Must be convertible to a u32")
+            height: height
+                .try_into()
+                .ok()
+                .expect("Must be convertible to a u32"),
+            sprite_sheet,
         });
         self
     }
@@ -530,9 +536,14 @@ impl BTermBuilder {
                 }
                 ConsoleType::SpriteConsole {
                     width,
-                    height
+                    height,
+                    sprite_sheet,
                 } => {
-                    context.register_sprite_console(SpriteConsole::init(*width, *height));
+                    context.register_sprite_console(SpriteConsole::init(
+                        *width,
+                        *height,
+                        *sprite_sheet,
+                    ));
                 }
             }
         }

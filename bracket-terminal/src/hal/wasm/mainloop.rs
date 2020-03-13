@@ -154,7 +154,7 @@ fn rebuild_consoles() {
                     .downcast_mut::<FancyConsole>()
                     .unwrap();
                 if fc.is_dirty {
-                    fc.tiles.sort_by(|a,b| a.z_order.cmp(&b.z_order));
+                    fc.tiles.sort_by(|a, b| a.z_order.cmp(&b.z_order));
                     backing.rebuild_vertices(
                         fc.height,
                         fc.width,

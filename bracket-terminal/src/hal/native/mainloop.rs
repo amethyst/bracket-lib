@@ -1,8 +1,8 @@
 use super::{BACKEND, CONSOLE_BACKING};
 use crate::hal::*;
 use crate::prelude::{
-    BEvent, BTerm, FancyConsole, GameState, SimpleConsole, SparseConsole, BACKEND_INTERNAL, INPUT,
-    SpriteConsole
+    BEvent, BTerm, FancyConsole, GameState, SimpleConsole, SparseConsole, SpriteConsole,
+    BACKEND_INTERNAL, INPUT,
 };
 use crate::{clear_input_state, Result};
 use bracket_geometry::prelude::Point;
@@ -71,8 +71,15 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     {
         let be = BACKEND.lock();
         let gl = be.gl.as_ref().unwrap();
-        for f in BACKEND_INTERNAL.lock().fonts.iter_mut() {
+        let mut bit = BACKEND_INTERNAL.lock();
+        for f in bit.fonts.iter_mut() {
             f.setup_gl_texture(gl)?;
+        }
+
+        for s in bit.sprite_sheets.iter_mut() {
+            let mut f = Font::new(&s.filename.to_string(), 1, 1, (1, 1));
+            f.setup_gl_texture(gl)?;
+            s.backing = Some(f);
         }
     }
 
@@ -250,6 +257,7 @@ fn check_console_backing() {
 fn rebuild_consoles() {
     let mut consoles = CONSOLE_BACKING.lock();
     let mut bi = BACKEND_INTERNAL.lock();
+    let ss = bi.sprite_sheets.clone();
     for (i, c) in consoles.iter_mut().enumerate() {
         let font_index = bi.consoles[i].font_index;
         let glyph_dimensions = bi.fonts[font_index].font_dimensions_glyphs;
@@ -303,7 +311,7 @@ fn rebuild_consoles() {
                     .downcast_mut::<FancyConsole>()
                     .unwrap();
                 if fc.is_dirty {
-                    fc.tiles.sort_by(|a,b| a.z_order.cmp(&b.z_order));
+                    fc.tiles.sort_by(|a, b| a.z_order.cmp(&b.z_order));
                     backing.rebuild_vertices(
                         fc.height,
                         fc.width,
@@ -324,15 +332,12 @@ fn rebuild_consoles() {
                     .downcast_mut::<SpriteConsole>()
                     .unwrap();
                 if sc.is_dirty {
+                    sc.sprites.sort_by(|a, b| a.z_order.cmp(&b.z_order));
                     backing.rebuild_vertices(
                         sc.height,
                         sc.width,
-                        sc.offset_x,
-                        sc.offset_y,
-                        sc.scale,
-                        sc.scale_center,
                         &sc.sprites,
-                        glyph_dimensions,
+                        &ss[sc.sprite_sheet],
                     );
                     sc.needs_resize_internal = false;
                 }
@@ -379,7 +384,11 @@ fn render_consoles() -> Result<()> {
                     .as_any()
                     .downcast_ref::<SpriteConsole>()
                     .unwrap();
-                backing.gl_draw(font, shader, &sc.sprites)?;
+                backing.gl_draw(
+                    bi.sprite_sheets[0].backing.as_ref().unwrap(),
+                    shader,
+                    &sc.sprites,
+                )?;
             }
         }
     }

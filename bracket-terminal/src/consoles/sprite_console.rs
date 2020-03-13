@@ -1,17 +1,15 @@
-use crate::prelude::{
-    CharacterTranslationMode, Console, FontCharType, TextAlign,
-    XpLayer
-};
-use bracket_color::prelude::{RGBA, ColorPair};
-use bracket_geometry::prelude::{RectF, Rect};
+use crate::prelude::{CharacterTranslationMode, Console, FontCharType, TextAlign, XpLayer};
+use bracket_color::prelude::RGBA;
+use bracket_geometry::prelude::Rect;
 use std::any::Any;
 
 /// Internal storage structure for sparse tiles.
 pub struct RenderSprite {
-    pub dimensions: RectF,
+    pub destination: Rect,
     pub z_order: i32,
-    pub tint : ColorPair,
-    pub index : (usize, usize)
+    pub tint: RGBA,
+    pub index: usize,
+    pub rotation: f32,
 }
 
 /// A sparse console. Rather than storing every cell on the screen, it stores just cells that have
@@ -19,38 +17,25 @@ pub struct RenderSprite {
 pub struct SpriteConsole {
     pub width: u32,
     pub height: u32,
+    pub sprite_sheet: usize,
 
     pub sprites: Vec<RenderSprite>,
     pub is_dirty: bool,
 
-    // To handle offset tiles for people who want thin walls between tiles
-    pub offset_x: f32,
-    pub offset_y: f32,
-
-    pub scale: f32,
-    pub scale_center: (i32, i32),
-
-    pub extra_clipping: Option<Rect>,
-    pub translation: CharacterTranslationMode,
     pub(crate) needs_resize_internal: bool,
 }
 
 impl SpriteConsole {
     /// Initializes the console.
-    pub fn init(width: u32, height: u32) -> Box<SpriteConsole> {
+    pub fn init(width: u32, height: u32, sprite_sheet: usize) -> Box<SpriteConsole> {
         // Console backing initialization
         let new_console = SpriteConsole {
             width,
             height,
             sprites: Vec::new(),
             is_dirty: true,
-            offset_x: 0.0,
-            offset_y: 0.0,
-            scale: 1.0,
-            scale_center: (width as i32 / 2, height as i32 / 2),
-            extra_clipping: None,
-            translation: CharacterTranslationMode::Codepage437,
             needs_resize_internal: false,
+            sprite_sheet,
         };
 
         Box::new(new_console)
@@ -114,12 +99,28 @@ impl Console for SpriteConsole {
     }
 
     /// Draws a box, starting at x/y with the extents width/height using CP437 double line characters
-    fn draw_box_double(&mut self, _sx: i32, _sy: i32, _width: i32, _height: i32, _fg: RGBA, _bg: RGBA) {
+    fn draw_box_double(
+        &mut self,
+        _sx: i32,
+        _sy: i32,
+        _width: i32,
+        _height: i32,
+        _fg: RGBA,
+        _bg: RGBA,
+    ) {
         // Does nothing
     }
 
     /// Draws a box, starting at x/y with the extents width/height using CP437 line characters
-    fn draw_hollow_box(&mut self, _sx: i32, _sy: i32, _width: i32, _height: i32, _fg: RGBA, _bg: RGBA) {
+    fn draw_hollow_box(
+        &mut self,
+        _sx: i32,
+        _sy: i32,
+        _width: i32,
+        _height: i32,
+        _fg: RGBA,
+        _bg: RGBA,
+    ) {
         // Does nothing
     }
 
@@ -222,17 +223,9 @@ impl Console for SpriteConsole {
     /// Sets an offset to total console rendering, useful for layers that
     /// draw between tiles. Offsets are specified as a percentage of total
     /// character size; so -0.5 will offset half a character to the left/top.
-    fn set_offset(&mut self, x: f32, y: f32) {
-        self.is_dirty = true;
-        self.offset_x = x * (2.0 / self.width as f32);
-        self.offset_y = y * (2.0 / self.height as f32);
-    }
+    fn set_offset(&mut self, _x: f32, _y: f32) {}
 
-    fn set_scale(&mut self, scale: f32, center_x: i32, center_y: i32) {
-        self.is_dirty = true;
-        self.scale = scale;
-        self.scale_center = (center_x, center_y);
-    }
+    fn set_scale(&mut self, _scale: f32, _center_x: i32, _center_y: i32) {}
 
     fn as_any(&self) -> &dyn Any {
         self
@@ -244,37 +237,30 @@ impl Console for SpriteConsole {
 
     /// Permits the creation of an arbitrary clipping rectangle. It's a really good idea
     /// to make sure that this rectangle is entirely valid.
-    fn set_clipping(&mut self, clipping: Option<Rect>) {
-        self.extra_clipping = clipping;
-    }
+    fn set_clipping(&mut self, _clipping: Option<Rect>) {}
 
     /// Returns the current arbitrary clipping rectangle, None if there isn't one.
     fn get_clipping(&self) -> Option<Rect> {
-        self.extra_clipping
+        None
     }
 
     /// Sets ALL tiles foreground alpha (only tiles that exist, in sparse consoles).
     fn set_all_fg_alpha(&mut self, alpha: f32) {
-        self.sprites.iter_mut().for_each(|t| t.tint.fg.a = alpha);
+        self.sprites.iter_mut().for_each(|t| t.tint.a = alpha);
     }
 
     /// Sets ALL tiles background alpha (only tiles that exist, in sparse consoles).
-    fn set_all_bg_alpha(&mut self, alpha: f32) {
-        self.sprites.iter_mut().for_each(|t| t.tint.bg.a = alpha);
-    }
+    fn set_all_bg_alpha(&mut self, _alpha: f32) {}
 
     /// Sets ALL tiles foreground alpha (only tiles that exist, in sparse consoles).
-    fn set_all_alpha(&mut self, fg: f32, bg: f32) {
+    fn set_all_alpha(&mut self, fg: f32, _bg: f32) {
         self.sprites.iter_mut().for_each(|t| {
-            t.tint.fg.a = fg;
-            t.tint.bg.a = bg;
+            t.tint.a = fg;
         });
     }
 
     /// Sets the character translation mode
-    fn set_translation_mode(&mut self, mode: CharacterTranslationMode) {
-        self.translation = mode;
-    }
+    fn set_translation_mode(&mut self, _mode: CharacterTranslationMode) {}
 
     /// Sets the character size of the terminal
     fn set_char_size(&mut self, width: u32, height: u32) {

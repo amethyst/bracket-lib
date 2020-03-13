@@ -1,7 +1,7 @@
 use crate::named::*;
 use crate::prelude::RGBA;
-use std::collections::HashMap;
 use parking_lot::Mutex;
+use std::collections::HashMap;
 
 lazy_static! {
     static ref PALETTE: Mutex<HashMap<String, RGBA>> = Mutex::new(HashMap::new());
@@ -10,9 +10,7 @@ lazy_static! {
 /// Register a palette color by name with the global registry.
 #[allow(clippy::needless_pass_by_value)]
 pub fn register_palette_color<S: ToString, COLOR: Into<RGBA>>(name: S, color: COLOR) {
-    PALETTE
-        .lock()
-        .insert(name.to_string(), color.into());
+    PALETTE.lock().insert(name.to_string(), color.into());
 }
 
 /// Retrieve a palette color by name from the global registry.

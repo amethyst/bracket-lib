@@ -1,6 +1,6 @@
+use crate::hal::{setup_quad, Framebuffer, Shader};
 use crate::prelude::{BTerm, InitHints, BACKEND_INTERNAL};
 use crate::Result;
-use crate::hal::{Framebuffer, Shader, setup_quad};
 
 pub fn init_raw<S: ToString>(
     width_pixels: u32,

@@ -1,6 +1,6 @@
 use super::BACKEND;
 use crate::hal::native::{shader_strings, WrappedContext};
-use crate::hal::{Framebuffer, Shader, setup_quad};
+use crate::hal::{setup_quad, Framebuffer, Shader};
 use crate::prelude::{BTerm, InitHints, BACKEND_INTERNAL};
 use crate::Result;
 use glutin::{dpi::LogicalSize, event_loop::EventLoop, window::WindowBuilder, ContextBuilder};
@@ -68,6 +68,11 @@ pub fn init_raw<S: ToString>(
         &gl,
         shader_strings::FANCY_CONSOLE_VS,
         shader_strings::FANCY_CONSOLE_FS,
+    ));
+    shaders.push(Shader::new(
+        &gl,
+        shader_strings::SPRITE_CONSOLE_VS,
+        shader_strings::SPRITE_CONSOLE_FS,
     ));
 
     // Build the backing frame-buffer
