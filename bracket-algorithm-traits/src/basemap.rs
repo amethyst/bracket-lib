@@ -11,6 +11,8 @@
 //! `get_pathing_distance` allows you to implement your heuristic for determining remaining distance to a
 //! target.
 
+use smallvec::SmallVec;
+
 /// Implement this trait to support path-finding functions.
 pub trait BaseMap {
     /// True is you cannot see through the tile, false otherwise. Default implementation
@@ -24,8 +26,8 @@ pub trait BaseMap {
     /// These do NOT have to be contiguous - if you want to support teleport pads, that's awesome.
     /// Default implementation is provided that proves an empty list, in case you aren't using
     /// it.
-    fn get_available_exits(&self, _idx: usize) -> Vec<(usize, f32)> {
-        Vec::new()
+    fn get_available_exits(&self, _idx: usize) -> SmallVec<[(usize, f32); 10]> {
+        SmallVec::new()
     }
 
     /// Return the distance you would like to use for path-finding. Generally, Pythagoras distance (implemented in geometry)

@@ -187,8 +187,8 @@ impl BaseMap for State {
         self.map[idx] == TileType::Wall
     }
 
-    fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)> {
-        let mut exits: Vec<(usize, f32)> = Vec::new();
+    fn get_available_exits(&self, idx: usize) -> SmallVec<[(usize, f32); 10]> {
+        let mut exits = SmallVec::new();
         let x = (idx % 80) as i32;
         let y = (idx / 80) as i32;
 

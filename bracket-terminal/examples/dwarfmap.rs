@@ -259,8 +259,8 @@ impl BaseMap for State {
         self.map[idx as usize] == TileType::Wall
     }
 
-    fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)> {
-        let mut exits: Vec<(usize, f32)> = Vec::new();
+    fn get_available_exits(&self, idx: usize) -> SmallVec<[(usize, f32); 10]> {
+        let mut exits = SmallVec::new();
         let (x, y, z) = idx_xyz(idx as usize);
 
         // Cardinal directions

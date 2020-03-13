@@ -317,11 +317,11 @@ mod test {
     // 1 by 3 stripe of tiles
     struct MiniMap;
     impl BaseMap for MiniMap {
-        fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)> {
+        fn get_available_exits(&self, idx: usize) -> SmallVec<[(usize, f32); 10]> {
             match idx {
-                0 => vec![(1, 1.)],
-                2 => vec![(1, 1.)],
-                _ => vec![(idx - 1, 1.), (idx + 1, 1.)],
+                0 => smallvec![(1, 1.)],
+                2 => smallvec![(1, 1.)],
+                _ => smallvec![(idx - 1, 1.), (idx + 1, 1.)],
             }
         }
     }

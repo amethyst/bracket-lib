@@ -46,7 +46,7 @@ To support path-finding, you need to implement two more functions:
 
 ```rust
 impl BaseMap for MyMap {
-    fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)> {
+    fn get_available_exits(&self, idx: usize) -> SmallVec<[(usize, f32); 10]> {
         Vec::new()
         // Provide a list of exit indices (you can use point2d_to_index to generate them) for this
         // tile inside the array.

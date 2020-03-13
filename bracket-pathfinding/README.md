@@ -34,8 +34,8 @@ impl BaseMap for Map {
         self.tiles[idx as usize] == '#'
     }
 
-    fn get_available_exits(&self, idx: usize) -> Vec<(usize, f32)> {
-        let mut exits: Vec<(usize, f32)> = Vec::new();
+    fn get_available_exits(&self, idx: usize) -> SmallVec<[(usize, f32); 10]> {
+        let mut exits = SmallVec::new();
         let location = self.index_to_point2d(idx);
 
         if let Some(idx) = self.valid_exit(location, Point::new(-1, 0)) {

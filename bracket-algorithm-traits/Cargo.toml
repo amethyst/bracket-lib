@@ -16,3 +16,4 @@ license = "MIT"
 
 [dependencies]
 bracket-geometry = { path = "../bracket-geometry" }
+smallvec = "1.2.0"
