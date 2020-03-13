@@ -1,10 +1,9 @@
 use super::BACKEND;
-use crate::hal::{Font, Shader, BufferId, VertexArrayId};
+use crate::hal::{vao_float_builder, BufferId, Font, Shader, VertexArrayEntry, VertexArrayId};
 use crate::prelude::SparseTile;
 use crate::Result;
 use bracket_color::prelude::RGBA;
 use glow::HasContext;
-use std::mem;
 
 pub struct SparseConsoleBackend {
     vertex_buffer: Vec<f32>,
@@ -27,55 +26,15 @@ impl SparseConsoleBackend {
     }
 
     fn init_gl_for_console(gl: &glow::Context) -> (u32, u32, u32) {
-        let (vbo, vao, ebo);
-
-        unsafe {
-            // Generate buffers and arrays, as well as attributes.
-            vao = gl.create_vertex_array().unwrap();
-            vbo = gl.create_buffer().unwrap();
-            ebo = gl.create_buffer().unwrap();
-
-            gl.bind_vertex_array(Some(vao));
-
-            gl.bind_buffer(glow::ARRAY_BUFFER, Some(vbo));
-
-            let stride = 13 * mem::size_of::<f32>() as i32;
-            // position attribute
-            gl.vertex_attrib_pointer_f32(0, 3, glow::FLOAT, false, stride, 0);
-            gl.enable_vertex_attrib_array(0);
-            // color attribute
-            gl.vertex_attrib_pointer_f32(
-                1,
-                4,
-                glow::FLOAT,
-                false,
-                stride,
-                (3 * mem::size_of::<f32>()) as i32,
-            );
-            gl.enable_vertex_attrib_array(1);
-            // background color attribute
-            gl.vertex_attrib_pointer_f32(
-                2,
-                4,
-                glow::FLOAT,
-                false,
-                stride,
-                (7 * mem::size_of::<f32>()) as i32,
-            );
-            gl.enable_vertex_attrib_array(2);
-            // texture coordinate attribute
-            gl.vertex_attrib_pointer_f32(
-                3,
-                2,
-                glow::FLOAT,
-                false,
-                stride,
-                (11 * mem::size_of::<f32>()) as i32,
-            );
-            gl.enable_vertex_attrib_array(3);
-        };
-
-        (vbo, vao, ebo)
+        vao_float_builder(
+            gl,
+            &[
+                VertexArrayEntry { index: 0, size: 3 }, // Position
+                VertexArrayEntry { index: 1, size: 4 }, // Color
+                VertexArrayEntry { index: 2, size: 4 }, // Background
+                VertexArrayEntry { index: 3, size: 2 }, // Texture Coordinates
+            ],
+        )
     }
 
     /// Helper to push a point to the shader.

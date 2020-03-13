@@ -7,6 +7,8 @@ mod font;
 pub use font::*;
 mod quadrender;
 pub use quadrender::*;
+mod vertex_array_helper;
+pub(crate) use vertex_array_helper::*;
 
 #[cfg(not(target_arch = "wasm32"))]
 mod types_native;
