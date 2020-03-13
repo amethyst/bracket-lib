@@ -1,5 +1,5 @@
 use super::BACKEND;
-use crate::hal::{Font, Shader};
+use crate::hal::{Font, Shader, BufferId, VertexArrayId};
 use crate::prelude::Tile;
 use crate::Result;
 use bracket_color::prelude::RGBA;
@@ -9,9 +9,9 @@ use std::mem;
 pub struct SimpleConsoleBackend {
     vertex_buffer: Vec<f32>,
     index_buffer: Vec<i32>,
-    vbo: u32,
-    vao: u32,
-    ebo: u32,
+    vbo: BufferId,
+    vao: VertexArrayId,
+    ebo: BufferId,
     vertex_counter: usize,
     index_counter: usize,
 }
