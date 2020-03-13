@@ -9,6 +9,8 @@ mod quadrender;
 pub use quadrender::*;
 mod vertex_array_helper;
 pub(crate) use vertex_array_helper::*;
+mod backing;
+pub(crate) use backing::*;
 
 #[cfg(not(target_arch = "wasm32"))]
 mod types_native;

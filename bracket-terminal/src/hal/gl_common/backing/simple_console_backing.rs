@@ -1,5 +1,4 @@
-use super::BACKEND;
-use crate::hal::{vao_float_builder, BufferId, Font, Shader, VertexArrayEntry, VertexArrayId};
+use crate::hal::{BACKEND, vao_float_builder, BufferId, Font, Shader, VertexArrayEntry, VertexArrayId};
 use crate::prelude::Tile;
 use crate::Result;
 use bracket_color::prelude::RGBA;
