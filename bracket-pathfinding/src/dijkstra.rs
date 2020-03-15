@@ -1,9 +1,11 @@
 use bracket_algorithm_traits::prelude::BaseMap;
 #[cfg(feature = "threaded")]
 use rayon::prelude::*;
+#[allow(unused_imports)]
+use smallvec::SmallVec;
+use std::collections::VecDeque;
 use std::convert::TryInto;
 use std::f32::MAX;
-use std::mem;
 
 /// Representation of a Dijkstra flow map.
 /// map is a vector of floats, having a size equal to size_x * size_y (one per tile).
@@ -22,6 +24,20 @@ struct ParallelDm {
     map: Vec<f32>,
     max_depth: f32,
     starts: Vec<usize>,
+}
+
+// This is chosen arbitrarily. Whether it's better to
+// run threaded or not would depend on map structure,
+// map size, number of starts, and probably several
+// other parameters. Might want to make this choice
+// an explicit part of the API?
+#[allow(dead_code)]
+const THREADED_REQUIRED_STARTS:usize = 4;
+
+#[derive(PartialEq)]
+enum RunThreaded {
+    True,
+    False,
 }
 
 #[allow(dead_code)]
@@ -67,26 +83,6 @@ impl DijkstraMap {
         }
     }
 
-    /// Internal: add a node to the open list if it doesn't exceed max_depth, and isn't on the closed list.
-    /// Adds the entry to the closed list.
-    fn add_if_open(
-        max_depth: f32,
-        idx: usize,
-        open_list: &mut Vec<(usize, f32)>,
-        closed_list: &mut Vec<bool>,
-        new_depth: f32,
-    ) {
-        if new_depth > max_depth {
-            return;
-        }
-        if closed_list[idx as usize] {
-            return;
-        }
-
-        closed_list[idx as usize] = true;
-        open_list.push((idx, new_depth));
-    }
-
     /// Clears the Dijkstra map. Uses a parallel for each for performance.
     #[cfg(feature = "threaded")]
     pub fn clear(dm: &mut DijkstraMap) {
@@ -99,65 +95,45 @@ impl DijkstraMap {
     }
 
     #[cfg(feature = "threaded")]
-    fn build_helper(dm: &mut DijkstraMap, starts: &[usize], map: &dyn BaseMap) {
-        if starts.len() > rayon::current_num_threads() {
+    fn build_helper(dm: &mut DijkstraMap, starts: &[usize], map: &dyn BaseMap) -> RunThreaded {
+        if starts.len() >= THREADED_REQUIRED_STARTS {
             DijkstraMap::build_parallel(dm, starts, map);
-            return;
+            return RunThreaded::True;
         }
+        RunThreaded::False
     }
 
     #[cfg(not(feature = "threaded"))]
-    fn build_helper(_dm: &mut DijkstraMap, _starts: &[usize], _map: &dyn BaseMap) {}
+    fn build_helper(_dm: &mut DijkstraMap, _starts: &[usize], _map: &dyn BaseMap) -> RunThreaded {
+        RunThreaded::False
+    }
 
     /// Builds the Dijkstra map: iterate from each starting point, to each exit provided by BaseMap's
     /// exits implementation. Each step adds cost to the current depth, and is discarded if the new
     /// depth is further than the current depth.
+    /// WARNING: Will give incorrect results when used with non-uniform exit costs. Much slower
+    /// algorithm required to support that.
     /// If you provide more starting points than you have CPUs, automatically branches to a parallel
     /// version.
     pub fn build(dm: &mut DijkstraMap, starts: &[usize], map: &dyn BaseMap) {
-        DijkstraMap::build_helper(dm, starts, map);
+        let threaded = DijkstraMap::build_helper(dm, starts, map);
+        if threaded == RunThreaded::True { return; }
         let mapsize: usize = (dm.size_x * dm.size_y) as usize;
-        let mut open_list: Vec<(usize, f32)> = Vec::with_capacity(mapsize * 2);
-        let mut closed_list: Vec<bool> = vec![false; mapsize];
+        let mut open_list: VecDeque<(usize, f32)> = VecDeque::with_capacity(mapsize);
 
         for start in starts {
-            // Clearing vec in debug mode is stupidly slow, so we do it the hard way!
-            unsafe {
-                open_list.set_len(0);
-            }
-            // Zeroing the buffer is far too slow, so we're doing it the C way
-            unsafe {
-                std::ptr::write_bytes(
-                    closed_list.as_mut_ptr(),
-                    0,
-                    closed_list.len() * mem::size_of::<bool>(),
-                );
-            }
-            open_list.push((*start, 0.0));
+            open_list.push_back((*start, 0.0));
+        }
 
-            while !open_list.is_empty() {
-                let last_idx = open_list.len() - 1;
-                let current_tile = open_list[last_idx];
-                let tile_idx = current_tile.0;
-                let depth = current_tile.1;
-                unsafe {
-                    open_list.set_len(last_idx);
-                }
-
-                if dm.map[tile_idx as usize] > depth {
-                    dm.map[tile_idx as usize] = depth;
-
-                    let exits = map.get_available_exits(tile_idx);
-                    for exit in exits {
-                        DijkstraMap::add_if_open(
-                            dm.max_depth,
-                            exit.0,
-                            &mut open_list,
-                            &mut closed_list,
-                            depth + 1.0,
-                        );
-                    }
-                }
+        while let Some((tile_idx, depth)) = open_list.pop_front() {
+            let exits = map.get_available_exits(tile_idx);
+            for (new_idx, add_depth) in exits {
+                let new_depth = depth + add_depth;
+                let prev_depth = dm.map[new_idx];
+                if new_depth >= prev_depth { continue; }
+                if new_depth >= dm.max_depth { continue; }
+                dm.map[new_idx] = new_depth;
+                open_list.push_back((new_idx, new_depth));
             }
         }
     }
@@ -179,43 +155,31 @@ impl DijkstraMap {
             layers.push(layer);
         }
 
-        let exits: Vec<Vec<(usize, f32)>> = (0..mapsize)
+        let exits: Vec<SmallVec<[(usize, f32); 10]>> = (0..mapsize)
             .map(|idx| map.get_available_exits(idx))
             .collect();
 
         // Run each map in parallel
         layers.par_iter_mut().for_each(|l| {
-            let mut open_list: Vec<(usize, f32)> = Vec::with_capacity(mapsize * 2);
-            let mut closed_list: Vec<bool> = vec![false; mapsize];
+            let mut open_list: VecDeque<(usize, f32)> = VecDeque::with_capacity(mapsize);
 
             for start in l.starts.iter().copied() {
-                open_list.push((start, 0.0));
+                open_list.push_back((start, 0.0));
+            }
 
-                while !open_list.is_empty() {
-                    let last_idx = open_list.len() - 1;
-                    let current_tile = open_list[last_idx];
-                    let tile_idx = current_tile.0;
-                    let depth = current_tile.1;
-                    unsafe {
-                        open_list.set_len(last_idx);
-                    }
-
-                    if l.map[tile_idx as usize] > depth {
-                        l.map[tile_idx as usize] = depth;
-
-                        let exits = &exits[tile_idx as usize];
-                        for exit in exits {
-                            DijkstraMap::add_if_open(
-                                l.max_depth,
-                                exit.0,
-                                &mut open_list,
-                                &mut closed_list,
-                                depth + exit.1,
-                            );
-                        }
-                    }
+            while let Some((tile_idx, depth)) = open_list.pop_front() {
+                let exits = &exits[tile_idx];
+                for (new_idx, add_depth) in exits {
+                    let new_idx = *new_idx;
+                    let new_depth = depth + add_depth;
+                    let prev_depth = l.map[new_idx];
+                    if new_depth >= prev_depth { continue; }
+                    if new_depth >= l.max_depth { continue; }
+                    l.map[new_idx] = new_depth;
+                    open_list.push_back((new_idx, new_depth));
                 }
             }
+
         });
 
         // Recombine down to a single result
