@@ -113,8 +113,7 @@ impl DijkstraMap {
     /// depth is further than the current depth.
     /// WARNING: Will give incorrect results when used with non-uniform exit costs. Much slower
     /// algorithm required to support that.
-    /// If you provide more starting points than you have CPUs, automatically branches to a parallel
-    /// version.
+    /// Automatically branches to a parallel version if you provide more than 4 starting points
     pub fn build(dm: &mut DijkstraMap, starts: &[usize], map: &dyn BaseMap) {
         let threaded = DijkstraMap::build_helper(dm, starts, map);
         if threaded == RunThreaded::True { return; }
