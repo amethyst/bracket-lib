@@ -21,8 +21,8 @@ fn on_resize(
     let mut be = BACKEND.lock();
     if send_event {
         bterm.resize_pixels(
-            physical_size.width as u32,
-            physical_size.height as u32,
+            (physical_size.width as f64 / dpi_scale_factor) as u32,
+            (physical_size.height as f64 / dpi_scale_factor) as u32,
             be.resize_scaling,
         );
     }
@@ -160,7 +160,8 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     bterm.on_event(BEvent::Focused { focused: *focused });
                 }
                 WindowEvent::CursorMoved { position: pos, .. } => {
-                    bterm.on_mouse_position(pos.x, pos.y);
+                    let scale_factor = wc.window().scale_factor();
+                    bterm.on_mouse_position(pos.x / scale_factor, pos.y / scale_factor);
                 }
                 WindowEvent::CursorEntered { .. } => bterm.on_event(BEvent::CursorEntered),
                 WindowEvent::CursorLeft { .. } => bterm.on_event(BEvent::CursorLeft),
