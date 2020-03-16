@@ -284,7 +284,7 @@ mod test {
             match idx {
                 0 => smallvec![(1, 1.)],
                 2 => smallvec![(1, 1.)],
-                _ => smallvec![(idx - 1, 1.), (idx + 1, 1.)],
+                _ => smallvec![(idx - 1, 1.), (idx + 1, 2.)],
             }
         }
     }
