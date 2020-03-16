@@ -23,7 +23,14 @@ fn main() {
                 '#' => RGB::named(YELLOW),
                 _ => {
                     if flow_map.map[idx] < std::f32::MAX {
-                        RGB::from_u8(0, 255 - (flow_map.map[idx]) as u8, 0)
+                        RGB::from_u8(
+                            0,
+                            255 - {
+                                let n = flow_map.map[idx] * 6.0;
+                                if n > 255.0 { 255.0 } else { n }
+                            } as u8,
+                            0,
+                        )
                     } else {
                         RGB::named(CHOCOLATE)
                     }
