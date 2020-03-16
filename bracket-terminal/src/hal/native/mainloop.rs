@@ -39,12 +39,10 @@ fn on_resize(
     let new_fb =
         Framebuffer::build_fbo(gl, physical_size.width as i32, physical_size.height as i32)?;
     be.backing_buffer = Some(new_fb);
-    if be.resize_scaling {
-        bterm.on_event(BEvent::Resized {
-            new_size: Point::new(physical_size.width, physical_size.height),
-            dpi_scale_factor: dpi_scale_factor as f32,
-        });
-    }
+    bterm.on_event(BEvent::Resized {
+        new_size: Point::new(physical_size.width, physical_size.height),
+        dpi_scale_factor: dpi_scale_factor as f32,
+    });
 
     let mut bit = BACKEND_INTERNAL.lock();
     if be.resize_scaling && send_event {
