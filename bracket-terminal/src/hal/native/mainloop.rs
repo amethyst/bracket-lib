@@ -18,6 +18,7 @@ fn on_resize(
     dpi_scale_factor: f64,
     send_event: bool,
 ) -> Result<()> {
+    INPUT.lock().set_scale_factor(dpi_scale_factor);
     let mut be = BACKEND.lock();
     if send_event {
         bterm.resize_pixels(

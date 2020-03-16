@@ -24,6 +24,7 @@ impl GameState for State {
             &format!("Mouse tile position: {}, {}", mouse_tile.x, mouse_tile.y),
         );
         ctx.print(1, 3, &format!("FPS: {}", ctx.fps));
+        ctx.print(1, 4, &format!("Scale factor: {}", input.get_scale_factor()));
 
         for (i, btn) in input.mouse_button_pressed_set().iter().enumerate() {
             ctx.print(1, 5 + i as i32, &format!("Mouse Button {} is pressed", btn));
