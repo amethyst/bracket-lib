@@ -4,7 +4,7 @@ use crate::{
     prelude::{
         init_raw, BEvent, CharacterTranslationMode, Console, FancyConsole, Font, FontCharType,
         GameState, InitHints, RenderSprite, Shader, SimpleConsole, SpriteConsole, SpriteSheet,
-        TextAlign, VirtualKeyCode, XpFile, XpLayer, BACKEND, INPUT,
+        TextAlign, VirtualKeyCode, XpFile, XpLayer, BACKEND, INPUT, Radians
     },
     Result,
 };
@@ -448,11 +448,11 @@ impl BTerm {
     /// Set a tile with "fancy" additional attributes
     #[cfg(feature = "opengl")]
     #[allow(clippy::too_many_arguments)]
-    pub fn set_fancy<COLOR, COLOR2, GLYPH>(
+    pub fn set_fancy<COLOR, COLOR2, GLYPH, ANGLE>(
         &mut self,
         position: PointF,
         z_order: i32,
-        rotation: f32,
+        rotation: ANGLE,
         scale: PointF,
         fg: COLOR,
         bg: COLOR2,
@@ -461,6 +461,7 @@ impl BTerm {
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
         GLYPH: TryInto<FontCharType>,
+        ANGLE: Into<Radians>
     {
         let mut be = BACKEND_INTERNAL.lock();
         let cons_any = be.consoles[self.active_console].console.as_any_mut();
@@ -468,7 +469,7 @@ impl BTerm {
             fc.set_fancy(
                 position,
                 z_order,
-                rotation,
+                rotation.into().0,
                 scale,
                 fg.into(),
                 bg.into(),
@@ -479,11 +480,11 @@ impl BTerm {
 
     /// Set a tile with "fancy" additional attributes
     #[cfg(not(feature = "opengl"))]
-    pub fn set_fancy<COLOR, COLOR2, GLYPH>(
+    pub fn set_fancy<COLOR, COLOR2, GLYPH, ANGLE>(
         &mut self,
         _position: PointF,
         _z_order: i32,
-        _rotation: f32,
+        _rotation: ANGLE,
         _scale: PointF,
         _fg: COLOR,
         _bg: COLOR2,
@@ -492,6 +493,7 @@ impl BTerm {
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
         GLYPH: TryInto<FontCharType>,
+        ANGLE: Into<Radians>
     {
         // Does nothing
     }

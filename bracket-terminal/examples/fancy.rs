@@ -4,7 +4,7 @@ use bracket_terminal::prelude::*;
 
 struct State {
     x: f32,
-    spin: f32,
+    spin: Radians,
 }
 
 impl GameState for State {
@@ -50,7 +50,7 @@ impl GameState for State {
         if self.x > 80.0 {
             self.x = 0.0;
         }
-        self.spin += 0.2;
+        self.spin.0 += 0.2;
     }
 }
 
@@ -64,7 +64,7 @@ fn main() -> BError {
     context.with_post_scanlines(true);
     context.with_post_scanlines(true);
 
-    let gs = State { x: 0.0, spin: 0.0 };
+    let gs = State { x: 0.0, spin: Radians::new(0.0) };
 
     main_loop(context, gs)
 }

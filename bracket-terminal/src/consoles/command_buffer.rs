@@ -5,7 +5,7 @@
 use crate::prelude::{BTerm, FontCharType, TextAlign};
 use crate::Result;
 use bracket_color::prelude::{ColorPair, RGBA};
-use bracket_geometry::prelude::{Point, PointF, Rect};
+use bracket_geometry::prelude::{Point, PointF, Rect, Radians};
 use object_pool::{Pool, Reusable};
 use parking_lot::Mutex;
 use std::sync::Arc;
@@ -142,7 +142,7 @@ pub enum DrawCommand {
     SetFancy {
         position: PointF,
         z_order: i32,
-        rotation: f32,
+        rotation: Radians,
         color: ColorPair,
         glyph: FontCharType,
         scale: PointF,
@@ -202,11 +202,11 @@ impl DrawBatch {
     }
 
     /// Pushes a fancy terminal character
-    pub fn set_fancy(
+    pub fn set_fancy<ANGLE: Into<Radians>>(
         &mut self,
         position: PointF,
         z_order: i32,
-        rotation: f32,
+        rotation: ANGLE,
         scale: PointF,
         color: ColorPair,
         glyph: FontCharType,
@@ -216,7 +216,7 @@ impl DrawBatch {
             DrawCommand::SetFancy {
                 position,
                 z_order,
-                rotation,
+                rotation: rotation.into(),
                 color,
                 glyph,
                 scale,
