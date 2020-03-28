@@ -2,7 +2,7 @@
 #[allow(unused_imports)]
 use crate::{
     prelude::{
-        init_raw, BEvent, CharacterTranslationMode, Console, FancyConsole, Font, FontCharType,
+        init_raw, BEvent, CharacterTranslationMode, Console, FlexiConsole, Font, FontCharType,
         GameState, InitHints, RenderSprite, Shader, SimpleConsole, SpriteConsole, SpriteSheet,
         TextAlign, VirtualKeyCode, XpFile, XpLayer, BACKEND, INPUT, Radians
     },
@@ -465,7 +465,7 @@ impl BTerm {
     {
         let mut be = BACKEND_INTERNAL.lock();
         let cons_any = be.consoles[self.active_console].console.as_any_mut();
-        if let Some(fc) = cons_any.downcast_mut::<FancyConsole>() {
+        if let Some(fc) = cons_any.downcast_mut::<FlexiConsole>() {
             fc.set_fancy(
                 position,
                 z_order,

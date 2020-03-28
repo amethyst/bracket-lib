@@ -2,7 +2,7 @@ use crate::hal::{
     ConsoleBacking, FancyConsoleBackend, SimpleConsoleBackend, SparseConsoleBackend,
     SpriteConsoleBackend, BACKEND, CONSOLE_BACKING,
 };
-use crate::prelude::{FancyConsole, SimpleConsole, SparseConsole, SpriteConsole, BACKEND_INTERNAL};
+use crate::prelude::{FlexiConsole, SimpleConsole, SparseConsole, SpriteConsole, BACKEND_INTERNAL};
 use crate::Result;
 
 pub(crate) fn check_console_backing() {
@@ -28,7 +28,7 @@ pub(crate) fn check_console_backing() {
                         be.gl.as_ref().unwrap(),
                     ),
                 });
-            } else if let Some(sp) = cons_any.downcast_ref::<FancyConsole>() {
+            } else if let Some(sp) = cons_any.downcast_ref::<FlexiConsole>() {
                 consoles.push(ConsoleBacking::Fancy {
                     backing: FancyConsoleBackend::new(
                         sp.width as usize,
@@ -105,7 +105,7 @@ pub(crate) fn rebuild_consoles() {
                 let mut fc = bi.consoles[i]
                     .console
                     .as_any_mut()
-                    .downcast_mut::<FancyConsole>()
+                    .downcast_mut::<FlexiConsole>()
                     .unwrap();
                 if fc.is_dirty {
                     fc.tiles.sort_by(|a, b| a.z_order.cmp(&b.z_order));
@@ -171,7 +171,7 @@ pub(crate) fn render_consoles() -> Result<()> {
                 let fc = bi.consoles[i]
                     .console
                     .as_any()
-                    .downcast_ref::<FancyConsole>()
+                    .downcast_ref::<FlexiConsole>()
                     .unwrap();
                 backing.gl_draw(font, shader, &fc.tiles)?;
             }

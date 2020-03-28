@@ -1,5 +1,5 @@
 use crate::prelude::{
-    init_raw, BTerm, CharacterTranslationMode, FancyConsole, Font, InitHints, SimpleConsole,
+    init_raw, BTerm, CharacterTranslationMode, FlexiConsole, Font, InitHints, SimpleConsole,
     SparseConsole, SpriteConsole, SpriteSheet, INPUT,
 };
 use crate::Result;
@@ -40,7 +40,7 @@ enum ConsoleType {
         font: String,
         translator: CharacterTranslationMode,
     },
-    FancyConsole {
+    FlexiConsole {
         width: u32,
         height: u32,
         font: String,
@@ -409,7 +409,7 @@ impl BTermBuilder {
     where
         T: TryInto<u32>,
     {
-        self.consoles.push(ConsoleType::FancyConsole {
+        self.consoles.push(ConsoleType::FlexiConsole {
             width: width.try_into().ok().expect("Must be convertible to a u32"),
             height: height
                 .try_into()
@@ -557,7 +557,7 @@ impl BTermBuilder {
                         .register_console_no_bg(SparseConsole::init(*width, *height), font_id);
                     context.set_translation_mode(cid, *translator);
                 }
-                ConsoleType::FancyConsole {
+                ConsoleType::FlexiConsole {
                     width,
                     height,
                     font,
@@ -566,7 +566,7 @@ impl BTermBuilder {
                     let font_path = format!("{}/{}", self.resource_path, font);
                     let font_id = font_map[&font_path];
                     let cid = context
-                        .register_fancy_console(FancyConsole::init(*width, *height), font_id);
+                        .register_fancy_console(FlexiConsole::init(*width, *height), font_id);
                     context.set_translation_mode(cid, *translator);
                 }
                 ConsoleType::SpriteConsole {

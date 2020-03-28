@@ -1,7 +1,7 @@
 use crate::hal::{
     vao_float_builder, BufferId, Font, Shader, VertexArrayEntry, VertexArrayId, BACKEND,
 };
-use crate::prelude::FancyTile;
+use crate::prelude::FlexiTile;
 use crate::Result;
 use bracket_color::prelude::RGBA;
 use bracket_geometry::prelude::PointF;
@@ -72,7 +72,7 @@ impl FancyConsoleBackend {
         offset_y: f32,
         scale: f32,
         scale_center: (i32, i32),
-        tiles: &[FancyTile],
+        tiles: &[FlexiTile],
         font_dimensions_glyphs: (u32, u32),
     ) {
         if tiles.is_empty() {
@@ -199,7 +199,7 @@ impl FancyConsoleBackend {
         }
     }
 
-    pub fn gl_draw(&mut self, font: &Font, shader: &Shader, tiles: &[FancyTile]) -> Result<()> {
+    pub fn gl_draw(&mut self, font: &Font, shader: &Shader, tiles: &[FlexiTile]) -> Result<()> {
         let be = BACKEND.lock();
         let gl = be.gl.as_ref().unwrap();
         unsafe {

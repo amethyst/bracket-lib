@@ -7,7 +7,7 @@ use bracket_geometry::prelude::{PointF, Rect};
 use std::any::Any;
 
 /// Internal storage structure for sparse tiles.
-pub struct FancyTile {
+pub struct FlexiTile {
     pub position: PointF,
     pub z_order: i32,
     pub glyph: FontCharType,
@@ -19,11 +19,11 @@ pub struct FancyTile {
 
 /// A sparse console. Rather than storing every cell on the screen, it stores just cells that have
 /// data.
-pub struct FancyConsole {
+pub struct FlexiConsole {
     pub width: u32,
     pub height: u32,
 
-    pub tiles: Vec<FancyTile>,
+    pub tiles: Vec<FlexiTile>,
     pub is_dirty: bool,
 
     // To handle offset tiles for people who want thin walls between tiles
@@ -38,11 +38,11 @@ pub struct FancyConsole {
     pub(crate) needs_resize_internal: bool,
 }
 
-impl FancyConsole {
+impl FlexiConsole {
     /// Initializes the console.
-    pub fn init(width: u32, height: u32) -> Box<FancyConsole> {
+    pub fn init(width: u32, height: u32) -> Box<FlexiConsole> {
         // Console backing initialization
-        let new_console = FancyConsole {
+        let new_console = FlexiConsole {
             width,
             height,
             tiles: Vec::with_capacity((width * height) as usize),
@@ -76,7 +76,7 @@ impl FancyConsole {
             x: position.x,
             y: self.height as f32 - position.y,
         };
-        self.tiles.push(FancyTile {
+        self.tiles.push(FlexiTile {
             position: invert_pos,
             z_order,
             glyph,
@@ -88,7 +88,7 @@ impl FancyConsole {
     }
 }
 
-impl Console for FancyConsole {
+impl Console for FlexiConsole {
     fn get_char_size(&self) -> (u32, u32) {
         (self.width, self.height)
     }
@@ -127,7 +127,7 @@ impl Console for FancyConsole {
 
         let h = (self.height - 1) as f32;
         self.tiles
-            .extend(bytes.into_iter().enumerate().map(|(i, glyph)| FancyTile {
+            .extend(bytes.into_iter().enumerate().map(|(i, glyph)| FlexiTile {
                 position: PointF {
                     x: i as f32 + x as f32,
                     y: h - y as f32,
@@ -153,7 +153,7 @@ impl Console for FancyConsole {
         };
         let h = (self.height - 1) as f32;
         self.tiles
-            .extend(bytes.into_iter().enumerate().map(|(i, glyph)| FancyTile {
+            .extend(bytes.into_iter().enumerate().map(|(i, glyph)| FlexiTile {
                 z_order: 0,
                 position: PointF {
                     x: i as f32 + x as f32,
@@ -172,7 +172,7 @@ impl Console for FancyConsole {
         self.is_dirty = true;
         if self.try_at(x, y).is_some() {
             let h = (self.height - 1) as f32;
-            self.tiles.push(FancyTile {
+            self.tiles.push(FlexiTile {
                 position: PointF {
                     x: x as f32,
                     y: h - y as f32,
