@@ -9,7 +9,7 @@ mod initializer;
 mod input;
 pub mod rex;
 
-pub(crate) type Error = Box<dyn std::error::Error>;
+pub(crate) type Error = Box<dyn std::error::Error + 'static>;
 pub(crate) type Result<T> = core::result::Result<T, Error>;
 pub(crate) use input::clear_input_state;
 pub type FontCharType = u16;
