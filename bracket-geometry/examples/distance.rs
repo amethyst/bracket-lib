@@ -5,7 +5,7 @@ fn main() {
     let pt2 = Point::new(10, 20);
     println!("Given the two points:");
     println!("{:#?}\n{:#?}", pt1, pt2);
-    println!("");
+    println!();
     println!(
         "Pythagoras Distance: {}",
         DistanceAlg::Pythagoras.distance2d(pt1, pt2)
