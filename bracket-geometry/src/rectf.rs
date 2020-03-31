@@ -76,7 +76,7 @@ impl RectF {
 
     // Returns true if a point is inside the rectangle
     pub fn point_in_rect(&self, point: PointF) -> bool {
-        point.x >= self.x1 && point.x <= self.x2 && point.y >= self.y1 && point.y <= self.y2
+        point.x >= self.x1 && point.x < self.x2 && point.y >= self.y1 && point.y < self.y2
     }
 
     // Returns the rectangle's width

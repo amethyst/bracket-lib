@@ -74,7 +74,7 @@ impl Rect {
 
     // Returns true if a point is inside the rectangle
     pub fn point_in_rect(&self, point: Point) -> bool {
-        point.x >= self.x1 && point.x <= self.x2 && point.y >= self.y1 && point.y <= self.y2
+        point.x >= self.x1 && point.x < self.x2 && point.y >= self.y1 && point.y < self.y2
     }
 
     // Calls a function for each x/y point in the rectangle
@@ -92,8 +92,8 @@ impl Rect {
     // Gets a set of all tiles in the rectangle
     pub fn point_set(&self) -> HashSet<Point> {
         let mut result = HashSet::new();
-        for y in self.y1..=self.y2 {
-            for x in self.x1..=self.x2 {
+        for y in self.y1..self.y2 {
+            for x in self.x1..self.x2 {
                 result.insert(Point::new(x, y));
             }
         }
@@ -170,9 +170,9 @@ mod tests {
         let r1 = Rect::with_size(0, 0, 1, 1);
         let points = r1.point_set();
         assert!(points.contains(&Point::new(0, 0)));
-        assert!(points.contains(&Point::new(1, 0)));
-        assert!(points.contains(&Point::new(0, 1)));
-        assert!(points.contains(&Point::new(1, 1)));
+        assert!(!points.contains(&Point::new(1, 0)));
+        assert!(!points.contains(&Point::new(0, 1)));
+        assert!(!points.contains(&Point::new(1, 1)));
     }
 
     #[test]
