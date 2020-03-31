@@ -28,7 +28,7 @@ pub fn init_raw<S: ToString>(
     let windowed_context = unsafe { windowed_context.make_current().unwrap() };
 
     if platform_hints.fullscreen {
-        if let Some(mh) = el.available_monitors().nth(0) {
+        if let Some(mh) = el.available_monitors().next() {
             windowed_context
                 .window()
                 .set_fullscreen(Some(glutin::window::Fullscreen::Borderless(mh)));
