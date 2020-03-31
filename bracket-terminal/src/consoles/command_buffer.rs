@@ -5,7 +5,7 @@
 use crate::prelude::{BTerm, FontCharType, TextAlign};
 use crate::Result;
 use bracket_color::prelude::{ColorPair, RGBA};
-use bracket_geometry::prelude::{Point, PointF, Rect, Radians};
+use bracket_geometry::prelude::{Point, PointF, Radians, Rect};
 use object_pool::{Pool, Reusable};
 use parking_lot::Mutex;
 use std::sync::Arc;

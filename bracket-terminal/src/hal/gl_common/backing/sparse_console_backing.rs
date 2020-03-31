@@ -1,33 +1,24 @@
-use crate::hal::{
-    vao_float_builder, BufferId, Font, Shader, VertexArrayEntry, VertexArrayId, BACKEND,
-};
+use crate::hal::{Font, Shader, VertexArray, VertexArrayEntry};
 use crate::prelude::SparseTile;
 use crate::Result;
 use bracket_color::prelude::RGBA;
-use glow::HasContext;
 
 pub struct SparseConsoleBackend {
-    vertex_buffer: Vec<f32>,
-    index_buffer: Vec<i32>,
-    vbo: BufferId,
-    vao: VertexArrayId,
-    ebo: BufferId,
+    vao: VertexArray,
 }
 
 impl SparseConsoleBackend {
     pub fn new(_width: usize, _height: usize, gl: &glow::Context) -> SparseConsoleBackend {
-        let (vbo, vao, ebo) = SparseConsoleBackend::init_gl_for_console(gl);
-        SparseConsoleBackend {
-            vertex_buffer: Vec::new(),
-            index_buffer: Vec::new(),
-            vbo,
-            vao,
-            ebo,
-        }
+        let vao = SparseConsoleBackend::init_gl_for_console(gl, 1000, 1000);
+        SparseConsoleBackend { vao }
     }
 
-    fn init_gl_for_console(gl: &glow::Context) -> (BufferId, VertexArrayId, BufferId) {
-        vao_float_builder(
+    fn init_gl_for_console(
+        gl: &glow::Context,
+        vertex_capacity: usize,
+        index_capacity: usize,
+    ) -> VertexArray {
+        VertexArray::float_builder(
             gl,
             &[
                 VertexArrayEntry { index: 0, size: 3 }, // Position
@@ -35,6 +26,8 @@ impl SparseConsoleBackend {
                 VertexArrayEntry { index: 2, size: 4 }, // Background
                 VertexArrayEntry { index: 3, size: 2 }, // Texture Coordinates
             ],
+            vertex_capacity,
+            index_capacity,
         )
     }
 
@@ -70,8 +63,8 @@ impl SparseConsoleBackend {
             return;
         }
 
-        self.vertex_buffer.clear();
-        self.index_buffer.clear();
+        self.vao.vertex_buffer.clear();
+        self.vao.index_buffer.clear();
 
         let glyphs_on_font_x = font_dimensions_glyphs.0 as f32;
         let glyphs_on_font_y = font_dimensions_glyphs.1 as f32;
@@ -105,7 +98,7 @@ impl SparseConsoleBackend {
             let glyph_bottom = f32::from(glyph_y - 1) * glyph_size_y;
 
             SparseConsoleBackend::push_point(
-                &mut self.vertex_buffer,
+                &mut self.vao.vertex_buffer,
                 screen_x + step_x,
                 screen_y + step_y,
                 fg,
@@ -114,7 +107,7 @@ impl SparseConsoleBackend {
                 glyph_top,
             );
             SparseConsoleBackend::push_point(
-                &mut self.vertex_buffer,
+                &mut self.vao.vertex_buffer,
                 screen_x + step_x,
                 screen_y,
                 fg,
@@ -123,7 +116,7 @@ impl SparseConsoleBackend {
                 glyph_bottom,
             );
             SparseConsoleBackend::push_point(
-                &mut self.vertex_buffer,
+                &mut self.vao.vertex_buffer,
                 screen_x,
                 screen_y,
                 fg,
@@ -132,7 +125,7 @@ impl SparseConsoleBackend {
                 glyph_bottom,
             );
             SparseConsoleBackend::push_point(
-                &mut self.vertex_buffer,
+                &mut self.vao.vertex_buffer,
                 screen_x,
                 screen_y + step_y,
                 fg,
@@ -141,57 +134,21 @@ impl SparseConsoleBackend {
                 glyph_top,
             );
 
-            self.index_buffer.push(index_count);
-            self.index_buffer.push(1 + index_count);
-            self.index_buffer.push(3 + index_count);
-            self.index_buffer.push(1 + index_count);
-            self.index_buffer.push(2 + index_count);
-            self.index_buffer.push(3 + index_count);
+            self.vao.index_buffer.push(index_count);
+            self.vao.index_buffer.push(1 + index_count);
+            self.vao.index_buffer.push(3 + index_count);
+            self.vao.index_buffer.push(1 + index_count);
+            self.vao.index_buffer.push(2 + index_count);
+            self.vao.index_buffer.push(3 + index_count);
 
             index_count += 4;
         }
 
-        let be = BACKEND.lock();
-        let gl = be.gl.as_ref().unwrap();
-        unsafe {
-            gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
-            gl.buffer_data_u8_slice(
-                glow::ARRAY_BUFFER,
-                &self.vertex_buffer.align_to::<u8>().1,
-                glow::STATIC_DRAW,
-            );
-
-            gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
-            gl.buffer_data_u8_slice(
-                glow::ELEMENT_ARRAY_BUFFER,
-                &self.index_buffer.align_to::<u8>().1,
-                glow::STATIC_DRAW,
-            );
-        }
+        self.vao.upload_buffers();
     }
 
-    pub fn gl_draw(&mut self, font: &Font, shader: &Shader, tiles: &[SparseTile]) -> Result<()> {
-        let be = BACKEND.lock();
-        let gl = be.gl.as_ref().unwrap();
-        unsafe {
-            // bind Texture
-            font.bind_texture(gl);
-
-            // render container
-            shader.useProgram(gl);
-            gl.bind_vertex_array(Some(self.vao));
-            gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
-            gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
-            gl.enable(glow::BLEND);
-            gl.blend_func(glow::SRC_ALPHA, glow::ONE_MINUS_SRC_ALPHA);
-            gl.draw_elements(
-                glow::TRIANGLES,
-                (tiles.len() * 6) as i32,
-                glow::UNSIGNED_INT,
-                0,
-            );
-            gl.disable(glow::BLEND);
-        }
+    pub fn gl_draw(&mut self, font: &Font, shader: &Shader) -> Result<()> {
+        self.vao.draw_elements(shader, font);
         Ok(())
     }
 }

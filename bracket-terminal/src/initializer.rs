@@ -529,8 +529,8 @@ impl BTermBuilder {
                 } => {
                     let font_path = format!("{}/{}", self.resource_path, font);
                     let font_id = font_map[&font_path];
-                    let cid =
-                        context.register_console_no_bg(SimpleConsole::init(*width, *height), font_id);
+                    let cid = context
+                        .register_console_no_bg(SimpleConsole::init(*width, *height), font_id);
                     context.set_translation_mode(cid, *translator);
                 }
                 ConsoleType::SparseConsole {

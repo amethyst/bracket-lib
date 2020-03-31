@@ -1,4 +1,4 @@
-use super::TextureId;
+use super::{gl_error, TextureId};
 use crate::console::log;
 use crate::prelude::embedding;
 use crate::Result;
@@ -130,6 +130,7 @@ impl Font {
         }
 
         self.gl_id = Some(texture);
+        gl_error(gl);
 
         Ok(texture)
     }
@@ -138,6 +139,7 @@ impl Font {
     pub fn bind_texture(&self, gl: &glow::Context) {
         unsafe {
             gl.bind_texture(glow::TEXTURE_2D, self.gl_id);
+            gl_error(gl);
         }
     }
 }

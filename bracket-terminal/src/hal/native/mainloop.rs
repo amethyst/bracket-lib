@@ -1,4 +1,5 @@
 use super::BACKEND;
+use crate::gl_error_wrap;
 use crate::hal::*;
 use crate::prelude::{BEvent, BTerm, GameState, BACKEND_INTERNAL, INPUT};
 use crate::{clear_input_state, Result};
@@ -29,11 +30,14 @@ fn on_resize(
     }
     let gl = be.gl.as_ref().unwrap();
     unsafe {
-        gl.viewport(
-            0,
-            0,
-            physical_size.width as i32,
-            physical_size.height as i32,
+        gl_error_wrap!(
+            gl,
+            gl.viewport(
+                0,
+                0,
+                physical_size.width as i32,
+                physical_size.height as i32,
+            )
         );
     }
     let new_fb =

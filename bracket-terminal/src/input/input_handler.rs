@@ -24,7 +24,7 @@ pub struct Input {
     mouse_tile: Vec<(i32, i32)>,
     pub(crate) use_events: bool,
     event_queue: VecDeque<BEvent>,
-    scale_factor: f64
+    scale_factor: f64,
 }
 
 impl Input {
@@ -38,7 +38,7 @@ impl Input {
             mouse_tile: Vec::new(),
             event_queue: VecDeque::new(),
             use_events: false, // Not enabled by default so that systems not using it don't fill up RAM for no reason
-            scale_factor: 1.0
+            scale_factor: 1.0,
         }
     }
 
@@ -131,7 +131,7 @@ impl Input {
 
     /// Internal - do not use
     #[allow(dead_code)]
-    pub(crate) fn set_scale_factor(&mut self, scale : f64) {
+    pub(crate) fn set_scale_factor(&mut self, scale: f64) {
         self.scale_factor = scale;
     }
 

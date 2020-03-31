@@ -3,8 +3,8 @@
 use crate::{
     prelude::{
         init_raw, BEvent, CharacterTranslationMode, Console, FlexiConsole, Font, FontCharType,
-        GameState, InitHints, RenderSprite, Shader, SimpleConsole, SpriteConsole, SpriteSheet,
-        TextAlign, VirtualKeyCode, XpFile, XpLayer, BACKEND, INPUT, Radians
+        GameState, InitHints, Radians, RenderSprite, Shader, SimpleConsole, SpriteConsole,
+        SpriteSheet, TextAlign, VirtualKeyCode, XpFile, XpLayer, BACKEND, INPUT,
     },
     Result,
 };
@@ -461,7 +461,7 @@ impl BTerm {
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
         GLYPH: TryInto<FontCharType>,
-        ANGLE: Into<Radians>
+        ANGLE: Into<Radians>,
     {
         let mut be = BACKEND_INTERNAL.lock();
         let cons_any = be.consoles[self.active_console].console.as_any_mut();
@@ -493,7 +493,7 @@ impl BTerm {
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
         GLYPH: TryInto<FontCharType>,
-        ANGLE: Into<Radians>
+        ANGLE: Into<Radians>,
     {
         // Does nothing
     }

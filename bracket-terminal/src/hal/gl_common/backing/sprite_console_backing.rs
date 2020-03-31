@@ -1,33 +1,24 @@
-use crate::hal::{
-    vao_float_builder, BufferId, Font, Shader, VertexArrayEntry, VertexArrayId, BACKEND,
-};
+use crate::hal::{Font, Shader, VertexArray, VertexArrayEntry};
 use crate::prelude::{RenderSprite, SpriteSheet};
 use crate::Result;
 use bracket_color::prelude::RGBA;
-use glow::HasContext;
 
 pub struct SpriteConsoleBackend {
-    vertex_buffer: Vec<f32>,
-    index_buffer: Vec<i32>,
-    vbo: BufferId,
-    vao: VertexArrayId,
-    ebo: BufferId,
+    vao: VertexArray,
 }
 
 impl SpriteConsoleBackend {
     pub fn new(_width: usize, _height: usize, gl: &glow::Context) -> SpriteConsoleBackend {
-        let (vbo, vao, ebo) = SpriteConsoleBackend::init_gl_for_console(gl);
-        SpriteConsoleBackend {
-            vertex_buffer: Vec::new(),
-            index_buffer: Vec::new(),
-            vbo,
-            vao,
-            ebo,
-        }
+        let vao = SpriteConsoleBackend::init_gl_for_console(gl, 1000, 100);
+        SpriteConsoleBackend { vao }
     }
 
-    fn init_gl_for_console(gl: &glow::Context) -> (BufferId, VertexArrayId, BufferId) {
-        vao_float_builder(
+    fn init_gl_for_console(
+        gl: &glow::Context,
+        vertex_capacity: usize,
+        index_capacity: usize,
+    ) -> VertexArray {
+        VertexArray::float_builder(
             gl,
             &[
                 VertexArrayEntry { index: 0, size: 2 }, // Position
@@ -36,6 +27,8 @@ impl SpriteConsoleBackend {
                 VertexArrayEntry { index: 3, size: 2 }, // Texture Coordinate
                 VertexArrayEntry { index: 4, size: 2 }, // Scale
             ],
+            vertex_capacity,
+            index_capacity,
         )
     }
 
@@ -76,8 +69,8 @@ impl SpriteConsoleBackend {
         let offset_x = (width as f32 / 2.0) * scale_x;
         let offset_y = (height as f32 / 2.0) * scale_y;
 
-        self.vertex_buffer.clear();
-        self.index_buffer.clear();
+        self.vao.vertex_buffer.clear();
+        self.vao.index_buffer.clear();
 
         let mut index_count: i32 = 0;
         for s in sprites.iter() {
@@ -105,7 +98,7 @@ impl SpriteConsoleBackend {
             sd.y1 = height as i32 - s.destination.y2;
 
             SpriteConsoleBackend::push_point(
-                &mut self.vertex_buffer,
+                &mut self.vao.vertex_buffer,
                 0.5,
                 0.5,
                 (sd.x2 as f32 * scale_x) - offset_x,
@@ -116,7 +109,7 @@ impl SpriteConsoleBackend {
                 scale,
             );
             SpriteConsoleBackend::push_point(
-                &mut self.vertex_buffer,
+                &mut self.vao.vertex_buffer,
                 0.5,
                 -0.5,
                 (sd.x2 as f32 * scale_x) - offset_x,
@@ -127,7 +120,7 @@ impl SpriteConsoleBackend {
                 scale,
             );
             SpriteConsoleBackend::push_point(
-                &mut self.vertex_buffer,
+                &mut self.vao.vertex_buffer,
                 -0.5,
                 -0.5,
                 (sd.x1 as f32 * scale_x) - offset_x,
@@ -138,7 +131,7 @@ impl SpriteConsoleBackend {
                 scale,
             );
             SpriteConsoleBackend::push_point(
-                &mut self.vertex_buffer,
+                &mut self.vao.vertex_buffer,
                 -0.5,
                 0.5,
                 (sd.x1 as f32 * scale_x) - offset_x,
@@ -149,57 +142,21 @@ impl SpriteConsoleBackend {
                 scale,
             );
 
-            self.index_buffer.push(index_count);
-            self.index_buffer.push(1 + index_count);
-            self.index_buffer.push(3 + index_count);
-            self.index_buffer.push(1 + index_count);
-            self.index_buffer.push(2 + index_count);
-            self.index_buffer.push(3 + index_count);
+            self.vao.index_buffer.push(index_count);
+            self.vao.index_buffer.push(1 + index_count);
+            self.vao.index_buffer.push(3 + index_count);
+            self.vao.index_buffer.push(1 + index_count);
+            self.vao.index_buffer.push(2 + index_count);
+            self.vao.index_buffer.push(3 + index_count);
 
             index_count += 4;
         }
 
-        let be = BACKEND.lock();
-        let gl = be.gl.as_ref().unwrap();
-        unsafe {
-            gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
-            gl.buffer_data_u8_slice(
-                glow::ARRAY_BUFFER,
-                &self.vertex_buffer.align_to::<u8>().1,
-                glow::STATIC_DRAW,
-            );
-
-            gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
-            gl.buffer_data_u8_slice(
-                glow::ELEMENT_ARRAY_BUFFER,
-                &self.index_buffer.align_to::<u8>().1,
-                glow::STATIC_DRAW,
-            );
-        }
+        self.vao.upload_buffers();
     }
 
-    pub fn gl_draw(&mut self, font: &Font, shader: &Shader, tiles: &[RenderSprite]) -> Result<()> {
-        let be = BACKEND.lock();
-        let gl = be.gl.as_ref().unwrap();
-        unsafe {
-            // bind Texture
-            font.bind_texture(gl);
-
-            // render container
-            shader.useProgram(gl);
-            gl.bind_vertex_array(Some(self.vao));
-            gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
-            gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
-            gl.enable(glow::BLEND);
-            gl.blend_func(glow::SRC_ALPHA, glow::ONE_MINUS_SRC_ALPHA);
-            gl.draw_elements(
-                glow::TRIANGLES,
-                (tiles.len() * 6) as i32,
-                glow::UNSIGNED_INT,
-                0,
-            );
-            gl.disable(glow::BLEND);
-        }
+    pub fn gl_draw(&mut self, font: &Font, shader: &Shader) -> Result<()> {
+        self.vao.draw_elements(shader, font);
         Ok(())
     }
 }

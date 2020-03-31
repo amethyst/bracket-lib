@@ -64,7 +64,10 @@ fn main() -> BError {
     context.with_post_scanlines(true);
     context.with_post_scanlines(true);
 
-    let gs = State { x: 0.0, spin: Radians::new(0.0) };
+    let gs = State {
+        x: 0.0,
+        spin: Radians::new(0.0),
+    };
 
     main_loop(context, gs)
 }

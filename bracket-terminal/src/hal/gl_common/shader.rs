@@ -1,4 +1,4 @@
-use super::ShaderId;
+use super::{gl_error, ShaderId};
 use crate::console::log;
 use glow::HasContext;
 use std::str;
@@ -60,7 +60,8 @@ impl Shader {
     /// activate the shader
     /// ------------------------------------------------------------------------
     pub unsafe fn useProgram(&self, gl: &glow::Context) {
-        gl.use_program(Some(self.ID))
+        gl.use_program(Some(self.ID));
+        gl_error(gl);
     }
 
     #[allow(non_snake_case)]

@@ -1,17 +1,10 @@
-use crate::hal::{
-    vao_float_builder, BufferId, Font, Shader, VertexArrayEntry, VertexArrayId, BACKEND,
-};
+use crate::hal::{Font, Shader, VertexArray, VertexArrayEntry};
 use crate::prelude::Tile;
 use crate::Result;
 use bracket_color::prelude::RGBA;
-use glow::HasContext;
 
 pub struct SimpleConsoleBackend {
-    vertex_buffer: Vec<f32>,
-    index_buffer: Vec<i32>,
-    vbo: BufferId,
-    vao: VertexArrayId,
-    ebo: BufferId,
+    vao: VertexArray,
     vertex_counter: usize,
     index_counter: usize,
 }
@@ -20,27 +13,27 @@ impl SimpleConsoleBackend {
     pub fn new(width: usize, height: usize, gl: &glow::Context) -> SimpleConsoleBackend {
         let vertex_capacity: usize = (13 * width as usize * height as usize) * 4;
         let index_capacity: usize = 6 * width as usize * height as usize;
-        let (vbo, vao, ebo) = SimpleConsoleBackend::init_gl_for_console(gl);
+        let vao = SimpleConsoleBackend::init_gl_for_console(gl, vertex_capacity, index_capacity);
         let mut result = SimpleConsoleBackend {
-            vertex_buffer: Vec::with_capacity(vertex_capacity),
-            index_buffer: Vec::with_capacity(index_capacity),
-            vbo,
             vao,
-            ebo,
             vertex_counter: 0,
             index_counter: 0,
         };
         for _ in 0..vertex_capacity {
-            result.vertex_buffer.push(0.0);
+            result.vao.vertex_buffer.push(0.0);
         }
         for _ in 0..index_capacity {
-            result.index_buffer.push(0);
+            result.vao.index_buffer.push(0);
         }
         result
     }
 
-    fn init_gl_for_console(gl: &glow::Context) -> (BufferId, VertexArrayId, BufferId) {
-        vao_float_builder(
+    fn init_gl_for_console(
+        gl: &glow::Context,
+        vertex_capacity: usize,
+        index_capacity: usize,
+    ) -> VertexArray {
+        VertexArray::float_builder(
             gl,
             &[
                 VertexArrayEntry { index: 0, size: 3 }, // Position
@@ -48,6 +41,8 @@ impl SimpleConsoleBackend {
                 VertexArrayEntry { index: 2, size: 4 }, // Background
                 VertexArrayEntry { index: 3, size: 2 }, // Texture Pos
             ],
+            vertex_capacity,
+            index_capacity,
         )
     }
 
@@ -64,19 +59,19 @@ impl SimpleConsoleBackend {
         offset_x: f32,
         offset_y: f32,
     ) {
-        self.vertex_buffer[self.vertex_counter] = x + offset_x;
-        self.vertex_buffer[self.vertex_counter + 1] = y + offset_y;
-        self.vertex_buffer[self.vertex_counter + 2] = 0.0f32;
-        self.vertex_buffer[self.vertex_counter + 3] = fg.r;
-        self.vertex_buffer[self.vertex_counter + 4] = fg.g;
-        self.vertex_buffer[self.vertex_counter + 5] = fg.b;
-        self.vertex_buffer[self.vertex_counter + 6] = fg.a;
-        self.vertex_buffer[self.vertex_counter + 7] = bg.r;
-        self.vertex_buffer[self.vertex_counter + 8] = bg.g;
-        self.vertex_buffer[self.vertex_counter + 9] = bg.b;
-        self.vertex_buffer[self.vertex_counter + 10] = bg.a;
-        self.vertex_buffer[self.vertex_counter + 11] = ux;
-        self.vertex_buffer[self.vertex_counter + 12] = uy;
+        self.vao.vertex_buffer[self.vertex_counter] = x + offset_x;
+        self.vao.vertex_buffer[self.vertex_counter + 1] = y + offset_y;
+        self.vao.vertex_buffer[self.vertex_counter + 2] = 0.0f32;
+        self.vao.vertex_buffer[self.vertex_counter + 3] = fg.r;
+        self.vao.vertex_buffer[self.vertex_counter + 4] = fg.g;
+        self.vao.vertex_buffer[self.vertex_counter + 5] = fg.b;
+        self.vao.vertex_buffer[self.vertex_counter + 6] = fg.a;
+        self.vao.vertex_buffer[self.vertex_counter + 7] = bg.r;
+        self.vao.vertex_buffer[self.vertex_counter + 8] = bg.g;
+        self.vao.vertex_buffer[self.vertex_counter + 9] = bg.b;
+        self.vao.vertex_buffer[self.vertex_counter + 10] = bg.a;
+        self.vao.vertex_buffer[self.vertex_counter + 11] = ux;
+        self.vao.vertex_buffer[self.vertex_counter + 12] = uy;
         self.vertex_counter += 13;
     }
 
@@ -97,13 +92,13 @@ impl SimpleConsoleBackend {
         if needs_resize {
             let vertex_capacity: usize = (13 * width as usize * height as usize) * 4;
             let index_capacity: usize = 6 * width as usize * height as usize;
-            self.vertex_buffer.clear();
-            self.index_buffer.clear();
+            self.vao.vertex_buffer.clear();
+            self.vao.index_buffer.clear();
             for _ in 0..vertex_capacity {
-                self.vertex_buffer.push(0.0);
+                self.vao.vertex_buffer.push(0.0);
             }
             for _ in 0..index_capacity {
-                self.index_buffer.push(0);
+                self.vao.index_buffer.push(0);
             }
         }
 
@@ -177,12 +172,12 @@ impl SimpleConsoleBackend {
                     offset_y,
                 );
 
-                self.index_buffer[self.index_counter] = index_count;
-                self.index_buffer[self.index_counter + 1] = 1 + index_count;
-                self.index_buffer[self.index_counter + 2] = 3 + index_count;
-                self.index_buffer[self.index_counter + 3] = 1 + index_count;
-                self.index_buffer[self.index_counter + 4] = 2 + index_count;
-                self.index_buffer[self.index_counter + 5] = 3 + index_count;
+                self.vao.index_buffer[self.index_counter] = index_count;
+                self.vao.index_buffer[self.index_counter + 1] = 1 + index_count;
+                self.vao.index_buffer[self.index_counter + 2] = 3 + index_count;
+                self.vao.index_buffer[self.index_counter + 3] = 1 + index_count;
+                self.vao.index_buffer[self.index_counter + 4] = 2 + index_count;
+                self.vao.index_buffer[self.index_counter + 5] = 3 + index_count;
                 self.index_counter += 6;
 
                 index_count += 4;
@@ -191,47 +186,11 @@ impl SimpleConsoleBackend {
             screen_y += step_y;
         }
 
-        let be = BACKEND.lock();
-        let gl = be.gl.as_ref().unwrap();
-        unsafe {
-            gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
-            gl.buffer_data_u8_slice(
-                glow::ARRAY_BUFFER,
-                &self.vertex_buffer.align_to::<u8>().1,
-                glow::STATIC_DRAW,
-            );
-
-            gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
-            gl.buffer_data_u8_slice(
-                glow::ELEMENT_ARRAY_BUFFER,
-                &self.index_buffer.align_to::<u8>().1,
-                glow::STATIC_DRAW,
-            );
-        }
+        self.vao.upload_buffers();
     }
 
-    pub fn gl_draw(&mut self, font: &Font, shader: &Shader, width: u32, height: u32) -> Result<()> {
-        let be = BACKEND.lock();
-        let gl = be.gl.as_ref().unwrap();
-        unsafe {
-            // bind Texture
-            font.bind_texture(gl);
-
-            // render container
-            shader.useProgram(gl);
-            gl.bind_vertex_array(Some(self.vao));
-            gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(self.ebo));
-            gl.bind_buffer(glow::ARRAY_BUFFER, Some(self.vbo));
-            gl.enable(glow::BLEND);
-            gl.blend_func(glow::SRC_ALPHA, glow::ONE_MINUS_SRC_ALPHA);
-            gl.draw_elements(
-                glow::TRIANGLES,
-                (width * height * 6) as i32,
-                glow::UNSIGNED_INT,
-                0,
-            );
-            gl.disable(glow::BLEND);
-        }
+    pub fn gl_draw(&mut self, font: &Font, shader: &Shader) -> Result<()> {
+        self.vao.draw_elements(shader, font);
         Ok(())
     }
 }

@@ -152,40 +152,16 @@ pub(crate) fn render_consoles() -> Result<()> {
         let shader = &bi.shaders[cons.shader_index];
         match c {
             ConsoleBacking::Simple { backing } => {
-                let sc = bi.consoles[i]
-                    .console
-                    .as_any()
-                    .downcast_ref::<SimpleConsole>()
-                    .unwrap();
-                backing.gl_draw(font, shader, sc.height, sc.width)?;
+                backing.gl_draw(font, shader)?;
             }
             ConsoleBacking::Sparse { backing } => {
-                let sc = bi.consoles[i]
-                    .console
-                    .as_any()
-                    .downcast_ref::<SparseConsole>()
-                    .unwrap();
-                backing.gl_draw(font, shader, &sc.tiles)?;
+                backing.gl_draw(font, shader)?;
             }
             ConsoleBacking::Fancy { backing } => {
-                let fc = bi.consoles[i]
-                    .console
-                    .as_any()
-                    .downcast_ref::<FlexiConsole>()
-                    .unwrap();
-                backing.gl_draw(font, shader, &fc.tiles)?;
+                backing.gl_draw(font, shader)?;
             }
             ConsoleBacking::Sprite { backing } => {
-                let sc = bi.consoles[i]
-                    .console
-                    .as_any()
-                    .downcast_ref::<SpriteConsole>()
-                    .unwrap();
-                backing.gl_draw(
-                    bi.sprite_sheets[0].backing.as_ref().unwrap(),
-                    shader,
-                    &sc.sprites,
-                )?;
+                backing.gl_draw(bi.sprite_sheets[0].backing.as_ref().unwrap(), shader)?;
             }
         }
     }
