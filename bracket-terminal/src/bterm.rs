@@ -209,7 +209,12 @@ impl BTerm {
 
     /// Sets the currently active console number.
     pub fn set_active_console(&mut self, id: usize) {
-        self.active_console = id;
+        let length = BACKEND_INTERNAL.lock().consoles.len();
+        if id < length {
+            self.active_console = id;
+        } else {
+            panic!("Invalid console id: {}. Valid consoles are 0..{}", id, length);
+        }
     }
 
     /// Applies the current physical mouse position to the active console, and translates the coordinates into that console's coordinate space.
