@@ -9,7 +9,7 @@ mod initializer;
 mod input;
 pub mod rex;
 
-pub(crate) type Error = Box<dyn std::error::Error>;
+pub(crate) type Error = Box<dyn std::error::Error + Send + Sync>;
 pub(crate) type Result<T> = core::result::Result<T, Error>;
 pub(crate) use input::clear_input_state;
 pub type FontCharType = u16;
@@ -30,7 +30,7 @@ pub mod prelude {
     pub use crate::FontCharType;
     pub use bracket_color::prelude::*;
     pub use bracket_geometry::prelude::*;
-    pub type BError = std::result::Result<(), Box<dyn std::error::Error>>;
+    pub type BError = std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>;
 
     #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
     pub use glutin::event::VirtualKeyCode;
