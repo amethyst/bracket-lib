@@ -835,6 +835,12 @@ impl BTerm {
         BACKEND.lock().request_screenshot = Some(filename.to_string());
     }
 
+    /// Take a screenshot - Native only
+    #[cfg(not(all(feature = "opengl", not(target_arch = "wasm32"))))]
+    pub fn screenshot<S: ToString>(&mut self, _filename: S) {
+        // Do nothing
+    }
+
     /// Register a sprite sheet (OpenGL - native or WASM - only)
     #[cfg(feature = "opengl")]
     pub fn register_spritesheet(&mut self, ss: SpriteSheet) -> usize {

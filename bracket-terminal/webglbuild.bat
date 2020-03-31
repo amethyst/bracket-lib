@@ -19,7 +19,7 @@ CALL :StageExample virtual_console, virtual_console
 CALL :StageExample alpha, alpha
 CALL :StageExample colorfont, colorfont
 CALL :StageExample fontswitch, fontswitch
-CALL :StageExample fancy, fancy
+CALL :StageExample flexible, flexible
 CALL :StageExample sprites, sprites
 
 
