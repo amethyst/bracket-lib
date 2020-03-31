@@ -9,6 +9,7 @@ use amethyst::{
 };
 use bracket_color::prelude::RGB;
 
+#[derive(Clone)]
 pub struct Font {
     pub tile_size: (u32, u32),
     pub filename: String,
