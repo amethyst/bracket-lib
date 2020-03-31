@@ -30,7 +30,7 @@ pub mod prelude {
     pub use crate::FontCharType;
     pub use bracket_color::prelude::*;
     pub use bracket_geometry::prelude::*;
-    pub type BError = std::result::Result<(), Box<dyn std::error::Error>>;
+    pub type BError = std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>;
 
     #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
     pub use glutin::event::VirtualKeyCode;
