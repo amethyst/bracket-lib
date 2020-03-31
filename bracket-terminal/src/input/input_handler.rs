@@ -150,11 +150,13 @@ impl Input {
     /// Internal - do not use
     pub(crate) fn on_mouse_button_down(&mut self, button_num: usize) {
         self.mouse_buttons.insert(button_num);
+        self.push_event(BEvent::MouseButtonDown{button: button_num});
     }
 
     /// Internal - do not use
     pub(crate) fn on_mouse_button_up(&mut self, button_num: usize) {
         self.mouse_buttons.remove(&button_num);
+        self.push_event(BEvent::MouseButtonUp{button: button_num});
     }
 
     /// Internal - do not use

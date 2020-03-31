@@ -34,6 +34,12 @@ pub enum BEvent {
     /// A mouse button was pressed or released
     MouseClick { button: usize, pressed: bool },
 
+    /// Mouse button is down
+    MouseButtonDown { button: usize },
+
+    /// Mouse button is up
+    MouseButtonUp { button: usize },
+
     /// A key on the keyboard was pressed or released.
     KeyboardInput {
         key: VirtualKeyCode,
