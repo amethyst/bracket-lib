@@ -43,6 +43,11 @@ impl Map {
         };
 
         // Add random walls
+        for i in 0..15 {
+            tiles.tiles[10 + i * MAP_WIDTH] = '#';
+            tiles.tiles[18 + i * MAP_WIDTH] = '#';
+        }
+        /*
         let n_walls = 200;
         let mut rng = RandomNumberGenerator::new();
         for _ in 0..n_walls {
@@ -54,7 +59,7 @@ impl Map {
                 let idx = tiles.point2d_to_index(target);
                 tiles.tiles[idx] = '#';
             }
-        }
+        }*/
 
         tiles
     }
@@ -95,13 +100,13 @@ impl BaseMap for Map {
         if let Some(idx) = self.valid_exit(location, Point::new(-1, -1)) {
             exits.push((idx, 1.4))
         }
+        if let Some(idx) = self.valid_exit(location, Point::new(-1, 1)) {
+            exits.push((idx, 1.4))
+        }
         if let Some(idx) = self.valid_exit(location, Point::new(1, -1)) {
             exits.push((idx, 1.4))
         }
-        if let Some(idx) = self.valid_exit(location, Point::new(-1, 1)) {
-            exits.push((idx, 1.4))
-        }
-        if let Some(idx) = self.valid_exit(location, Point::new(-1, 1)) {
+        if let Some(idx) = self.valid_exit(location, Point::new(1, 1)) {
             exits.push((idx, 1.4))
         }
 
@@ -109,7 +114,7 @@ impl BaseMap for Map {
     }
 
     fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
-        DistanceAlg::PythagorasSquared
+        DistanceAlg::Pythagoras
             .distance2d(self.index_to_point2d(idx1), self.index_to_point2d(idx2))
     }
 }

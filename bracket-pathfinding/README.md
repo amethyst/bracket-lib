@@ -61,7 +61,7 @@ A-Star also need to know a distance to the objective for a given tile. If you do
 ```rust
 impl BaseMap for Map {
     fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
-        DistanceAlg::PythagorasSquared.distance2d(
+        DistanceAlg::Pythagoras.distance2d(
             self.index_to_point2d(idx1),
             self.index_to_point2d(idx2)
         )
