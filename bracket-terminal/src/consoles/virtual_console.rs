@@ -382,6 +382,10 @@ impl Console for VirtualConsole {
         panic!("Unsupported on virtual consoles.");
     }
 
+    fn get_scale(&self) -> (f32, i32, i32) {
+        (1.0, 0, 0)
+    }
+
     fn as_any(&self) -> &dyn Any {
         self
     }

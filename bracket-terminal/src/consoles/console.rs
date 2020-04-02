@@ -135,9 +135,14 @@ pub trait Console {
     /// drawing walls between tiles.
     fn set_offset(&mut self, x: f32, y: f32);
 
-    /// Specify a scale of the scale. A scale above 1.0 will make the text larger.
+    /// Specify a scale and center of the console.
+    /// A scale above 1.0 will make the text larger.
     /// The center of the scale is at character position (center_x, center_y).
     fn set_scale(&mut self, scale: f32, center_x: i32, center_y: i32);
+
+    /// Get the scale & center of the console.
+    /// Returns (scale, center_x, center_y).
+    fn get_scale(&self) -> (f32, i32, i32);
 
     /// Produces the implementor as an Any that can be matched to determine type and access
     /// natively.

@@ -227,7 +227,9 @@ impl BTerm {
     #[cfg(not(feature = "curses"))]
     pub fn mouse_pos(&self) -> (i32, i32) {
         let bi = BACKEND_INTERNAL.lock();
-        let max_sizes = bi.consoles[self.active_console].console.get_char_size();
+
+        let active_console = &bi.consoles[self.active_console].console;
+        let max_sizes = active_console.get_char_size();
 
         (
             iclamp(
@@ -747,6 +749,13 @@ impl BTerm {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
             .set_scale(scale, center_x, center_y);
+    }
+
+    /// Gets the active scale for the current layer
+    pub fn get_scale(&self) -> (f32, i32, i32) {
+        BACKEND_INTERNAL.lock().consoles[self.active_console]
+            .console
+            .get_scale()
     }
 
     /// Permits the creation of an arbitrary clipping rectangle. It's a really good idea
