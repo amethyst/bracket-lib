@@ -15,5 +15,5 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bracket-geometry = { path = "../bracket-geometry" }
+bracket-geometry = "0.8.0"
 smallvec = "1.2.0"
