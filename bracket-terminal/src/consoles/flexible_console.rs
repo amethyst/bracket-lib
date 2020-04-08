@@ -385,6 +385,10 @@ impl Console for FlexiConsole {
         self.scale_center = (center_x, center_y);
     }
 
+    fn get_scale(&self) -> (f32, i32, i32) {
+        (self.scale, self.scale_center.0, self.scale_center.1)
+    }
+
     fn as_any(&self) -> &dyn Any {
         self
     }

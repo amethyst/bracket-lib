@@ -223,20 +223,34 @@ impl BTerm {
         (self.mouse_pos.0, self.mouse_pos.1)
     }
 
-    /// Applies the current physical mouse position to the active console, and translates the coordinates into that console's coordinate space.
-    #[cfg(not(feature = "curses"))]
-    pub fn mouse_pos(&self) -> (i32, i32) {
-        let bi = BACKEND_INTERNAL.lock();
-        let max_sizes = bi.consoles[self.active_console].console.get_char_size();
+    ///
+    #[cfg(feature = "curses")]
+    fn pixel_to_char_pos(&self, pos: (i32, i32), _console: &Box<dyn Console>) -> (i32, i32) {
+        pos
+    }
 
+    #[cfg(not(feature = "curses"))]
+    fn pixel_to_char_pos(&self, pos: (i32, i32), console: &Box<dyn Console>) -> (i32, i32) {
+        let max_sizes = console.get_char_size();
+        let (scale, center_x, center_y) = console.get_scale();
+        let font_size = (
+            self.width_pixels as f32 / max_sizes.0 as f32,
+            self.height_pixels as f32 / max_sizes.1 as f32,
+        );
+        let offsets = (
+            center_x as f32 * font_size.0 * (scale - 1.0),
+            center_y as f32 * font_size.1 * (scale - 1.0),
+        );
         (
             iclamp(
-                self.mouse_pos.0 * max_sizes.0 as i32 / i32::max(1, self.width_pixels as i32),
+                ((pos.0 as f32 + offsets.0) * max_sizes.0 as f32
+                    / f32::max(1.0, scale * self.width_pixels as f32)) as i32,
                 0,
                 max_sizes.0 as i32 - 1,
             ),
             iclamp(
-                self.mouse_pos.1 * max_sizes.1 as i32 / i32::max(1, self.height_pixels as i32),
+                ((pos.1 as f32 + offsets.1) * max_sizes.1 as f32
+                    / f32::max(1.0, scale * self.height_pixels as f32)) as i32,
                 0,
                 max_sizes.1 as i32 - 1,
             ),
@@ -244,21 +258,21 @@ impl BTerm {
     }
 
     /// Applies the current physical mouse position to the active console, and translates the coordinates into that console's coordinate space.
+    #[cfg(not(feature = "curses"))]
+    pub fn mouse_pos(&self) -> (i32, i32) {
+        let bi = BACKEND_INTERNAL.lock();
+        let active_console = &bi.consoles[self.active_console].console;
+
+        self.pixel_to_char_pos(self.mouse_pos, active_console)
+    }
+
+    /// Applies the current physical mouse position to the active console, and translates the coordinates into that console's coordinate space.
     pub fn mouse_point(&self) -> Point {
         let bi = BACKEND_INTERNAL.lock();
-        let max_sizes = bi.consoles[self.active_console].console.get_char_size();
-        Point::new(
-            iclamp(
-                self.mouse_pos.0 * max_sizes.0 as i32 / self.width_pixels.max(1) as i32,
-                0,
-                max_sizes.0 as i32 - 1,
-            ),
-            iclamp(
-                self.mouse_pos.1 * max_sizes.1 as i32 / self.height_pixels.max(1) as i32,
-                0,
-                max_sizes.1 as i32 - 1,
-            ),
-        )
+        let active_console = &bi.consoles[self.active_console].console;
+        let char_pos = self.pixel_to_char_pos(self.mouse_pos, active_console);
+
+        Point::new(char_pos.0, char_pos.1)
     }
 
     /// Tells the game to quit
@@ -341,21 +355,9 @@ impl BTerm {
         input.on_mouse_pixel_position(x, y);
         // TODO: Console cascade!
         for (i, cons) in bi.consoles.iter().enumerate() {
-            let max_sizes = cons.console.get_char_size();
+            let char_pos = self.pixel_to_char_pos(self.mouse_pos, &cons.console);
 
-            input.on_mouse_tile_position(
-                i,
-                iclamp(
-                    self.mouse_pos.0 * max_sizes.0 as i32 / i32::max(1, self.width_pixels as i32),
-                    0,
-                    max_sizes.0 as i32 - 1,
-                ),
-                iclamp(
-                    self.mouse_pos.1 * max_sizes.1 as i32 / i32::max(1, self.height_pixels as i32),
-                    0,
-                    max_sizes.1 as i32 - 1,
-                ),
-            );
+            input.on_mouse_tile_position(i, char_pos.0, char_pos.1);
         }
     }
 
@@ -747,6 +749,13 @@ impl BTerm {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
             .set_scale(scale, center_x, center_y);
+    }
+
+    /// Gets the active scale for the current layer
+    pub fn get_scale(&self) -> (f32, i32, i32) {
+        BACKEND_INTERNAL.lock().consoles[self.active_console]
+            .console
+            .get_scale()
     }
 
     /// Permits the creation of an arbitrary clipping rectangle. It's a really good idea

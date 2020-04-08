@@ -226,6 +226,10 @@ impl Console for SpriteConsole {
 
     fn set_scale(&mut self, _scale: f32, _center_x: i32, _center_y: i32) {}
 
+    fn get_scale(&self) -> (f32, i32, i32) {
+        (1.0, 0, 0)
+    }
+
     fn as_any(&self) -> &dyn Any {
         self
     }
