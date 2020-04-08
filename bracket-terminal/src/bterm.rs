@@ -54,7 +54,7 @@ unsafe impl Send for BTermInternal {}
 unsafe impl Sync for BTermInternal {}
 
 lazy_static! {
-    pub(crate) static ref BACKEND_INTERNAL: Mutex<BTermInternal> = Mutex::new(BTermInternal::new());
+    pub static ref BACKEND_INTERNAL: Mutex<BTermInternal> = Mutex::new(BTermInternal::new());
 }
 
 /// A BTerm context.
