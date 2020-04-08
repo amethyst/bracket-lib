@@ -63,7 +63,7 @@ pub fn initialize_fonts(world: &mut World) -> Result<()> {
 
             // This sets black pixels to be transparent
             const MIN_VAL: u8 = 10;
-            let mut raw_pixels = png.raw_pixels().clone();
+            let mut raw_pixels = png.to_bytes().clone();
             for i in 0..raw_pixels.len() / 4 {
                 if raw_pixels[(i * 4)] < MIN_VAL
                     && raw_pixels[(i * 4) + 1] < MIN_VAL
