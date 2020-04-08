@@ -6,7 +6,7 @@ use crate::{clear_input_state, Result};
 use bracket_geometry::prelude::Point;
 use glow::HasContext;
 use glutin::{
-    event::DeviceEvent, event::Event, event::MouseButton, event::WindowEvent,
+    event::Event, event::MouseButton, event::WindowEvent,
     event_loop::ControlFlow,
 };
 use std::time::Instant;
@@ -128,15 +128,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                 );
                 wc.swap_buffers().unwrap();
                 crate::hal::fps_sleep(BACKEND.lock().frame_sleep_time, &now, prev_ms);
-            }
-            Event::DeviceEvent {
-                event: DeviceEvent::ModifiersChanged(modifiers),
-                ..
-            } => {
-                bterm.shift = modifiers.shift();
-                bterm.alt = modifiers.alt();
-                bterm.control = modifiers.ctrl();
-            }
+            }            
             Event::LoopDestroyed => (),
             Event::WindowEvent { ref event, .. } => match event {
                 WindowEvent::Moved(physical_position) => {
@@ -202,6 +194,12 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     *scancode,
                     *state == glutin::event::ElementState::Pressed,
                 ),
+
+                WindowEvent::ModifiersChanged(modifiers) => {
+                    bterm.shift = modifiers.shift();
+                    bterm.alt = modifiers.alt();
+                    bterm.control = modifiers.ctrl();
+                }
                 _ => (),
             },
             _ => (),
