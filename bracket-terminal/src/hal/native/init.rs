@@ -11,6 +11,9 @@ pub fn init_raw<S: ToString>(
     window_title: S,
     platform_hints: InitHints,
 ) -> Result<BTerm> {
+    // Force Wayland to use X11, which actually works.
+    std::env::set_var("WINIT_UNIX_BACKEND", "x11");
+
     let el = EventLoop::new();
     let wb = WindowBuilder::new()
         .with_title(window_title.to_string())
