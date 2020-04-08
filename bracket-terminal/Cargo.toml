@@ -16,8 +16,8 @@ exclude = [
 ]
 
 [dependencies]
-bracket-color = { path = "../bracket-color", features = [ "rex", "palette" ] }
-bracket-geometry = { path = "../bracket-geometry" }
+bracket-color = { version = "0.8.0", features = [ "rex", "palette" ] }
+bracket-geometry = { version = "0.8.0" }
 flate2 = "1.0.14"
 lazy_static = "1.4.0"
 object-pool = "0.4"
@@ -42,9 +42,9 @@ amethyst_engine_vulkan = [ "amethyst/vulkan", "image" ]
 amethyst_engine_metal = [ "amethyst/metal", "image" ]
 
 [dev-dependencies]
-bracket-random = { path = "../bracket-random" }
-bracket-pathfinding = { path = "../bracket-pathfinding" }
-bracket-noise = { path = "../bracket-noise" }
+bracket-random = { version = "0.8.0" }
+bracket-pathfinding = { version = "0.8.0" }
+bracket-noise = { version = "0.8.0" }
 criterion = "0.3.1"
 
 [target.wasm32-unknown-unknown.dependencies]
