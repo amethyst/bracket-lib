@@ -18,5 +18,5 @@ license = "MIT"
 bracket-random = { path = "../bracket-random" }
 
 [dev-dependencies]
-crossterm = "0.16.0"
+crossterm = "0.17.2"
 bracket-color = { path = "../bracket-color", features = [ "rex", "palette" ] }
