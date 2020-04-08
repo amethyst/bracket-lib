@@ -13,6 +13,7 @@ enum TileType {
 // We're extending State to include a minimal map and player coordinates.
 struct State {
     map: Vec<TileType>,
+    visited: Vec<bool>,
     player_position: usize,
 }
 
@@ -36,6 +37,7 @@ impl State {
         let mut state = State {
             map: vec![TileType::Floor; 80 * 50],
             player_position: xy_idx(40, 25),
+            visited: vec![false; 80 * 50]
         };
 
         // Make the boundaries walls
@@ -76,6 +78,7 @@ impl State {
         let new_idx = xy_idx(new_position.0, new_position.1);
         if self.map[new_idx] == TileType::Floor {
             self.player_position = new_idx;
+            self.visited[new_idx] = true;
         }
     }
 }
@@ -89,6 +92,7 @@ impl GameState for State {
             Some(key) => {
                 // A key is pressed or held
                 match key {
+
                     // We're matching a key code from GLFW (the GL library underlying BTerm),
                     // and applying movement via the move_player function.
 
@@ -121,7 +125,7 @@ impl GameState for State {
         // Iterate the map array, incrementing coordinates as we go.
         let mut y = 0;
         let mut x = 0;
-        for tile in &self.map {
+        for (idx,tile) in self.map.iter().enumerate() {
             // Render a tile depending upon the tile type
             match tile {
                 TileType::Floor => {
@@ -142,6 +146,9 @@ impl GameState for State {
                         "#",
                     );
                 }
+            }
+            if self.visited[idx] {
+                ctx.set_bg(idx as i32 % 80, idx as i32 / 80, RGB::named(NAVY));
             }
 
             // Move the coordinates

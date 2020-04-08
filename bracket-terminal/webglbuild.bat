@@ -1,26 +1,30 @@
 @ECHO OFF
+cargo build --all --target wasm32-unknown-unknown --release --features=opengl --all
+
 REM Build the actual WASM files and helpers
+CALL :StageExample alpha, alpha
+CALL :StageExample astar_mouse, astar_mouse
+CALL :StageExample benchmark, benchmark
+CALL :StageExample colorfont, colorfont
+CALL :StageExample dwarfmap, dwarfmap
+CALL :StageExample flexible, flexible
+CALL :StageExample fontswitch, fontswitch
 CALL :StageExample hello_minimal, hello_minimal
 CALL :StageExample hello_terminal, hello_terminal
-CALL :StageExample astar_mouse, astar_mouse
-CALL :StageExample dwarfmap, dwarfmap
+CALL :StageExample input_harness, input_harness
+CALL :StageExample keyboard, keyboard
+CALL :StageExample native_gl, native_gl
+CALL :StageExample no_cls, no_cls
 CALL :StageExample postprocess, postprocess
 CALL :StageExample rex, rex
 CALL :StageExample sparse, sparse
+CALL :StageExample sprites, sprites
 CALL :StageExample textblock, textblock
 CALL :StageExample textsprites, textsprites
 CALL :StageExample tiles, tiles
-CALL :StageExample walking, walking
-CALL :StageExample no_cls, no_cls
-CALL :StageExample native_gl, native_gl
-CALL :StageExample keyboard, keyboard
-CALL :StageExample input_harness, input_harness
+CALL :StageExample unicode, unicode
 CALL :StageExample virtual_console, virtual_console
-CALL :StageExample alpha, alpha
-CALL :StageExample colorfont, colorfont
-CALL :StageExample fontswitch, fontswitch
-CALL :StageExample flexible, flexible
-CALL :StageExample sprites, sprites
+CALL :StageExample walking, walking
 
 
 REM Submit to server
