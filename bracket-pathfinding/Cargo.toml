@@ -25,8 +25,8 @@ smallvec = "1.2.0"
 
 [dev-dependencies]
 crossterm = "0.17.2"
-bracket-random = {path = "../bracket-random" }
-bracket-color = { path = "../bracket-color", features = [ "rex", "palette" ] }
+bracket-random = "0.8.0"
+bracket-color = { version = "0.8.0", features = [ "rex", "palette" ] }
 criterion = "0.3.1"
 
 [[bench]]
