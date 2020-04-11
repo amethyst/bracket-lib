@@ -742,7 +742,7 @@ impl BTerm {
     pub fn fill_region<COLOR, COLOR2, GLYPH>(
         &mut self,
         target: Rect,
-        glyph: FontCharType,
+        glyph: GLYPH,
         fg: COLOR,
         bg: COLOR2,
     ) where
