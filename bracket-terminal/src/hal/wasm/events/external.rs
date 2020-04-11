@@ -36,6 +36,6 @@ pub fn on_external_element_click(event: web_sys::Event) {
                 .unwrap()
                 .id(),
         );
-        crate::console::log(format!("{}", GLOBAL_BUTTON.clone().unwrap()));
+        //crate::console::log(format!("{}", GLOBAL_BUTTON.clone().unwrap()));
     }
 }

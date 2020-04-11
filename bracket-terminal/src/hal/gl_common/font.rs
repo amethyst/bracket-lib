@@ -64,7 +64,6 @@ impl Font {
 
     /// Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
     pub fn setup_gl_texture(&mut self, gl: &glow::Context) -> Result<TextureId> {
-        log(&format!("GL initialized: {}", self.bitmap_file));
         let texture;
 
         unsafe {
