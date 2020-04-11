@@ -8,6 +8,7 @@ use bracket_color::prelude::{ColorPair, RGBA};
 use bracket_geometry::prelude::{Point, PointF, Radians, Rect};
 use object_pool::{Pool, Reusable};
 use parking_lot::Mutex;
+use std::convert::TryInto;
 use std::sync::Arc;
 
 lazy_static! {
@@ -196,29 +197,41 @@ impl DrawBatch {
     }
 
     /// Sets an individual cell glyph
-    pub fn set(&mut self, pos: Point, color: ColorPair, glyph: FontCharType) -> &mut Self {
-        self.batch.push((0, DrawCommand::Set { pos, color, glyph }));
+    pub fn set<G: TryInto<FontCharType>>(
+        &mut self,
+        pos: Point,
+        color: ColorPair,
+        glyph: G,
+    ) -> &mut Self {
+        self.batch.push((
+            0,
+            DrawCommand::Set {
+                pos,
+                color,
+                glyph: glyph.try_into().ok().expect("Must be u16 convertible"),
+            },
+        ));
         self
     }
 
     /// Pushes a fancy terminal character
-    pub fn set_fancy<ANGLE: Into<Radians>>(
+    pub fn set_fancy<ANGLE: Into<Radians>, Z: TryInto<i32>, G: TryInto<FontCharType>>(
         &mut self,
         position: PointF,
-        z_order: i32,
+        z_order: Z,
         rotation: ANGLE,
         scale: PointF,
         color: ColorPair,
-        glyph: FontCharType,
+        glyph: G,
     ) -> &mut Self {
         self.batch.push((
             0,
             DrawCommand::SetFancy {
                 position,
-                z_order,
+                z_order: z_order.try_into().ok().expect("Must be i32 convertible"),
                 rotation: rotation.into(),
                 color,
-                glyph,
+                glyph: glyph.try_into().ok().expect("Must be u16 convertible"),
                 scale,
             },
         ));
@@ -282,27 +295,27 @@ impl DrawBatch {
     }
 
     /// Prints text, centered to the whole console width, at vertical location y.
-    pub fn print_centered<S: ToString>(&mut self, y: i32, text: S) -> &mut Self {
+    pub fn print_centered<S: ToString, Y: TryInto<i32>>(&mut self, y: Y, text: S) -> &mut Self {
         self.batch.push((
             0,
             DrawCommand::PrintCentered {
-                y,
+                y: y.try_into().ok().expect("Must be i32 convertible"),
                 text: text.to_string(),
             },
         ));
         self
     }
     /// Prints text, centered to the whole console width, at vertical location y.
-    pub fn print_color_centered<S: ToString>(
+    pub fn print_color_centered<S: ToString, Y: TryInto<i32>>(
         &mut self,
-        y: i32,
+        y: Y,
         text: S,
         color: ColorPair,
     ) -> &mut Self {
         self.batch.push((
             0,
             DrawCommand::PrintColorCentered {
-                y,
+                y: y.try_into().ok().expect("Must be i32 convertible"),
                 text: text.to_string(),
                 color,
             },
@@ -395,28 +408,44 @@ impl DrawBatch {
     }
 
     /// Fills a region with a glyph/color combination.
-    pub fn fill_region(&mut self, pos: Rect, color: ColorPair, glyph: FontCharType) -> &mut Self {
-        self.batch
-            .push((0, DrawCommand::FillRegion { pos, color, glyph }));
+    pub fn fill_region<G: TryInto<FontCharType>>(
+        &mut self,
+        pos: Rect,
+        color: ColorPair,
+        glyph: G,
+    ) -> &mut Self {
+        self.batch.push((
+            0,
+            DrawCommand::FillRegion {
+                pos,
+                color,
+                glyph: glyph.try_into().ok().expect("Must be u16 convertible"),
+            },
+        ));
         self
     }
 
     /// Draw a horizontal progress bar
-    pub fn bar_horizontal(
+    pub fn bar_horizontal<W, N, MAX>(
         &mut self,
         pos: Point,
-        width: i32,
-        n: i32,
-        max: i32,
+        width: W,
+        n: N,
+        max: MAX,
         color: ColorPair,
-    ) -> &mut Self {
+    ) -> &mut Self
+    where
+        W: TryInto<i32>,
+        N: TryInto<i32>,
+        MAX: TryInto<i32>,
+    {
         self.batch.push((
             0,
             DrawCommand::BarHorizontal {
                 pos,
-                width,
-                n,
-                max,
+                width: width.try_into().ok().expect("Must be i32 convertible"),
+                n: n.try_into().ok().expect("Must be i32 convertible"),
+                max: max.try_into().ok().expect("Must be i32 convertible"),
                 color,
             },
         ));
@@ -424,21 +453,26 @@ impl DrawBatch {
     }
 
     /// Draw a horizontal progress bar
-    pub fn bar_vertical(
+    pub fn bar_vertical<H, N, MAX>(
         &mut self,
         pos: Point,
-        height: i32,
-        n: i32,
-        max: i32,
+        height: H,
+        n: N,
+        max: MAX,
         color: ColorPair,
-    ) -> &mut Self {
+    ) -> &mut Self
+    where
+        H: TryInto<i32>,
+        N: TryInto<i32>,
+        MAX: TryInto<i32>,
+    {
         self.batch.push((
             0,
             DrawCommand::BarVertical {
                 pos,
-                height,
-                n,
-                max,
+                height: height.try_into().ok().expect("Must be i32 convertible"),
+                n: n.try_into().ok().expect("Must be i32 convertible"),
+                max: max.try_into().ok().expect("Must be i32 convertible"),
                 color,
             },
         ));

@@ -5,10 +5,7 @@ use crate::prelude::{BEvent, BTerm, GameState, BACKEND_INTERNAL, INPUT};
 use crate::{clear_input_state, Result};
 use bracket_geometry::prelude::Point;
 use glow::HasContext;
-use glutin::{
-    event::Event, event::MouseButton, event::WindowEvent,
-    event_loop::ControlFlow,
-};
+use glutin::{event::Event, event::MouseButton, event::WindowEvent, event_loop::ControlFlow};
 use std::time::Instant;
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
@@ -128,7 +125,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                 );
                 wc.swap_buffers().unwrap();
                 crate::hal::fps_sleep(BACKEND.lock().frame_sleep_time, &now, prev_ms);
-            }            
+            }
             Event::LoopDestroyed => (),
             Event::WindowEvent { ref event, .. } => match event {
                 WindowEvent::Moved(physical_position) => {

@@ -37,7 +37,7 @@ impl State {
         let mut state = State {
             map: vec![TileType::Floor; 80 * 50],
             player_position: xy_idx(40, 25),
-            visited: vec![false; 80 * 50]
+            visited: vec![false; 80 * 50],
         };
 
         // Make the boundaries walls
@@ -92,7 +92,6 @@ impl GameState for State {
             Some(key) => {
                 // A key is pressed or held
                 match key {
-
                     // We're matching a key code from GLFW (the GL library underlying BTerm),
                     // and applying movement via the move_player function.
 
@@ -125,7 +124,7 @@ impl GameState for State {
         // Iterate the map array, incrementing coordinates as we go.
         let mut y = 0;
         let mut x = 0;
-        for (idx,tile) in self.map.iter().enumerate() {
+        for (idx, tile) in self.map.iter().enumerate() {
             // Render a tile depending upon the tile type
             match tile {
                 TileType::Floor => {

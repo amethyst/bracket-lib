@@ -213,7 +213,10 @@ impl BTerm {
         if id < length {
             self.active_console = id;
         } else {
-            panic!("Invalid console id: {}. Valid consoles are 0..{}", id, length);
+            panic!(
+                "Invalid console id: {}. Valid consoles are 0..{}",
+                id, length
+            );
         }
     }
 
@@ -417,39 +420,71 @@ impl BTerm {
     }
 
     /// Print a string to the active console.
-    pub fn print<S: ToString>(&mut self, x: i32, y: i32, output: S) {
+    pub fn print<S, X, Y>(&mut self, x: X, y: Y, output: S)
+    where
+        S: ToString,
+        X: TryInto<i32>,
+        Y: TryInto<i32>,
+    {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .print(x, y, &output.to_string());
+            .print(
+                x.try_into().ok().expect("Must be i32 convertible"),
+                y.try_into().ok().expect("Must be i32 convertible"),
+                &output.to_string(),
+            );
     }
 
     /// Print a string to the active console, in color.
-    pub fn print_color<S: ToString, COLOR, COLOR2>(
+    pub fn print_color<S, COLOR, COLOR2, X, Y>(
         &mut self,
-        x: i32,
-        y: i32,
+        x: X,
+        y: Y,
         fg: COLOR,
         bg: COLOR2,
         output: S,
     ) where
+        S: ToString,
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
+        X: TryInto<i32>,
+        Y: TryInto<i32>,
     {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .print_color(x, y, fg.into(), bg.into(), &output.to_string());
+            .print_color(
+                x.try_into().ok().expect("Must be i32 convertible"),
+                y.try_into().ok().expect("Must be i32 convertible"),
+                fg.into(),
+                bg.into(),
+                &output.to_string(),
+            );
     }
 
     /// Set a single tile located at x/y to the specified foreground/background colors, and glyph.
-    pub fn set<COLOR, COLOR2, GLYPH>(&mut self, x: i32, y: i32, fg: COLOR, bg: COLOR2, glyph: GLYPH)
-    where
+    pub fn set<COLOR, COLOR2, GLYPH, X, Y>(
+        &mut self,
+        x: X,
+        y: Y,
+        fg: COLOR,
+        bg: COLOR2,
+        glyph: GLYPH,
+    ) where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
         GLYPH: TryInto<FontCharType>,
+        X: TryInto<i32>,
+        Y: TryInto<i32>,
     {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .set(x, y, fg.into(), bg.into(), glyph.try_into().ok().unwrap());
+            .set(
+                x.try_into().ok().expect("Must be i32 convertible"),
+                y.try_into().ok().expect("Must be i32 convertible"),
+                fg.into(),
+                bg.into(),
+                glyph.try_into().ok().expect("Must be u16 convertible"),
+            );
     }
 
     /// Set a tile with "fancy" additional attributes
@@ -480,7 +515,7 @@ impl BTerm {
                 scale,
                 fg.into(),
                 bg.into(),
-                glyph.try_into().ok().unwrap(),
+                glyph.try_into().ok().expect("Must be u16 convertible"),
             );
         }
     }
@@ -506,125 +541,201 @@ impl BTerm {
     }
 
     /// Sets the background color only of a specified tile.
-    pub fn set_bg<COLOR>(&mut self, x: i32, y: i32, bg: COLOR)
+    pub fn set_bg<COLOR, X, Y>(&mut self, x: X, y: Y, bg: COLOR)
     where
         COLOR: Into<RGBA>,
+        X: TryInto<i32>,
+        Y: TryInto<i32>,
     {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .set_bg(x, y, bg.into());
+            .set_bg(
+                x.try_into().ok().expect("Must be i32 convertible"),
+                y.try_into().ok().expect("Must be i32 convertible"),
+                bg.into(),
+            );
     }
 
     /// Draws a filled box, with single line characters.
-    pub fn draw_box<COLOR, COLOR2>(
+    pub fn draw_box<COLOR, COLOR2, X, Y, W, H>(
         &mut self,
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
+        x: X,
+        y: Y,
+        width: W,
+        height: H,
         fg: COLOR,
         bg: COLOR2,
     ) where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
+        X: TryInto<i32>,
+        Y: TryInto<i32>,
+        W: TryInto<i32>,
+        H: TryInto<i32>,
     {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .draw_box(x, y, width, height, fg.into(), bg.into());
+            .draw_box(
+                x.try_into().ok().expect("Must be i32 convertible"),
+                y.try_into().ok().expect("Must be i32 convertible"),
+                width.try_into().ok().expect("Must be i32 convertible"),
+                height.try_into().ok().expect("Must be i32 convertible"),
+                fg.into(),
+                bg.into(),
+            );
     }
 
     /// Draws a filled box, with double line characters.
-    pub fn draw_box_double<COLOR, COLOR2>(
+    pub fn draw_box_double<COLOR, COLOR2, X, Y, W, H>(
         &mut self,
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
+        x: X,
+        y: Y,
+        width: W,
+        height: H,
         fg: COLOR,
         bg: COLOR2,
     ) where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
+        X: TryInto<i32>,
+        Y: TryInto<i32>,
+        W: TryInto<i32>,
+        H: TryInto<i32>,
     {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .draw_box_double(x, y, width, height, fg.into(), bg.into());
+            .draw_box_double(
+                x.try_into().ok().expect("Must be i32 convertible"),
+                y.try_into().ok().expect("Must be i32 convertible"),
+                width.try_into().ok().expect("Must be i32 convertible"),
+                height.try_into().ok().expect("Must be i32 convertible"),
+                fg.into(),
+                bg.into(),
+            );
     }
 
     /// Draws a single-line box, without filling in the center.
-    pub fn draw_hollow_box<COLOR, COLOR2>(
+    pub fn draw_hollow_box<COLOR, COLOR2, X, Y, W, H>(
         &mut self,
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
+        x: X,
+        y: Y,
+        width: W,
+        height: H,
         fg: COLOR,
         bg: COLOR2,
     ) where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
+        X: TryInto<i32>,
+        Y: TryInto<i32>,
+        W: TryInto<i32>,
+        H: TryInto<i32>,
     {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .draw_hollow_box(x, y, width, height, fg.into(), bg.into());
+            .draw_hollow_box(
+                x.try_into().ok().expect("Must be i32 convertible"),
+                y.try_into().ok().expect("Must be i32 convertible"),
+                width.try_into().ok().expect("Must be i32 convertible"),
+                height.try_into().ok().expect("Must be i32 convertible"),
+                fg.into(),
+                bg.into(),
+            );
     }
 
     /// Draws a double-line box, without filling in the contents.
-    pub fn draw_hollow_box_double<COLOR, COLOR2>(
+    pub fn draw_hollow_box_double<COLOR, COLOR2, X, Y, W, H>(
         &mut self,
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
+        x: X,
+        y: Y,
+        width: W,
+        height: H,
         fg: COLOR,
         bg: COLOR2,
     ) where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
+        X: TryInto<i32>,
+        Y: TryInto<i32>,
+        W: TryInto<i32>,
+        H: TryInto<i32>,
     {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .draw_hollow_box_double(x, y, width, height, fg.into(), bg.into());
+            .draw_hollow_box_double(
+                x.try_into().ok().expect("Must be i32 convertible"),
+                y.try_into().ok().expect("Must be i32 convertible"),
+                width.try_into().ok().expect("Must be i32 convertible"),
+                height.try_into().ok().expect("Must be i32 convertible"),
+                fg.into(),
+                bg.into(),
+            );
     }
 
     /// Draws a horizontal bar, suitable for health-bars or progress bars.
     #[allow(clippy::too_many_arguments)]
-    pub fn draw_bar_horizontal<COLOR, COLOR2>(
+    pub fn draw_bar_horizontal<COLOR, COLOR2, X, Y, W, N, MAX>(
         &mut self,
-        x: i32,
-        y: i32,
-        width: i32,
-        n: i32,
-        max: i32,
+        x: X,
+        y: Y,
+        width: W,
+        n: N,
+        max: MAX,
         fg: COLOR,
         bg: COLOR2,
     ) where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
+        X: TryInto<i32>,
+        Y: TryInto<i32>,
+        W: TryInto<i32>,
+        N: TryInto<i32>,
+        MAX: TryInto<i32>,
     {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .draw_bar_horizontal(x, y, width, n, max, fg.into(), bg.into());
+            .draw_bar_horizontal(
+                x.try_into().ok().expect("Must be i32 convertible"),
+                y.try_into().ok().expect("Must be i32 convertible"),
+                width.try_into().ok().expect("Must be i32 convertible"),
+                n.try_into().ok().expect("Must be i32 convertible"),
+                max.try_into().ok().expect("Must be i32 convertible"),
+                fg.into(),
+                bg.into(),
+            );
     }
 
     /// Draws a vertical bar, suitable for health-bars or progress bars.
     #[allow(clippy::too_many_arguments)]
-    pub fn draw_bar_vertical<COLOR, COLOR2>(
+    pub fn draw_bar_vertical<COLOR, COLOR2, X, Y, H, N, MAX>(
         &mut self,
-        x: i32,
-        y: i32,
-        height: i32,
-        n: i32,
-        max: i32,
+        x: X,
+        y: Y,
+        height: H,
+        n: N,
+        max: MAX,
         fg: COLOR,
         bg: COLOR2,
     ) where
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
+        X: TryInto<i32>,
+        Y: TryInto<i32>,
+        H: TryInto<i32>,
+        N: TryInto<i32>,
+        MAX: TryInto<i32>,
     {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .draw_bar_vertical(x, y, height, n, max, fg.into(), bg.into());
+            .draw_bar_vertical(
+                x.try_into().ok().expect("Must be i32 convertible"),
+                y.try_into().ok().expect("Must be i32 convertible"),
+                height.try_into().ok().expect("Must be i32 convertible"),
+                n.try_into().ok().expect("Must be i32 convertible"),
+                max.try_into().ok().expect("Must be i32 convertible"),
+                fg.into(),
+                bg.into(),
+            );
     }
 
     /// Fills a target region with the specified color/glyph combo.
@@ -645,36 +756,63 @@ impl BTerm {
     }
 
     /// Prints centered text, centered across the whole line
-    pub fn print_centered<S: ToString>(&mut self, y: i32, text: S) {
+    pub fn print_centered<S, Y>(&mut self, y: Y, text: S)
+    where
+        S: ToString,
+        Y: TryInto<i32>,
+    {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .print_centered(y, &text.to_string());
+            .print_centered(
+                y.try_into().ok().expect("Must be i32 convertible"),
+                &text.to_string(),
+            );
     }
 
     /// Prints centered text, centered across the whole line - in color
-    pub fn print_color_centered<S, COLOR, COLOR2>(&mut self, y: i32, fg: COLOR, bg: COLOR2, text: S)
-    where
+    pub fn print_color_centered<S, COLOR, COLOR2, Y>(
+        &mut self,
+        y: Y,
+        fg: COLOR,
+        bg: COLOR2,
+        text: S,
+    ) where
         S: ToString,
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
+        Y: TryInto<i32>,
     {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .print_color_centered(y, fg.into(), bg.into(), &text.to_string());
+            .print_color_centered(
+                y.try_into().ok().expect("Must be i32 convertible"),
+                fg.into(),
+                bg.into(),
+                &text.to_string(),
+            );
     }
 
     /// Prints text, centered on an arbitrary point
-    pub fn print_centered_at<S: ToString>(&mut self, x: i32, y: i32, text: S) {
+    pub fn print_centered_at<S, X, Y>(&mut self, x: X, y: Y, text: S)
+    where
+        S: ToString,
+        X: TryInto<i32>,
+        Y: TryInto<i32>,
+    {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .print_centered_at(x, y, &text.to_string());
+            .print_centered_at(
+                x.try_into().ok().expect("Must be i32 convertible"),
+                y.try_into().ok().expect("Must be i32 convertible"),
+                &text.to_string(),
+            );
     }
 
     /// Prints colored text, centered on an arbitrary point
-    pub fn print_color_centered_at<S, COLOR, COLOR2>(
+    pub fn print_color_centered_at<S, COLOR, COLOR2, X, Y>(
         &mut self,
-        x: i32,
-        y: i32,
+        x: X,
+        y: Y,
         fg: COLOR,
         bg: COLOR2,
         text: S,
@@ -682,24 +820,41 @@ impl BTerm {
         S: ToString,
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
+        X: TryInto<i32>,
+        Y: TryInto<i32>,
     {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .print_color_centered_at(x, y, fg.into(), bg.into(), &text.to_string());
+            .print_color_centered_at(
+                x.try_into().ok().expect("Must be i32 convertible"),
+                y.try_into().ok().expect("Must be i32 convertible"),
+                fg.into(),
+                bg.into(),
+                &text.to_string(),
+            );
     }
 
     /// Prints right-aligned text
-    pub fn print_right<S: ToString>(&mut self, x: i32, y: i32, text: S) {
+    pub fn print_right<S, X, Y>(&mut self, x: X, y: Y, text: S)
+    where
+        S: ToString,
+        X: TryInto<i32>,
+        Y: TryInto<i32>,
+    {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .print_right(x, y, &text.to_string());
+            .print_right(
+                x.try_into().ok().expect("Must be i32 convertible"),
+                y.try_into().ok().expect("Must be i32 convertible"),
+                &text.to_string(),
+            );
     }
 
     /// Prints right-aligned text, in color
-    pub fn print_color_right<S, COLOR, COLOR2>(
+    pub fn print_color_right<S, COLOR, COLOR2, X, Y>(
         &mut self,
-        x: i32,
-        y: i32,
+        x: X,
+        y: Y,
         fg: COLOR,
         bg: COLOR2,
         text: S,
@@ -707,27 +862,45 @@ impl BTerm {
         S: ToString,
         COLOR: Into<RGBA>,
         COLOR2: Into<RGBA>,
+        X: TryInto<i32>,
+        Y: TryInto<i32>,
     {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .print_color_right(x, y, fg.into(), bg.into(), &text.to_string());
+            .print_color_right(
+                x.try_into().ok().expect("Must be i32 convertible"),
+                y.try_into().ok().expect("Must be i32 convertible"),
+                fg.into(),
+                bg.into(),
+                &text.to_string(),
+            );
     }
 
     /// Print a colorized string with the color encoding defined inline.
     /// For example: printer(1, 1, "#[blue]This blue text contains a #[pink]pink#[] word")
     /// You can get the same effect with a TextBlock, but this can be easier.
     /// Thanks to doryen_rs for the idea.
-    pub fn printer<S: ToString>(
+    pub fn printer<S, X, Y>(
         &mut self,
-        x: i32,
-        y: i32,
+        x: X,
+        y: Y,
         output: S,
         align: TextAlign,
         background: Option<RGBA>,
-    ) {
+    ) where
+        S: ToString,
+        X: TryInto<i32>,
+        Y: TryInto<i32>,
+    {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
             .console
-            .printer(x, y, &output.to_string(), align, background);
+            .printer(
+                x.try_into().ok().expect("Must be i32 convertible"),
+                y.try_into().ok().expect("Must be i32 convertible"),
+                &output.to_string(),
+                align,
+                background,
+            );
     }
 
     /// Exports the current layer to a REX Paint file
