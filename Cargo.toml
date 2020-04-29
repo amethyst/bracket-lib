@@ -43,3 +43,14 @@ bracket-pathfinding = { version = "~0.8.1" }
 bracket-random = { version = "~0.8.0", features = [ "parsing" ] }
 bracket-terminal = { version = "~0.8.1", default-features = false }
 
+[workspace]
+members = [
+    "bracket-algorithm-traits",
+    "bracket-color",
+    "bracket-geometry",
+    "bracket-noise",
+    "bracket-pathfinding",
+    "bracket-random",
+    "bracket-terminal",
+    "rltk"
+]
