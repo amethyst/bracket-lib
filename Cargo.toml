@@ -35,13 +35,13 @@ amethyst_engine_vulkan = [ "bracket-terminal/amethyst_engine_vulkan" ]
 amethyst_engine_metal = [ "bracket-terminal/amethyst_engine_metal" ]
 
 [dependencies]
-bracket-algorithm-traits = { version = "0.8.0" }
-bracket-color = { version = "0.8.0", features = [ "rex", "palette" ] }
+bracket-algorithm-traits = { version = "~0.8.1" }
+bracket-color = { version = "~0.8.1", features = [ "rex", "palette" ] }
 bracket-geometry = { version = "~0.8.1" }
-bracket-noise = { version = "0.8.0" }
-bracket-pathfinding = { version = "0.8.0" }
-bracket-random = { version = "0.8.0", features = [ "parsing" ] }
-bracket-terminal = { version = "0.8.0", default-features = false }
+bracket-noise = { version = "~0.8.1" }
+bracket-pathfinding = { version = "~0.8.1" }
+bracket-random = { version = "~0.8.0", features = [ "parsing" ] }
+bracket-terminal = { version = "~0.8.1", default-features = false }
 
 [workspace]
 members = [

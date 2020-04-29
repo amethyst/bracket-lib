@@ -16,8 +16,8 @@ exclude = [
 ]
 
 [dependencies]
-bracket-color = { version = "0.8.0", features = [ "rex", "palette" ] }
-bracket-geometry = { version = "0.8.0" }
+bracket-color = { version = "~0.8.1", features = [ "rex", "palette" ] }
+bracket-geometry = { version = "~0.8.1" }
 flate2 = "1.0.14"
 lazy_static = "1.4.0"
 object-pool = "0.4"
@@ -27,7 +27,7 @@ image = { version = "0.23.3", default-features = false, features = ["jpeg", "png
 crossterm = { version = "0.17.2", optional = true }
 pancurses = { version = "0.16.1", optional = true }
 amethyst = { version = "0.15.0", features = [ "tiles" ], optional = true }
-ultraviolet = "0.4.5"
+ultraviolet = "~0.4.6"
 parking_lot = { version = "0.10.0" }
 
 [target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
@@ -42,9 +42,9 @@ amethyst_engine_vulkan = [ "amethyst/vulkan", "image" ]
 amethyst_engine_metal = [ "amethyst/metal", "image" ]
 
 [dev-dependencies]
-bracket-random = { version = "0.8.0" }
-bracket-pathfinding = { version = "0.8.0" }
-bracket-noise = { version = "0.8.0" }
+bracket-random = { version = "~0.8.0" }
+bracket-pathfinding = { version = "~0.8.1" }
+bracket-noise = { version = "~0.8.1" }
 criterion = "0.3.1"
 
 [target.wasm32-unknown-unknown.dependencies]
