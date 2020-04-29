@@ -1,6 +1,6 @@
 [package]
 name = "bracket-lib"
-version = "0.8.0"
+version = "0.8.1"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = true
@@ -37,7 +37,7 @@ amethyst_engine_metal = [ "bracket-terminal/amethyst_engine_metal" ]
 [dependencies]
 bracket-algorithm-traits = { version = "0.8.0" }
 bracket-color = { version = "0.8.0", features = [ "rex", "palette" ] }
-bracket-geometry = { version = "0.8.0" }
+bracket-geometry = { version = "~0.8.1" }
 bracket-noise = { version = "0.8.0" }
 bracket-pathfinding = { version = "0.8.0" }
 bracket-random = { version = "0.8.0", features = [ "parsing" ] }
