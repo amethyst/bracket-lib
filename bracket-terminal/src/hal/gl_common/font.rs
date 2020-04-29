@@ -1,5 +1,4 @@
 use super::{gl_error, TextureId};
-use crate::console::log;
 use crate::prelude::embedding;
 use crate::Result;
 use bracket_color::prelude::RGB;
