@@ -2096,44 +2096,38 @@ impl FastNoise {
 
     #[allow(dead_code)]
     fn get_white_noise4d(&self, x: f32, y: f32, z: f32, w: f32) -> f32 {
-        unsafe {
-            let xc: i32 = std::mem::transmute_copy(&x);
-            let yc: i32 = std::mem::transmute_copy(&y);
-            let zc: i32 = std::mem::transmute_copy(&z);
-            let wc: i32 = std::mem::transmute_copy(&w);
+        let xc: i32 = x.to_bits() as i32;
+        let yc: i32 = y.to_bits() as i32;
+        let zc: i32 = z.to_bits() as i32;
+        let wc: i32 = w.to_bits() as i32;
 
-            self.val_coord_4d(
-                self.seed as i32,
-                xc ^ (xc as i32 >> 16),
-                yc ^ (yc >> 16),
-                zc ^ (zc >> 16),
-                wc ^ (wc >> 16),
-            )
-        }
+        self.val_coord_4d(
+            self.seed as i32,
+            xc ^ (xc as i32 >> 16),
+            yc ^ (yc >> 16),
+            zc ^ (zc >> 16),
+            wc ^ (wc >> 16),
+        )
     }
 
     fn get_white_noise3d(&self, x: f32, y: f32, z: f32) -> f32 {
-        unsafe {
-            let xc: i32 = std::mem::transmute_copy(&x);
-            let yc: i32 = std::mem::transmute_copy(&y);
-            let zc: i32 = std::mem::transmute_copy(&z);
+        let xc: i32 = x.to_bits() as i32;
+        let yc: i32 = y.to_bits() as i32;
+        let zc: i32 = z.to_bits() as i32;
 
-            self.val_coord_3d(
-                self.seed as i32,
-                xc ^ (xc >> 16),
-                yc ^ (yc >> 16),
-                zc ^ (zc >> 16),
-            )
-        }
+        self.val_coord_3d(
+            self.seed as i32,
+            xc ^ (xc >> 16),
+            yc ^ (yc >> 16),
+            zc ^ (zc >> 16),
+        )
     }
 
     fn get_white_noise(&self, x: f32, y: f32) -> f32 {
-        unsafe {
-            let xc: i32 = std::mem::transmute_copy(&x);
-            let yc: i32 = std::mem::transmute_copy(&y);
+        let xc: i32 = x.to_bits() as i32;
+        let yc: i32 = y.to_bits() as i32;
 
-            self.val_coord_2d(self.seed as i32, xc ^ (xc >> 16), yc ^ (yc >> 16))
-        }
+        self.val_coord_2d(self.seed as i32, xc ^ (xc >> 16), yc ^ (yc >> 16))
     }
 
     #[allow(dead_code)]
