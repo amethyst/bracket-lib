@@ -47,7 +47,7 @@ pub trait Algorithm2D: BaseMap {
     // the time, that's what you want.
     fn in_bounds(&self, pos: Point) -> bool {
         let bounds = self.dimensions();
-        pos.x > 0 && pos.x < bounds.x && pos.y > 0 && pos.y < bounds.y
+        pos.x >= 0 && pos.x < bounds.x && pos.y >= 0 && pos.y < bounds.y
     }
 }
 
@@ -79,6 +79,7 @@ mod tests {
         }
 
         let map = TestMap {};
+        assert!(map.in_bounds(Point::new(0, 0)));
         assert!(map.in_bounds(Point::new(1, 1)));
         assert!(!map.in_bounds(Point::new(3, 3)));
     }

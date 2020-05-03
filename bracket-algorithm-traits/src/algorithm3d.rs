@@ -52,11 +52,11 @@ pub trait Algorithm3D: BaseMap {
     // the time, that's what you want.
     fn in_bounds(&self, pos: Point3) -> bool {
         let bounds = self.dimensions();
-        pos.x > 0
+        pos.x >= 0
             && pos.x < bounds.x
-            && pos.y > 0
+            && pos.y >= 0
             && pos.y < bounds.y
-            && pos.z > 0
+            && pos.z >= 0
             && pos.z < bounds.z
     }
 }
@@ -89,6 +89,7 @@ mod tests {
         }
 
         let map = TestMap {};
+        assert!(map.in_bounds(Point3::new(0, 0, 0)));
         assert!(map.in_bounds(Point3::new(1, 1, 1)));
         assert!(!map.in_bounds(Point3::new(3, 3, 3)));
     }
