@@ -26,6 +26,9 @@ pub trait BaseMap {
     /// These do NOT have to be contiguous - if you want to support teleport pads, that's awesome.
     /// Default implementation is provided that proves an empty list, in case you aren't using
     /// it.
+    ///
+    /// Note that you should never return the current tile as an exit. The A* implementation
+    /// really doesn't like that.
     fn get_available_exits(&self, _idx: usize) -> SmallVec<[(usize, f32); 10]> {
         SmallVec::new()
     }

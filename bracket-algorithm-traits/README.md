@@ -50,6 +50,7 @@ impl BaseMap for MyMap {
         Vec::new()
         // Provide a list of exit indices (you can use point2d_to_index to generate them) for this
         // tile inside the array.
+        // Do NOT include the current tile as an available exit.
     }
 
     fn get_pathing_distance(&self, _idx1: usize, _idx2: usize) -> f32 {
