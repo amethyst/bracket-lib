@@ -2,13 +2,13 @@ use crate::prelude::RandomNumberGenerator;
 use core::iter::Iterator;
 use std::convert::TryInto;
 
-pub struct DiceIterator {
+pub struct DiceIterator<'a> {
     die_type: i32,
-    rng: *mut RandomNumberGenerator,
+    rng: &'a mut RandomNumberGenerator,
 }
 
-impl DiceIterator {
-    pub fn new<T>(die_type: T, rng: &mut RandomNumberGenerator) -> Self
+impl<'a> DiceIterator<'a> {
+    pub fn new<T>(die_type: T, rng: &'a mut RandomNumberGenerator) -> Self
     where
         T: TryInto<i32>,
     {
@@ -17,10 +17,10 @@ impl DiceIterator {
     }
 }
 
-impl Iterator for DiceIterator {
+impl<'a> Iterator for DiceIterator<'a> {
     type Item = i32;
 
     fn next(&mut self) -> Option<i32> {
-        unsafe { Some(self.rng.as_mut().unwrap().roll_dice(1, self.die_type)) }
+        Some(self.rng.roll_dice(1, self.die_type))
     }
 }
