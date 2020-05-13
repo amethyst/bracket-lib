@@ -110,9 +110,9 @@ mod tests {
         let visible = field_of_view(Point::new(2, 2), 8, &map);
 
         for t in visible.iter() {
-            assert!(t.x > 0);
+            assert!(t.x >= 0);
             assert!(t.x < TESTMAP_W as i32 - 1);
-            assert!(t.y > 0);
+            assert!(t.y >= 0);
             assert!(t.y < TESTMAP_H as i32 - 1);
         }
     }
