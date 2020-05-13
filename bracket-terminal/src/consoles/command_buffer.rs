@@ -17,7 +17,7 @@ lazy_static! {
 }
 
 lazy_static! {
-    static ref BUFFER_POOL: Arc<Pool<'static, DrawBatch>> =
+    static ref BUFFER_POOL: Arc<Pool<DrawBatch>> =
         Arc::new(Pool::new(128, || DrawBatch {
             batch: Vec::with_capacity(5000)
         }));
@@ -158,7 +158,7 @@ pub struct DrawBatch {
 impl DrawBatch {
     /// Obtain a new, empty draw batch
     pub fn new() -> Reusable<'static, DrawBatch> {
-        BUFFER_POOL.pull()
+        BUFFER_POOL.pull(|| { panic!("No pooling!") })
     }
 
     /// Submits a batch to the global drawing buffer, and empties the batch.

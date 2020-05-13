@@ -18,5 +18,5 @@ license = "MIT"
 bracket-random = "~0.8.0"
 
 [dev-dependencies]
-crossterm = "0.17.3"
+crossterm = "~0.17.4"
 bracket-color = { version = "~0.8.1", features = [ "rex", "palette" ] }
