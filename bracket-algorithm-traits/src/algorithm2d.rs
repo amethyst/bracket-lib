@@ -26,14 +26,14 @@ pub trait Algorithm2D: BaseMap {
         let bounds = self.dimensions();
         ((pt.y * bounds.x) + pt.x)
             .try_into()
-            .expect("Not a valid usize")
+            .expect("Not a valid usize. Did something go negative?")
     }
 
     /// Convert an array index to a point. Defaults to an index based on an array
     /// strided X first.
     fn index_to_point2d(&self, idx: usize) -> Point {
         let bounds = self.dimensions();
-        let w: usize = bounds.x.try_into().expect("Not a valid usize");
+        let w: usize = bounds.x.try_into().expect("Not a valid usize. Did something go negative?");
         Point::new(idx % w, idx / w)
     }
 

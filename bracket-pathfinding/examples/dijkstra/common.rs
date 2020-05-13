@@ -61,9 +61,13 @@ impl Map {
 
     fn valid_exit(&self, loc: Point, delta: Point) -> Option<usize> {
         let destination = loc + delta;
-        let idx = self.point2d_to_index(destination);
-        if self.in_bounds(destination) && self.tiles[idx] == '.' {
-            Some(idx)
+        if self.in_bounds(destination) {
+            let idx = self.point2d_to_index(destination);
+            if self.tiles[idx] == '.' {
+                Some(idx)
+            } else {
+                None
+            }
         } else {
             None
         }

@@ -172,7 +172,7 @@ impl AStar {
             let successors = map.get_available_exits(q.idx);
 
             for s in successors {
-                if self.add_successor(q, s.0, s.1 + q.f, map) {
+                if q.idx != s.0 && self.add_successor(q, s.0, s.1 + q.f, map) {
                     let success = self.found_it();
                     return success;
                 }
