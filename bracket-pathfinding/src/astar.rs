@@ -27,7 +27,7 @@ pub struct NavigationPath {
 }
 
 #[allow(dead_code)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 /// Node is an internal step inside the A-Star path (not exposed/public). Idx is the current cell,
 /// f is the total cost, g the neighbor cost, and h the heuristic cost.
 /// See: https://en.wikipedia.org/wiki/A*_search_algorithm
