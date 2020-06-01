@@ -183,4 +183,38 @@ mod tests {
 
         assert_eq!(res, [Point::new(2, 3), Point::new(2, 4), Point::new(2, 5)]);
     }
+
+    #[test]
+    fn test_issue135_line() {
+        let line = Bresenham::new(Point::new(0, 6), Point::new(6,0));
+        let res: Vec<Point> = line.collect();
+        assert!(res.len() == 6);
+        res.iter().for_each(|p| {
+            assert!(p.x >= 0);
+            assert!(p.x < 7);
+            assert!(p.y >= 0);
+            assert!(p.y < 7);
+        });
+    }
+
+    #[test]
+    fn test_line_sweep() {
+        use crate::prelude::*;
+        let mut angle = Degrees::new(0.0);
+        let start_point = Point::new(20,20);
+        while angle.0 < 360.0 {
+            let end_point = project_angle(Point::new(0,0), 8.0, angle) + start_point;
+            let line = Bresenham::new(start_point, end_point);
+            let res : Vec<Point> = line.collect();
+            assert!(res.len() > 0);
+            res.iter().for_each(|p| {
+                assert!(p.x >= 10);
+                assert!(p.x < 30);
+                assert!(p.y >= 10);
+                assert!(p.y < 30);
+            });
+            angle.0 += 1.0;
+        }
+
+    }
 }

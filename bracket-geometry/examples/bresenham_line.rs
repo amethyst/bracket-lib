@@ -5,9 +5,13 @@ use std::io::{stdout, Write};
 
 fn main() {
     let mut fake_console: Vec<char> = vec!['.'; 100];
-    for point in Bresenham::new(Point::new(1, 1), Point::new(7, 9)) {
+
+    let line : Vec<Point> =  Bresenham::new(Point::new(0, 6), Point::new(6, 0)).collect();
+
+    for (i,point) in line.iter().enumerate() {
         let idx = ((point.y * 10) + point.x) as usize;
-        fake_console[idx] = '*';
+        let character = 48 + i as u8;
+        fake_console[idx] = character as char;
     }
 
     for y in 0..10 {
@@ -20,4 +24,6 @@ fn main() {
         queue!(stdout(), Print(&line)).expect("Command fail");
     }
     stdout().flush().expect("Flush Fail");
+
+    line.iter().for_each(|p| println!("{:?}", p));
 }
