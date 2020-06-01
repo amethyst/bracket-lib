@@ -46,6 +46,7 @@ pub fn init_raw<S: ToString>(
         quitting: false,
         post_scanlines: false,
         post_screenburn: false,
+        screen_burn_color: bracket_color::prelude::RGB::from_f32(0.0, 1.0, 1.0)
     };
     Ok(bterm)
 }

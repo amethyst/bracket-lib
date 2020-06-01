@@ -144,6 +144,7 @@ fn tock<GS: GameState>(
                     0.0,
                 );
                 bi.shaders[3].setBool(be.gl.as_ref().unwrap(), "screenBurn", bterm.post_screenburn);
+                bi.shaders[3].setVec3(be.gl.as_ref().unwrap(), "screenBurnColor", bterm.screen_burn_color.r, bterm.screen_burn_color.g, bterm.screen_burn_color.b);
             } else {
                 bi.shaders[2].useProgram(be.gl.as_ref().unwrap());
             }

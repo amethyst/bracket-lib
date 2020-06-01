@@ -1,5 +1,6 @@
 bracket_terminal::add_wasm_support!();
 use bracket_terminal::prelude::*;
+use bracket_random::prelude::*;
 
 struct State {
     nyan: XpFile,
@@ -30,6 +31,13 @@ impl GameState for State {
             RGB::named(BLACK),
             "Press B to toggle burn.",
         );
+        ctx.print_color(
+            0,
+            3,
+            RGB::named(WHITE),
+            RGB::named(BLACK),
+            "Press C to change burn color.",
+        );
         ctx.render_xp_sprite(&self.nyan, 2, 4);
 
         match ctx.key {
@@ -39,6 +47,18 @@ impl GameState for State {
                 if let VirtualKeyCode::B = key {
                     self.burn = !self.burn;
                     ctx.with_post_scanlines(self.burn);
+                }
+                if let VirtualKeyCode::C = key {
+                    let mut rng = RandomNumberGenerator::new();
+                    let n = rng.range(0, 6);
+                    match n {
+                    0 => ctx.screen_burn_color(RGB::named(RED)),
+                    1 => ctx.screen_burn_color(RGB::named(YELLOW)),
+                    2 => ctx.screen_burn_color(RGB::named(GREEN)),
+                    3 => ctx.screen_burn_color(RGB::named(BLUE)),
+                    4 => ctx.screen_burn_color(RGB::named(MAGENTA)),
+                    _ => ctx.screen_burn_color(RGB::named(CYAN)),
+                    }
                 }
             }
         }

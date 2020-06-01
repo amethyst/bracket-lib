@@ -112,6 +112,7 @@ in vec2 TexCoords;
 uniform sampler2D screenTexture;
 uniform vec3 screenSize;
 uniform bool screenBurn;
+uniform vec3 screenBurnColor;
 
 void main()
 {
@@ -122,7 +123,7 @@ void main()
     if (col.r < 0.1f && col.g < 0.1f && col.b < 0.1f) {
         if (screenBurn) {
             float dist = (1.0 - distance(vec2(gl_FragCoord.x / screenSize.x, gl_FragCoord.y / screenSize.y), vec2(0.5,0.5))) * 0.2;
-            FragColor = vec4(0.0, dist, dist, 1.0);
+            FragColor = vec4(dist * screenBurnColor.r, dist * screenBurnColor.g, dist * screenBurnColor.b, 1.0);
         } else {
             FragColor = vec4(0.0, 0.0, 0.0, 1.0);
         }

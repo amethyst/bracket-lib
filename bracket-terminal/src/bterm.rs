@@ -77,6 +77,7 @@ pub struct BTerm {
     pub quitting: bool,
     pub post_scanlines: bool,
     pub post_screenburn: bool,
+    pub screen_burn_color: bracket_color::prelude::RGB
 }
 
 impl BTerm {
@@ -314,6 +315,11 @@ impl BTerm {
     pub fn with_post_scanlines(&mut self, with_burn: bool) {
         self.post_scanlines = true;
         self.post_screenburn = with_burn;
+    }
+
+    // Change the screen-burn color
+    pub fn screen_burn_color(&mut self, color: bracket_color::prelude::RGB) {
+        self.screen_burn_color = color;
     }
 
     /// Internal: mark a key press
