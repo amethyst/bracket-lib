@@ -432,4 +432,7 @@ impl Console for VirtualConsole {
     fn set_char_size(&mut self, _width: u32, _height: u32) {
         panic!("Not implemented.");
     }
+
+    // Clears the dirty bit
+    fn clear_dirty(&mut self) { }
 }

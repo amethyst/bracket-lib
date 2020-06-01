@@ -133,6 +133,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
             let cons_any = cons.console.as_any();
             if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
                 if st.is_dirty {
+                    st.clear_dirty();
                     let mut idx = 0;
                     let mut last_bg = RGBA::new();
                     let mut last_fg = RGBA::new();
@@ -179,6 +180,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                 }
             } else if let Some(st) = cons_any.downcast_ref::<SparseConsole>() {
                 if st.is_dirty {
+                    st.clear_dirty();
                     for t in st.tiles.iter() {
                         let x = t.idx as u32 % st.width;
                         let y = t.idx as u32 / st.width;

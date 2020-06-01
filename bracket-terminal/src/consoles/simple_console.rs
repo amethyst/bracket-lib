@@ -407,4 +407,7 @@ impl Console for SimpleConsole {
         self.height = height;
         self.needs_resize_internal = true;
     }
+
+    // Clears the dirty bit
+    fn clear_dirty(&mut self) { self.is_dirty = false; }
 }
