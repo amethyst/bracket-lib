@@ -3,6 +3,11 @@ use crate::prelude::{parse_dice_string, DiceParseError, DiceType};
 use rand::{Rng, RngCore, SeedableRng};
 use rand_xorshift::XorShiftRng;
 
+#[cfg(feature = "serde")]
+use serde_crate::{Deserialize, Serialize};
+
+#[derive(Clone)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(crate="serde_crate"))]
 pub struct RandomNumberGenerator {
     rng: XorShiftRng,
 }
@@ -166,5 +171,17 @@ mod tests {
                 Some(e) => assert!(*e > 0 && *e < 11),
             }
         }
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn serialize_rng() {
+        use serde_crate::{Serialize, Deserialize};
+        let mut rng = RandomNumberGenerator::seeded(1000);
+        let serialized = serde_json::to_string(&rng).unwrap();
+        let n = rng.range(0, 100);
+        let mut deserialized: RandomNumberGenerator = serde_json::from_str(&serialized).unwrap();
+        let n2 = deserialized.range(0, 100);
+        assert!(n == n2);
     }
 }

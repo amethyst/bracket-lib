@@ -2,8 +2,11 @@ use regex::Regex;
 use std::error;
 use std::fmt;
 
+#[cfg(feature = "serde")]
+use serde_crate::{Deserialize, Serialize};
+
 // Describes a dice roll type
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize), serde(crate="serde_crate"))]
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct DiceType {
     pub n_dice: i32,
@@ -129,5 +132,15 @@ mod tests {
     #[test]
     fn fail_parsing() {
         assert!(parse_dice_string("blah").is_err());
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn serialize_parsing() {
+        use serde_crate::{Serialize, Deserialize};
+        let d = parse_dice_string("3d6 - 2").unwrap();
+        let serialized = serde_json::to_string(&d).unwrap();
+        let deserialized: DiceType = serde_json::from_str(&serialized).unwrap();
+        assert!(d == deserialized);
     }
 }
