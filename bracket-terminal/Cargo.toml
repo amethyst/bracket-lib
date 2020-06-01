@@ -85,3 +85,8 @@ required-features = [ "opengl" ]
 name = "flexible"
 path = "examples/flexible.rs"
 required-features = [ "opengl" ]
+
+[[example]]
+name = "sprites"
+path = "examples/sprites.rs"
+required-features = [ "opengl" ]

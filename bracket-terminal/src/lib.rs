@@ -15,6 +15,9 @@ pub(crate) use input::clear_input_state;
 pub type FontCharType = u16;
 pub use consoles::console;
 
+#[cfg(all(feature = "opengl", any(feature = "crossterm", any(feature = "curses", any(feature = "amethyst_engine_vulkan", feature = "amethyst_engine_metal")))))]
+compile_error!("Default features (opengl) must be disabled for other back-ends");
+
 pub mod prelude {
 
     pub use crate::bterm::*;
