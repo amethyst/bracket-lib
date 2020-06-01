@@ -59,10 +59,6 @@ impl SparseConsoleBackend {
         tiles: &[SparseTile],
         font_dimensions_glyphs: (u32, u32),
     ) {
-        if tiles.is_empty() {
-            return;
-        }
-
         self.vao.vertex_buffer.clear();
         self.vao.index_buffer.clear();
 
