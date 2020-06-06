@@ -114,12 +114,6 @@ impl AStar {
         } else {
             let distance = self.distance_to_end(idx, map);
             let f = distance + cost;
-            let s = Node {
-                idx,
-                f: f,
-                g: cost,
-                h: distance,
-            };
 
             // If a node with the same position as successor is in the open list with a lower f, skip add
             let mut should_add = self
@@ -129,11 +123,17 @@ impl AStar {
                 .is_none();
 
             // If a node with the same position as successor is in the closed list, with a lower f, skip add
-            if should_add && self.closed_list.contains_key(&idx) && self.closed_list[&idx] < s.f {
+            if should_add && self.closed_list.contains_key(&idx) && self.closed_list[&idx] < f {
                 should_add = false;
             }
 
             if should_add {
+                let s = Node {
+                    idx,
+                    f: f,
+                    g: cost,
+                    h: distance,
+                };
                 self.open_list.push(s);
                 self.parents.insert(idx, q.idx);
             }
