@@ -60,11 +60,11 @@ impl PartialOrd for Node {
 
 impl NavigationPath {
     /// Makes a new (empty) NavigationPath
-    pub fn new() -> NavigationPath {
+    pub fn new(capacity: usize) -> NavigationPath {
         NavigationPath {
             destination: 0,
             success: false,
-            steps: Vec::new(),
+            steps: Vec::with_capacity(capacity),
         }
     }
 }
@@ -148,7 +148,7 @@ impl AStar {
 
     /// Helper function to unwrap a path once we've found the end-point.
     fn found_it(&self) -> NavigationPath {
-        let mut result = NavigationPath::new();
+        let mut result = NavigationPath::new(self.parents.len());
         result.success = true;
         result.destination = self.end;
 
@@ -187,6 +187,6 @@ impl AStar {
             self.closed_list.insert(q.idx, q.f);
         }
 
-        NavigationPath::new()
+        NavigationPath::new(0)
     }
 }
