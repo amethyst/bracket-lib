@@ -156,9 +156,10 @@ impl AStar {
         let mut current = self.end;
         while current != self.start {
             let parent = self.parents[&current];
-            result.steps.insert(0, parent);
+            result.steps.push(parent);
             current = parent;
         }
+        result.steps.reverse();
 
         result
     }
