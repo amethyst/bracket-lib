@@ -181,9 +181,6 @@ impl AStar {
                 }
             }
 
-            if self.closed_list.contains_key(&q.idx) {
-                self.closed_list.remove(&q.idx);
-            }
             self.closed_list.insert(q.idx, q.f);
         }
 
