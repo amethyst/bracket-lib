@@ -122,9 +122,13 @@ impl AStar {
                 .find(|e| e.f < f && e.idx == idx)
                 .is_none();
 
-            // If a node with the same position as successor is in the closed list, with a lower f, skip add
-            if should_add && self.closed_list.contains_key(&idx) && self.closed_list[&idx] < f {
-                should_add = false;
+            if should_add {
+                // If a node with the same position as successor is in the closed list, with a lower f, skip add
+                if let Some(cf) = self.closed_list.get(&idx) {
+                    if *cf < f {
+                        should_add = false;
+                    }
+                }
             }
 
             if should_add {
