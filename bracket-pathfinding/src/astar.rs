@@ -113,20 +113,20 @@ impl AStar {
             true
         } else {
             let distance = self.distance_to_end(idx, map);
+            let f = distance + cost;
             let s = Node {
                 idx,
-                f: distance + cost,
+                f: f,
                 g: cost,
                 h: distance,
             };
 
             // If a node with the same position as successor is in the open list with a lower f, skip add
-            let mut should_add = true;
-            for e in &self.open_list {
-                if e.f < s.f && e.idx == idx {
-                    should_add = false;
-                }
-            }
+            let mut should_add = self
+                .open_list
+                .iter()
+                .find(|e| e.f < f && e.idx == idx)
+                .is_none();
 
             // If a node with the same position as successor is in the closed list, with a lower f, skip add
             if should_add && self.closed_list.contains_key(&idx) && self.closed_list[&idx] < s.f {
