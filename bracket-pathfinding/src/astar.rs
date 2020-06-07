@@ -119,7 +119,7 @@ impl AStar {
             let mut should_add = self
                 .open_list
                 .iter()
-                .find(|e| e.f < f && e.idx == idx)
+                .find(|e| e.idx == idx && e.f < f )
                 .is_none();
 
             if should_add {
