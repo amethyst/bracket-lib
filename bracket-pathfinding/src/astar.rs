@@ -134,7 +134,7 @@ impl AStar {
             if should_add {
                 let s = Node {
                     idx,
-                    f: f,
+                    f,
                     g: cost,
                     h: distance,
                 };

@@ -24,8 +24,6 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 criterion_group!(benches, criterion_benchmark);
 criterion_main!(benches);
 
-use bracket_color::prelude::*;
-use bracket_pathfinding::prelude::*;
 use bracket_random::prelude::RandomNumberGenerator;
 
 pub const MAP_WIDTH: usize = 80;
