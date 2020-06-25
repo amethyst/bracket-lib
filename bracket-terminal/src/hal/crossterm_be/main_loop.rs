@@ -1,4 +1,5 @@
 use super::{virtual_key_code_to_scan, BACKEND};
+use crate::consoles::Console;
 use crate::prelude::{
     to_char, BEvent, BTerm, GameState, SimpleConsole, SparseConsole, VirtualKeyCode,
     BACKEND_INTERNAL,
@@ -130,8 +131,8 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
         // Tell each console to draw itself
         for cons in &mut bi.consoles {
-            let cons_any = cons.console.as_any();
-            if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
+            let cons_any = cons.console.as_any_mut();
+            if let Some(st) = cons_any.downcast_mut::<SimpleConsole>() {
                 if st.is_dirty {
                     st.clear_dirty();
                     let mut idx = 0;
@@ -178,7 +179,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                         }
                     }
                 }
-            } else if let Some(st) = cons_any.downcast_ref::<SparseConsole>() {
+            } else if let Some(st) = cons_any.downcast_mut::<SparseConsole>() {
                 if st.is_dirty {
                     st.clear_dirty();
                     for t in st.tiles.iter() {
