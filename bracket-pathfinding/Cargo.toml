@@ -36,3 +36,7 @@ harness = false
 [[bench]]
 name = "astar_benchmark"
 harness = false
+
+[[bench]]
+name = "jps_benchmark"
+harness = false
