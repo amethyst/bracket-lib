@@ -30,6 +30,8 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     let mut key_map: HashSet<crossterm::event::KeyCode> = HashSet::new();
     let mut keys_this_frame: HashSet<crossterm::event::KeyCode> = HashSet::new();
 
+    crossterm::terminal::enable_raw_mode().expect("Raw mode failed");
+
     'main: while !bterm.quitting {
         let now_seconds = now.elapsed().as_secs();
         frames += 1;
@@ -51,7 +53,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
         // Input handler goes here
         keys_this_frame.clear();
-        while poll(Duration::from_secs(0))? {
+        while poll(Duration::from_millis(0))? {
             match read().expect("Uh oh") {
                 Event::Mouse(event) => {
                     //println!("{:?}", event);
