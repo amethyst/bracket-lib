@@ -24,7 +24,7 @@ amethyst_engine_vulkan = [ "bracket-lib/amethyst_engine_vulkan" ]
 amethyst_engine_metal = [ "bracket-lib/amethyst_engine_metal" ]
 
 [dependencies]
-bracket-lib = { version = "~0.8.1", default-features = false }
+bracket-lib = { path = "../", version = "~0.8.1", default-features = false }
 
 [dev-dependencies]
 
