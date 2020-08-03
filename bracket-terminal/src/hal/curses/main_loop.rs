@@ -8,6 +8,7 @@ use pancurses::endwin;
 use std::collections::HashSet;
 use std::convert::TryInto;
 use std::time::Instant;
+use super::char_to_keycode;
 
 pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
     let now = Instant::now();
@@ -185,53 +186,3 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     Ok(())
 }
 
-fn char_to_keycode(c: char) -> Option<VirtualKeyCode> {
-    match c {
-        '`' => Some(VirtualKeyCode::Grave),
-        '1' => Some(VirtualKeyCode::Key1),
-        '2' => Some(VirtualKeyCode::Key2),
-        '3' => Some(VirtualKeyCode::Key3),
-        '4' => Some(VirtualKeyCode::Key4),
-        '5' => Some(VirtualKeyCode::Key5),
-        '6' => Some(VirtualKeyCode::Key6),
-        '7' => Some(VirtualKeyCode::Key7),
-        '8' => Some(VirtualKeyCode::Key8),
-        '9' => Some(VirtualKeyCode::Key9),
-        '0' => Some(VirtualKeyCode::Key0),
-        'a' => Some(VirtualKeyCode::A),
-        'b' => Some(VirtualKeyCode::B),
-        'c' => Some(VirtualKeyCode::C),
-        'd' => Some(VirtualKeyCode::D),
-        'e' => Some(VirtualKeyCode::E),
-        'f' => Some(VirtualKeyCode::F),
-        'g' => Some(VirtualKeyCode::G),
-        'h' => Some(VirtualKeyCode::H),
-        'i' => Some(VirtualKeyCode::I),
-        'j' => Some(VirtualKeyCode::J),
-        'k' => Some(VirtualKeyCode::K),
-        'l' => Some(VirtualKeyCode::L),
-        'm' => Some(VirtualKeyCode::M),
-        'n' => Some(VirtualKeyCode::N),
-        'o' => Some(VirtualKeyCode::O),
-        'p' => Some(VirtualKeyCode::P),
-        'q' => Some(VirtualKeyCode::Q),
-        'r' => Some(VirtualKeyCode::R),
-        's' => Some(VirtualKeyCode::S),
-        't' => Some(VirtualKeyCode::T),
-        'u' => Some(VirtualKeyCode::U),
-        'v' => Some(VirtualKeyCode::V),
-        'w' => Some(VirtualKeyCode::W),
-        'x' => Some(VirtualKeyCode::X),
-        'y' => Some(VirtualKeyCode::Y),
-        'z' => Some(VirtualKeyCode::Z),
-        '\t' => Some(VirtualKeyCode::Tab),
-        '\n' => Some(VirtualKeyCode::Return),
-        ',' => Some(VirtualKeyCode::Comma),
-        '.' => Some(VirtualKeyCode::Period),
-        '/' => Some(VirtualKeyCode::Slash),
-        '[' => Some(VirtualKeyCode::LBracket),
-        ']' => Some(VirtualKeyCode::RBracket),
-        '\\' => Some(VirtualKeyCode::Backslash),
-        _ => None,
-    }
-}
