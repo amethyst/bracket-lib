@@ -366,6 +366,6 @@ fn partial_redraw(buffer : &mut Vec<OutputBuffer>) {
             .expect("Command fail");
             last_bg = t.bg;
         }
-        queue!(stdout(), Print(to_char(t.glyph as u8))).expect("Command fail");
+        queue!(stdout(), Print(t.glyph)).expect("Command fail");
     });
 }
