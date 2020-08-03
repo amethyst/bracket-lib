@@ -20,6 +20,7 @@ mod color;
 pub use color::*;
 mod scancode_helper;
 pub use scancode_helper::virtual_key_code_to_scan;
+pub(crate) use scancode_helper::char_to_keycode;
 
 pub struct InitHints {
     pub vsync: bool,

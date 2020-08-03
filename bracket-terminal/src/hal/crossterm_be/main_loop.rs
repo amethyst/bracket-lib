@@ -2,8 +2,9 @@ use super::{virtual_key_code_to_scan, BACKEND};
 use crate::consoles::Console;
 use crate::prelude::{
     to_char, BEvent, BTerm, GameState, SimpleConsole, SparseConsole, VirtualKeyCode,
-    BACKEND_INTERNAL,
+    BACKEND_INTERNAL
 };
+use super::keycode_to_key;
 use crate::{clear_input_state, Result};
 use bracket_color::prelude::*;
 use crossterm::event::{poll, read, Event};
@@ -29,6 +30,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
     let mut key_map: HashSet<crossterm::event::KeyCode> = HashSet::new();
     let mut keys_this_frame: HashSet<crossterm::event::KeyCode> = HashSet::new();
+    let mut output_buffer : Option<Vec<OutputBuffer>> = None;
 
     crossterm::terminal::enable_raw_mode().expect("Raw mode failed");
 
@@ -128,98 +130,13 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
         gamestate.tick(&mut bterm);
 
-        let be = BACKEND.lock();
-        let mut bi = BACKEND_INTERNAL.lock();
-
-        // Tell each console to draw itself
-        for cons in &mut bi.consoles {
-            let cons_any = cons.console.as_any_mut();
-            if let Some(st) = cons_any.downcast_mut::<SimpleConsole>() {
-                if st.is_dirty {
-                    st.clear_dirty();
-                    let mut idx = 0;
-                    let mut last_bg = RGBA::new();
-                    let mut last_fg = RGBA::new();
-                    for y in 0..st.height {
-                        queue!(
-                            stdout(),
-                            cursor::MoveTo(0, st.height as u16 - (y as u16 + 1))
-                        )
-                        .expect("Command fail");
-                        for _x in 0..st.width {
-                            let t = &st.tiles[idx];
-                            if t.fg != last_fg {
-                                queue!(
-                                    stdout(),
-                                    crossterm::style::SetForegroundColor(
-                                        crossterm::style::Color::Rgb {
-                                            r: (t.fg.r * 255.0) as u8,
-                                            g: (t.fg.g * 255.0) as u8,
-                                            b: (t.fg.b * 255.0) as u8,
-                                        }
-                                    )
-                                )
-                                .expect("Command fail");
-                                last_fg = t.fg;
-                            }
-                            if t.bg != last_bg {
-                                queue!(
-                                    stdout(),
-                                    crossterm::style::SetBackgroundColor(
-                                        crossterm::style::Color::Rgb {
-                                            r: (t.bg.r * 255.0) as u8,
-                                            g: (t.bg.g * 255.0) as u8,
-                                            b: (t.bg.b * 255.0) as u8,
-                                        }
-                                    )
-                                )
-                                .expect("Command fail");
-                                last_bg = t.bg;
-                            }
-                            queue!(stdout(), Print(to_char(t.glyph as u8))).expect("Command fail");
-                            idx += 1;
-                        }
-                    }
-                }
-            } else if let Some(st) = cons_any.downcast_mut::<SparseConsole>() {
-                if st.is_dirty {
-                    st.clear_dirty();
-                    for t in st.tiles.iter() {
-                        let x = t.idx as u32 % st.width;
-                        let y = t.idx as u32 / st.width;
-                        queue!(
-                            stdout(),
-                            cursor::MoveTo(x as u16, st.height as u16 - (y as u16 + 1) as u16)
-                        )
-                        .expect("Command fail");
-                        queue!(
-                            stdout(),
-                            crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
-                                r: (t.fg.r * 255.0) as u8,
-                                g: (t.fg.g * 255.0) as u8,
-                                b: (t.fg.b * 255.0) as u8,
-                            })
-                        )
-                        .expect("Command fail");
-                        queue!(
-                            stdout(),
-                            crossterm::style::SetBackgroundColor(crossterm::style::Color::Rgb {
-                                r: (t.bg.r * 255.0) as u8,
-                                g: (t.bg.g * 255.0) as u8,
-                                b: (t.bg.b * 255.0) as u8,
-                            })
-                        )
-                        .expect("Command fail");
-                        queue!(stdout(), Print(to_char(t.glyph as u8))).expect("Command fail");
-                    }
-                }
-            }
+        if output_buffer.is_none() {
+            output_buffer = Some(full_redraw()?);
+        } else {
+            partial_redraw(output_buffer.as_mut().unwrap());
         }
 
-        //bterm.backend.platform.window.refresh();
-        stdout().flush().expect("Command fail");
-
-        crate::hal::fps_sleep(be.frame_sleep_time, &now, prev_ms);
+        crate::hal::fps_sleep(BACKEND.lock().frame_sleep_time, &now, prev_ms);
     }
 
     let be = BACKEND.lock();
@@ -233,83 +150,222 @@ fn reset_terminal() {
     execute!(stdout(), crossterm::cursor::Show).expect("Command fail");
 }
 
-fn keycode_to_key(c: crossterm::event::KeyCode) -> Option<VirtualKeyCode> {
-    use crossterm::event::KeyCode;
-    match c {
-        KeyCode::Left => Some(VirtualKeyCode::Left),
-        KeyCode::Right => Some(VirtualKeyCode::Right),
-        KeyCode::Up => Some(VirtualKeyCode::Up),
-        KeyCode::Down => Some(VirtualKeyCode::Down),
-        KeyCode::Backspace => Some(VirtualKeyCode::Delete),
-        KeyCode::Enter => Some(VirtualKeyCode::Return),
-        KeyCode::Home => Some(VirtualKeyCode::Home),
-        KeyCode::End => Some(VirtualKeyCode::End),
-        KeyCode::PageUp => Some(VirtualKeyCode::PageUp),
-        KeyCode::PageDown => Some(VirtualKeyCode::PageDown),
-        KeyCode::Tab => Some(VirtualKeyCode::Tab),
-        KeyCode::Delete => Some(VirtualKeyCode::Delete),
-        KeyCode::Insert => Some(VirtualKeyCode::Insert),
-        KeyCode::Esc => Some(VirtualKeyCode::Escape),
-        KeyCode::F(1) => Some(VirtualKeyCode::F1),
-        KeyCode::F(2) => Some(VirtualKeyCode::F2),
-        KeyCode::F(3) => Some(VirtualKeyCode::F3),
-        KeyCode::F(4) => Some(VirtualKeyCode::F4),
-        KeyCode::F(5) => Some(VirtualKeyCode::F5),
-        KeyCode::F(6) => Some(VirtualKeyCode::F6),
-        KeyCode::F(7) => Some(VirtualKeyCode::F7),
-        KeyCode::F(8) => Some(VirtualKeyCode::F8),
-        KeyCode::F(9) => Some(VirtualKeyCode::F9),
-        KeyCode::F(10) => Some(VirtualKeyCode::F10),
-        KeyCode::F(11) => Some(VirtualKeyCode::F11),
-        KeyCode::F(12) => Some(VirtualKeyCode::F12),
-        KeyCode::Char('`') => Some(VirtualKeyCode::Grave),
-        KeyCode::Char('1') => Some(VirtualKeyCode::Key1),
-        KeyCode::Char('2') => Some(VirtualKeyCode::Key2),
-        KeyCode::Char('3') => Some(VirtualKeyCode::Key3),
-        KeyCode::Char('4') => Some(VirtualKeyCode::Key4),
-        KeyCode::Char('5') => Some(VirtualKeyCode::Key5),
-        KeyCode::Char('6') => Some(VirtualKeyCode::Key6),
-        KeyCode::Char('7') => Some(VirtualKeyCode::Key7),
-        KeyCode::Char('8') => Some(VirtualKeyCode::Key8),
-        KeyCode::Char('9') => Some(VirtualKeyCode::Key9),
-        KeyCode::Char('0') => Some(VirtualKeyCode::Key0),
-        KeyCode::Char('-') => Some(VirtualKeyCode::Minus),
-        KeyCode::Char('=') => Some(VirtualKeyCode::Equals),
-        KeyCode::Char('a') => Some(VirtualKeyCode::A),
-        KeyCode::Char('b') => Some(VirtualKeyCode::B),
-        KeyCode::Char('c') => Some(VirtualKeyCode::C),
-        KeyCode::Char('d') => Some(VirtualKeyCode::D),
-        KeyCode::Char('e') => Some(VirtualKeyCode::E),
-        KeyCode::Char('f') => Some(VirtualKeyCode::F),
-        KeyCode::Char('g') => Some(VirtualKeyCode::G),
-        KeyCode::Char('h') => Some(VirtualKeyCode::H),
-        KeyCode::Char('i') => Some(VirtualKeyCode::I),
-        KeyCode::Char('j') => Some(VirtualKeyCode::J),
-        KeyCode::Char('k') => Some(VirtualKeyCode::K),
-        KeyCode::Char('l') => Some(VirtualKeyCode::L),
-        KeyCode::Char('m') => Some(VirtualKeyCode::M),
-        KeyCode::Char('n') => Some(VirtualKeyCode::N),
-        KeyCode::Char('o') => Some(VirtualKeyCode::O),
-        KeyCode::Char('p') => Some(VirtualKeyCode::P),
-        KeyCode::Char('q') => Some(VirtualKeyCode::Q),
-        KeyCode::Char('r') => Some(VirtualKeyCode::R),
-        KeyCode::Char('s') => Some(VirtualKeyCode::S),
-        KeyCode::Char('t') => Some(VirtualKeyCode::T),
-        KeyCode::Char('u') => Some(VirtualKeyCode::U),
-        KeyCode::Char('v') => Some(VirtualKeyCode::V),
-        KeyCode::Char('w') => Some(VirtualKeyCode::W),
-        KeyCode::Char('x') => Some(VirtualKeyCode::X),
-        KeyCode::Char('y') => Some(VirtualKeyCode::Y),
-        KeyCode::Char('z') => Some(VirtualKeyCode::Z),
-        KeyCode::Char('[') => Some(VirtualKeyCode::LBracket),
-        KeyCode::Char(']') => Some(VirtualKeyCode::RBracket),
-        KeyCode::Char('\\') => Some(VirtualKeyCode::Backslash),
-        KeyCode::Char(';') => Some(VirtualKeyCode::Semicolon),
-        KeyCode::Char('\'') => Some(VirtualKeyCode::Apostrophe),
-        KeyCode::Char(',') => Some(VirtualKeyCode::Comma),
-        KeyCode::Char('.') => Some(VirtualKeyCode::Period),
-        KeyCode::Char('/') => Some(VirtualKeyCode::Slash),
+#[derive(Clone, PartialEq)]
+struct OutputBuffer {
+    glyph : char,
+    fg: RGBA,
+    bg: RGBA
+}
 
-        _ => None,
+impl Default for OutputBuffer {
+    fn default() -> Self {
+        Self {
+            glyph: ' ',
+            fg: RGBA::from_f32(1.0, 1.0, 1.0, 1.0),
+            bg: RGBA::from_f32(0.0, 0.0, 0.0, 0.0)
+        }
     }
+}
+
+fn full_redraw() -> Result<Vec<OutputBuffer>> {
+    let be = BACKEND.lock();
+    let mut bi = BACKEND_INTERNAL.lock();
+
+    let (width, height) = crossterm::terminal::size()?;
+    let mut buffer = vec![OutputBuffer::default(); height as usize * width as usize];
+
+    // Tell each console to draw itself
+    for cons in &mut bi.consoles {
+        let cons_any = cons.console.as_any_mut();
+        if let Some(st) = cons_any.downcast_mut::<SimpleConsole>() {
+            if st.is_dirty {
+                st.clear_dirty();
+                let mut idx = 0;
+                let mut last_bg = RGBA::new();
+                let mut last_fg = RGBA::new();
+                for y in 0..st.height {
+                    queue!(
+                        stdout(),
+                        cursor::MoveTo(0, st.height as u16 - (y as u16 + 1))
+                    )
+                    .expect("Command fail");
+                    let mut buf_idx = (st.height as u16 - (y as u16 + 1)) as usize * width as usize;
+                    for x in 0..st.width {
+                        let t = &st.tiles[idx];
+                        if t.fg != last_fg {
+                            queue!(
+                                stdout(),
+                                crossterm::style::SetForegroundColor(
+                                    crossterm::style::Color::Rgb {
+                                        r: (t.fg.r * 255.0) as u8,
+                                        g: (t.fg.g * 255.0) as u8,
+                                        b: (t.fg.b * 255.0) as u8,
+                                    }
+                                )
+                            )
+                            .expect("Command fail");
+                            last_fg = t.fg;
+                        }
+                        if t.bg != last_bg {
+                            queue!(
+                                stdout(),
+                                crossterm::style::SetBackgroundColor(
+                                    crossterm::style::Color::Rgb {
+                                        r: (t.bg.r * 255.0) as u8,
+                                        g: (t.bg.g * 255.0) as u8,
+                                        b: (t.bg.b * 255.0) as u8,
+                                    }
+                                )
+                            )
+                            .expect("Command fail");
+                            last_bg = t.bg;
+                        }
+                        queue!(stdout(), Print(to_char(t.glyph as u8))).expect("Command fail");
+                        buffer[buf_idx].glyph = to_char(t.glyph as u8);
+                        buffer[buf_idx].fg = t.fg;
+                        buffer[buf_idx].bg = t.bg;
+                        idx += 1;
+                        buf_idx += 1;
+                    }
+                }
+            }
+        } else if let Some(st) = cons_any.downcast_mut::<SparseConsole>() {
+            if st.is_dirty {
+                st.clear_dirty();
+                for t in st.tiles.iter() {
+                    let x = t.idx as u32 % st.width;
+                    let y = t.idx as u32 / st.width;
+                    queue!(
+                        stdout(),
+                        cursor::MoveTo(x as u16, st.height as u16 - (y as u16 + 1) as u16)
+                    )
+                    .expect("Command fail");
+                    queue!(
+                        stdout(),
+                        crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
+                            r: (t.fg.r * 255.0) as u8,
+                            g: (t.fg.g * 255.0) as u8,
+                            b: (t.fg.b * 255.0) as u8,
+                        })
+                    )
+                    .expect("Command fail");
+                    queue!(
+                        stdout(),
+                        crossterm::style::SetBackgroundColor(crossterm::style::Color::Rgb {
+                            r: (t.bg.r * 255.0) as u8,
+                            g: (t.bg.g * 255.0) as u8,
+                            b: (t.bg.b * 255.0) as u8,
+                        })
+                    )
+                    .expect("Command fail");
+                    queue!(stdout(), Print(to_char(t.glyph as u8))).expect("Command fail");
+                    let buf_idx = (((st.height as u16 - (y as u16 + 1)) * height) + x as u16) as usize;
+                    buffer[buf_idx].glyph = to_char(t.glyph as u8);
+                    buffer[buf_idx].fg = t.fg;
+                    buffer[buf_idx].bg = t.bg;
+                }
+            }
+        }
+    }
+
+    //bterm.backend.platform.window.refresh();
+    stdout().flush().expect("Command fail");
+
+    Ok(buffer)
+}
+
+fn partial_redraw(buffer : &mut Vec<OutputBuffer>) {
+    let be = BACKEND.lock();
+    let mut bi = BACKEND_INTERNAL.lock();
+
+    let (width, height) = crossterm::terminal::size().expect("Failed to get size");
+    let mut dirty = Vec::new();
+
+    // Iterate all consoles, rendering to the buffer and denoting dirty
+    for cons in &mut bi.consoles {
+        let cons_any = cons.console.as_any_mut();
+        if let Some(st) = cons_any.downcast_mut::<SimpleConsole>() {
+            if st.is_dirty {
+                st.clear_dirty();
+                let mut idx = 0;
+                for y in 0..st.height {
+                    let mut buf_idx = (st.height as u16 - (y as u16 + 1)) as usize * width as usize;
+                    for x in 0..st.width {
+                        let t = &st.tiles[idx];
+                        let new_output = OutputBuffer{
+                            glyph: to_char(t.glyph as u8),
+                            fg: t.fg,
+                            bg: t.bg
+                        };
+                        if buffer[buf_idx] != new_output {
+                            buffer[buf_idx] = new_output;
+                            dirty.push(buf_idx);
+                        }
+                        idx += 1;
+                        buf_idx += 1;
+                    }
+                }
+            }
+        } else if let Some(st) = cons_any.downcast_mut::<SparseConsole>() {
+            if st.is_dirty {
+                st.clear_dirty();
+                for t in st.tiles.iter() {
+                    let x = t.idx as u32 % st.width;
+                    let y = t.idx as u32 / st.width;
+                    let buf_idx = (((st.height as u16 - (y as u16 + 1)) * height) + x as u16) as usize;
+                    let new_output = OutputBuffer{
+                        glyph: to_char(t.glyph as u8),
+                        fg: t.fg,
+                        bg: t.bg
+                    };
+                    if buffer[buf_idx] != new_output {
+                        buffer[buf_idx] = new_output;
+                        dirty.push(buf_idx);
+                    }
+                }
+            }
+        }
+    }
+
+    // Render just the dirty tiles
+    let mut last_bg = RGBA::new();
+    let mut last_fg = RGBA::new();
+    dirty.iter().for_each(|idx| {
+        let x = idx % width as usize;
+        let y = idx / width as usize;
+        let t = &buffer[*idx];
+
+        queue!(
+            stdout(),
+            cursor::MoveTo(x as u16, y as u16)
+        )
+        .expect("Command fail");
+
+        if t.fg != last_fg {
+            queue!(
+                stdout(),
+                crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
+                    r: (t.fg.r * 255.0) as u8,
+                    g: (t.fg.g * 255.0) as u8,
+                    b: (t.fg.b * 255.0) as u8,
+                })
+            )
+            .expect("Command fail");
+            last_fg = t.fg;
+        }
+
+        if t.bg != last_bg {
+            queue!(
+                stdout(),
+                crossterm::style::SetBackgroundColor(crossterm::style::Color::Rgb {
+                    r: (t.bg.r * 255.0) as u8,
+                    g: (t.bg.g * 255.0) as u8,
+                    b: (t.bg.b * 255.0) as u8,
+                })
+            )
+            .expect("Command fail");
+            last_bg = t.bg;
+        }
+        queue!(stdout(), Print(t.glyph)).expect("Command fail");
+    });
 }

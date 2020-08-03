@@ -12,7 +12,7 @@ mod shader;
 pub use init::*;
 pub use shader::*;
 mod scancode_helper;
-pub use scancode_helper::virtual_key_code_to_scan;
+pub use scancode_helper::{virtual_key_code_to_scan, keycode_to_key};
 
 pub struct InitHints {
     pub vsync: bool,
