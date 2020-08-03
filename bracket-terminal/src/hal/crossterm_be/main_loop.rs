@@ -328,6 +328,8 @@ fn partial_redraw(buffer : &mut Vec<OutputBuffer>) {
     }
 
     // Render just the dirty tiles
+    let mut last_bg = RGBA::new();
+    let mut last_fg = RGBA::new();
     dirty.iter().for_each(|idx| {
         let x = idx % width as usize;
         let y = idx / width as usize;
@@ -338,24 +340,32 @@ fn partial_redraw(buffer : &mut Vec<OutputBuffer>) {
             cursor::MoveTo(x as u16, y as u16)
         )
         .expect("Command fail");
-        queue!(
-            stdout(),
-            crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
-                r: (t.fg.r * 255.0) as u8,
-                g: (t.fg.g * 255.0) as u8,
-                b: (t.fg.b * 255.0) as u8,
-            })
-        )
-        .expect("Command fail");
-        queue!(
-            stdout(),
-            crossterm::style::SetBackgroundColor(crossterm::style::Color::Rgb {
-                r: (t.bg.r * 255.0) as u8,
-                g: (t.bg.g * 255.0) as u8,
-                b: (t.bg.b * 255.0) as u8,
-            })
-        )
-        .expect("Command fail");
+
+        if t.fg != last_fg {
+            queue!(
+                stdout(),
+                crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
+                    r: (t.fg.r * 255.0) as u8,
+                    g: (t.fg.g * 255.0) as u8,
+                    b: (t.fg.b * 255.0) as u8,
+                })
+            )
+            .expect("Command fail");
+            last_fg = t.fg;
+        }
+
+        if t.bg != last_bg {
+            queue!(
+                stdout(),
+                crossterm::style::SetBackgroundColor(crossterm::style::Color::Rgb {
+                    r: (t.bg.r * 255.0) as u8,
+                    g: (t.bg.g * 255.0) as u8,
+                    b: (t.bg.b * 255.0) as u8,
+                })
+            )
+            .expect("Command fail");
+            last_bg = t.bg;
+        }
         queue!(stdout(), Print(to_char(t.glyph as u8))).expect("Command fail");
     });
 }
