@@ -20,6 +20,8 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     let mut key_map: HashSet<char> = HashSet::new();
     let mut keys_this_frame: HashSet<char> = HashSet::new();
 
+    let mut output_buffer : Option<Vec<OutputBuffer>> = None;
+
     while !bterm.quitting {
         let now_seconds = now.elapsed().as_secs();
         frames += 1;
@@ -115,7 +117,11 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
         gamestate.tick(&mut bterm);
 
-        full_redraw()?;
+        if output_buffer.is_none() {
+            output_buffer = Some(full_redraw()?);
+        } else {
+            partial_redraw(output_buffer.as_mut().unwrap());
+        }
 
         crate::hal::fps_sleep(BACKEND.lock().frame_sleep_time, &now, prev_ms);
     }
@@ -124,10 +130,31 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     Ok(())
 }
 
+#[derive(Clone, PartialEq)]
+struct OutputBuffer {
+    glyph : char,
+    fg: RGBA,
+    bg: RGBA
+}
+
+impl Default for OutputBuffer {
+    fn default() -> Self {
+        Self {
+            glyph: ' ',
+            fg: RGBA::from_f32(1.0, 1.0, 1.0, 1.0),
+            bg: RGBA::from_f32(0.0, 0.0, 0.0, 0.0)
+        }
+    }
+}
+
 // Completely redraws the back-end
-fn full_redraw() -> Result<()> {
+fn full_redraw() -> Result<Vec<OutputBuffer>> {
     let be = BACKEND.lock();
     let window = be.window.as_ref().unwrap();
+
+    let height = window.get_max_y() as usize;
+    let width = window.get_max_x() as usize;
+    let mut buffer = vec![OutputBuffer::default(); height*width];
 
     window.clear();
 
@@ -153,11 +180,18 @@ fn full_redraw() -> Result<()> {
                     }
                     let pair = (cp_bg * 16) + cp_fg;
                     window.attrset(pancurses::COLOR_PAIR(pair.try_into()?));
+
+                    let ch = to_char(t.glyph as u8);
+                    let ty = st.height as i32 - (y as i32 + 1);
                     window.mvaddch(
-                        st.height as i32 - (y as i32 + 1),
+                        ty,
                         x as i32,
-                        to_char(t.glyph as u8),
+                        ch,
                     );
+                    let buf_idx = (ty as usize * height) + x as usize;
+                    buffer[buf_idx].glyph = ch;
+                    buffer[buf_idx].fg = t.fg;
+                    buffer[buf_idx].bg = t.bg;
                     idx += 1;
                 }
             }
@@ -179,15 +213,102 @@ fn full_redraw() -> Result<()> {
                 }
                 let pair = (cp_bg * 16) + cp_fg;
                 window.attrset(pancurses::COLOR_PAIR(pair.try_into()?));
+                let ch = to_char(t.glyph as u8);
+                let ty = st.height as i32 - (y as i32 + 1);
                 window.mvaddch(
-                    st.height as i32 - (y as i32 + 1),
+                    ty,
                     x as i32,
-                    to_char(t.glyph as u8),
+                    ch,
                 );
+                let buf_idx = (ty as usize * height) + x as usize;
+                buffer[buf_idx].glyph = ch;
+                buffer[buf_idx].fg = t.fg;
+                buffer[buf_idx].bg = t.bg;
             }
         }
     }
 
     window.refresh();
-    Ok(())
+    Ok(buffer)
+}
+
+fn partial_redraw(buf : &mut Vec<OutputBuffer>) {
+    let be = BACKEND.lock();
+    let window = be.window.as_ref().unwrap();
+
+    let height = window.get_max_y() as usize;
+    let width = window.get_max_x() as usize;
+
+    let mut dirty = Vec::new();
+
+    // Iterate all consoles, rendering to the buffer and denoting dirty
+    for cons in &mut BACKEND_INTERNAL.lock().consoles {
+        let cons_any = cons.console.as_any();
+        if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
+            let mut idx = 0;
+            for y in 0..st.height {
+                for x in 0..st.width {
+                    let t = &st.tiles[idx];
+
+                    let new_output = OutputBuffer{
+                        glyph: to_char(t.glyph as u8),
+                        fg: t.fg,
+                        bg: t.bg
+                    };
+                    let ty = st.height as i32 - (y as i32 + 1);
+                    let buf_idx = (ty as usize * width) + x as usize;
+                    if buf[buf_idx] != new_output {
+                        buf[buf_idx] = new_output;
+                        dirty.push(buf_idx);
+                    }
+                    idx += 1;
+                }
+            }
+        } else if let Some(st) = cons_any.downcast_ref::<SparseConsole>() {
+            for t in st.tiles.iter() {
+                let x = t.idx as u32 % st.width;
+                let y = t.idx as u32 / st.width;
+                let ty = st.height as i32 - (y as i32 + 1);
+                let buf_idx = (ty as usize * width) + x as usize;
+                let new_output = OutputBuffer{
+                    glyph: to_char(t.glyph as u8),
+                    fg: t.fg,
+                    bg: t.bg
+                };
+                if buf[buf_idx] != new_output {
+                    buf[buf_idx] = new_output;
+                    dirty.push(buf_idx);
+                }
+            }
+        }
+    }
+
+    let mut last_bg = RGBA::new();
+    let mut last_fg = RGBA::new();
+    let mut cp_fg = 0;
+    let mut cp_bg = 0;
+    dirty.iter().for_each(|idx| {
+        let x = idx % width;
+        let y = idx / width;
+        let t = &buf[*idx];
+
+        if t.fg != last_fg {
+            cp_fg = find_nearest_color(t.fg, &be.color_map);
+            last_fg = t.fg;
+        }
+        if t.bg != last_bg {
+            cp_bg = find_nearest_color(t.bg, &be.color_map);
+            last_bg = t.bg;
+        }
+        let pair = (cp_bg * 16) + cp_fg;
+        window.attrset(pancurses::COLOR_PAIR(pair.try_into().unwrap()));
+
+        window.mvaddch(
+            y as i32,
+            x as i32,
+            buf[*idx].glyph,
+        );
+    });
+
+    window.refresh();
 }
