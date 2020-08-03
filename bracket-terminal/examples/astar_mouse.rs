@@ -135,6 +135,7 @@ impl GameState for State {
         if self.mode == Mode::Waiting {
             // Render a mouse cursor
             let mouse_pos = INPUT.lock().mouse_tile(0);
+            println!("{:?}", mouse_pos);
             let mouse_idx = self.point2d_to_index(mouse_pos);
             draw_batch.print_color(
                 mouse_pos,

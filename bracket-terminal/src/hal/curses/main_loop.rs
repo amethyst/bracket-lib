@@ -82,8 +82,8 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                                 }
                             }
                             bterm.on_mouse_position(
-                                mouse_event.x as f64 * 8.0,
-                                mouse_event.y as f64 * 8.0,
+                                mouse_event.x as f64,
+                                mouse_event.y as f64,
                             );
                         }
                     }
