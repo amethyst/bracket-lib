@@ -115,49 +115,34 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
         gamestate.tick(&mut bterm);
 
-        let be = BACKEND.lock();
-        let window = be.window.as_ref().unwrap();
+        full_redraw()?;
 
-        window.clear();
+        crate::hal::fps_sleep(BACKEND.lock().frame_sleep_time, &now, prev_ms);
+    }
 
-        // Tell each console to draw itself
-        for cons in &mut BACKEND_INTERNAL.lock().consoles {
-            let cons_any = cons.console.as_any();
-            if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
-                let mut last_bg = RGBA::new();
-                let mut last_fg = RGBA::new();
-                let mut cp_fg = 0;
-                let mut cp_bg = 0;
-                let mut idx = 0;
-                for y in 0..st.height {
-                    for x in 0..st.width {
-                        let t = &st.tiles[idx];
-                        if t.fg != last_fg {
-                            cp_fg = find_nearest_color(t.fg, &be.color_map);
-                            last_fg = t.fg;
-                        }
-                        if t.bg != last_bg {
-                            cp_bg = find_nearest_color(t.bg, &be.color_map);
-                            last_bg = t.bg;
-                        }
-                        let pair = (cp_bg * 16) + cp_fg;
-                        window.attrset(pancurses::COLOR_PAIR(pair.try_into()?));
-                        window.mvaddch(
-                            st.height as i32 - (y as i32 + 1),
-                            x as i32,
-                            to_char(t.glyph as u8),
-                        );
-                        idx += 1;
-                    }
-                }
-            } else if let Some(st) = cons_any.downcast_ref::<SparseConsole>() {
-                let mut last_bg = RGBA::new();
-                let mut last_fg = RGBA::new();
-                let mut cp_fg = 0;
-                let mut cp_bg = 0;
-                for t in st.tiles.iter() {
-                    let x = t.idx as u32 % st.width;
-                    let y = t.idx as u32 / st.width;
+    endwin();
+    Ok(())
+}
+
+// Completely redraws the back-end
+fn full_redraw() -> Result<()> {
+    let be = BACKEND.lock();
+    let window = be.window.as_ref().unwrap();
+
+    window.clear();
+
+    // Tell each console to draw itself
+    for cons in &mut BACKEND_INTERNAL.lock().consoles {
+        let cons_any = cons.console.as_any();
+        if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
+            let mut last_bg = RGBA::new();
+            let mut last_fg = RGBA::new();
+            let mut cp_fg = 0;
+            let mut cp_bg = 0;
+            let mut idx = 0;
+            for y in 0..st.height {
+                for x in 0..st.width {
+                    let t = &st.tiles[idx];
                     if t.fg != last_fg {
                         cp_fg = find_nearest_color(t.fg, &be.color_map);
                         last_fg = t.fg;
@@ -173,16 +158,36 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                         x as i32,
                         to_char(t.glyph as u8),
                     );
+                    idx += 1;
                 }
             }
+        } else if let Some(st) = cons_any.downcast_ref::<SparseConsole>() {
+            let mut last_bg = RGBA::new();
+            let mut last_fg = RGBA::new();
+            let mut cp_fg = 0;
+            let mut cp_bg = 0;
+            for t in st.tiles.iter() {
+                let x = t.idx as u32 % st.width;
+                let y = t.idx as u32 / st.width;
+                if t.fg != last_fg {
+                    cp_fg = find_nearest_color(t.fg, &be.color_map);
+                    last_fg = t.fg;
+                }
+                if t.bg != last_bg {
+                    cp_bg = find_nearest_color(t.bg, &be.color_map);
+                    last_bg = t.bg;
+                }
+                let pair = (cp_bg * 16) + cp_fg;
+                window.attrset(pancurses::COLOR_PAIR(pair.try_into()?));
+                window.mvaddch(
+                    st.height as i32 - (y as i32 + 1),
+                    x as i32,
+                    to_char(t.glyph as u8),
+                );
+            }
         }
-
-        window.refresh();
-
-        crate::hal::fps_sleep(be.frame_sleep_time, &now, prev_ms);
     }
 
-    endwin();
+    window.refresh();
     Ok(())
 }
-
