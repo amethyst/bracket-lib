@@ -30,6 +30,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
     let mut key_map: HashSet<crossterm::event::KeyCode> = HashSet::new();
     let mut keys_this_frame: HashSet<crossterm::event::KeyCode> = HashSet::new();
+    let mut output_buffer : Option<Vec<OutputBuffer>> = None;
 
     crossterm::terminal::enable_raw_mode().expect("Raw mode failed");
 
@@ -129,98 +130,13 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
         gamestate.tick(&mut bterm);
 
-        let be = BACKEND.lock();
-        let mut bi = BACKEND_INTERNAL.lock();
-
-        // Tell each console to draw itself
-        for cons in &mut bi.consoles {
-            let cons_any = cons.console.as_any_mut();
-            if let Some(st) = cons_any.downcast_mut::<SimpleConsole>() {
-                if st.is_dirty {
-                    st.clear_dirty();
-                    let mut idx = 0;
-                    let mut last_bg = RGBA::new();
-                    let mut last_fg = RGBA::new();
-                    for y in 0..st.height {
-                        queue!(
-                            stdout(),
-                            cursor::MoveTo(0, st.height as u16 - (y as u16 + 1))
-                        )
-                        .expect("Command fail");
-                        for _x in 0..st.width {
-                            let t = &st.tiles[idx];
-                            if t.fg != last_fg {
-                                queue!(
-                                    stdout(),
-                                    crossterm::style::SetForegroundColor(
-                                        crossterm::style::Color::Rgb {
-                                            r: (t.fg.r * 255.0) as u8,
-                                            g: (t.fg.g * 255.0) as u8,
-                                            b: (t.fg.b * 255.0) as u8,
-                                        }
-                                    )
-                                )
-                                .expect("Command fail");
-                                last_fg = t.fg;
-                            }
-                            if t.bg != last_bg {
-                                queue!(
-                                    stdout(),
-                                    crossterm::style::SetBackgroundColor(
-                                        crossterm::style::Color::Rgb {
-                                            r: (t.bg.r * 255.0) as u8,
-                                            g: (t.bg.g * 255.0) as u8,
-                                            b: (t.bg.b * 255.0) as u8,
-                                        }
-                                    )
-                                )
-                                .expect("Command fail");
-                                last_bg = t.bg;
-                            }
-                            queue!(stdout(), Print(to_char(t.glyph as u8))).expect("Command fail");
-                            idx += 1;
-                        }
-                    }
-                }
-            } else if let Some(st) = cons_any.downcast_mut::<SparseConsole>() {
-                if st.is_dirty {
-                    st.clear_dirty();
-                    for t in st.tiles.iter() {
-                        let x = t.idx as u32 % st.width;
-                        let y = t.idx as u32 / st.width;
-                        queue!(
-                            stdout(),
-                            cursor::MoveTo(x as u16, st.height as u16 - (y as u16 + 1) as u16)
-                        )
-                        .expect("Command fail");
-                        queue!(
-                            stdout(),
-                            crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
-                                r: (t.fg.r * 255.0) as u8,
-                                g: (t.fg.g * 255.0) as u8,
-                                b: (t.fg.b * 255.0) as u8,
-                            })
-                        )
-                        .expect("Command fail");
-                        queue!(
-                            stdout(),
-                            crossterm::style::SetBackgroundColor(crossterm::style::Color::Rgb {
-                                r: (t.bg.r * 255.0) as u8,
-                                g: (t.bg.g * 255.0) as u8,
-                                b: (t.bg.b * 255.0) as u8,
-                            })
-                        )
-                        .expect("Command fail");
-                        queue!(stdout(), Print(to_char(t.glyph as u8))).expect("Command fail");
-                    }
-                }
-            }
+        if output_buffer.is_none() {
+            output_buffer = Some(full_redraw()?);
+        } else {
+            partial_redraw(output_buffer.as_mut().unwrap());
         }
 
-        //bterm.backend.platform.window.refresh();
-        stdout().flush().expect("Command fail");
-
-        crate::hal::fps_sleep(be.frame_sleep_time, &now, prev_ms);
+        crate::hal::fps_sleep(BACKEND.lock().frame_sleep_time, &now, prev_ms);
     }
 
     let be = BACKEND.lock();
@@ -232,4 +148,214 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 fn reset_terminal() {
     execute!(stdout(), crossterm::style::ResetColor).expect("Command fail");
     execute!(stdout(), crossterm::cursor::Show).expect("Command fail");
+}
+
+#[derive(Clone, PartialEq)]
+struct OutputBuffer {
+    glyph : char,
+    fg: RGBA,
+    bg: RGBA
+}
+
+impl Default for OutputBuffer {
+    fn default() -> Self {
+        Self {
+            glyph: ' ',
+            fg: RGBA::from_f32(1.0, 1.0, 1.0, 1.0),
+            bg: RGBA::from_f32(0.0, 0.0, 0.0, 0.0)
+        }
+    }
+}
+
+fn full_redraw() -> Result<Vec<OutputBuffer>> {
+    let be = BACKEND.lock();
+    let mut bi = BACKEND_INTERNAL.lock();
+
+    let (width, height) = crossterm::terminal::size()?;
+    let mut buffer = vec![OutputBuffer::default(); height as usize * width as usize];
+
+    // Tell each console to draw itself
+    for cons in &mut bi.consoles {
+        let cons_any = cons.console.as_any_mut();
+        if let Some(st) = cons_any.downcast_mut::<SimpleConsole>() {
+            if st.is_dirty {
+                st.clear_dirty();
+                let mut idx = 0;
+                let mut last_bg = RGBA::new();
+                let mut last_fg = RGBA::new();
+                for y in 0..st.height {
+                    queue!(
+                        stdout(),
+                        cursor::MoveTo(0, st.height as u16 - (y as u16 + 1))
+                    )
+                    .expect("Command fail");
+                    let mut buf_idx = (st.height as u16 - (y as u16 + 1)) as usize * width as usize;
+                    for x in 0..st.width {
+                        let t = &st.tiles[idx];
+                        if t.fg != last_fg {
+                            queue!(
+                                stdout(),
+                                crossterm::style::SetForegroundColor(
+                                    crossterm::style::Color::Rgb {
+                                        r: (t.fg.r * 255.0) as u8,
+                                        g: (t.fg.g * 255.0) as u8,
+                                        b: (t.fg.b * 255.0) as u8,
+                                    }
+                                )
+                            )
+                            .expect("Command fail");
+                            last_fg = t.fg;
+                        }
+                        if t.bg != last_bg {
+                            queue!(
+                                stdout(),
+                                crossterm::style::SetBackgroundColor(
+                                    crossterm::style::Color::Rgb {
+                                        r: (t.bg.r * 255.0) as u8,
+                                        g: (t.bg.g * 255.0) as u8,
+                                        b: (t.bg.b * 255.0) as u8,
+                                    }
+                                )
+                            )
+                            .expect("Command fail");
+                            last_bg = t.bg;
+                        }
+                        queue!(stdout(), Print(to_char(t.glyph as u8))).expect("Command fail");
+                        buffer[buf_idx].glyph = to_char(t.glyph as u8);
+                        buffer[buf_idx].fg = t.fg;
+                        buffer[buf_idx].bg = t.bg;
+                        idx += 1;
+                        buf_idx += 1;
+                    }
+                }
+            }
+        } else if let Some(st) = cons_any.downcast_mut::<SparseConsole>() {
+            if st.is_dirty {
+                st.clear_dirty();
+                for t in st.tiles.iter() {
+                    let x = t.idx as u32 % st.width;
+                    let y = t.idx as u32 / st.width;
+                    queue!(
+                        stdout(),
+                        cursor::MoveTo(x as u16, st.height as u16 - (y as u16 + 1) as u16)
+                    )
+                    .expect("Command fail");
+                    queue!(
+                        stdout(),
+                        crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
+                            r: (t.fg.r * 255.0) as u8,
+                            g: (t.fg.g * 255.0) as u8,
+                            b: (t.fg.b * 255.0) as u8,
+                        })
+                    )
+                    .expect("Command fail");
+                    queue!(
+                        stdout(),
+                        crossterm::style::SetBackgroundColor(crossterm::style::Color::Rgb {
+                            r: (t.bg.r * 255.0) as u8,
+                            g: (t.bg.g * 255.0) as u8,
+                            b: (t.bg.b * 255.0) as u8,
+                        })
+                    )
+                    .expect("Command fail");
+                    queue!(stdout(), Print(to_char(t.glyph as u8))).expect("Command fail");
+                    let buf_idx = (((st.height as u16 - (y as u16 + 1)) * height) + x as u16) as usize;
+                    buffer[buf_idx].glyph = to_char(t.glyph as u8);
+                    buffer[buf_idx].fg = t.fg;
+                    buffer[buf_idx].bg = t.bg;
+                }
+            }
+        }
+    }
+
+    //bterm.backend.platform.window.refresh();
+    stdout().flush().expect("Command fail");
+
+    Ok(buffer)
+}
+
+fn partial_redraw(buffer : &mut Vec<OutputBuffer>) {
+    let be = BACKEND.lock();
+    let mut bi = BACKEND_INTERNAL.lock();
+
+    let (width, height) = crossterm::terminal::size().expect("Failed to get size");
+    let mut dirty = Vec::new();
+
+    // Iterate all consoles, rendering to the buffer and denoting dirty
+    for cons in &mut bi.consoles {
+        let cons_any = cons.console.as_any_mut();
+        if let Some(st) = cons_any.downcast_mut::<SimpleConsole>() {
+            if st.is_dirty {
+                st.clear_dirty();
+                let mut idx = 0;
+                for y in 0..st.height {
+                    let mut buf_idx = (st.height as u16 - (y as u16 + 1)) as usize * width as usize;
+                    for x in 0..st.width {
+                        let t = &st.tiles[idx];
+                        let new_output = OutputBuffer{
+                            glyph: to_char(t.glyph as u8),
+                            fg: t.fg,
+                            bg: t.bg
+                        };
+                        if buffer[buf_idx] != new_output {
+                            buffer[buf_idx] = new_output;
+                            dirty.push(buf_idx);
+                        }
+                        idx += 1;
+                        buf_idx += 1;
+                    }
+                }
+            }
+        } else if let Some(st) = cons_any.downcast_mut::<SparseConsole>() {
+            if st.is_dirty {
+                st.clear_dirty();
+                for t in st.tiles.iter() {
+                    let x = t.idx as u32 % st.width;
+                    let y = t.idx as u32 / st.width;
+                    let buf_idx = (((st.height as u16 - (y as u16 + 1)) * height) + x as u16) as usize;
+                    let new_output = OutputBuffer{
+                        glyph: to_char(t.glyph as u8),
+                        fg: t.fg,
+                        bg: t.bg
+                    };
+                    if buffer[buf_idx] != new_output {
+                        buffer[buf_idx] = new_output;
+                        dirty.push(buf_idx);
+                    }
+                }
+            }
+        }
+    }
+
+    // Render just the dirty tiles
+    dirty.iter().for_each(|idx| {
+        let x = idx % width as usize;
+        let y = idx / width as usize;
+        let t = &buffer[*idx];
+
+        queue!(
+            stdout(),
+            cursor::MoveTo(x as u16, y as u16)
+        )
+        .expect("Command fail");
+        queue!(
+            stdout(),
+            crossterm::style::SetForegroundColor(crossterm::style::Color::Rgb {
+                r: (t.fg.r * 255.0) as u8,
+                g: (t.fg.g * 255.0) as u8,
+                b: (t.fg.b * 255.0) as u8,
+            })
+        )
+        .expect("Command fail");
+        queue!(
+            stdout(),
+            crossterm::style::SetBackgroundColor(crossterm::style::Color::Rgb {
+                r: (t.bg.r * 255.0) as u8,
+                g: (t.bg.g * 255.0) as u8,
+                b: (t.bg.b * 255.0) as u8,
+            })
+        )
+        .expect("Command fail");
+        queue!(stdout(), Print(to_char(t.glyph as u8))).expect("Command fail");
+    });
 }
