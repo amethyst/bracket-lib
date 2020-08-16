@@ -59,10 +59,6 @@ impl SpriteConsoleBackend {
         sprites: &[RenderSprite],
         sprite_sheet: &SpriteSheet,
     ) {
-        if sprites.is_empty() {
-            return;
-        }
-
         let scale_x = 1.0 / (width as f32 * 0.5);
         let scale_y = 1.0 / (height as f32 * 0.5);
 
