@@ -304,8 +304,8 @@ fn tock<GS: GameState>(
     {
         let mut be = BACKEND.lock();
         if let Some(filename) = &be.request_screenshot {
-            let w = bterm.width_pixels;
-            let h = bterm.height_pixels;
+            let w = (bterm.width_pixels as f32 * scale_factor) as u32;
+            let h = (bterm.height_pixels as f32 * scale_factor) as u32;
             let gl = be.gl.as_ref().unwrap();
 
             let mut img = image::DynamicImage::new_rgba8(w, h);
