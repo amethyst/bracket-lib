@@ -74,7 +74,7 @@ struct AStar {
     end: usize,
     open_list: BinaryHeap<Node>,
     closed_list: HashMap<usize, f32>,
-    parents: HashMap<usize, usize>,
+    parents: HashMap<usize, (usize, f32)>, // (index, cost)
     step_counter: usize,
 }
 
@@ -115,8 +115,8 @@ impl AStar {
 
         // If a node with the same position as successor is in the open list with a lower f, skip add
         let mut should_add = true;
-        for e in &self.open_list {
-            if e.f < s.f && e.idx == idx {
+        if let Some(e) = self.parents.get(&idx) {
+            if e.1 < s.f {
                 should_add = false;
             }
         }
@@ -128,7 +128,7 @@ impl AStar {
 
         if should_add {
             self.open_list.push(s);
-            self.parents.insert(idx, q.idx);
+            self.parents.insert(idx, (q.idx, q.f));
         }
     }
 
@@ -142,8 +142,8 @@ impl AStar {
         let mut current = self.end;
         while current != self.start {
             let parent = self.parents[&current];
-            result.steps.insert(0, parent);
-            current = parent;
+            result.steps.insert(0, parent.0);
+            current = parent.0;
         }
 
         result
