@@ -35,7 +35,6 @@ struct Node {
     idx: usize,
     f: f32,
     g: f32,
-    h: f32,
 }
 
 impl PartialEq for Node {
@@ -87,7 +86,6 @@ impl AStar {
             idx: start,
             f: 0.0,
             g: 0.0,
-            h: 0.0,
         });
 
         AStar {
@@ -117,7 +115,6 @@ impl AStar {
                 idx,
                 f: distance + cost,
                 g: cost,
-                h: distance,
             };
 
             // If a node with the same position as successor is in the open list with a lower f, skip add
