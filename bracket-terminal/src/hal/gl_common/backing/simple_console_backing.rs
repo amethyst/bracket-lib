@@ -94,12 +94,8 @@ impl SimpleConsoleBackend {
             let index_capacity: usize = 6 * width as usize * height as usize;
             self.vao.vertex_buffer.clear();
             self.vao.index_buffer.clear();
-            for _ in 0..vertex_capacity {
-                self.vao.vertex_buffer.push(0.0);
-            }
-            for _ in 0..index_capacity {
-                self.vao.index_buffer.push(0);
-            }
+            self.vao.vertex_buffer.resize(vertex_capacity, 0.0);
+            self.vao.index_buffer.resize(index_capacity, 0);
         }
 
         self.vertex_counter = 0;
