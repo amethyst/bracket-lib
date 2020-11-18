@@ -7,7 +7,7 @@ fn main() {
     let mut angle = Degrees::new(0.0);
     let start_point = Point::new(10, 10);
     while angle.0 < 360.0 {
-        queue!(stdout(), cursor::MoveTo(0, 0));
+        queue!(stdout(), cursor::MoveTo(0, 0)).expect("Failed to write to stdout");
         let mut fake_console: Vec<char> = vec!['.'; 400];
 
         let end_point = project_angle(Point::new(0,0), 8.0, angle) + start_point;
@@ -30,6 +30,6 @@ fn main() {
         }
         stdout().flush().expect("Flush Fail");
         angle.0 += 1.0;
-        std::thread::sleep_ms(20);
+        std::thread::sleep(std::time::Duration::from_millis(20));
     }
 }
