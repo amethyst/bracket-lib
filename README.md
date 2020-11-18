@@ -44,3 +44,15 @@ By default, `bracket-lib` runs in OpenGL mode (or WebGL if it detects that you a
 * `amethyst_engine_metal` for Amethyst support, in `Metal` mode.
 * `crossterm` to use the excellent `Crossterm` terminal library.
 * `curses` to use `pancurses` for `ncurses` or `pdcurses` support depending upon your platform.
+
+## Sample Projects
+
+- https://github.com/bofh69/rouge
+- https://github.com/carsin/miners
+- https://github.com/amethyst/shotcaller
+- https://github.com/baszalmstra/my-little-robots
+- https://github.com/Havegum/Terrain-Generator
+- https://github.com/Bobox214/rs-gliphus
+- https://github.com/BobG1983/escape-from-alpha-nine
+- https://github.com/Maxgy/blademaster
+- https://github.com/Maxgy/text-rts
