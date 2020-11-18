@@ -1,6 +1,5 @@
 use bracket_color::prelude::*;
 use bracket_pathfinding::prelude::*;
-use bracket_random::prelude::RandomNumberGenerator;
 use crossterm::queue;
 use crossterm::style::{Color::Rgb, Print, SetForegroundColor};
 use std::io::{stdout, Write};
