@@ -107,6 +107,10 @@ uniform vec3 screenSize;
 uniform bool screenBurn;
 uniform vec3 screenBurnColor;
 
+float random(vec2 p) {
+    return fract(cos(dot(p, vec2(23.14069263277926, 2.665144142690225))) * 12345.6789);
+}
+
 void main()
 {
     vec3 col = texture(screenTexture, TexCoords).rgb;
@@ -115,7 +119,8 @@ void main()
 
     if (col.r < 0.1f && col.g < 0.1f && col.b < 0.1f) {
         if (screenBurn) {
-            float dist = (1.0 - distance(vec2(gl_FragCoord.x / screenSize.x, gl_FragCoord.y / screenSize.y), vec2(0.5,0.5))) * 0.2;
+            float noise = 64.0 * (0.5 - random(TexCoords)) / screenSize.x;
+            float dist = (1.0 - distance(vec2(gl_FragCoord.x / screenSize.x, gl_FragCoord.y / screenSize.y), vec2(0.5,0.5)) + noise) * 0.2;
             FragColor = vec4(dist * screenBurnColor.r, dist * screenBurnColor.g, dist * screenBurnColor.b, 1.0);
         } else {
             FragColor = vec4(0.0, 0.0, 0.0, 1.0);
