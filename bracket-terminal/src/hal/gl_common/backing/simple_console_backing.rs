@@ -19,12 +19,8 @@ impl SimpleConsoleBackend {
             vertex_counter: 0,
             index_counter: 0,
         };
-        for _ in 0..vertex_capacity {
-            result.vao.vertex_buffer.push(0.0);
-        }
-        for _ in 0..index_capacity {
-            result.vao.index_buffer.push(0);
-        }
+        result.vao.vertex_buffer.resize(vertex_capacity, 0.0);
+        result.vao.index_buffer.resize(index_capacity, 0);
         result
     }
 
