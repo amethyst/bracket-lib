@@ -105,7 +105,6 @@ impl AStar {
 
     /// Adds a successor; if we're at the end, marks success.
     fn add_successor(&mut self, q: Node, idx: usize, cost: f32, map: &dyn BaseMap) {
-        // Did we reach our goal?
         let distance = self.distance_to_end(idx, map);
         let s = Node {
             idx,
