@@ -18,11 +18,7 @@ pub fn register_palette_color<S: ToString, COLOR: Into<RGBA>>(name: S, color: CO
 #[allow(clippy::needless_pass_by_value)]
 pub fn palette_color<S: ToString>(name: &S) -> Option<RGBA> {
     let plock = PALETTE.lock();
-    if let Some(col) = plock.get(&name.to_string()) {
-        Some(*col)
-    } else {
-        None
-    }
+    plock.get(&name.to_string()).map_or(None, |col| Some(*col))
 }
 
 /// Empties the palette
