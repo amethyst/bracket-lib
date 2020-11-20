@@ -18,7 +18,7 @@ exclude = [
 [dependencies]
 bracket-color = { path = "../bracket-color", version = "~0.8.1", features = [ "rex", "palette" ] }
 bracket-geometry = { path = "../bracket-geometry", version = "~0.8.1" }
-flate2 = "1.0.14"
+flate2 = "1.0.19"
 lazy_static = "1.4.0"
 object-pool = "0.5.2"
 byteorder = "1.3.4"
