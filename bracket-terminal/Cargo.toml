@@ -28,7 +28,7 @@ crossterm = { version = "~0.17.4", optional = true }
 pancurses = { version = "0.16.1", optional = true }
 amethyst = { version = "0.15.0", features = [ "tiles" ], optional = true }
 ultraviolet = "~0.7.5"
-parking_lot = { version = "~0.10.2" }
+parking_lot = { version = "~0.11.1" }
 
 [target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
 glutin = {version = "0.25.1", optional = true }
