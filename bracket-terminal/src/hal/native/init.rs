@@ -31,7 +31,7 @@ pub fn init_raw<S: ToString>(
         if let Some(mh) = el.available_monitors().next() {
             windowed_context
                 .window()
-                .set_fullscreen(Some(glutin::window::Fullscreen::Borderless(mh)));
+                .set_fullscreen(Some(glutin::window::Fullscreen::Borderless(Some(mh))));
         } else {
             return Err("No available monitor found".into());
         }
