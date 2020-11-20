@@ -13,7 +13,7 @@ categories = ["game-engines", "graphics"]
 license = "MIT"
 
 [dependencies]
-ultraviolet = "~0.4.6"
+ultraviolet = "~0.7.5"
 serde = { version = "~1.0.110", features = ["derive"], optional = true }
 specs = { version = "0.16.1", optional = true }
 

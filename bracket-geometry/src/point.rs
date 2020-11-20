@@ -1,6 +1,6 @@
 use std::convert::{From, TryInto};
 use std::ops;
-use ultraviolet::{Vec2, Vec2i};
+use ultraviolet::Vec2;
 
 pub type PointF = Vec2;
 
@@ -81,20 +81,25 @@ impl Point {
         Vec2::new(self.x as f32, self.y as f32)
     }
 
+    /*
+    // This doesn't seem to exist anymore?
     /// Converts the point to an UltraViolet vec2i
     pub fn to_vec2i(self) -> Vec2i {
         Vec2i::new(self.x, self.y)
     }
+    */
 
     /// Creates a point from an UltraViolet vec2
     pub fn from_vec2(v: Vec2) -> Self {
         Self::new(v.x as i32, v.y as i32)
     }
 
+    /*
     /// Creates a point from an UltraViolet vec2i
     pub fn from_vec2i(v: Vec2i) -> Self {
         Self::new(v.x, v.y)
     }
+    */
 }
 
 impl From<(i32, i32)> for Point {
@@ -124,6 +129,7 @@ impl From<Vec2> for Point {
     }
 }
 
+/*
 impl From<Vec2i> for Point {
     fn from(item: Vec2i) -> Self {
         Self {
@@ -132,6 +138,7 @@ impl From<Vec2i> for Point {
         }
     }
 }
+*/
 
 ///////////////////////////////////////////////////////////////////////////////////////
 /// Overloads: We support basic point math

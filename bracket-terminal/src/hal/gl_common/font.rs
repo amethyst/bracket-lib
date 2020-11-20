@@ -96,7 +96,7 @@ impl Font {
             self.width = w as u32;
             self.height = h as u32;
             let img_flip = img_orig.flipv();
-            let img = img_flip.to_rgba();
+            let img = img_flip.to_rgba8();
             let mut data = img.into_raw();
             if let Some(bg_rgb) = self.explicit_background {
                 let bg_r = (bg_rgb.r * 255.0) as u8;

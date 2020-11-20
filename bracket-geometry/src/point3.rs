@@ -1,6 +1,6 @@
 use std::convert::{From, TryInto};
 use std::ops;
-use ultraviolet::{Vec3, Vec3i};
+use ultraviolet::Vec3;
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
@@ -43,10 +43,12 @@ impl Point3 {
         Vec3::new(self.x as f32, self.y as f32, self.z as f32)
     }
 
+    /*
     /// Converts into an UltraViolet Vec3
     pub fn to_vec3i(&self) -> Vec3i {
         Vec3i::new(self.x, self.y, self.z)
     }
+    */
 }
 
 impl From<Vec3> for Point3 {
@@ -59,6 +61,7 @@ impl From<Vec3> for Point3 {
     }
 }
 
+/*
 impl From<Vec3i> for Point3 {
     fn from(item: Vec3i) -> Self {
         Self {
@@ -68,6 +71,7 @@ impl From<Vec3i> for Point3 {
         }
     }
 }
+*/
 
 ///////////////////////////////////////////////////////////////////////////////////////
 /// Overloads: We support basic point math
