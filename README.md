@@ -47,9 +47,10 @@ By default, `bracket-lib` runs in OpenGL mode (or WebGL if it detects that you a
 
 ## Sample Projects
 
+- https://github.com/Micutio/innit
+- https://github.com/amethyst/shotcaller
 - https://github.com/bofh69/rouge
 - https://github.com/carsin/miners
-- https://github.com/amethyst/shotcaller
 - https://github.com/baszalmstra/my-little-robots
 - https://github.com/Havegum/Terrain-Generator
 - https://github.com/Bobox214/rs-gliphus
