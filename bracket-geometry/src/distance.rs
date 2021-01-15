@@ -7,6 +7,7 @@ pub enum DistanceAlg {
     PythagorasSquared,
     Manhattan,
     Chebyshev,
+    Diagonal
 }
 
 impl DistanceAlg {
@@ -17,6 +18,7 @@ impl DistanceAlg {
             DistanceAlg::PythagorasSquared => distance2d_pythagoras_squared(start, end),
             DistanceAlg::Manhattan => distance2d_manhattan(start, end),
             DistanceAlg::Chebyshev => distance2d_chebyshev(start, end),
+            DistanceAlg::Diagonal => distance2d_diagonal(start, end)
         }
     }
     /// Provides a 3D distance between points, using the specified algorithm.
@@ -26,6 +28,7 @@ impl DistanceAlg {
             DistanceAlg::PythagorasSquared => distance3d_pythagoras_squared(start, end),
             DistanceAlg::Manhattan => distance3d_manhattan(start, end),
             DistanceAlg::Chebyshev => distance3d_pythagoras(start, end),
+            DistanceAlg::Diagonal => distance3d_diagonal(start, end)
         }
     }
 }
@@ -82,6 +85,24 @@ fn distance2d_pythagoras(start: Point, end: Point) -> f32 {
 fn distance3d_pythagoras(start: Point3, end: Point3) -> f32 {
     let dsq = distance3d_pythagoras_squared(start, end);
     f32::sqrt(dsq)
+}
+
+// Calculates a diagonal distance
+fn distance2d_diagonal(start: Point, end: Point) -> f32 {
+    i32::max(
+        (start.x - end.x).abs(),
+        (start.y - end.y).abs()
+    ) as f32
+}
+
+fn distance3d_diagonal(start: Point3, end: Point3) -> f32 {
+    i32::max(
+        (start.x - end.x).abs(),
+        i32::max(
+            (start.y - end.y).abs(),
+            (start.z - end.z).abs()
+        )
+    ) as f32
 }
 
 #[cfg(test)]
