@@ -45,7 +45,7 @@ amethyst_engine_metal = [ "amethyst/metal", "image" ]
 bracket-random = { path = "../bracket-random", version = "~0.8.0" }
 bracket-pathfinding = { path = "../bracket-pathfinding", version = "~0.8.1" }
 bracket-noise = { path = "../bracket-noise", version = "~0.8.1" }
-criterion = "0.3.1"
+criterion = "0.3.4"
 
 [target.wasm32-unknown-unknown.dependencies]
 web-sys = { version = "0.3", features=["console", "Attr", "CanvasRenderingContext2d", "Document", "Element", "Event",

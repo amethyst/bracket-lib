@@ -32,7 +32,7 @@ rand = { version = "0.7.3", features = ["wasm-bindgen"] }
 rand = "0.7.3"
 
 [dev-dependencies]
-criterion = "0.3.1"
+criterion = "0.3.4"
 serde_json = "1.0.53"
 
 [[bench]]
