@@ -20,8 +20,8 @@ fn on_resize(
     let mut be = BACKEND.lock();
     if send_event {
         bterm.resize_pixels(
-            (physical_size.width as f64 / dpi_scale_factor) as u32,
-            (physical_size.height as f64 / dpi_scale_factor) as u32,
+            physical_size.width as u32,
+            physical_size.height as u32,
             be.resize_scaling,
         );
     }
