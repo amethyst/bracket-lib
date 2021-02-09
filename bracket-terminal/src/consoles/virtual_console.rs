@@ -434,5 +434,5 @@ impl Console for VirtualConsole {
     }
 
     // Clears the dirty bit
-    fn clear_dirty(&mut self) { }
+    fn clear_dirty(&mut self) {}
 }

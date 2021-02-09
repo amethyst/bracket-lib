@@ -1,3 +1,4 @@
+use super::char_to_keycode;
 use super::*;
 use crate::hal::VirtualKeyCode;
 use crate::prelude::{
@@ -8,7 +9,6 @@ use pancurses::endwin;
 use std::collections::HashSet;
 use std::convert::TryInto;
 use std::time::Instant;
-use super::char_to_keycode;
 
 pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
     let now = Instant::now();
@@ -20,7 +20,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     let mut key_map: HashSet<char> = HashSet::new();
     let mut keys_this_frame: HashSet<char> = HashSet::new();
 
-    let mut output_buffer : Option<Vec<OutputBuffer>> = None;
+    let mut output_buffer: Option<Vec<OutputBuffer>> = None;
 
     while !bterm.quitting {
         let now_seconds = now.elapsed().as_secs();
@@ -84,10 +84,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                                     buttons_this_frame.1 = true;
                                 }
                             }
-                            bterm.on_mouse_position(
-                                mouse_event.x as f64,
-                                mouse_event.y as f64,
-                            );
+                            bterm.on_mouse_position(mouse_event.x as f64, mouse_event.y as f64);
                         }
                     }
                     _ => {
@@ -132,9 +129,9 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 
 #[derive(Clone, PartialEq)]
 struct OutputBuffer {
-    glyph : char,
+    glyph: char,
     fg: RGBA,
-    bg: RGBA
+    bg: RGBA,
 }
 
 impl Default for OutputBuffer {
@@ -142,7 +139,7 @@ impl Default for OutputBuffer {
         Self {
             glyph: ' ',
             fg: RGBA::from_f32(1.0, 1.0, 1.0, 1.0),
-            bg: RGBA::from_f32(0.0, 0.0, 0.0, 0.0)
+            bg: RGBA::from_f32(0.0, 0.0, 0.0, 0.0),
         }
     }
 }
@@ -154,7 +151,7 @@ fn full_redraw() -> Result<Vec<OutputBuffer>> {
 
     let height = window.get_max_y() as usize;
     let width = window.get_max_x() as usize;
-    let mut buffer = vec![OutputBuffer::default(); height*width];
+    let mut buffer = vec![OutputBuffer::default(); height * width];
 
     window.clear();
 
@@ -183,11 +180,7 @@ fn full_redraw() -> Result<Vec<OutputBuffer>> {
 
                     let ch = to_char(t.glyph as u8);
                     let ty = st.height as i32 - (y as i32 + 1);
-                    window.mvaddch(
-                        ty,
-                        x as i32,
-                        ch,
-                    );
+                    window.mvaddch(ty, x as i32, ch);
                     let buf_idx = (ty as usize * height) + x as usize;
                     buffer[buf_idx].glyph = ch;
                     buffer[buf_idx].fg = t.fg;
@@ -215,11 +208,7 @@ fn full_redraw() -> Result<Vec<OutputBuffer>> {
                 window.attrset(pancurses::COLOR_PAIR(pair.try_into()?));
                 let ch = to_char(t.glyph as u8);
                 let ty = st.height as i32 - (y as i32 + 1);
-                window.mvaddch(
-                    ty,
-                    x as i32,
-                    ch,
-                );
+                window.mvaddch(ty, x as i32, ch);
                 let buf_idx = (ty as usize * height) + x as usize;
                 buffer[buf_idx].glyph = ch;
                 buffer[buf_idx].fg = t.fg;
@@ -232,7 +221,7 @@ fn full_redraw() -> Result<Vec<OutputBuffer>> {
     Ok(buffer)
 }
 
-fn partial_redraw(buf : &mut Vec<OutputBuffer>) {
+fn partial_redraw(buf: &mut Vec<OutputBuffer>) {
     let be = BACKEND.lock();
     let window = be.window.as_ref().unwrap();
 
@@ -250,10 +239,10 @@ fn partial_redraw(buf : &mut Vec<OutputBuffer>) {
                 for x in 0..st.width {
                     let t = &st.tiles[idx];
 
-                    let new_output = OutputBuffer{
+                    let new_output = OutputBuffer {
                         glyph: to_char(t.glyph as u8),
                         fg: t.fg,
-                        bg: t.bg
+                        bg: t.bg,
                     };
                     let ty = st.height as i32 - (y as i32 + 1);
                     let buf_idx = (ty as usize * width) + x as usize;
@@ -270,10 +259,10 @@ fn partial_redraw(buf : &mut Vec<OutputBuffer>) {
                 let y = t.idx as u32 / st.width;
                 let ty = st.height as i32 - (y as i32 + 1);
                 let buf_idx = (ty as usize * width) + x as usize;
-                let new_output = OutputBuffer{
+                let new_output = OutputBuffer {
                     glyph: to_char(t.glyph as u8),
                     fg: t.fg,
-                    bg: t.bg
+                    bg: t.bg,
                 };
                 if buf[buf_idx] != new_output {
                     buf[buf_idx] = new_output;
@@ -303,11 +292,7 @@ fn partial_redraw(buf : &mut Vec<OutputBuffer>) {
         let pair = (cp_bg * 16) + cp_fg;
         window.attrset(pancurses::COLOR_PAIR(pair.try_into().unwrap()));
 
-        window.mvaddch(
-            y as i32,
-            x as i32,
-            buf[*idx].glyph,
-        );
+        window.mvaddch(y as i32, x as i32, buf[*idx].glyph);
     });
 
     window.refresh();

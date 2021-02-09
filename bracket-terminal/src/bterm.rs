@@ -77,7 +77,7 @@ pub struct BTerm {
     pub quitting: bool,
     pub post_scanlines: bool,
     pub post_screenburn: bool,
-    pub screen_burn_color: bracket_color::prelude::RGB
+    pub screen_burn_color: bracket_color::prelude::RGB,
 }
 
 impl BTerm {

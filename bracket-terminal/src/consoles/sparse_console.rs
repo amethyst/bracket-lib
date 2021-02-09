@@ -418,5 +418,7 @@ impl Console for SparseConsole {
     }
 
     // Clears the dirty bit
-    fn clear_dirty(&mut self) { self.is_dirty = false; }
+    fn clear_dirty(&mut self) {
+        self.is_dirty = false;
+    }
 }

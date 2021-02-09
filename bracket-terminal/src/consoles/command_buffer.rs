@@ -17,10 +17,9 @@ lazy_static! {
 }
 
 lazy_static! {
-    static ref BUFFER_POOL: Arc<Pool<DrawBatch>> =
-        Arc::new(Pool::new(128, || DrawBatch {
-            batch: Vec::with_capacity(5000)
-        }));
+    static ref BUFFER_POOL: Arc<Pool<DrawBatch>> = Arc::new(Pool::new(128, || DrawBatch {
+        batch: Vec::with_capacity(5000)
+    }));
 }
 
 /// Clears the global command buffer. This is called internally by BTerm at the end of each
@@ -158,7 +157,7 @@ pub struct DrawBatch {
 impl DrawBatch {
     /// Obtain a new, empty draw batch
     pub fn new() -> Reusable<'static, DrawBatch> {
-        BUFFER_POOL.pull(|| { panic!("No pooling!") })
+        BUFFER_POOL.pull(|| panic!("No pooling!"))
     }
 
     /// Submits a batch to the global drawing buffer, and empties the batch.

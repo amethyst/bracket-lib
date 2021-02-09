@@ -1,6 +1,6 @@
 bracket_terminal::add_wasm_support!();
-use bracket_terminal::prelude::*;
 use bracket_random::prelude::*;
+use bracket_terminal::prelude::*;
 
 struct State {
     nyan: XpFile,
@@ -52,12 +52,12 @@ impl GameState for State {
                     let mut rng = RandomNumberGenerator::new();
                     let n = rng.range(0, 6);
                     match n {
-                    0 => ctx.screen_burn_color(RGB::named(RED)),
-                    1 => ctx.screen_burn_color(RGB::named(YELLOW)),
-                    2 => ctx.screen_burn_color(RGB::named(GREEN)),
-                    3 => ctx.screen_burn_color(RGB::named(BLUE)),
-                    4 => ctx.screen_burn_color(RGB::named(MAGENTA)),
-                    _ => ctx.screen_burn_color(RGB::named(CYAN)),
+                        0 => ctx.screen_burn_color(RGB::named(RED)),
+                        1 => ctx.screen_burn_color(RGB::named(YELLOW)),
+                        2 => ctx.screen_burn_color(RGB::named(GREEN)),
+                        3 => ctx.screen_burn_color(RGB::named(BLUE)),
+                        4 => ctx.screen_burn_color(RGB::named(MAGENTA)),
+                        _ => ctx.screen_burn_color(RGB::named(CYAN)),
                     }
                 }
             }

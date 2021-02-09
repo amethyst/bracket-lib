@@ -1,6 +1,6 @@
 use bracket_color::prelude::*;
-use std::collections::HashMap;
 use parking_lot::Mutex;
+use std::collections::HashMap;
 
 pub struct CursesColor {
     rf: f32,
@@ -23,11 +23,10 @@ lazy_static! {
 }
 
 pub fn find_nearest_color(color: RGBA, map: &[CursesColor]) -> i16 {
-    let key = (color.r * 255.0) as u32 +
-        (((color.g * 255.0) as u32) << 8u32) +
-        (((color.b * 255.0) as u32) << 16u32) +
-        (((color.a * 255.0) as u32) << 24u32)
-    ;
+    let key = (color.r * 255.0) as u32
+        + (((color.g * 255.0) as u32) << 8u32)
+        + (((color.b * 255.0) as u32) << 16u32)
+        + (((color.a * 255.0) as u32) << 24u32);
     {
         let cache = COLOR_CACHE.lock();
         if let Some(col) = cache.get(&key) {

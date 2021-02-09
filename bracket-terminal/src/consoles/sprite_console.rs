@@ -273,5 +273,7 @@ impl Console for SpriteConsole {
     }
 
     // Clears the dirty bit
-    fn clear_dirty(&mut self) { self.is_dirty = false; }
+    fn clear_dirty(&mut self) {
+        self.is_dirty = false;
+    }
 }
