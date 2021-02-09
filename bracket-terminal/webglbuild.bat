@@ -1,5 +1,5 @@
 @ECHO OFF
-cargo build --all --target wasm32-unknown-unknown --release --features=opengl --all
+cargo build --all --target wasm32-unknown-unknown --release --features=opengl
 
 REM Build the actual WASM files and helpers
 CALL :StageExample alpha, alpha

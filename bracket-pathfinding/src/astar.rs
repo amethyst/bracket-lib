@@ -121,7 +121,7 @@ impl AStar {
         }
 
         // If a node with the same position as successor is in the closed list, with a lower f, skip add
-        if should_add && self.closed_list.contains_key(&idx) && self.closed_list[&idx] < s.f {
+        if should_add && self.closed_list.contains_key(&idx) {
             should_add = false;
         }
 
