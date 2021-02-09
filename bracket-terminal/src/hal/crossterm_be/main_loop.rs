@@ -61,18 +61,18 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     //println!("{:?}", event);
                     // Button capture goes here
                     // Mouse doesn't seem to support cursor position? That's going to cause issues.
-                    match event {
-                        crossterm::event::MouseEvent::Down(button, x, y, _modifiers) => {
+                    match event.kind {
+                        crossterm::event::MouseEventKind::Down(button) => {
                             bterm.left_click = true;
-                            bterm.mouse_pos = (x as i32 * 8, y as i32 * 8);
-                            bterm.on_mouse_position(x as f64 * 8.0, y as f64 * 8.0);
+                            bterm.mouse_pos = (event.column as i32 * 8, event.row as i32 * 8);
+                            bterm.on_mouse_position(event.column as f64 * 8.0, event.row as f64 * 8.0);
                             bterm.on_mouse_button(button as usize, true);
                         }
-                        crossterm::event::MouseEvent::Up(button, _x, _y, _modifiers) => {
+                        crossterm::event::MouseEventKind::Up(button) => {
                             bterm.on_mouse_button(button as usize, false);
                         }
-                        crossterm::event::MouseEvent::Drag(_button, x, y, _modifiers) => {
-                            bterm.on_mouse_position(x as f64 * 8.0, y as f64 * 8.0);
+                        crossterm::event::MouseEventKind::Drag(..) => {
+                            bterm.on_mouse_position(event.column as f64 * 8.0, event.row as f64 * 8.0);
                         }
                         _ => {
                             //eprintln!("{:?}", event);
