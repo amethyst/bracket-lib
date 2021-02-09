@@ -13,6 +13,15 @@ pub struct TextBlock {
     cursor: (i32, i32),
 }
 
+#[derive(Debug, Clone)]
+pub struct OutOfSpace;
+
+impl std::fmt::Display for OutOfSpace {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "Out of text-buffer space.")
+    }
+}
+
 impl TextBlock {
     pub fn new(x: i32, y: i32, width: i32, height: i32) -> TextBlock {
         TextBlock {
@@ -82,19 +91,23 @@ impl TextBlock {
         }
     }
 
-    pub fn print(&mut self, text: &TextBuilder) {
+    pub fn print(&mut self, text: &TextBuilder) -> Result<(), OutOfSpace> {
         for cmd in &text.commands {
             match cmd {
                 CommandType::Text { block: t } => {
                     for c in t {
                         let idx = self.at(self.cursor.0, self.cursor.1);
-                        self.buffer[idx].glyph = *c;
-                        self.buffer[idx].fg = self.fg;
-                        self.buffer[idx].bg = self.bg;
-                        self.cursor.0 += 1;
-                        if self.cursor.0 >= self.width {
-                            self.cursor.0 = 0;
-                            self.cursor.1 += 1;
+                        if idx < self.buffer.len() {
+                            self.buffer[idx].glyph = *c;
+                            self.buffer[idx].fg = self.fg;
+                            self.buffer[idx].bg = self.bg;
+                            self.cursor.0 += 1;
+                            if self.cursor.0 >= self.width {
+                                self.cursor.0 = 0;
+                                self.cursor.1 += 1;
+                            }
+                        } else {
+                            return Err(OutOfSpace);
                         }
                     }
                 }
@@ -105,13 +118,17 @@ impl TextBlock {
                     self.cursor.0 = (self.width / 2) - half_width;
                     for c in t {
                         let idx = self.at(self.cursor.0, self.cursor.1);
-                        self.buffer[idx].glyph = *c;
-                        self.buffer[idx].fg = self.fg;
-                        self.buffer[idx].bg = self.bg;
-                        self.cursor.0 += 1;
-                        if self.cursor.0 >= self.width {
-                            self.cursor.0 = 0;
-                            self.cursor.1 += 1;
+                        if idx < self.buffer.len() {
+                            self.buffer[idx].glyph = *c;
+                            self.buffer[idx].fg = self.fg;
+                            self.buffer[idx].bg = self.bg;
+                            self.cursor.0 += 1;
+                            if self.cursor.0 >= self.width {
+                                self.cursor.0 = 0;
+                                self.cursor.1 += 1;
+                            }
+                        } else {
+                            return Err(OutOfSpace);
                         }
                     }
                 }
@@ -139,19 +156,24 @@ impl TextBlock {
                         }
                         for c in chrs {
                             let idx = self.at(self.cursor.0, self.cursor.1);
-                            self.buffer[idx].glyph = c;
-                            self.buffer[idx].fg = self.fg;
-                            self.buffer[idx].bg = self.bg;
-                            self.cursor.0 += 1;
-                            if self.cursor.0 >= self.width {
-                                self.cursor.0 = 0;
-                                self.cursor.1 += 1;
+                            if idx < self.buffer.len() {
+                                self.buffer[idx].glyph = c;
+                                self.buffer[idx].fg = self.fg;
+                                self.buffer[idx].bg = self.bg;
+                                self.cursor.0 += 1;
+                                if self.cursor.0 >= self.width {
+                                    self.cursor.0 = 0;
+                                    self.cursor.1 += 1;
+                                }
+                            } else {
+                                return Err(OutOfSpace);
                             }
                         }
                     }
                 }
             }
         }
+        Ok(())
     }
 }
 
@@ -215,5 +237,37 @@ impl TextBuilder {
             block: text.to_string(),
         });
         self
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{TextBlock, TextBuilder};
+
+    #[test]
+    fn textblock_ok() {
+        let mut block = TextBlock::new(0, 0, 80, 25);
+
+        let mut buf = TextBuilder::empty();
+        buf.ln()
+            .centered("Hello World")
+            .line_wrap("The quick brown fox jumped over the lazy dog, and just kept on running in an attempt to exceed the console width.")
+            .reset();
+
+        assert!(block.print(&buf).is_ok());
+    }
+
+    #[test]
+    fn textblock_wrap_error() {
+        let mut block = TextBlock::new(0, 0, 80, 2);
+
+        let mut buf = TextBuilder::empty();
+        buf.ln()
+            .centered("Hello World")
+            .line_wrap("The quick brown fox jumped over the lazy dog, and just kept on running in an attempt to exceed the console width.")
+            .line_wrap("The quick brown fox jumped over the lazy dog, and just kept on running in an attempt to exceed the console width.")
+            .reset();
+
+        assert!(block.print(&buf).is_err());
     }
 }

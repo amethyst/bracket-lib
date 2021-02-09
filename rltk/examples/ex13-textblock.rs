@@ -29,7 +29,7 @@ impl GameState for State {
             .append(&format!("{}", ctx.fps))
             .reset();
 
-        block.print(&buf);
+        block.print(&buf).expect("Too much text");
 
         block.render_to_draw_batch(&mut draw_batch);
         draw_batch.submit(0).expect("Batch error");
