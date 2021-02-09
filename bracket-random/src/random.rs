@@ -39,9 +39,9 @@ impl RandomNumberGenerator {
     /// So range(1,6) will give you numbers from 1 to 5.
     pub fn range<T>(&mut self, min: T, max: T) -> T
     where
-        T: rand::distributions::uniform::SampleUniform,
+        T: rand::distributions::uniform::SampleUniform + PartialOrd,
     {
-        self.rng.gen_range(min, max)
+        self.rng.gen_range(min..max)
     }
 
     /// Rolls dice, using the classic 3d6 type of format: n is the number of dice, die_type is the size of the dice.

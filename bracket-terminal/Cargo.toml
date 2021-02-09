@@ -53,7 +53,7 @@ web-sys = { version = "0.3", features=["console", "Attr", "CanvasRenderingContex
     "MouseEvent"] }
 wasm-bindgen = "0.2"
 wasm-timer = "0.1.0"
-rand = { version = "0.7.3", features = ["wasm-bindgen"] }
+rand = { version = "0.8.3" }
 console_error_panic_hook = "0.1.6"
 winit = { version = "0.24.0", features = [ "web-sys" ] }
 
