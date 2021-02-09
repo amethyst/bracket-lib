@@ -10,7 +10,7 @@ use amethyst::{
     ecs::prelude::*,
     input::{Bindings, InputBundle, InputHandler, StringBindings},
     prelude::*,
-    renderer::{camera::Projection, palette::Srgba, Camera},
+    renderer::{palette::Srgba, Camera},
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
         types::DefaultBackend,
@@ -218,14 +218,14 @@ impl BTermGemBridge {
 
         world
             .create_entity()
-            .with(Camera::from(Projection::orthographic(
+            .with(Camera::orthographic(
                 -width / 2.0,
                 width / 2.0,
                 -height / 2.0,
                 height / 2.0,
                 0.0,
                 5.0,
-            )))
+            ))
             .with(transform)
             .build();
     }
