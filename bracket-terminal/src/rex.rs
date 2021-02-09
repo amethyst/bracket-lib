@@ -17,8 +17,9 @@ use flate2::read::GzDecoder;
 use flate2::write::GzEncoder;
 use flate2::Compression;
 
-use crate::prelude::{Console, FontCharType};
-use bracket_color::prelude::{XpColor, RGB};
+use crate::prelude::{Console, FontCharType, DrawBatch};
+use bracket_color::prelude::{XpColor, RGB, ColorPair};
+use bracket_geometry::prelude::Point;
 
 /// Structure representing a character and its foreground/background color
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -183,6 +184,24 @@ pub fn xp_to_console(
                         y as i32 + offset_y,
                         RGB::from_xp(cell.fg).into(),
                         RGB::from_xp(cell.bg).into(),
+                        cell.ch as FontCharType,
+                    );
+                }
+            }
+        }
+    }
+}
+
+/// Applies an XpFile to a given draw batch, with 0,0 offset by offset_x and offset-y.
+pub fn xp_to_draw_batch(xp: &XpFile, draw_batch: &mut DrawBatch, offset_x: i32, offset_y: i32) {
+    for layer in &xp.layers {
+        for y in 0..layer.height {
+            for x in 0..layer.width {
+                let cell = layer.get(x, y).unwrap();
+                if !cell.bg.is_transparent() {
+                    draw_batch.set(
+                        Point::new(x as i32 + offset_x, y as i32 + offset_y),
+                        ColorPair::new(RGB::from_xp(cell.fg), RGB::from_xp(cell.bg)),
                         cell.ch as FontCharType,
                     );
                 }
