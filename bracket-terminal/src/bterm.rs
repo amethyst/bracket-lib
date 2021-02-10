@@ -236,7 +236,28 @@ impl BTerm {
     #[cfg(not(feature = "curses"))]
     fn pixel_to_char_pos(&self, pos: (i32, i32), console: &Box<dyn Console>) -> (i32, i32) {
         let max_sizes = console.get_char_size();
-        let (scale, center_x, center_y) = console.get_scale();
+        //let (scale, center_x, center_y) = console.get_scale();
+
+        // Scaling now works by projecting the mouse position to 0..1 in both dimensions and then
+        // multiplying by the console size (with clamping).
+        let w = self.width_pixels as f32;
+        let h = self.height_pixels as f32;
+        let extent_x = pos.0 as f32 / w;
+        let extent_y = pos.1 as f32 / h;
+        let mouse_x = f32::min(
+            extent_x * max_sizes.0 as f32,
+            max_sizes.0 as f32 - 1.0
+        );
+        let mouse_y = f32::min(
+            extent_y * max_sizes.1 as f32,
+            max_sizes.1 as f32 - 1.0
+        );
+
+        //println!("Screen: {}x{}. Console size: {}x{}", w, h, max_sizes.0, max_sizes.1);
+
+        ( mouse_x as i32, mouse_y as i32 )
+
+/*
         let font_size = (
             self.width_pixels as f32 / max_sizes.0 as f32,
             self.height_pixels as f32 / max_sizes.1 as f32,
@@ -258,7 +279,7 @@ impl BTerm {
                 0,
                 max_sizes.1 as i32 - 1,
             ),
-        )
+        )*/
     }
 
     /// Applies the current physical mouse position to the active console, and translates the coordinates into that console's coordinate space.

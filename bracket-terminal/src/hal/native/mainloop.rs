@@ -16,6 +16,7 @@ fn on_resize(
     dpi_scale_factor: f64,
     send_event: bool,
 ) -> Result<()> {
+    //println!("{:#?}", physical_size);
     INPUT.lock().set_scale_factor(dpi_scale_factor);
     let mut be = BACKEND.lock();
     if send_event {
@@ -50,8 +51,8 @@ fn on_resize(
         let num_consoles = bit.consoles.len();
         for i in 0..num_consoles {
             let font_size = bit.fonts[bit.consoles[i].font_index].tile_size;
-            let chr_w = (physical_size.width as f64 / dpi_scale_factor) as u32 / font_size.0;
-            let chr_h = (physical_size.height as f64 / dpi_scale_factor) as u32 / font_size.1;
+            let chr_w = physical_size.width as u32 / font_size.0;
+            let chr_h = physical_size.height as u32 / font_size.1;
             bit.consoles[i].console.set_char_size(chr_w, chr_h);
         }
     }
@@ -92,7 +93,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
         &mut bterm,
         wc.window().inner_size(),
         wc.window().scale_factor(),
-        false,
+        true,
     )?; // Additional resize to handle some X11 cases
 
     el.run(move |event, _, control_flow| {
@@ -153,8 +154,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                     bterm.on_event(BEvent::Focused { focused: *focused });
                 }
                 WindowEvent::CursorMoved { position: pos, .. } => {
-                    let scale_factor = wc.window().scale_factor();
-                    bterm.on_mouse_position(pos.x / scale_factor, pos.y / scale_factor);
+                    bterm.on_mouse_position(pos.x, pos.y);
                 }
                 WindowEvent::CursorEntered { .. } => bterm.on_event(BEvent::CursorEntered),
                 WindowEvent::CursorLeft { .. } => bterm.on_event(BEvent::CursorLeft),
