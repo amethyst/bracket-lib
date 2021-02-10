@@ -255,7 +255,7 @@ impl BTerm {
 
         //println!("Screen: {}x{}. Console size: {}x{}", w, h, max_sizes.0, max_sizes.1);
 
-        ( mouse_x as i32, mouse_y as i32 )
+        ( i32::max(0, mouse_x as i32), i32::max(0, mouse_y as i32 ))
 
 /*
         let font_size = (
