@@ -8,7 +8,7 @@ To obtain `bracket-color`, include the following in your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-bracket-color = "0.7.0"
+bracket-color = "0.8.2"
 ```
 
 ## RGB
