@@ -8,7 +8,7 @@ To obtain `bracket-random`, include the following in your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-bracket-random = "0.7.0"
+bracket-random = "0.8.2"
 ```
 
 It will be available as a crate very soon.
