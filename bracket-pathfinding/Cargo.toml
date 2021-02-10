@@ -1,6 +1,6 @@
 [package]
 name = "bracket-pathfinding"
-version = "0.8.2"
+version = "0.8.3"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = true

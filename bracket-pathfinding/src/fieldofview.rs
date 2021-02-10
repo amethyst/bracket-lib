@@ -35,10 +35,10 @@ impl ScanFovData<'_> {
 
     fn insert_visible_for_horizontal(&mut self, point: Point) -> bool {
         let idx = self.fov_check.point2d_to_index(point);
-        let mut is_visible = !self.fov_check.is_opaque(idx);
+        let mut is_visible = self.fov_check.in_bounds(point) && !self.fov_check.is_opaque(idx);
 
         if self.distance_to_center(point) <= self.range_2 as f32 {
-            if self.center.y != point.y {
+            if self.center.y != point.y && is_visible {
                 self.visible_points.insert(point);
             }
         } else {
