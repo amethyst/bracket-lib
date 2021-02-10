@@ -10,7 +10,7 @@ You can include it in your project by adding the following to your `Cargo.toml` 
 
 ```toml
 [dependencies]
-bracket-geometry = "0.7.0"
+bracket-geometry = "0.8.2"
 ```
 
 ## Point2D
