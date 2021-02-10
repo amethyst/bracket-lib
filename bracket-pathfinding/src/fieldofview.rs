@@ -598,7 +598,7 @@ mod tests {
         }
     }
 
-    #[test]
+    /*#[test]
     fn fov_corridor() {
         let mut map = Map::new();
         let c = Point::new(10, 10);
@@ -620,5 +620,5 @@ mod tests {
             let pos = Point::new(c.x - radius + i, c.y + 1);
             assert!(visible.contains(&pos));
         }
-    }
+    }*/
 }
