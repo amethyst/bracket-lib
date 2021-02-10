@@ -244,20 +244,14 @@ impl BTerm {
         let h = self.height_pixels as f32;
         let extent_x = pos.0 as f32 / w;
         let extent_y = pos.1 as f32 / h;
-        let mouse_x = f32::min(
-            extent_x * max_sizes.0 as f32,
-            max_sizes.0 as f32 - 1.0
-        );
-        let mouse_y = f32::min(
-            extent_y * max_sizes.1 as f32,
-            max_sizes.1 as f32 - 1.0
-        );
+        let mouse_x = f32::min(extent_x * max_sizes.0 as f32, max_sizes.0 as f32 - 1.0);
+        let mouse_y = f32::min(extent_y * max_sizes.1 as f32, max_sizes.1 as f32 - 1.0);
 
         //println!("Screen: {}x{}. Console size: {}x{}", w, h, max_sizes.0, max_sizes.1);
 
-        ( i32::max(0, mouse_x as i32), i32::max(0, mouse_y as i32 ))
+        (i32::max(0, mouse_x as i32), i32::max(0, mouse_y as i32))
 
-/*
+        /*
         let font_size = (
             self.width_pixels as f32 / max_sizes.0 as f32,
             self.height_pixels as f32 / max_sizes.1 as f32,
