@@ -2,6 +2,15 @@
 
 [Auburn's FastNoise](https://github.com/Auburns/FastNoise) library is amazing - it's fast, covers all the commonly used types of noise, and has been ported to many systems. This crate ports much of that functionality (more is being ported in each version) to Rust. It is part of the `bracket-lib` family of crates.
 
+## Using bracket-noise
+
+To obtain `bracket-noise`, include the following in your `Cargo.toml` file:
+
+```toml
+[dependencies]
+bracket-noise = "0.8.2"
+```
+
 ## Examples
 
 You may run examples with `cargo run --example <name>`. The examples use `crossterm` for easy terminal output.
