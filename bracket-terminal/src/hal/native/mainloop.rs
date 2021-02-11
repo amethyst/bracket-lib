@@ -138,6 +138,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                 WindowEvent::Resized(_physical_size) => {
                     let scale_factor = wc.window().scale_factor();
                     let physical_size = wc.window().inner_size();
+                    wc.resize(physical_size);
                     on_resize(&mut bterm, physical_size, scale_factor, true)
                         .unwrap();
                 }
