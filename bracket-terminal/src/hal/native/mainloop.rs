@@ -174,6 +174,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                 WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
                     let scale_factor = wc.window().scale_factor();
                     let physical_size = wc.window().inner_size();
+                    wc.resize(physical_size);
                     on_resize(&mut bterm, physical_size, scale_factor, false).unwrap();
                     bterm.on_event(BEvent::ScaleFactorChanged {
                         new_size: Point::new(new_inner_size.width, new_inner_size.height),
