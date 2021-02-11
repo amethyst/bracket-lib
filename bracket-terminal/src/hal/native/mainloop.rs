@@ -116,16 +116,18 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                 wc.window().request_redraw();
             }
             Event::RedrawRequested { .. } => {
-                tock(
-                    &mut bterm,
-                    wc.window().scale_factor() as f32,
-                    &mut gamestate,
-                    &mut frames,
-                    &mut prev_seconds,
-                    &mut prev_ms,
-                    &now,
-                );
-                wc.swap_buffers().unwrap();
+                if wc.window().inner_size().width > 0 {
+                    tock(
+                        &mut bterm,
+                        wc.window().scale_factor() as f32,
+                        &mut gamestate,
+                        &mut frames,
+                        &mut prev_seconds,
+                        &mut prev_ms,
+                        &now,
+                    );
+                    wc.swap_buffers().unwrap();
+                }
                 crate::hal::fps_sleep(BACKEND.lock().frame_sleep_time, &now, prev_ms);
             }
             Event::LoopDestroyed => (),
