@@ -154,6 +154,9 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
 fn reset_terminal() {
     execute!(stdout(), crossterm::style::ResetColor).expect("Command fail");
     execute!(stdout(), crossterm::cursor::Show).expect("Command fail");
+    execute!(stdout(), crossterm::terminal::LeaveAlternateScreen).expect("Command fail");
+    execute!(stdout(), crossterm::event::DisableMouseCapture).expect("Command fail");
+    crossterm::terminal::disable_raw_mode();
 }
 
 #[derive(Clone, PartialEq)]
