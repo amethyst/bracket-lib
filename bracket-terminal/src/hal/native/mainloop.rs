@@ -135,8 +135,10 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                         new_position: Point::new(physical_position.x, physical_position.y),
                     });
                 }
-                WindowEvent::Resized(physical_size) => {
-                    on_resize(&mut bterm, *physical_size, wc.window().scale_factor(), true)
+                WindowEvent::Resized(_physical_size) => {
+                    let scale_factor = wc.window().scale_factor();
+                    let physical_size = wc.window().inner_size();
+                    on_resize(&mut bterm, physical_size, scale_factor, true)
                         .unwrap();
                 }
                 WindowEvent::CloseRequested => {
@@ -170,11 +172,12 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
                 }
 
                 WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
-                    let sf = wc.window().scale_factor();
-                    on_resize(&mut bterm, **new_inner_size, sf, false).unwrap();
+                    let scale_factor = wc.window().scale_factor();
+                    let physical_size = wc.window().inner_size();
+                    on_resize(&mut bterm, physical_size, scale_factor, false).unwrap();
                     bterm.on_event(BEvent::ScaleFactorChanged {
                         new_size: Point::new(new_inner_size.width, new_inner_size.height),
-                        dpi_scale_factor: sf as f32,
+                        dpi_scale_factor: scale_factor as f32,
                     })
                 }
 
