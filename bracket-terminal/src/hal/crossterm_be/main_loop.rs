@@ -24,9 +24,9 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<(
     let mut frames = 0;
 
     // Panic handler to reset terminal
-    std::panic::set_hook(Box::new(|_| {
+    ctrlc::set_handler(move || {
         reset_terminal();
-    }));
+    });
 
     let mut key_map: HashSet<crossterm::event::KeyCode> = HashSet::new();
     let mut keys_this_frame: HashSet<crossterm::event::KeyCode> = HashSet::new();
