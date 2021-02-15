@@ -13,6 +13,14 @@ struct ScanFovData<'a> {
 
 #[allow(non_snake_case)]
 impl ScanFovData<'_> {
+    fn is_transparent(&self, idx: usize, point: Point) -> bool {
+        if self.fov_check.in_bounds(point) {
+            !self.fov_check.is_opaque(idx)
+        } else {
+            false
+        }
+    }
+
     fn distance_to_center(&self, point: Point) -> f32 {
         let dx = i32::abs(point.x - self.center.x) as f32 - 0.5;
         let dy = i32::abs(point.y - self.center.y) as f32 - 0.5;
@@ -21,7 +29,7 @@ impl ScanFovData<'_> {
 
     fn insert_visible_for_vertical(&mut self, point: Point) -> bool {
         let idx = self.fov_check.point2d_to_index(point);
-        let mut is_visible = !self.fov_check.is_opaque(idx);
+        let mut is_visible = self.is_transparent(idx, point);
 
         if self.distance_to_center(point) <= self.range_2 as f32 {
             if point.x != self.center.x {
@@ -35,10 +43,10 @@ impl ScanFovData<'_> {
 
     fn insert_visible_for_horizontal(&mut self, point: Point) -> bool {
         let idx = self.fov_check.point2d_to_index(point);
-        let mut is_visible = self.fov_check.in_bounds(point) && !self.fov_check.is_opaque(idx);
+        let mut is_visible = self.is_transparent(idx, point);
 
         if self.distance_to_center(point) <= self.range_2 as f32 {
-            if self.center.y != point.y && is_visible {
+            if self.center.y != point.y {
                 self.visible_points.insert(point);
             }
         } else {
@@ -70,7 +78,7 @@ impl ScanFovData<'_> {
         }
 
         let idx = self.fov_check.point2d_to_index(current);
-        let mut last_visible = !self.fov_check.is_opaque(idx);
+        let mut last_visible = self.is_transparent(idx, current);
         for current_x in current.x..=end_x {
             current.x = current_x;
 
@@ -115,7 +123,7 @@ impl ScanFovData<'_> {
         }
 
         let idx = self.fov_check.point2d_to_index(current);
-        let mut last_visible = !self.fov_check.is_opaque(idx);
+        let mut last_visible = self.is_transparent(idx, current);
         while current.x >= end_x {
             let is_visible = self.insert_visible_for_vertical(current);
 
@@ -159,7 +167,7 @@ impl ScanFovData<'_> {
         }
 
         let idx = self.fov_check.point2d_to_index(current);
-        let mut last_visible = !self.fov_check.is_opaque(idx);
+        let mut last_visible = self.is_transparent(idx, current);
         for current_x in current.x..=end_x {
             current.x = current_x;
 
@@ -204,7 +212,7 @@ impl ScanFovData<'_> {
         }
 
         let idx = self.fov_check.point2d_to_index(current);
-        let mut last_visible = !self.fov_check.is_opaque(idx);
+        let mut last_visible = self.is_transparent(idx, current);
         while current.x >= end_x {
             let is_visible = self.insert_visible_for_vertical(current);
 
@@ -248,7 +256,7 @@ impl ScanFovData<'_> {
         }
 
         let idx = self.fov_check.point2d_to_index(current);
-        let mut last_visible = !self.fov_check.is_opaque(idx);
+        let mut last_visible = self.is_transparent(idx, current);
         for current_y in current.y..=end_y {
             current.y = current_y;
 
@@ -293,7 +301,7 @@ impl ScanFovData<'_> {
         }
 
         let idx = self.fov_check.point2d_to_index(current);
-        let mut last_visible = !self.fov_check.is_opaque(idx);
+        let mut last_visible = self.is_transparent(idx, current);
         while current.y >= end_y {
             let is_visible = self.insert_visible_for_horizontal(current);
 
@@ -337,7 +345,7 @@ impl ScanFovData<'_> {
         }
 
         let idx = self.fov_check.point2d_to_index(current);
-        let mut last_visible = !self.fov_check.is_opaque(idx);
+        let mut last_visible = self.is_transparent(idx, current);
         for current_y in current.y..=end_y {
             current.y = current_y;
 
@@ -382,7 +390,7 @@ impl ScanFovData<'_> {
         }
 
         let idx = self.fov_check.point2d_to_index(current);
-        let mut last_visible = !self.fov_check.is_opaque(idx);
+        let mut last_visible = self.is_transparent(idx, current);
         while current.y >= end_y {
             let is_visible = self.insert_visible_for_horizontal(current);
 
@@ -475,6 +483,10 @@ pub fn field_of_view_set(center: Point, range: i32, fov_check: &dyn Algorithm2D)
     }
 
     visible_points
+        .iter()
+        .map(|p| *p)
+        .filter(|p| fov_check.in_bounds(*p))
+        .collect()
 }
 
 /// Calculates field-of-view for a map that supports Algorithm2D.
@@ -598,7 +610,7 @@ mod tests {
         }
     }
 
-    /*#[test]
+    #[test]
     fn fov_corridor() {
         let mut map = Map::new();
         let c = Point::new(10, 10);
@@ -620,5 +632,5 @@ mod tests {
             let pos = Point::new(c.x - radius + i, c.y + 1);
             assert!(visible.contains(&pos));
         }
-    }*/
+    }
 }

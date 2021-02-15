@@ -44,7 +44,7 @@ amethyst_engine_metal = [ "amethyst/metal", "image" ]
 
 [dev-dependencies]
 bracket-random = { path = "../bracket-random", version = "~0.8.2" }
-bracket-pathfinding = { path = "../bracket-pathfinding", version = "~0.8.2" }
+bracket-pathfinding = { path = "../bracket-pathfinding", version = "~0.8.4" }
 bracket-noise = { path = "../bracket-noise", version = "~0.8.2" }
 criterion = "0.3.4"
 
