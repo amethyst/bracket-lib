@@ -41,7 +41,7 @@ bracket-geometry = { path = "./bracket-geometry", version = "~0.8.2" }
 bracket-noise = { path = "./bracket-noise", version = "~0.8.2" }
 bracket-pathfinding = { path = "./bracket-pathfinding", version = "~0.8.2" }
 bracket-random = { path = "./bracket-random", version = "~0.8.2", features = [ "parsing" ] }
-bracket-terminal = { path = "./bracket-terminal", version = "~0.8.1", default-features = false }
+bracket-terminal = { path = "./bracket-terminal", version = "~0.8.2", default-features = false }
 
 [workspace]
 members = [
