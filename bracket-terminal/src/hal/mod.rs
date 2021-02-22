@@ -25,10 +25,10 @@ mod curses;
 pub use curses::*;
 
 #[cfg(not(feature = "opengl"))]
-#[cfg(all(not(feature = "opengl"), feature = "crossterm"))]
+#[cfg(all(not(feature = "opengl"), feature = "cross_term"))]
 mod crossterm_be;
 
-#[cfg(all(not(feature = "opengl"), feature = "crossterm"))]
+#[cfg(all(not(feature = "opengl"), feature = "cross_term"))]
 pub use crossterm_be::*;
 
 #[cfg(all(

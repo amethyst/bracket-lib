@@ -39,9 +39,9 @@ winit = { version = "0.24.0" }
 default = [ "opengl" ]
 opengl = [ "glow", "image", "glutin" ]
 curses = [ "pancurses", "ctrlc" ]
+cross_term = [ "crossterm", "ctrlc" ]
 amethyst_engine_vulkan = [ "amethyst/vulkan", "image" ]
 amethyst_engine_metal = [ "amethyst/metal", "image" ]
-# TODO: Add crossterm optional ctrlc
 
 [dev-dependencies]
 bracket-random = { path = "../bracket-random", version = "~0.8.2" }

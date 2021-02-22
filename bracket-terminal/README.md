@@ -73,4 +73,4 @@ You can run the `dwarfmap` example with different back-ends like this. The same 
 * *Amethyst (Vulkan)*: `cargo run --example dwarfmap --no-default-features --features "amethyst_engine_vulkan"`
 * *Amethyst (Metal)*: `cargo run --example dwarfmap --no-default-features --features "amethyst_engine_metal"`
 * *Curses*: `cargo run --example dwarfmap --no-default-features --features "curses"`
-* *Crossterm*: `cargo run --example dwarfmap --no-default-features --features "crossterm"`
+* *Crossterm*: (note that the feature is called `cross_term`) `cargo run --example dwarfmap --no-default-features --features "cross_term"`
