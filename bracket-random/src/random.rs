@@ -20,7 +20,13 @@ impl RandomNumberGenerator {
     /// Creates a new RNG from a randomly generated seed
     #[allow(clippy::new_without_default)] // XorShiftRng doesn't have a Default, so we don't either
     pub fn new() -> RandomNumberGenerator {
-        let rng: XorShiftRng = SeedableRng::from_entropy();
+        use std::time::{SystemTime, UNIX_EPOCH};
+        let rng: XorShiftRng = SeedableRng::seed_from_u64(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_secs() as u64,
+        );
         RandomNumberGenerator { rng }
     }
 
