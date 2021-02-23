@@ -4,7 +4,7 @@ use crate::hal::VirtualKeyCode;
 use crate::prelude::{
     to_char, BEvent, BTerm, GameState, SimpleConsole, SparseConsole, BACKEND_INTERNAL, RGBA,
 };
-use crate::{clear_input_state, Result};
+use crate::{clear_input_state, BResult};
 use pancurses::endwin;
 use std::collections::HashSet;
 use std::convert::TryInto;
