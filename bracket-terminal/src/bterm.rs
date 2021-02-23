@@ -6,7 +6,7 @@ use crate::{
         GameState, InitHints, Radians, RenderSprite, Shader, SimpleConsole, SpriteConsole,
         SpriteSheet, TextAlign, VirtualKeyCode, XpFile, XpLayer, BACKEND, INPUT,
     },
-    Result,
+    BResult,
 };
 use bracket_color::prelude::RGBA;
 use bracket_geometry::prelude::{Point, PointF, Rect};
@@ -87,7 +87,7 @@ impl BTerm {
         height_pixels: T,
         window_title: S,
         platform_hints: InitHints,
-    ) -> Result<BTerm>
+    ) -> BResult<BTerm>
     where
         T: TryInto<u32>,
     {
@@ -148,7 +148,7 @@ impl BTerm {
     }
 
     /// Registers a font, and returns its handle number. Do not use after initialization!
-    pub(crate) fn register_font(&mut self, font: Font) -> Result<usize> {
+    pub(crate) fn register_font(&mut self, font: Font) -> BResult<usize> {
         let mut bi = BACKEND_INTERNAL.lock();
         bi.fonts.push(font);
         Ok(bi.fonts.len() - 1)
@@ -1058,7 +1058,7 @@ impl BTerm {
 }
 
 /// Runs the BTerm application, calling into the provided gamestate handler every tick.
-pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> Result<()> {
+pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> BResult<()> {
     super::hal::main_loop(bterm, gamestate)?;
     Ok(())
 }

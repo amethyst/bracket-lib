@@ -297,7 +297,7 @@ impl BTermGemBridge {
     }
 }
 
-pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> Result<()> {
+pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> BResult<()> {
     amethyst::start_logger(Default::default());
 
     let mut cfg = amethyst::window::DisplayConfig::default();

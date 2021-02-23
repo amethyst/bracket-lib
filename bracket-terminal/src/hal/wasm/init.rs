@@ -1,12 +1,12 @@
 use crate::prelude::{BTerm, InitHints, BACKEND_INTERNAL};
-use crate::Result;
+use crate::BResult;
 
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
     _window_title: S,
     _platform_hints: InitHints,
-) -> Result<BTerm> {
+) -> BResult<BTerm> {
     use super::super::*;
     use super::*;
     use wasm_bindgen::JsCast;

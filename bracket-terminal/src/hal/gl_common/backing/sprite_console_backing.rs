@@ -1,6 +1,6 @@
 use crate::hal::{Font, Shader, VertexArray, VertexArrayEntry};
 use crate::prelude::{RenderSprite, SpriteSheet};
-use crate::Result;
+use crate::BResult;
 use bracket_color::prelude::RGBA;
 
 pub struct SpriteConsoleBackend {
@@ -151,7 +151,7 @@ impl SpriteConsoleBackend {
         self.vao.upload_buffers();
     }
 
-    pub fn gl_draw(&mut self, font: &Font, shader: &Shader) -> Result<()> {
+    pub fn gl_draw(&mut self, font: &Font, shader: &Shader) -> BResult<()> {
         self.vao.draw_elements(shader, font);
         Ok(())
     }

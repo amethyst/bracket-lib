@@ -2,7 +2,7 @@ use crate::prelude::{
     init_raw, BTerm, CharacterTranslationMode, FlexiConsole, Font, InitHints, SimpleConsole,
     SparseConsole, SpriteConsole, SpriteSheet, INPUT,
 };
-use crate::Result;
+use crate::BResult;
 use bracket_color::prelude::RGB;
 use std::collections::HashMap;
 use std::convert::*;
@@ -137,7 +137,7 @@ impl BTermBuilder {
     }
 
     /// Provides an 8x8 terminal font simple console, with the specified dimensions as your starting point.
-    pub fn simple<T>(width: T, height: T) -> Result<Self>
+    pub fn simple<T>(width: T, height: T) -> BResult<Self>
     where
         T: TryInto<u32>,
     {
@@ -483,7 +483,7 @@ impl BTermBuilder {
     }
 
     /// Combine all of the builder parameters, and return an BTerm context ready to go.
-    pub fn build(self) -> Result<BTerm> {
+    pub fn build(self) -> BResult<BTerm> {
         let mut context = init_raw(
             self.width * self.tile_width,
             self.height * self.tile_height,

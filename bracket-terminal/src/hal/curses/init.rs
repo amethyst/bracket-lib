@@ -6,7 +6,7 @@ pub fn init_raw<S: ToString>(
     height_pixels: u32,
     _window_title: S,
     platform_hints: InitHints,
-) -> Result<BTerm> {
+) -> BResult<BTerm> {
     let window = initscr();
     resize_term(height_pixels as i32 / 8, width_pixels as i32 / 8);
     noecho();

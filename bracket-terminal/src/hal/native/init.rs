@@ -2,7 +2,7 @@ use super::BACKEND;
 use crate::hal::native::{shader_strings, WrappedContext};
 use crate::hal::{setup_quad, Framebuffer, Shader};
 use crate::prelude::{BTerm, InitHints, BACKEND_INTERNAL};
-use crate::Result;
+use crate::BResult;
 use glutin::{dpi::LogicalSize, event_loop::EventLoop, window::WindowBuilder, ContextBuilder};
 
 pub fn init_raw<S: ToString>(
@@ -10,7 +10,7 @@ pub fn init_raw<S: ToString>(
     height_pixels: u32,
     window_title: S,
     platform_hints: InitHints,
-) -> Result<BTerm> {
+) -> BResult<BTerm> {
     let el = EventLoop::new();
     let wb = WindowBuilder::new()
         .with_title(window_title.to_string())
