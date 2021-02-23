@@ -30,22 +30,28 @@ pub fn line2d_vector(start: Point, end: Point) -> Vec<Point> {
         return vec![start];
     }
 
-    let mut pos = Vec2::new(start.x as f32 + 0.5, start.y as f32 + 0.5);
-    let dest = Vec2::new(end.x as f32 + 0.5, end.y as f32 + 0.5);
+    let mut pos = Vec2::new(start.x as f32, start.y as f32);
+    let dest = Vec2::new(end.x as f32, end.y as f32);
     let n_steps = DistanceAlg::Pythagoras.distance2d(start, end);
-    let slope = (dest - pos) / n_steps;
+    let slope = (dest - pos).normalized();
     let mut result: Vec<Point> = Vec::with_capacity(n_steps as usize + 1);
+    let mut count = 0;
     result.push(start);
     loop {
         pos += slope;
-        let new_point = Point::new(pos.x as i32, pos.y as i32);
+        let new_point = Point::new(pos.x.round() as i32, pos.y.round() as i32);
         if result[result.len() - 1] != new_point {
+            if count == n_steps as i32 {
+                result.push(end);
+                break;
+            }
             result.push(new_point);
             if new_point == end {
                 // arrived
                 break;
             }
         }
+        count += 1;
     }
 
     result
@@ -161,5 +167,14 @@ mod tests {
                 Point::new(0, -5)
             ]
         );
+    }
+
+    #[test]
+    pub fn infinite_loop_bug181() {
+        let pt = Point { x: 2, y: 2 };
+        let pt2 = Point { x: 7, y: -4 };
+        let line = line2d_vector(pt, pt2);
+
+        assert_eq!(line[line.len()-1], pt2);
     }
 }
