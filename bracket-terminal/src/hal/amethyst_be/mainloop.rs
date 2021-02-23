@@ -1,6 +1,6 @@
 use super::*;
 use crate::prelude::{BEvent, BTerm, GameState, BACKEND_INTERNAL};
-use crate::{clear_input_state, Result};
+use crate::{clear_input_state, BResult};
 
 use amethyst::{
     core::math::{Point3, Vector3},

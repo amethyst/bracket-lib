@@ -5,7 +5,7 @@ use crate::prelude::{
     to_char, BEvent, BTerm, GameState, SimpleConsole, SparseConsole, VirtualKeyCode,
     BACKEND_INTERNAL,
 };
-use crate::{clear_input_state, Result};
+use crate::{clear_input_state, BResult};
 use bracket_color::prelude::*;
 use crossterm::event::{poll, read, Event};
 use crossterm::execute;

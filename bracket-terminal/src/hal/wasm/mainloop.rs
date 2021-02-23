@@ -2,7 +2,7 @@ use super::events::*;
 use super::*;
 use crate::hal::*;
 use crate::prelude::{BTerm, GameState, BACKEND_INTERNAL};
-use crate::{clear_input_state, Result};
+use crate::{clear_input_state, BResult};
 use glow::HasContext;
 
 pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<()> {
