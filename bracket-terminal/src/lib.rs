@@ -10,8 +10,6 @@ mod input;
 pub mod rex;
 
 pub type BResult<T> = anyhow::Result<T, Box<dyn std::error::Error + Send + Sync>>;
-//pub(crate) type Error = Box<dyn std::error::Error + Send + Sync>;
-//pub(crate) type Result<T> = core::result::Result<T, Error>;
 pub(crate) use input::clear_input_state;
 pub type FontCharType = u16;
 pub use consoles::console;
