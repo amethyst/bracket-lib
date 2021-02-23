@@ -6,6 +6,12 @@ use rand_xorshift::XorShiftRng;
 #[cfg(feature = "serde")]
 use serde_crate::{Deserialize, Serialize};
 
+
+#[cfg(target_arch = "wasm32")]
+fn unix_now() -> f64 {
+    js_sys::Date::now()
+}
+
 #[derive(Clone)]
 #[cfg_attr(
     feature = "serde",
@@ -19,6 +25,7 @@ pub struct RandomNumberGenerator {
 impl RandomNumberGenerator {
     /// Creates a new RNG from a randomly generated seed
     #[allow(clippy::new_without_default)] // XorShiftRng doesn't have a Default, so we don't either
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn new() -> RandomNumberGenerator {
         use std::time::{SystemTime, UNIX_EPOCH};
         let rng: XorShiftRng = SeedableRng::seed_from_u64(
@@ -26,6 +33,15 @@ impl RandomNumberGenerator {
                 .duration_since(UNIX_EPOCH)
                 .unwrap()
                 .as_secs() as u64,
+        );
+        RandomNumberGenerator { rng }
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    #[allow(clippy::new_without_default)] // XorShiftRng doesn't have a Default, so we don't either
+    pub fn new() -> RandomNumberGenerator {
+        let rng: XorShiftRng = SeedableRng::seed_from_u64(
+            unix_now() as u64
         );
         RandomNumberGenerator { rng }
     }

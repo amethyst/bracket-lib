@@ -26,6 +26,9 @@ lazy_static = { version = "1.4.0", optional = true }
 serde_crate = { version = "~1.0.110", features = ["derive"], optional = true, package = "serde" }
 rand = { version = "0.8.3", default-features = false }
 
+[target.wasm32-unknown-unknown.dependencies]
+js-sys = "0.3.47"
+
 [dev-dependencies]
 criterion = "0.3.4"
 serde_json = "~1.0"
