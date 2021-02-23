@@ -3,7 +3,7 @@
 // multi-threaded environment.
 
 use crate::prelude::{BTerm, FontCharType, TextAlign};
-use crate::Result;
+use crate::BResult;
 use bracket_color::prelude::{ColorPair, RGBA};
 use bracket_geometry::prelude::{Point, PointF, Radians, Rect};
 use object_pool::{Pool, Reusable};
@@ -24,7 +24,7 @@ lazy_static! {
 
 /// Clears the global command buffer. This is called internally by BTerm at the end of each
 /// frame. You really shouldn't need to call this yourself.
-pub fn clear_command_buffer() -> Result<()> {
+pub fn clear_command_buffer() -> BResult<()> {
     COMMAND_BUFFER.lock().clear();
     Ok(())
 }
@@ -161,7 +161,7 @@ impl DrawBatch {
     }
 
     /// Submits a batch to the global drawing buffer, and empties the batch.
-    pub fn submit(&mut self, z_order: usize) -> Result<()> {
+    pub fn submit(&mut self, z_order: usize) -> BResult<()> {
         self.batch.iter_mut().enumerate().for_each(|(i, (z, _))| {
             *z = z_order + i;
         });
@@ -504,7 +504,7 @@ impl DrawBatch {
 }
 
 /// Submits the current batch to the BTerm buffer and empties it
-pub fn render_draw_buffer(bterm: &mut BTerm) -> Result<()> {
+pub fn render_draw_buffer(bterm: &mut BTerm) -> BResult<()> {
     let mut buffer = COMMAND_BUFFER.lock();
     buffer.sort_unstable_by(|a, b| a.0.cmp(&b.0));
     buffer.iter().for_each(|(_, cmd)| match cmd {

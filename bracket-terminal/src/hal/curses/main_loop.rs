@@ -4,13 +4,13 @@ use crate::hal::VirtualKeyCode;
 use crate::prelude::{
     to_char, BEvent, BTerm, GameState, SimpleConsole, SparseConsole, BACKEND_INTERNAL, RGBA,
 };
-use crate::{clear_input_state, Result};
+use crate::{clear_input_state, BResult};
 use pancurses::endwin;
 use std::collections::HashSet;
 use std::convert::TryInto;
 use std::time::Instant;
 
-pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
+pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<()> {
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
     let mut prev_ms = now.elapsed().as_millis();
@@ -145,7 +145,7 @@ impl Default for OutputBuffer {
 }
 
 // Completely redraws the back-end
-fn full_redraw() -> Result<Vec<OutputBuffer>> {
+fn full_redraw() -> BResult<Vec<OutputBuffer>> {
     let be = BACKEND.lock();
     let window = be.window.as_ref().unwrap();
 

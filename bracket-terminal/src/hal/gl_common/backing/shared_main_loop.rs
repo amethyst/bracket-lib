@@ -3,7 +3,7 @@ use crate::hal::{
     SpriteConsoleBackend, BACKEND, CONSOLE_BACKING,
 };
 use crate::prelude::{FlexiConsole, SimpleConsole, SparseConsole, SpriteConsole, BACKEND_INTERNAL};
-use crate::Result;
+use crate::BResult;
 
 pub(crate) fn check_console_backing() {
     let mut be = BACKEND.lock();
@@ -143,7 +143,7 @@ pub(crate) fn rebuild_consoles() {
     }
 }
 
-pub(crate) fn render_consoles() -> Result<()> {
+pub(crate) fn render_consoles() -> BResult<()> {
     let bi = BACKEND_INTERNAL.lock();
     let mut consoles = CONSOLE_BACKING.lock();
     for (i, c) in consoles.iter_mut().enumerate() {

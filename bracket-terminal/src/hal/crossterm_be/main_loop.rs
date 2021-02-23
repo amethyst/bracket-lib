@@ -5,7 +5,7 @@ use crate::prelude::{
     to_char, BEvent, BTerm, GameState, SimpleConsole, SparseConsole, VirtualKeyCode,
     BACKEND_INTERNAL,
 };
-use crate::{clear_input_state, Result};
+use crate::{clear_input_state, BResult};
 use bracket_color::prelude::*;
 use crossterm::event::{poll, read, Event};
 use crossterm::execute;
@@ -17,7 +17,7 @@ use std::io::{stdout, Write};
 use std::time::Duration;
 use std::time::Instant;
 
-pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
+pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<()> {
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
     let mut prev_ms = now.elapsed().as_millis();
@@ -176,7 +176,7 @@ impl Default for OutputBuffer {
     }
 }
 
-fn full_redraw() -> Result<Vec<OutputBuffer>> {
+fn full_redraw() -> BResult<Vec<OutputBuffer>> {
     let be = BACKEND.lock();
     let mut bi = BACKEND_INTERNAL.lock();
 

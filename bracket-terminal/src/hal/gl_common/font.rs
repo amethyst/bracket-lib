@@ -1,6 +1,6 @@
 use super::{gl_error, TextureId};
 use crate::prelude::embedding;
-use crate::Result;
+use crate::BResult;
 use bracket_color::prelude::RGB;
 use glow::HasContext;
 use image::GenericImageView;
@@ -62,7 +62,7 @@ impl Font {
     }
 
     /// Load a font, and allocate it as an OpenGL resource. Returns the OpenGL binding number (which is also set in the structure).
-    pub fn setup_gl_texture(&mut self, gl: &glow::Context) -> Result<TextureId> {
+    pub fn setup_gl_texture(&mut self, gl: &glow::Context) -> BResult<TextureId> {
         let texture;
 
         unsafe {

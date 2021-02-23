@@ -1,6 +1,6 @@
 use super::*;
 use crate::prelude::{BEvent, BTerm, GameState, BACKEND_INTERNAL};
-use crate::{clear_input_state, Result};
+use crate::{clear_input_state, BResult};
 
 use amethyst::{
     core::math::{Point3, Vector3},
@@ -297,7 +297,7 @@ impl BTermGemBridge {
     }
 }
 
-pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> Result<()> {
+pub fn main_loop<GS: GameState>(bterm: BTerm, gamestate: GS) -> BResult<()> {
     amethyst::start_logger(Default::default());
 
     let mut cfg = amethyst::window::DisplayConfig::default();

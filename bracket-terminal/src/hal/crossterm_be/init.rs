@@ -1,6 +1,6 @@
 use super::{InitHints, BACKEND};
 use crate::prelude::BTerm;
-use crate::Result;
+use crate::BResult;
 use crossterm::{
     execute,
     terminal::{size, SetSize},
@@ -12,7 +12,7 @@ pub fn init_raw<S: ToString>(
     height_pixels: u32,
     _window_title: S,
     platform_hints: InitHints,
-) -> Result<BTerm> {
+) -> BResult<BTerm> {
     let old_size = size().expect("Unable to get console size");
     execute!(
         stdout(),

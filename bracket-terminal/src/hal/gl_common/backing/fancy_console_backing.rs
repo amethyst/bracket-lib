@@ -1,6 +1,6 @@
 use crate::hal::{Font, Shader, VertexArray, VertexArrayEntry};
 use crate::prelude::FlexiTile;
-use crate::Result;
+use crate::BResult;
 use bracket_color::prelude::RGBA;
 use bracket_geometry::prelude::PointF;
 
@@ -176,7 +176,7 @@ impl FancyConsoleBackend {
         self.vao.upload_buffers();
     }
 
-    pub fn gl_draw(&mut self, font: &Font, shader: &Shader) -> Result<()> {
+    pub fn gl_draw(&mut self, font: &Font, shader: &Shader) -> BResult<()> {
         self.vao.draw_elements(shader, font);
         Ok(())
     }

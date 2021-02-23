@@ -9,8 +9,7 @@ mod initializer;
 mod input;
 pub mod rex;
 
-pub(crate) type Error = Box<dyn std::error::Error + Send + Sync>;
-pub(crate) type Result<T> = core::result::Result<T, Error>;
+pub type BResult<T> = anyhow::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 pub(crate) use input::clear_input_state;
 pub type FontCharType = u16;
 pub use consoles::console;
@@ -29,6 +28,7 @@ compile_error!("Default features (opengl) must be disabled for other back-ends")
 
 pub mod prelude {
 
+    pub use crate::BResult;
     pub use crate::bterm::*;
     pub use crate::consoles::*;
     pub use crate::embedding;

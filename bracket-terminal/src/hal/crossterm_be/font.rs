@@ -1,4 +1,4 @@
-use crate::Result;
+use crate::BResult;
 
 #[derive(Clone)]
 pub struct Font {
@@ -14,7 +14,7 @@ impl Font {
         Font { tile_size: (0, 0) }
     }
 
-    pub fn setup_gl_texture(&mut self, _gl: &crate::hal::BTermPlatform) -> Result<()> {
+    pub fn setup_gl_texture(&mut self, _gl: &crate::hal::BTermPlatform) -> BResult<()> {
         Ok(())
     }
 

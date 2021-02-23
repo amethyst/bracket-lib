@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use crate::Result;
+use crate::BResult;
 use glow::HasContext;
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -16,7 +16,7 @@ pub struct Framebuffer {
 
 impl Framebuffer {
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn build_fbo(gl: &glow::Context, width: i32, height: i32) -> Result<Framebuffer> {
+    pub fn build_fbo(gl: &glow::Context, width: i32, height: i32) -> BResult<Framebuffer> {
         let fbo;
         let buffer;
 

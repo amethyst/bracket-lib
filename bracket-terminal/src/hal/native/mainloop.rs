@@ -2,7 +2,7 @@ use super::BACKEND;
 use crate::gl_error_wrap;
 use crate::hal::*;
 use crate::prelude::{BEvent, BTerm, GameState, BACKEND_INTERNAL, INPUT};
-use crate::{clear_input_state, Result};
+use crate::{clear_input_state, BResult};
 use bracket_geometry::prelude::Point;
 use glow::HasContext;
 use glutin::{event::Event, event::MouseButton, event::WindowEvent, event_loop::ControlFlow};
@@ -15,7 +15,7 @@ fn on_resize(
     physical_size: glutin::dpi::PhysicalSize<u32>,
     dpi_scale_factor: f64,
     send_event: bool,
-) -> Result<()> {
+) -> BResult<()> {
     //println!("{:#?}", physical_size);
     INPUT.lock().set_scale_factor(dpi_scale_factor);
     let mut be = BACKEND.lock();
@@ -60,7 +60,7 @@ fn on_resize(
     Ok(())
 }
 
-pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> Result<()> {
+pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<()> {
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
     let mut prev_ms = now.elapsed().as_millis();
