@@ -10,6 +10,8 @@ Bracket-terminal supports multiple back-ends:
 * The `crossterm` back-end runs natively in your existing terminal. Graphical features are not supported.
 * The `curses` back-end runs natively in *NIX terminals, or in a `pdcurses` terminal emulator on Windows. Graphical features are not supported.
 
+**BREAKING CHANGE ALERT**: The `crossterm` feature is now `cross_term` if you are using `bracket-terminal` directly. It's still `crossterm` for `bracket-lib` and `rltk`.
+
 ## Why `bracket-terminal` and not direct console rendering?
 
 Bracket-terminal can do terminal rendering, but if that is your only target you may be better off using `crossterm`. Bracket-terminal gets you a few features you don't find elsewhere:

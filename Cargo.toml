@@ -1,6 +1,6 @@
 [package]
 name = "bracket-lib"
-version = "0.8.1"
+version = "0.8.2"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = true
@@ -30,7 +30,7 @@ serde = [ "bracket-color/serde", "bracket-geometry/serde", "bracket-random/serde
 threaded = [ "bracket-pathfinding/threaded" ]
 opengl = [ "bracket-terminal/opengl" ]
 curses = [ "bracket-terminal/curses" ]
-crossterm = [ "bracket-terminal/crossterm" ]
+crossterm = [ "bracket-terminal/cross_term" ]
 amethyst_engine_vulkan = [ "bracket-terminal/amethyst_engine_vulkan" ]
 amethyst_engine_metal = [ "bracket-terminal/amethyst_engine_metal" ]
 
