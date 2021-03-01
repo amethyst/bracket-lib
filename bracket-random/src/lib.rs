@@ -7,6 +7,9 @@ mod random;
 #[cfg(feature = "parsing")]
 mod parsing;
 
+#[cfg(target_arch = "wasm32")]
+mod js_seed;
+
 mod iterators;
 
 pub mod prelude {
