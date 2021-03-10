@@ -90,7 +90,10 @@ fn distance3d_pythagoras(start: Point3, end: Point3) -> f32 {
 
 // Calculates a diagonal distance
 fn distance2d_diagonal(start: Point, end: Point) -> f32 {
-    i32::max((start.x - end.x).abs(), (start.y - end.y).abs()) as f32
+    i32::max(
+        (start.x - end.x).abs(),
+        (start.y - end.y).abs()
+    ) as f32
 }
 
 fn distance3d_diagonal(start: Point3, end: Point3) -> f32 {
