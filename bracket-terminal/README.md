@@ -37,13 +37,13 @@ impl GameState for State {
     }
 }
 
-fn main() {
+fn main() -> BError {
     let context = BTermBuilder::simple80x50()
         .with_title("Hello Minimal Bracket World")
-        .build();
+        .build()?;
 
     let gs: State = State {};
-    main_loop(context, gs);
+    main_loop(context, gs)
 }
 ```
 
