@@ -186,6 +186,50 @@ impl ops::Div<f32> for Point3 {
     }
 }
 
+// Support AddAssign for Point3
+impl ops::AddAssign for Point3 {
+    fn add_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        };
+    }
+}
+
+// Support SubAssign for Point3
+impl ops::SubAssign for Point3 {
+    fn sub_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        };
+    }
+}
+
+// Support MulAssign for Point3
+impl ops::MulAssign for Point3 {
+    fn mul_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x * other.x,
+            y: self.y * other.y,
+            z: self.z * other.z,
+        };
+    }
+}
+
+// Support DivAssign for Point3
+impl ops::DivAssign for Point3 {
+    fn div_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x / other.x,
+            y: self.y / other.y,
+            z: self.z / other.z,
+        };
+    }
+}
+
 // Unit tests
 #[cfg(test)]
 mod tests {
@@ -209,6 +253,15 @@ mod tests {
     }
 
     #[test]
+    fn add_assign_point_to_point3() {
+        let mut pt = Point3::new(0, 0, 0);
+        pt += Point3::new(1, 2, 3);
+        assert_eq!(pt.x, 1);
+        assert_eq!(pt.y, 2);
+        assert_eq!(pt.z, 3);
+    }
+
+    #[test]
     fn add_point3_to_int() {
         let pt = Point3::new(0, 0, 0);
         let p2 = pt + 2;
@@ -227,6 +280,15 @@ mod tests {
     }
 
     #[test]
+    fn sub_assign_point3_to_point() {
+        let mut pt = Point3::new(0, 0, 0);
+        pt -= Point3::new(1, 2, 3);
+        assert_eq!(pt.x, -1);
+        assert_eq!(pt.y, -2);
+        assert_eq!(pt.z, -3);
+    }
+
+    #[test]
     fn sub_point3_to_int() {
         let pt = Point3::new(0, 0, 0);
         let p2 = pt - 2;
@@ -242,6 +304,15 @@ mod tests {
         assert_eq!(p2.x, 1);
         assert_eq!(p2.y, 2);
         assert_eq!(p2.z, 4);
+    }
+
+    #[test]
+    fn mul_assign_point3_to_point() {
+        let mut pt = Point3::new(1, 1, 1);
+        pt *= Point3::new(1, 2, 4);
+        assert_eq!(pt.x, 1);
+        assert_eq!(pt.y, 2);
+        assert_eq!(pt.z, 4);
     }
 
     #[test]
@@ -269,6 +340,15 @@ mod tests {
         assert_eq!(p2.x, 2);
         assert_eq!(p2.y, 1);
         assert_eq!(p2.z, 4);
+    }
+
+    #[test]
+    fn div_assign_point3_to_point() {
+        let mut pt = Point3::new(4, 4, 4);
+        pt /= Point3::new(2, 4, 1);
+        assert_eq!(pt.x, 2);
+        assert_eq!(pt.y, 1);
+        assert_eq!(pt.z, 4);
     }
 
     #[test]
