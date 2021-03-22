@@ -243,6 +243,42 @@ impl ops::Div<f32> for Point {
     }
 }
 
+impl ops::AddAssign for Point {
+    fn add_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        };
+    }
+}
+
+impl ops::SubAssign for Point {
+    fn sub_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+        };
+    }
+}
+
+impl ops::MulAssign for Point {
+    fn mul_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x * other.x,
+            y: self.y * other.y,
+        };
+    }
+}
+
+impl ops::DivAssign for Point {
+    fn div_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x / other.x,
+            y: self.y / other.y,
+        };
+    }
+}
+
 // Unit tests
 #[cfg(test)]
 mod tests {
@@ -264,6 +300,14 @@ mod tests {
     }
 
     #[test]
+    fn add_assign_point_to_point() {
+        let mut pt = Point::new(0, 0);
+        pt += Point::new(1, 2);
+        assert_eq!(pt.x, 1);
+        assert_eq!(pt.y, 2);
+    }
+
+    #[test]
     fn add_point_to_int() {
         let pt = Point::new(0, 0);
         let p2 = pt + 2;
@@ -280,6 +324,14 @@ mod tests {
     }
 
     #[test]
+    fn sub_assign_point_to_point() {
+        let mut pt = Point::new(0, 0);
+        pt -= Point::new(1, 2);
+        assert_eq!(pt.x, -1);
+        assert_eq!(pt.y, -2);
+    }
+
+    #[test]
     fn sub_point_to_int() {
         let pt = Point::new(0, 0);
         let p2 = pt - 2;
@@ -293,6 +345,14 @@ mod tests {
         let p2 = pt * Point::new(1, 2);
         assert_eq!(p2.x, 1);
         assert_eq!(p2.y, 2);
+    }
+
+    #[test]
+    fn mul_assign_point_to_point() {
+        let mut pt = Point::new(1, 1);
+        pt *= Point::new(1, 2);
+        assert_eq!(pt.x, 1);
+        assert_eq!(pt.y, 2);
     }
 
     #[test]
@@ -317,6 +377,14 @@ mod tests {
         let p2 = pt / Point::new(2, 4);
         assert_eq!(p2.x, 2);
         assert_eq!(p2.y, 1);
+    }
+
+    #[test]
+    fn div_assign_point_to_point() {
+        let mut pt = Point::new(4, 4);
+        pt /= Point::new(2, 4);
+        assert_eq!(pt.x, 2);
+        assert_eq!(pt.y, 1);
     }
 
     #[test]
