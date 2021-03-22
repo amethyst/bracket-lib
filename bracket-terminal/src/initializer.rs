@@ -482,6 +482,7 @@ impl BTermBuilder {
         self
     }
 
+
     /// Combine all of the builder parameters, and return an BTerm context ready to go.
     pub fn build(self) -> BResult<BTerm> {
         let mut context = init_raw(
@@ -493,7 +494,7 @@ impl BTermBuilder {
 
         let mut font_map: HashMap<String, usize> = HashMap::new();
         for font in &self.fonts {
-            let font_path = format!("{}/{}", self.resource_path, font.path);
+            let font_path = path_join(&self.resource_path, &font.path);
             let font_id = context.register_font(Font::load(
                 font_path.clone(),
                 font.dimensions,
@@ -515,7 +516,7 @@ impl BTermBuilder {
                     font,
                     translator,
                 } => {
-                    let font_path = format!("{}/{}", self.resource_path, font);
+                    let font_path = path_join(&self.resource_path, &font);
                     let font_id = font_map[&font_path];
                     let cid =
                         context.register_console(SimpleConsole::init(*width, *height), font_id);
@@ -527,7 +528,7 @@ impl BTermBuilder {
                     font,
                     translator,
                 } => {
-                    let font_path = format!("{}/{}", self.resource_path, font);
+                    let font_path = path_join(&self.resource_path, &font);
                     let font_id = font_map[&font_path];
                     let cid = context
                         .register_console_no_bg(SimpleConsole::init(*width, *height), font_id);
@@ -539,7 +540,7 @@ impl BTermBuilder {
                     font,
                     translator,
                 } => {
-                    let font_path = format!("{}/{}", self.resource_path, font);
+                    let font_path = path_join(&self.resource_path, &font);
                     let font_id = font_map[&font_path];
                     let cid =
                         context.register_console(SparseConsole::init(*width, *height), font_id);
@@ -551,7 +552,7 @@ impl BTermBuilder {
                     font,
                     translator,
                 } => {
-                    let font_path = format!("{}/{}", self.resource_path, font);
+                    let font_path = path_join(&self.resource_path, &font);
                     let font_id = font_map[&font_path];
                     let cid = context
                         .register_console_no_bg(SparseConsole::init(*width, *height), font_id);
@@ -563,7 +564,7 @@ impl BTermBuilder {
                     font,
                     translator,
                 } => {
-                    let font_path = format!("{}/{}", self.resource_path, font);
+                    let font_path = path_join(&self.resource_path, &font);
                     let font_id = font_map[&font_path];
                     let cid = context
                         .register_fancy_console(FlexiConsole::init(*width, *height), font_id);
@@ -589,4 +590,10 @@ impl BTermBuilder {
 
         Ok(context)
     }
+}
+
+fn path_join(a: &String, b: &String) -> String {
+    use std::path::Path;
+    let path = Path::new(&a).join(&b);
+    format!("{}", path.to_str().unwrap())
 }
