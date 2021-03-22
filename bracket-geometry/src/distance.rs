@@ -2,6 +2,7 @@ use crate::prelude::{Point, Point3};
 use std::cmp::{max, min};
 
 /// Enumeration of available 2D Distance algorithms
+#[derive(Clone, Copy)]
 pub enum DistanceAlg {
     Pythagoras,
     PythagorasSquared,
@@ -216,5 +217,20 @@ mod tests {
 
         d = DistanceAlg::Chebyshev.distance2d(Point::new(0, 0), Point::new(5, 5));
         assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
+    }
+
+    #[test]
+    fn test_algorithm_from_shared_reference() {
+        let mut algorithm = DistanceAlg::Chebyshev;
+        let mut d = algorithm.distance2d(Point::new(0, 0), Point::new(5, 5));
+        assert!(f32::abs(d - 5.0) < std::f32::EPSILON);
+
+        algorithm = DistanceAlg::Manhattan;
+        d = algorithm.distance2d(Point::new(0, 0), Point::new(5, 5));
+        assert!(f32::abs(d - 10.0) < std::f32::EPSILON);
+
+        let shared_ref = &algorithm;
+        d = shared_ref.distance2d(Point::new(0, 0), Point::new(5, 5));
+        assert!(f32::abs(d - 10.0) < std::f32::EPSILON);
     }
 }
