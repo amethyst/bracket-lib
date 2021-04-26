@@ -340,8 +340,8 @@ impl ScanFovData<'_> {
         }
 
         let mut end_y = self.center.y + (end_slope * distance as f32 + 0.5) as i32;
-        if end_y >= self.dimensions.x {
-            end_y = self.dimensions.x - 1;
+        if end_y >= self.dimensions.y {
+            end_y = self.dimensions.y - 1;
         }
 
         let idx = self.fov_check.point2d_to_index(current);
