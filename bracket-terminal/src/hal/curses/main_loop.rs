@@ -61,6 +61,28 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                     pancurses::Input::KeyUp => bterm.on_key(VirtualKeyCode::Up, 0, true),
                     pancurses::Input::KeyDown => bterm.on_key(VirtualKeyCode::Down, 0, true),
                     pancurses::Input::KeyHome => bterm.on_key(VirtualKeyCode::Home, 0, true),
+                    pancurses::Input::KeyEnd => bterm.on_key(VirtualKeyCode::End,0,true),
+                    pancurses::Input::KeyPPage => bterm.on_key(VirtualKeyCode::PageUp,0,true),
+                    pancurses::Input::KeyNPage => bterm.on_key(VirtualKeyCode::PageDown,0,true),
+                    pancurses::Input::KeyIC => bterm.on_key(VirtualKeyCode::Insert,0,true),
+                    pancurses::Input::KeyDC => bterm.on_key(VirtualKeyCode::Insert,0,true),
+                    pancurses::Input::KeyEnter => bterm.on_key(VirtualKeyCode::NumpadEnter,0,true),
+                    pancurses::Input::KeyBackspace => bterm.on_key(VirtualKeyCode::Back,0,true),
+                    pancurses::Input::KeyF1 => bterm.on_key(VirtualKeyCode::F1, 0, true),
+                    pancurses::Input::KeyF2 => bterm.on_key(VirtualKeyCode::F2, 0, true),
+                    pancurses::Input::KeyF3 => bterm.on_key(VirtualKeyCode::F3, 0, true),
+                    pancurses::Input::KeyF4 => bterm.on_key(VirtualKeyCode::F4, 0, true),
+                    pancurses::Input::KeyF5 => bterm.on_key(VirtualKeyCode::F5, 0, true),
+                    pancurses::Input::KeyF6 => bterm.on_key(VirtualKeyCode::F6, 0, true),
+                    pancurses::Input::KeyF7 => bterm.on_key(VirtualKeyCode::F7, 0, true),
+                    pancurses::Input::KeyF8 => bterm.on_key(VirtualKeyCode::F8, 0, true),
+                    pancurses::Input::KeyF9 => bterm.on_key(VirtualKeyCode::F9, 0, true),
+                    pancurses::Input::KeyF10 => bterm.on_key(VirtualKeyCode::F10, 0, true),
+                    pancurses::Input::KeyF11 => bterm.on_key(VirtualKeyCode::F11, 0, true),
+                    pancurses::Input::KeyF12 => bterm.on_key(VirtualKeyCode::F12, 0, true),
+
+
+
                     pancurses::Input::KeyMouse => {
                         if let Ok(mouse_event) = pancurses::getmouse() {
                             if mouse_event.bstate & pancurses::BUTTON1_CLICKED > 0 {
