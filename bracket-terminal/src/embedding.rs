@@ -25,8 +25,14 @@ impl Dictionary {
     }
 
     pub fn get_resource(&self, path: String) -> Option<&'static [u8]> {
-        if self.entries.contains_key(&path) {
-            return Some(&self.entries[&path]);
+        let fixed_path = if std::path::MAIN_SEPARATOR != '/' {
+            path.replace(std::path::MAIN_SEPARATOR, "/")
+        } else {
+            path
+        };
+
+        if self.entries.contains_key(&fixed_path) {
+            return Some(&self.entries[&fixed_path]);
         }
         None
     }
