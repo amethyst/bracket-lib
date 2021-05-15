@@ -64,6 +64,8 @@ pub struct BTerm {
     pub height_pixels: u32,
     pub original_height_pixels: u32,
     pub original_width_pixels: u32,
+    pub tile_width: u32,
+    pub tile_height: u32,
     pub fps: f32,
     pub frame_time_ms: f32,
     pub active_console: usize,
@@ -83,22 +85,27 @@ pub struct BTerm {
 impl BTerm {
     /// Initializes an OpenGL context and a window, stores the info in the BTerm structure.
     pub fn init_raw<S: ToString, T>(
-        width_pixels: T,
-        height_pixels: T,
+        chars_width: T,
+        tile_width: T,
+        chars_height: T,
+        tile_height: T,
         window_title: S,
         platform_hints: InitHints,
     ) -> BResult<BTerm>
     where
         T: TryInto<u32>,
     {
-        let w = width_pixels.try_into();
-        let h = height_pixels.try_into();
-        let (w, h) = if let (Ok(w), Ok(h)) = (w, h) {
-            (w, h)
+        let chars_w = chars_width.try_into();
+        let chars_h = chars_height.try_into();
+        let tile_w = tile_width.try_into();
+        let tile_h = tile_height.try_into();
+
+        let (chars_w, chars_h, tile_w, tile_h) = if let (Ok(chars_w), Ok(chars_h), Ok(tile_w), Ok(tile_h)) = (chars_w, chars_h, tile_w, tile_h) {
+            (chars_w, chars_h, tile_w, tile_h)
         } else {
             return Err("Couldn't convert to u32".into());
         };
-        Ok(init_raw(w, h, window_title, platform_hints)?)
+        Ok(init_raw(chars_w, tile_w, chars_h, tile_h, window_title, platform_hints)?)
     }
 
     /// Quick initialization for when you just want an 8x8 font terminal
@@ -118,7 +125,7 @@ impl BTerm {
         let w: u32 = width_chars.try_into().ok().unwrap();
         let h: u32 = height_chars.try_into().ok().unwrap();
         let font_path = format!("{}/terminal8x8.png", &path_to_shaders.to_string());
-        let mut context = BTerm::init_raw(w * 8, h * 8, window_title, InitHints::new()).unwrap();
+        let mut context = BTerm::init_raw(w, 8, h, 8, window_title, InitHints::new()).unwrap();
         let font = context.register_font(Font::load(font_path, (8, 8), None));
         context.register_console(SimpleConsole::init(w, h), font.unwrap());
         context
@@ -141,7 +148,7 @@ impl BTerm {
         let w: u32 = width_chars.try_into().ok().unwrap();
         let h: u32 = height_chars.try_into().ok().unwrap();
         let font_path = format!("{}/vga8x16.png", &path_to_shaders.to_string());
-        let mut context = BTerm::init_raw(w * 8, h * 16, window_title, InitHints::new()).unwrap();
+        let mut context = BTerm::init_raw(w, 8, h, 16, window_title, InitHints::new()).unwrap();
         let font = context.register_font(Font::load(font_path, (8, 16), None));
         context.register_console(SimpleConsole::init(w, h), font.unwrap());
         context

@@ -486,8 +486,10 @@ impl BTermBuilder {
     /// Combine all of the builder parameters, and return an BTerm context ready to go.
     pub fn build(self) -> BResult<BTerm> {
         let mut context = init_raw(
-            self.width * self.tile_width,
-            self.height * self.tile_height,
+            self.width,
+            self.tile_width,
+            self.height,
+            self.tile_height,
             self.title.unwrap_or_else(|| "BTerm Window".to_string()),
             self.platform_hints,
         )?;

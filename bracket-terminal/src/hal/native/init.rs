@@ -6,11 +6,17 @@ use crate::BResult;
 use glutin::{dpi::LogicalSize, event_loop::EventLoop, window::WindowBuilder, ContextBuilder};
 
 pub fn init_raw<S: ToString>(
-    width_pixels: u32,
-    height_pixels: u32,
+    chars_width: u32,
+    tile_width: u32,
+    chars_height: u32,
+    tile_height: u32,
     window_title: S,
     platform_hints: InitHints,
 ) -> BResult<BTerm> {
+
+    let width_pixels = chars_width * tile_width;
+    let height_pixels = chars_height * tile_height;
+
     let el = EventLoop::new();
     let wb = WindowBuilder::new()
         .with_title(window_title.to_string())
@@ -104,6 +110,8 @@ pub fn init_raw<S: ToString>(
         height_pixels,
         original_width_pixels: width_pixels,
         original_height_pixels: height_pixels,
+        tile_width,
+        tile_height,
         fps: 0.0,
         frame_time_ms: 0.0,
         active_console: 0,
