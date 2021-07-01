@@ -341,7 +341,7 @@ fn tock<GS: GameState>(
                     h as i32,
                     glow::RGBA,
                     glow::UNSIGNED_BYTE,
-                    pixels,
+                    glow::PixelPackData::Slice(pixels),
                 );
             }
 
