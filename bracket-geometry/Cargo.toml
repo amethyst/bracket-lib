@@ -15,7 +15,7 @@ license = "MIT"
 [dependencies]
 ultraviolet = "~0.8.1"
 serde = { version = "~1.0.110", features = ["derive"], optional = true }
-specs = { version = "0.16.1", optional = true }
+specs = { version = "~0.17", optional = true }
 
 [dev-dependencies]
 crossterm = "~0.19"
