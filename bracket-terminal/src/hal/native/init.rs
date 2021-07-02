@@ -37,9 +37,11 @@ pub fn init_raw<S: ToString>(
         }
     }
 
-    let gl = glow::Context::from_loader_function(|ptr| {
-        windowed_context.get_proc_address(ptr) as *const _
-    });
+    let gl = unsafe {
+        glow::Context::from_loader_function(|ptr| {
+            windowed_context.get_proc_address(ptr) as *const _
+        })
+    };
 
     // Load our basic shaders
     let mut shaders: Vec<Shader> = Vec::new();
