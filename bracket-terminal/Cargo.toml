@@ -27,7 +27,7 @@ image = { version = "0.23.12", default-features = false, features = ["jpeg", "pn
 crossterm = { version = "~0.19", optional = true }
 pancurses = { version = "0.16.1", optional = true }
 amethyst = { version = "=0.15.0", features = [ "tiles" ], optional = true }
-ultraviolet = "~0.7.5"
+ultraviolet = "~0.8.1"
 parking_lot = { version = "~0.11.1" }
 ctrlc = { version = "~3.1", optional=true }
 anyhow = "~1.0"
