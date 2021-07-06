@@ -4,10 +4,21 @@ use crate::hal::*;
 use crate::prelude::{BTerm, GameState, BACKEND_INTERNAL};
 use crate::{clear_input_state, BResult};
 use glow::HasContext;
+use wasm_bindgen::JsCast;
+use std::cell::RefCell;
+use std::rc::Rc;
+
+fn window() -> web_sys::Window {
+    web_sys::window().expect("no global `window` exists")
+}
+
+fn request_animation_frame(f: &Closure<dyn FnMut()>) {
+    window()
+        .request_animation_frame(f.as_ref().unchecked_ref())
+        .expect("should register `requestAnimationFrame` OK");
+}
 
 pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<()> {
-    use glow::HasRenderLoop;
-
     std::panic::set_hook(Box::new(console_error_panic_hook::hook));
 
     {
@@ -30,8 +41,9 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
     let mut prev_ms = now.elapsed().as_millis();
     let mut frames = 0;
 
-    let render_loop = glow::RenderLoop::from_request_animation_frame();
-    render_loop.run(move |_running: &mut bool| {
+    let f = Rc::new(RefCell::new(None));
+    let g = f.clone();
+    *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
         // Read in event results
         unsafe {
             bterm.key = GLOBAL_KEY;
@@ -62,7 +74,9 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
             GLOBAL_LEFT_CLICK = false;
             GLOBAL_BUTTON = None;
         }
-    });
+        request_animation_frame(f.borrow().as_ref().unwrap());
+    }) as Box<dyn FnMut()>));;
+    request_animation_frame(g.borrow().as_ref().unwrap());
     Ok(())
 }
 
