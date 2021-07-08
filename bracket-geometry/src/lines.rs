@@ -175,6 +175,6 @@ mod tests {
         let pt2 = Point { x: 7, y: -4 };
         let line = line2d_vector(pt, pt2);
 
-        assert_eq!(line[line.len()-1], pt2);
+        assert_eq!(line[line.len() - 1], pt2);
     }
 }

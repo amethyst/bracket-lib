@@ -162,8 +162,7 @@ impl AStar {
             }
 
             // Generate successors
-            map
-                .get_available_exits(q.idx)
+            map.get_available_exits(q.idx)
                 .iter()
                 .for_each(|s| self.add_successor(q, s.0, s.1 + q.f, map));
 

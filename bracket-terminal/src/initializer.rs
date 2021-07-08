@@ -482,7 +482,6 @@ impl BTermBuilder {
         self
     }
 
-
     /// Combine all of the builder parameters, and return an BTerm context ready to go.
     pub fn build(self) -> BResult<BTerm> {
         let mut context = init_raw(

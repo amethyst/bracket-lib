@@ -59,6 +59,7 @@
 //! println!("{:?}", DistanceAlg::Chebyshev.distance2d(Point::new(0,0), Point::new(5,5)));
 //! ```
 
+mod angle;
 mod angles;
 mod circle_bresenham;
 mod distance;
@@ -69,9 +70,9 @@ mod point;
 mod point3;
 mod rect;
 mod rectf;
-mod angle;
 
 pub mod prelude {
+    pub use crate::angle::*;
     pub use crate::angles::*;
     pub use crate::circle_bresenham::*;
     pub use crate::distance::*;
@@ -82,5 +83,4 @@ pub mod prelude {
     pub use crate::point3::*;
     pub use crate::rect::*;
     pub use crate::rectf::*;
-    pub use crate::angle::*;
 }

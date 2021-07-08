@@ -32,7 +32,7 @@ struct ParallelDm {
 // other parameters. Might want to make this choice
 // an explicit part of the API?
 #[allow(dead_code)]
-const THREADED_REQUIRED_STARTS:usize = 4;
+const THREADED_REQUIRED_STARTS: usize = 4;
 
 #[derive(PartialEq)]
 enum RunThreaded {
@@ -116,7 +116,9 @@ impl DijkstraMap {
     /// Automatically branches to a parallel version if you provide more than 4 starting points
     pub fn build(dm: &mut DijkstraMap, starts: &[usize], map: &dyn BaseMap) {
         let threaded = DijkstraMap::build_helper(dm, starts, map);
-        if threaded == RunThreaded::True { return; }
+        if threaded == RunThreaded::True {
+            return;
+        }
         let mapsize: usize = (dm.size_x * dm.size_y) as usize;
         let mut open_list: VecDeque<(usize, f32)> = VecDeque::with_capacity(mapsize);
 
@@ -129,8 +131,12 @@ impl DijkstraMap {
             for (new_idx, add_depth) in exits {
                 let new_depth = depth + add_depth;
                 let prev_depth = dm.map[new_idx];
-                if new_depth >= prev_depth { continue; }
-                if new_depth >= dm.max_depth { continue; }
+                if new_depth >= prev_depth {
+                    continue;
+                }
+                if new_depth >= dm.max_depth {
+                    continue;
+                }
                 dm.map[new_idx] = new_depth;
                 open_list.push_back((new_idx, new_depth));
             }
@@ -172,13 +178,16 @@ impl DijkstraMap {
                     let new_idx = *new_idx;
                     let new_depth = depth + add_depth;
                     let prev_depth = l.map[new_idx];
-                    if new_depth >= prev_depth { continue; }
-                    if new_depth >= l.max_depth { continue; }
+                    if new_depth >= prev_depth {
+                        continue;
+                    }
+                    if new_depth >= l.max_depth {
+                        continue;
+                    }
                     l.map[new_idx] = new_depth;
                     open_list.push_back((new_idx, new_depth));
                 }
             }
-
         });
 
         // Recombine down to a single result

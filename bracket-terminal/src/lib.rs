@@ -28,7 +28,6 @@ compile_error!("Default features (opengl) must be disabled for other back-ends")
 
 pub mod prelude {
 
-    pub use crate::BResult;
     pub use crate::bterm::*;
     pub use crate::consoles::*;
     pub use crate::embedding;
@@ -39,6 +38,7 @@ pub mod prelude {
     pub use crate::input::{BEvent, Input, INPUT};
     pub use crate::rex;
     pub use crate::rex::*;
+    pub use crate::BResult;
     pub use crate::FontCharType;
     pub use bracket_color::prelude::*;
     pub use bracket_geometry::prelude::*;

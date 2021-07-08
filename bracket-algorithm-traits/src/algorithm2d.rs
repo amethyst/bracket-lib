@@ -33,7 +33,10 @@ pub trait Algorithm2D: BaseMap {
     /// strided X first.
     fn index_to_point2d(&self, idx: usize) -> Point {
         let bounds = self.dimensions();
-        let w: usize = bounds.x.try_into().expect("Not a valid usize. Did something go negative?");
+        let w: usize = bounds
+            .x
+            .try_into()
+            .expect("Not a valid usize. Did something go negative?");
         Point::new(idx % w, idx / w)
     }
 

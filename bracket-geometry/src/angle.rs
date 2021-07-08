@@ -23,13 +23,13 @@ impl Radians {
 }
 
 impl From<Radians> for Degrees {
-    fn from(item : Radians) -> Self {
+    fn from(item: Radians) -> Self {
         Self(item.0 * 57.2958)
     }
 }
 
 impl From<Degrees> for Radians {
-    fn from(item : Degrees) -> Self {
+    fn from(item: Degrees) -> Self {
         Self(item.0 * 0.017_453_3)
     }
 }

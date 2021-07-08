@@ -63,7 +63,7 @@ impl Map {
         let destination = loc + delta;
 
         if destination.x < 0 || destination.y < 0 {
-            return None
+            return None;
         }
 
         let idx = self.point2d_to_index(destination);
@@ -114,8 +114,7 @@ impl BaseMap for Map {
     }
 
     fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
-        DistanceAlg::Pythagoras
-            .distance2d(self.index_to_point2d(idx1), self.index_to_point2d(idx2))
+        DistanceAlg::Pythagoras.distance2d(self.index_to_point2d(idx1), self.index_to_point2d(idx2))
     }
 }
 

@@ -2,8 +2,9 @@ use crate::prelude::{Point, Radians};
 
 /// From a given start point, project forward radius units at an angle of angle_radians degrees.
 /// 0 Degrees is north (negative Y), 90 degrees is east (positive X)
-pub fn project_angle<ANGLE>(start: Point, radius: f32, angle_radians: ANGLE) -> Point 
-where ANGLE : Into<Radians>
+pub fn project_angle<ANGLE>(start: Point, radius: f32, angle_radians: ANGLE) -> Point
+where
+    ANGLE: Into<Radians>,
 {
     let degrees_radians = angle_radians.into().0 + std::f32::consts::PI;
     Point::new(
@@ -14,7 +15,7 @@ where ANGLE : Into<Radians>
 
 #[cfg(test)]
 mod tests {
-    use crate::prelude::{project_angle, Point, Radians, Degrees};
+    use crate::prelude::{project_angle, Degrees, Point, Radians};
 
     #[test]
     fn test_project_angle() {

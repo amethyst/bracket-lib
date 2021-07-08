@@ -140,15 +140,13 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                     let scale_factor = wc.window().scale_factor();
                     let physical_size = wc.window().inner_size();
                     wc.resize(physical_size);
-                    on_resize(&mut bterm, physical_size, scale_factor, true)
-                        .unwrap();
+                    on_resize(&mut bterm, physical_size, scale_factor, true).unwrap();
                 }
                 WindowEvent::Resized(_physical_size) => {
                     let scale_factor = wc.window().scale_factor();
                     let physical_size = wc.window().inner_size();
                     wc.resize(physical_size);
-                    on_resize(&mut bterm, physical_size, scale_factor, true)
-                        .unwrap();
+                    on_resize(&mut bterm, physical_size, scale_factor, true).unwrap();
                 }
                 WindowEvent::CloseRequested => {
                     // If not using events, just close. Otherwise, push the event

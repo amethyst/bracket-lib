@@ -4,9 +4,9 @@ use crate::hal::*;
 use crate::prelude::{BTerm, GameState, BACKEND_INTERNAL};
 use crate::{clear_input_state, BResult};
 use glow::HasContext;
-use wasm_bindgen::JsCast;
 use std::cell::RefCell;
 use std::rc::Rc;
+use wasm_bindgen::JsCast;
 
 fn window() -> web_sys::Window {
     web_sys::window().expect("no global `window` exists")
@@ -75,7 +75,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
             GLOBAL_BUTTON = None;
         }
         request_animation_frame(f.borrow().as_ref().unwrap());
-    }) as Box<dyn FnMut()>));;
+    }) as Box<dyn FnMut()>));
     request_animation_frame(g.borrow().as_ref().unwrap());
     Ok(())
 }

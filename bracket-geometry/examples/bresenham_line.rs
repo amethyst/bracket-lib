@@ -6,9 +6,9 @@ use std::io::{stdout, Write};
 fn main() {
     let mut fake_console: Vec<char> = vec!['.'; 100];
 
-    let line : Vec<Point> =  Bresenham::new(Point::new(0, 6), Point::new(6, 0)).collect();
+    let line: Vec<Point> = Bresenham::new(Point::new(0, 6), Point::new(6, 0)).collect();
 
-    for (i,point) in line.iter().enumerate() {
+    for (i, point) in line.iter().enumerate() {
         let idx = ((point.y * 10) + point.x) as usize;
         let character = 48 + i as u8;
         fake_console[idx] = character as char;

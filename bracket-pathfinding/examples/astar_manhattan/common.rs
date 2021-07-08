@@ -119,8 +119,11 @@ impl BaseMap for Map {
     fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
         // NOTE: Using the average of Manhattan and an actual distance function is necessary,
         // because Manhattan will not converge on a solution for a strict A*.
-        (DistanceAlg::Manhattan.distance2d(self.index_to_point2d(idx1), self.index_to_point2d(idx2)) +
-        DistanceAlg::Pythagoras.distance2d(self.index_to_point2d(idx1), self.index_to_point2d(idx2))) / 2.0
+        (DistanceAlg::Manhattan
+            .distance2d(self.index_to_point2d(idx1), self.index_to_point2d(idx2))
+            + DistanceAlg::Pythagoras
+                .distance2d(self.index_to_point2d(idx1), self.index_to_point2d(idx2)))
+            / 2.0
     }
 }
 
