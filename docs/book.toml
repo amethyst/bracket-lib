@@ -1,0 +1,6 @@
+[book]
+authors = ["Herbert Wolverson"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Bracket-Lib Usage Guide"
