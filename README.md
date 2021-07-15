@@ -4,6 +4,10 @@
 
 > You can read a tutorial series on writing a Roguelike with this library at: [https://bfnightly.bracketproductions.com/rustbook/](https://bfnightly.bracketproductions.com/rustbook/)
 
+> *Bracket-lib* is the primary support library for my book, [Hands-on Rust](https://hands-on-rust.com/). Please consider checking out my book.
+
+Early work has begun on writing a manual. You can find it in the `manual` folder. It uses `mdbook`. Once it's a bit more complete, I'll host it as a website.
+
 ## What happened to RLTK?
 
 This *is* RLTK, renamed because it is increasingly finding usage outside of just Roguelikes. It's also been divided into a number of crates, to make it easy to pick-and-choose the features you need.
