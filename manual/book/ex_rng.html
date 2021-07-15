@@ -1,0 +1,390 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Random Examples - Bracket-Lib Usage Guide</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="favicon.png">
+        
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <link rel="stylesheet" href="css/print.css" media="print">
+        
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="what_is_it.html"><strong aria-hidden="true">1.</strong> What is Bracket-lib</a></li><li class="chapter-item expanded "><a href="linking.html"><strong aria-hidden="true">2.</strong> Quick Start</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="hello_terminal.html"><strong aria-hidden="true">2.1.</strong> Hello Terminal</a></li><li class="chapter-item expanded "><a href="individual_parts.html"><strong aria-hidden="true">2.2.</strong> Using Individual Components</a></li></ol></li><li class="chapter-item expanded "><a href="examples.html"><strong aria-hidden="true">3.</strong> Using the Examples</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="ex_color.html"><strong aria-hidden="true">3.1.</strong> Color Examples</a></li><li class="chapter-item expanded "><a href="ex_geometry.html"><strong aria-hidden="true">3.2.</strong> Geometry Examples</a></li><li class="chapter-item expanded "><a href="ex_noise.html"><strong aria-hidden="true">3.3.</strong> Noise Examples</a></li><li class="chapter-item expanded "><a href="ex_path.html"><strong aria-hidden="true">3.4.</strong> Pathfinding Examples</a></li><li class="chapter-item expanded "><a href="ex_rng.html" class="active"><strong aria-hidden="true">3.5.</strong> Random Examples</a></li><li class="chapter-item expanded "><a href="ex_bterm.html"><strong aria-hidden="true">3.6.</strong> Terminal Examples</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">Bracket-Lib Usage Guide</h1>
+
+                    <div class="right-buttons">
+                        
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2><a class="header" href="#bracket-random-examples" id="bracket-random-examples">Bracket-Random Examples</a></h2>
+<h3><a class="header" href="#diceroll" id="diceroll">diceroll</a></h3>
+<p><a href="https://github.com/amethyst/bracket-lib/blob/master/bracket-random/examples/diceroll.rs">Source Code</a></p>
+<p>Demonstrates using the <code>roll_dice</code> functionality of the RNG to roll dice in a familiar, RPG-style. <code>3d6</code> is represented as <code>roll_dice(3, 6)</code>.</p>
+<pre><code>Rolling 3d6, 10 times.
+3d6 Roll: 10
+3d6 Roll: 8
+3d6 Roll: 11
+3d6 Roll: 10
+3d6 Roll: 14
+3d6 Roll: 7
+3d6 Roll: 13
+3d6 Roll: 9
+3d6 Roll: 13
+3d6 Roll: 11
+Total of rolls: 106
+</code></pre>
+<h3><a class="header" href="#dicestring" id="dicestring">dicestring</a></h3>
+<p><a href="https://github.com/amethyst/bracket-lib/blob/master/bracket-random/examples/dicestring.rs">Source Code</a></p>
+<p>Demonstrates using the <code>roll_str</code> functionality to allow you to enter dice types as strings. For example, <code>roll_str(&quot;3d6&quot;)</code>. Note that this is a lot slower due to parsing requirements.</p>
+<pre><code>Rolling 3d6, 10 times.
+3d6 Roll: 13
+3d6 Roll: 3
+3d6 Roll: 11
+3d6 Roll: 6
+3d6 Roll: 8
+3d6 Roll: 12
+3d6 Roll: 5
+3d6 Roll: 10
+3d6 Roll: 12
+3d6 Roll: 13
+Total of rolls: 93
+</code></pre>
+<h3><a class="header" href="#die_iterator" id="die_iterator">die_iterator</a></h3>
+<p><a href="https://github.com/amethyst/bracket-lib/blob/master/bracket-random/examples/die_iterator.rs">Source Code</a></p>
+<p>Creates a dice iterator, each rolling a 6-sided die. Takes 10 dice rolls and prints them.</p>
+<pre><code>Rolled 3
+Rolled 1
+Rolled 3
+Rolled 6
+Rolled 2
+Rolled 4
+Rolled 1
+Rolled 2
+Rolled 1
+Rolled 1
+</code></pre>
+<h3><a class="header" href="#distribution" id="distribution">distribution</a></h3>
+<p><a href="https://github.com/amethyst/bracket-lib/blob/master/bracket-random/examples/distribution.rs">Source Code</a></p>
+<p>Rolls a lot of dice and plots their relative distribution. This is intended to validate that the random number generator is behaving appropriately.</p>
+<pre><code>Rolling 3d6, 200000 times and counting distribution.
+03 : ##
+04 : #######
+05 : ###############
+06 : #########################
+07 : ######################################
+08 : #####################################################
+09 : ################################################################
+10 : ####################################################################
+11 : ######################################################################
+12 : #################################################################
+13 : #####################################################
+14 : ######################################
+15 : ##########################
+16 : ###############
+17 : #######
+18 : ##
+</code></pre>
+<h3><a class="header" href="#next" id="next">next</a></h3>
+<p><a href="https://github.com/amethyst/bracket-lib/blob/master/bracket-random/examples/next.rs">Source Code</a></p>
+<p>Demonstrates the <code>next_u64</code> function in the RNG, which passes straight through to the underlying RNG code.</p>
+<pre><code>Generating the next 10 u64 numbers
+Roll: 18130881974873676332
+Roll: 3148465433356529749
+Roll: 44531299326498369
+Roll: 9665219486649819621
+Roll: 10520437451657888625
+Roll: 12316016225926642867
+Roll: 2116667603649678054
+Roll: 11573604930291377796
+Roll: 2541210746452578386
+Roll: 17238031251593215327
+</code></pre>
+<h3><a class="header" href="#rand" id="rand">rand</a></h3>
+<p><a href="https://github.com/amethyst/bracket-lib/blob/master/bracket-random/examples/rand.rs">Source Code</a></p>
+<p>Demonstrates how to use <code>rand</code> to generate a random number of a specified type.</p>
+<pre><code>Generating the next 10 f64 numbers
+Roll: 0.7195672608676137
+Roll: 0.5348780904141426
+Roll: 0.8706676996760022
+Roll: 0.32794462603290664
+Roll: 0.619775940285832
+Roll: 0.4395722002981868
+Roll: 0.37184757519241163
+Roll: 0.9221657800105313
+Roll: 0.35612926854806837
+Roll: 0.17372920791278967
+</code></pre>
+<h3><a class="header" href="#range" id="range">range</a></h3>
+<p><a href="https://github.com/amethyst/bracket-lib/blob/master/bracket-random/examples/range.rs">Source Code</a></p>
+<p>Demonstrates the <code>rng.range(min, max)</code> function.</p>
+<pre><code>Generating the next 10 numbers in the range 100 - 200
+Roll: 181
+Roll: 179
+Roll: 199
+Roll: 180
+Roll: 114
+Roll: 117
+Roll: 166
+Roll: 162
+Roll: 196
+Roll: 113
+</code></pre>
+<h3><a class="header" href="#slice" id="slice">slice</a></h3>
+<p><a href="https://github.com/amethyst/bracket-lib/blob/master/bracket-random/examples/slice.rs">Source Code</a></p>
+<p>Demonstrates using the crate to randomly select an entry from a slice (collection) of entries.</p>
+<pre><code>Randomly chose a: Cat
+Randomly chose a: Dragon
+Randomly chose a: Hamster
+Randomly chose a: Dragon
+Randomly chose a: Cat
+Randomly chose a: Dragon
+Randomly chose a: Cat
+Randomly chose a: Hamster
+Randomly chose a: Cat
+Randomly chose a: Cat
+</code></pre>
+<h3><a class="header" href="#slice_index" id="slice_index">slice_index</a></h3>
+<p><a href="https://github.com/amethyst/bracket-lib/blob/master/bracket-random/examples/slice_index.rs">Source Code</a></p>
+<p>Demonstrates using <code>slice_index</code> to randomly pull an index entry from a slice of data.</p>
+<pre><code>Randomly chose index: 2, which is a Gerbil
+Randomly chose index: 0, which is a Cat
+Randomly chose index: 0, which is a Cat
+Randomly chose index: 1, which is a Dog
+Randomly chose index: 0, which is a Cat
+Randomly chose index: 2, which is a Gerbil
+Randomly chose index: 4, which is a Dragon
+Randomly chose index: 4, which is a Dragon
+Randomly chose index: 4, which is a Dragon
+Randomly chose index: 1, which is a Dog
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="ex_path.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="ex_bterm.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="ex_path.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="ex_bterm.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+        <!-- Livereload script (if served using the cli tool) -->
+        <script type="text/javascript">
+            var socket = new WebSocket("ws://localhost:3000/__livereload");
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

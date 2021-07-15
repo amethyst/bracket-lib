@@ -1,1 +1,0 @@
-# Sparse Console
