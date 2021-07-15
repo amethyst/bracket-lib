@@ -54,6 +54,5 @@ By default, `bracket-lib` runs in OpenGL mode (or WebGL if it detects that you a
 - https://github.com/baszalmstra/my-little-robots
 - https://github.com/Havegum/Terrain-Generator
 - https://github.com/Bobox214/rs-gliphus
-- https://github.com/BobG1983/escape-from-alpha-nine
 - https://github.com/Maxgy/blademaster
 - https://github.com/Maxgy/text-rts
