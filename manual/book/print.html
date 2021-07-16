@@ -97,7 +97,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="what_is_it.html"><strong aria-hidden="true">1.</strong> What is Bracket-lib</a></li><li class="chapter-item expanded "><a href="linking.html"><strong aria-hidden="true">2.</strong> Quick Start</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="hello_terminal.html"><strong aria-hidden="true">2.1.</strong> Hello Terminal</a></li><li class="chapter-item expanded "><a href="individual_parts.html"><strong aria-hidden="true">2.2.</strong> Using Individual Components</a></li></ol></li><li class="chapter-item expanded "><a href="examples.html"><strong aria-hidden="true">3.</strong> Using the Examples</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="ex_color.html"><strong aria-hidden="true">3.1.</strong> Color Examples</a></li><li class="chapter-item expanded "><a href="ex_geometry.html"><strong aria-hidden="true">3.2.</strong> Geometry Examples</a></li><li class="chapter-item expanded "><a href="ex_noise.html"><strong aria-hidden="true">3.3.</strong> Noise Examples</a></li><li class="chapter-item expanded "><a href="ex_path.html"><strong aria-hidden="true">3.4.</strong> Pathfinding Examples</a></li><li class="chapter-item expanded "><a href="ex_rng.html"><strong aria-hidden="true">3.5.</strong> Random Examples</a></li><li class="chapter-item expanded "><a href="ex_bterm.html"><strong aria-hidden="true">3.6.</strong> Terminal Examples</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="what_is_it.html"><strong aria-hidden="true">1.</strong> What is Bracket-lib</a></li><li class="chapter-item expanded "><a href="linking.html"><strong aria-hidden="true">2.</strong> Quick Start</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="hello_terminal.html"><strong aria-hidden="true">2.1.</strong> Hello Terminal</a></li><li class="chapter-item expanded "><a href="individual_parts.html"><strong aria-hidden="true">2.2.</strong> Using Individual Components</a></li></ol></li><li class="chapter-item expanded "><a href="examples.html"><strong aria-hidden="true">3.</strong> Using the Examples</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="ex_color.html"><strong aria-hidden="true">3.1.</strong> Color Examples</a></li><li class="chapter-item expanded "><a href="ex_geometry.html"><strong aria-hidden="true">3.2.</strong> Geometry Examples</a></li><li class="chapter-item expanded "><a href="ex_noise.html"><strong aria-hidden="true">3.3.</strong> Noise Examples</a></li><li class="chapter-item expanded "><a href="ex_path.html"><strong aria-hidden="true">3.4.</strong> Pathfinding Examples</a></li><li class="chapter-item expanded "><a href="ex_rng.html"><strong aria-hidden="true">3.5.</strong> Random Examples</a></li><li class="chapter-item expanded "><a href="ex_bterm.html"><strong aria-hidden="true">3.6.</strong> Terminal Examples</a></li></ol></li><li class="chapter-item expanded "><a href="consoles.html"><strong aria-hidden="true">4.</strong> Working with Consoles</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="consoles_print.html"><strong aria-hidden="true">4.1.</strong> Printing to Consoles</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -722,6 +722,245 @@ Randomly chose index: 1, which is a Dog
 <h2><a class="header" href="#walking_with_is_pressed" id="walking_with_is_pressed">walking_with_is_pressed</a></h2>
 <p><a href="https://github.com/amethyst/bracket-lib/blob/master/bracket-terminal/examples/walking_with_is_pressed.rs">Source Code</a></p>
 <p>The same walking demo, but using the <code>is_pressed</code> function (for advanced input) rather than the simple key enum.</p>
+<h1><a class="header" href="#working-with-consoles" id="working-with-consoles">Working with Consoles</a></h1>
+<p><code>Bracket-terminal</code> is based around <em>consoles</em>. At its base, a console represents a grid. Consoles have a grid dimension, and each cell/tile is addressed through <code>x</code> and <code>y</code> coordinates:</p>
+<table><thead><tr><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody>
+<tr><td>0,0</td><td>1,0</td><td>2,0</td><td>3,0</td><td>4,0</td></tr>
+<tr><td>0,1</td><td>1,1</td><td>2,1</td><td>3,1</td><td>4,1</td></tr>
+<tr><td>0,2</td><td>1,2</td><td>2,2</td><td>3,2</td><td>4,2</td></tr>
+<tr><td>0,3</td><td>1,3</td><td>2,3</td><td>3,3</td><td>4,3</td></tr>
+<tr><td>0,4</td><td>1,4</td><td>2,4</td><td>3,4</td><td>4,4</td></tr>
+</tbody></table>
+<p><em>The coordinates extend out to the limits of the console's dimensions.</em></p>
+<h2><a class="header" href="#types-of-console" id="types-of-console">Types of Console</a></h2>
+<p><code>Bracket-terminal</code> includes the following types of console:</p>
+<ul>
+<li><strong>Simple Consoles</strong> store an internal vector, representing each tile of the grid. Each tile/cell is rendered as part of an overall grid structure. Simple consoles are best suited to layers that address a large part of the screen.
+<ul>
+<li>Simple Consoles may or may not contain a background. If they don't include a background, they don't overwrite content behind them.</li>
+</ul>
+</li>
+<li><strong>Sparse Consoles</strong> store a list of characters to render, and the address at which they are rendered. They are best used when you only want to draw a few things on the screen, typically with a simple console behind them.</li>
+<li><strong>Fancy Consoles</strong> also store a render list, but add niceties such as fractional coordinates and rotation to characters.</li>
+<li><strong>Sprite Consoles</strong> store a list of sprites from a sprite sheet, and render them in <em>pixel</em> coordinates.</li>
+<li><strong>Virtual Consoles</strong> aren't rendered, but can store huge amounts of data. Windowing functions make it easy to render parts of the console to another console type. These are great for large blobs of documentation, log files and similar.</li>
+</ul>
+<h2><a class="header" href="#layers" id="layers">Layers</a></h2>
+<p><code>Bracket-terminal</code> supports <em>layering</em>. You can have multiple consoles, drawn on top of one another. Consoles can have their own tile sizes, and may be offset or scaled. They are rendered in the order in which they are initialized---the first console is always rendered first, subsequent consoles are rendered on top of them.</p>
+<p>You can use layers to render your game with one tileset, characters with another, and HUD/game information in an attractive text font on top of them all.</p>
+<h2><a class="header" href="#initializing-consoles-and-layers" id="initializing-consoles-and-layers">Initializing Consoles and Layers</a></h2>
+<p>In your <code>main</code> function, when you initialize <code>bracket-terminal</code> you specify the consoles you require. The simplest possible initialization provides you with a single <em>simple</em> layer, containing 80 (width) by 50 (height) cells:</p>
+<pre><pre class="playground"><code class="language-rust">fn main() -&gt; BError {
+    let context = BTermBuilder::simple80x50()
+        .with_title(&quot;Hello Minimal Bracket World&quot;)
+        .build()?;
+</code></pre></pre>
+<p>Let's have a look at how this works.</p>
+<h3><a class="header" href="#constructor" id="constructor">Constructor</a></h3>
+<p>So what's really happening here? <code>BTermBuilder</code> is a <em>builder</em> structure that represents what you'd like to construct. You have to start with a constructor. You have some choices:</p>
+<ul>
+<li>The <code>default</code>, <code>new</code> default to an 80x50 console, but don't specify any details.</li>
+<li>The <code>simple80x50</code> constructor provides everything you need for a default, 8x8 font 80x50 console.</li>
+<li>The <code>simple(width, height)</code> constructor provides everything you need for a default, 8x8 font <code>width</code> by <code>height</code> console.</li>
+<li>The <code>vga80x50</code> constructor initializes an 80x50 console, with a VGA 8x16 font registered.</li>
+<li>The <code>vga(width, height)</code> constructor provides a VGA 8x16 font console in the specified dimensions.</li>
+</ul>
+<p>The <em>constructor</em> provides a starting-point for constructing the console. Chances are, you want to specify more information. The constructor does not return a usable context, yet---it provides a builder that lets you add detail to your request.</p>
+<h3><a class="header" href="#global-builder-options" id="global-builder-options">Global Builder Options</a></h3>
+<p>Some builder functions provide global (whole program) functionality. These include:</p>
+<ul>
+<li><code>with_title(string)</code> lets you specify a window title.</li>
+<li><code>with_resource_path(string)</code> lets you specify where your font files are saved.</li>
+<li><code>with_font(filename, character width, character height)</code> lets you register your own font file.</li>
+<li><code>with_font_bg(filename, character width, character height, color)</code> lets you register a font with an explicit background color that will be converted to transparent.</li>
+<li><code>with_vsync(bool)</code> lets you turn vertical refresh sync on or off. This uncaps your frame rate, but may lead to visual tearing on some systems.</li>
+<li><code>with_fullscreen(bool)</code> lets you specify that the game should try and run in full screen mode, as opposed to a window.</li>
+<li><code>with_fps_cap(fps)</code> lets you cap the maximum frames per second at which the game will render, explicitly sleeping to keep CPU load manageable.</li>
+<li><code>with_platform_specific(hint)</code> is used for those times you need to tell a renderer something, but that feature can't work in all render targets. These will be documented in the render targets.</li>
+<li><code>with_advanced_input(bool)</code> lets you change the input mechanism from populating the key/mouse variables to a stream of keyboard/mouse events.</li>
+<li><code>with_automatic_console_resize(bool)</code> lets you change the behavior of resizing the window. Instead of scaling the console up or down to fit the window, a resize event re-calculates the size of the consoles and expands/shrinks them to fit. You can query the current size of a layer from the context in <code>tick</code>.</li>
+</ul>
+<p>These provide a fair amount of control over the general program. If you want to use layers, or get fancy with your consoles, you often need to specify per-layer information.</p>
+<h3><a class="header" href="#building-layers" id="building-layers">Building Layers</a></h3>
+<p>You can add as many layers as you want (I haven't tested the upper bound). There are several builder functions that add layers:</p>
+<ul>
+<li><code>with_simple_console(width, height, font filename)</code> creates a simple console of the specified dimensions, bound to the target font.</li>
+<li><code>with_simple_console_no_bg(width, height, font filename)</code> creates a simple console with no background - it won't overwrite underlying layers. This is useful when you want to layer printed data on top of other layers, but still want a simple console.</li>
+<li><code>with_simple_8x8</code> creates a simple console bound to the internal 8x8 font, using dimensions that were specified with <code>with_dimensions</code>. This is mostly provided for compatibility with previous versions.</li>
+<li><code>with_sparse_console(width, height, font filename)</code> creates a sparse console with the specified dimensions and font.</li>
+<li><code>with_sparse_console_no_bg(width, height, font filename)</code> creates a sparse console with the specified dimensions and font. It also sets the &quot;no background&quot; flag, so backgrounds won't be rendered for characters. Instead of blanking the area around a rendered character, it will just render the character data.</li>
+<li><code>with_fancy_console(width, height, font filename)</code> creates a fancy console. These will have their own section in the manual.</li>
+<li><code>with_sprite_console(width, height, sprite_sheet)</code> creates a sprite console. These will also have their own section in the manual.</li>
+</ul>
+<p>You can combine these with various <code>with_tile_dimensions</code> and <code>with_dimensions</code> calls. These calls apply to the most recently added layer, allowing you to customize how they are rendered.</p>
+<p>For example, this creates an 80x50 layer (0) in 8x8 mode, and an 80x25 layer (1) in VGA font (8x16):</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let context = BTermBuilder::simple80x50()
+    .with_font(&quot;vga8x16.png&quot;, 8u32, 16u32)
+    .with_sparse_console(80u32, 25u32, &quot;vga8x16.png&quot;)
+    .with_title(&quot;Bracket Terminal - Sparse Consoles&quot;)
+    .build()?;
+<span class="boring">}
+</span></code></pre></pre>
+<p>A more complicated example (from the Roguelike Tutorial):</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let mut context = RltkBuilder::simple(80, 60)
+    .unwrap()
+    .with_title(&quot;Roguelike Tutorial&quot;)
+    .with_font(&quot;vga8x16.png&quot;, 8, 16)
+    .with_sparse_console(80, 30, &quot;vga8x16.png&quot;)
+    .with_vsync(false)
+    .build()?;
+<span class="boring">}
+</span></code></pre></pre>
+<p>Note that <code>RltkBuilder</code> is the same as <code>BTermBuilder</code>---it changes its name if you use the library as <code>RLTK</code>. This creates an 80x60 simple console, and then registers a VGA-mode 80x30 (half the height) sparse console.</p>
+<p>Another example, this from from <a href="https://hands-on-rust.com/">Hands-on Rust</a>:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>    let context = BTermBuilder::new()
+        .with_title(&quot;Dungeon Crawler&quot;)
+        .with_fps_cap(30.0)
+        .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+        .with_tile_dimensions(32, 32)
+        .with_resource_path(&quot;resources/&quot;)
+        .with_font(&quot;dungeonfont.png&quot;, 32, 32)
+        .with_font(&quot;terminal8x8.png&quot;, 8, 8)
+        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, &quot;dungeonfont.png&quot;)
+        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, &quot;dungeonfont.png&quot;)
+        .with_simple_console_no_bg(SCREEN_WIDTH*2, SCREEN_HEIGHT*2, &quot;terminal8x8.png&quot;)
+<span class="boring">}
+</span></code></pre></pre>
+<p>This sets a window title and an FPS cap. Then it sets the window size and tile dimensions, and a resource path. It loads the two fonts, and sets up three layers: a simple console for the map, a simple console for characters, and a text layer over the top.</p>
+<h3><a class="header" href="#constructing-your-session" id="constructing-your-session">Constructing Your Session</a></h3>
+<p>Once you're done with specifying details, you finish the builder chain with <code>.build()</code>. It returns a <code>Result</code> type, so it's handy to use the <code>?</code> syntax---but you can handle errors however you wish. Sometimes, you asked for the impossible---or the underlying system just won't cooperate with your wishes. These generate errors. Otherwise, you receive a usable context---which you can run with the <code>main_loop</code> function and your game state (see below).</p>
+<h2><a class="header" href="#handing-over-control" id="handing-over-control">Handing Over Control</a></h2>
+<p><code>Bracket-terminal</code> takes over control of the main game loop. It does this because it needs to continually interact with your operating system (or browser in WASM mode), marshall events and handle redrawing the screen. You need to create a <code>State</code> object that <em>must</em> implement <code>GameState</code>---and begin execution with <code>main_loop(my_state)</code>.</p>
+<p>For example, the following from &quot;hello terminal&quot; hands over control:</p>
+<pre><pre class="playground"><code class="language-rust">use bracket_lib::prelude::*;
+
+struct State {}
+
+impl GameState for State {
+    fn tick(&amp;mut self, ctx: &amp;mut BTerm) {
+        ctx.print(1, 1, &quot;Hello Bracket World&quot;);
+    }
+}
+
+fn main() -&gt; BError {
+    let context = BTermBuilder::simple80x50()
+        .with_title(&quot;Hello Minimal Bracket World&quot;)
+        .build()?;
+
+    let gs: State = State {};
+    main_loop(context, gs)
+}
+</code></pre></pre>
+<p>The <code>tick</code> function in your <code>GameState</code> implementing structure is called every frame.</p>
+<h1><a class="header" href="#printing-to-consoles" id="printing-to-consoles">Printing to Consoles</a></h1>
+<p>Probably the most common thing to do with a console is to print text to it. This can be actual text, or characters mapped to sprites in your font file---but it's a <em>really</em> common task. <code>Bracket-terminal</code> provides a lot of different ways to do this.</p>
+<h2><a class="header" href="#interacting-with-your-context" id="interacting-with-your-context">Interacting with Your Context</a></h2>
+<p>Your <code>tick</code> function receives a <code>ctx: &amp;mut BTerm</code> parameter. This provides a link between your program and the terminals. Almost all of the direct control functions are called as methods on the <code>ctx</code>. You'll need to pass your context (or parts of it) to child functions in your program. This allows your program to control the console, while the library retains overall control of execution.</p>
+<blockquote>
+<p>Passing a mutable reference around can be a pain. That's why there are other options, which will be covered later.</p>
+</blockquote>
+<h2><a class="header" href="#working-with-layers" id="working-with-layers">Working with Layers</a></h2>
+<p>If you have multiple layers, you need to make sure that you call <code>ctx.set_active_console(index)</code> to activate the one you wish to target. Most draw commands are passed through to the underlying console---the library needs to know where to send them. It's a good idea to remember to call <code>set_active_console(0)</code> at the end of your session, to ensure you don't forget to change back to the default on another pass.</p>
+<h2><a class="header" href="#direct-drawing-commands" id="direct-drawing-commands">Direct Drawing Commands</a></h2>
+<p>There are <em>many</em> different options for drawing to the console.</p>
+<h3><a class="header" href="#clearing-the-screen" id="clearing-the-screen">Clearing the Screen</a></h3>
+<p>You have two options for clearing a console: <code>ctx.cls()</code> clears the screen to a black background, <code>ctx.cls_bg(color)</code> clears the console to a specified background color (and has no effect on layers without background).</p>
+<p>You often want to clear the console at the start of a tick, if you plan to draw the whole screen. Some optimizations may occur that make it <em>not really</em> clear and redraw everything, especially in Curses and Crossterm modes.</p>
+<h3><a class="header" href="#specifying-characters" id="specifying-characters">Specifying Characters</a></h3>
+<p>Characters need to be selected from the <code>codepage-437</code> list. There's a <a href="https://dwarffortresswiki.org/index.php/Character_table">great chart</a> showing CP-437 here.</p>
+<p>You can convert a Rust character into a codepage-437 character with <code>to_cp437('X')</code>.</p>
+<h3><a class="header" href="#printing-a-single-characterglyph" id="printing-a-single-characterglyph">Printing a Single Character/Glyph</a></h3>
+<p>You can print a single CP-437 character with the <code>ctx.set(x, y, foreground, background, glyph)</code> command. This is mostly used by the <code>print</code> commands, but you can use it yourself if you wish.</p>
+<p>For example:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>ctx.set(1, 1, RED.into(), BLACK.into(), to_cp437('☺'));
+<span class="boring">}
+</span></code></pre></pre>
+<p>This will set the character at 1,1 (near the top-left) to a red smiley face with a black background.</p>
+<p>You can also use <code>ctx.set_bg(x, y, color)</code> to set just the background color a cell.</p>
+<h3><a class="header" href="#printing-strings" id="printing-strings">Printing Strings</a></h3>
+<p>You can print a string with the <code>ctx.print(x, y, string)</code> function. You don't need to convert the characters in the string---the library does it for you. No color is specified, it will just use black/white.</p>
+<p>If you'd like to print in color, <code>ctx.print_color(x, y, foreground, background, string)</code> works the same way---but specifies the colors to use.</p>
+<p>You can center your text (horizontally) around a given <code>y</code> coordinate with <code>print_centered(y, string)</code> and <code>print_color_centered(y, fg, bg, string)</code>. These center relative to the whole panel.</p>
+<p>You can also center your text around a specific point with <code>print_centered_at(x, y, text)</code> and its friend <code>print_color_centered_at(x, y, fg, bg, string)</code>.</p>
+<p>You can right-justify your text with <code>print_color_right(x, y, fg, bg, string)</code> and <code>print_right(x, y, string)</code>.</p>
+<p>I didn't want to tackle full-justification. Hyphenation systems are painful.</p>
+<h3><a class="header" href="#printing-with-more-control" id="printing-with-more-control">Printing with More Control</a></h3>
+<p>If you need to do fancy things like having different words in different colors, you can use the <code>ctx.printer</code> system:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>printer(x, y, string, alignment, background)
+<span class="boring">}
+</span></code></pre></pre>
+<ul>
+<li>The <code>x</code> and <code>y</code> coordinates behave as you'd expect.</li>
+<li><code>alignment</code> takes a <code>TextAlign</code> enum: <code>TextAlign::Left</code>, <code>TextAlign::Center</code> or <code>TextAlign::Right</code>.</li>
+<li><code>background</code> is an <code>Option</code>. So either specify <code>None</code> (for no background), or <code>Some(color)</code>.</li>
+</ul>
+<p>Text in the printer accepts control characters to specify colors. You have to register these with calls to <code>register_palette_color</code> (typically in your main function. It's a free function, not attached to your context). You can then use control characters inside your string. They are a <em>stack</em>---so you have to exit out once you are done with formatting.</p>
+<p>For example:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>register_palette_color(&quot;blue&quot;, RGB::named(BLUE));
+register_palette_color(&quot;pink&quot;, RGB::named(MAGENTA));
+<span class="boring">}
+</span></code></pre></pre>
+<p>This code assigns the name &quot;blue&quot; and &quot;pink&quot; to appropriate RGB colors. In your <code>tick</code> function, you can then use <code>printer</code> as follows:</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>ctx.printer(
+    40,
+    49,
+    &quot;#[blue]Hello #[pink]Bracket#[] world.&quot;,
+    TextAlign::Center,
+    Some(RGBA::from_u8(200, 200, 200, 255)),
+);
+<span class="boring">}
+</span></code></pre></pre>
+<p>Notice that <code>#[]</code> is used to end the color. This will print &quot;Hello&quot; and &quot;world&quot; in blue, and &quot;Bracket&quot; in pink. The <code>#[]</code> has popped the stack---reverting to the <em>previously specified</em> color.</p>
+<h3><a class="header" href="#drawing-boxes" id="drawing-boxes">Drawing Boxes</a></h3>
+<p>You can use the <code>ctx.draw_box(x, y, width, height, foreground, background)</code> function to draw a single-lined box at the specified coordinates.</p>
+<p>Likewise, <code>ctx.draw_box_double(x, y, w, h, fg, bg)</code> does the same thing---but with double-lines.</p>
+<p>Both of these functions zero out the contents of the box. If you don't want to do that, <code>draw_hollow_box</code> and <code>draw_hollow_box_double</code> omit this step, but otherwise operate in the same way.</p>
+<h3><a class="header" href="#drawing-progressscrollhealth-bars" id="drawing-progressscrollhealth-bars">Drawing Progress/Scroll/Health Bars</a></h3>
+<p>The function <code>ctx.draw_bar_horizontal</code> renders a bar, with a specified percentage in one color and a percentage in another. The full syntax is:</p>
+<pre><code>draw_bar_horizontal(x, y, width, number, max, foreground, background)
+</code></pre>
+<p>Specify <code>number</code> as the current number, bounded by <code>max</code>. For example, a health bar showing 6 out of 12 possible hit points remaining would use a <code>number</code> of <code>6</code> and <code> max</code> of 12.</p>
+<p>If you'd like to do the same thing, but with a vertical bar you can use:</p>
+<pre><code>draw_bar_vertical(x, y, height, number, max, foreground, background)
+</code></pre>
+<h3><a class="header" href="#filling-a-region" id="filling-a-region">Filling a Region</a></h3>
+<p>You can fill a rectangular region of the screen with the <code>ctx.fill_region(target, symbol, foreground, background)</code> function. <code>target</code> is a <code>Rect</code> from <code>bracket-geometry</code>.</p>
+<h1><a class="header" href="#other-console-options" id="other-console-options">Other Console Options</a></h1>
+<p>There are a bunch of other console-related functions.</p>
+<h2><a class="header" href="#controlling-string-translation" id="controlling-string-translation">Controlling String Translation</a></h2>
+<p>You can change the console's translation mode with <code>set_translation_mode</code>. By default, all strings are turned into <code>cp437</code>. If you are using a big unicode font, you can change to <code>CharacterTranslationMode::Unicode</code> to support it. See the <code>unicode</code> example for details.</p>
+<h2><a class="header" href="#clipping-rendering" id="clipping-rendering">Clipping Rendering</a></h2>
+<p>If you only want your rendering to apply to a given region of the screen, you can call <code>ctx.set_clipping(Some(Rect))</code> (and remove it with <code>ctx.set_clipping(None)</code>). Rendered characters will only appear if they are within the clipping region. This can be handy for limiting window rendering.</p>
+<h2><a class="header" href="#changing-font" id="changing-font">Changing Font</a></h2>
+<p>You can change a console to use any registered font on the fly with <code>ctx.set_active_font(font index, bool)</code>. If the bool is true, the console will resize to the dimensions implied by the font size. The &quot;font index&quot; is the order in which the font was inserted.</p>
+<p>You can override the internal size of a font with <code>ctx.set_char_size</code>. Use this with caution. A better approach to resizing is to call <code>ctx.set_char_size_and_resize_window(width, height)</code>. This doesn't work on all platforms.</p>
+<h2><a class="header" href="#changing-alpha" id="changing-alpha">Changing Alpha</a></h2>
+<p>You can change the alpha-level of ALL characters on a layer with <code>set_all_fg_alpha</code> and <code>set_all_bg_alpha</code>. The <code>set_all_alpha</code> applies your change to both foregrounds and backgrounds.</p>
+<h2><a class="header" href="#scaling-the-console" id="scaling-the-console">Scaling the Console</a></h2>
+<p>You can set a console scale with <code>set_scale</code> (and query it with <code>get_scale</code>). This allows you to &quot;zoom in&quot; on a layer. It's not commonly used.</p>
+<h2><a class="header" href="#saving-a-console" id="saving-a-console">Saving a Console</a></h2>
+<p>You can save the current state of a console to a REX Paint file by calling <code>to_xp_layer</code>. You can take a <code>PNG</code> screenshot with <code>ctx.screenshot(filename)</code>.</p>
 
                     </main>
 
@@ -744,21 +983,6 @@ Randomly chose index: 1, which is a Dog
 
         </div>
 
-        
-        <!-- Livereload script (if served using the cli tool) -->
-        <script type="text/javascript">
-            var socket = new WebSocket("ws://localhost:3000/__livereload");
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
         
 
         

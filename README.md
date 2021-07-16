@@ -6,7 +6,7 @@
 
 > *Bracket-lib* is the primary support library for my book, [Hands-on Rust](https://hands-on-rust.com/). Please consider checking out my book.
 
-Early work has begun on writing a manual. You can find it in the `manual` folder. It uses `mdbook`. Once it's a bit more complete, I'll host it as a website.
+Early work has begun on writing a manual. You can find it in the `manual` folder, or [read it online](https://bfnightly.bracketproductions.com/bracket-lib/what_is_it.html).
 
 ## What happened to RLTK?
 

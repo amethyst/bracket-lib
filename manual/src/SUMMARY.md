@@ -11,4 +11,6 @@
     - [Pathfinding Examples](./ex_path.md)
     - [Random Examples](./ex_rng.md)
     - [Terminal Examples](./ex_bterm.md)
+- [Working with Consoles](./consoles.md)
+    - [Printing to Consoles](./consoles_print.md)
     
