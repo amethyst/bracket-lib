@@ -4,6 +4,8 @@
 
 *Hands-on Rust* includes bonus content that uses a fancy console to provide a smooth-moving version of [Flappy Dragon](https://github.com/thebracket/HandsOnRust/tree/main/FirstGameFlappyAscii/flappy_bonus).
 
+![](ex_fancy.gif)
+
 ## Initializing a Fancy Console
 
 Fancy consoles are another creation option in the `BTermBuilder` chain. The following example creates a single fancy console:
