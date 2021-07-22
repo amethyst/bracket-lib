@@ -13,4 +13,5 @@
     - [Terminal Examples](./ex_bterm.md)
 - [Working with Consoles](./consoles.md)
     - [Printing to Consoles](./consoles_print.md)
+    - [Fancy Consoles](./fancy.md)
     
