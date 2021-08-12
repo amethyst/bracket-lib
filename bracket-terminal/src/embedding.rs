@@ -32,7 +32,7 @@ impl Dictionary {
         };
 
         if self.entries.contains_key(&fixed_path) {
-            return Some(&self.entries[&fixed_path]);
+            return Some(self.entries[&fixed_path]);
         }
         None
     }
