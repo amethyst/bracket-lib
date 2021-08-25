@@ -6,12 +6,14 @@ use std::collections::HashSet;
 mod recursive_shadowcasting;
 // Default algorithm / backwards compatibility
 pub use recursive_shadowcasting::{field_of_view, field_of_view_set};
+mod symmetric_shadowcasting;
 
 /// Enumeration of available FOV algorithms
 #[derive(Clone, Copy)]
 #[non_exhaustive] // Other algorithms may be added in the future
 pub enum FieldOfViewAlg {
     RecursiveShadowcasting,
+    SymmetricShadowcasting,
 }
 
 impl FieldOfViewAlg {
@@ -25,6 +27,9 @@ impl FieldOfViewAlg {
             FieldOfViewAlg::RecursiveShadowcasting => {
                 recursive_shadowcasting::field_of_view_set(center, range, fov_check)
             }
+            FieldOfViewAlg::SymmetricShadowcasting => {
+                symmetric_shadowcasting::field_of_view_set(center, range, fov_check)
+            }
         }
     }
     pub fn field_of_view(
@@ -36,6 +41,9 @@ impl FieldOfViewAlg {
         match self {
             FieldOfViewAlg::RecursiveShadowcasting => {
                 recursive_shadowcasting::field_of_view(start, range, fov_check)
+            }
+            FieldOfViewAlg::SymmetricShadowcasting => {
+                symmetric_shadowcasting::field_of_view(start, range, fov_check)
             }
         }
     }
