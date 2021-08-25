@@ -198,4 +198,29 @@ mod tests {
             }
         }
     }
+
+    // NOTE: Symmetry applies to FieldOfViewAlg::SymmetricShadowcasting only
+    #[test]
+    fn fov_symmetric() {
+        use bracket_random::prelude::RandomNumberGenerator;
+
+        let mut rng = RandomNumberGenerator::seeded(0);
+        let mut map = Map::new();
+        let c = Point::new(10, 10);
+        let radius: i32 = 8;
+
+        for _ in 0..TESTMAP_TILES / 5 {
+            map.tiles[rng.range(0, TESTMAP_TILES)] = true;
+        }
+        map.tiles[c.to_index(TESTMAP_W)] = false;
+
+        for point in FieldOfViewAlg::SymmetricShadowcasting.field_of_view_set(c, radius, &map) {
+            // Symmetry only holds for transparent tiles
+            if !map.tiles[point.to_index(TESTMAP_W)] {
+                assert!(FieldOfViewAlg::SymmetricShadowcasting
+                    .field_of_view_set(point, radius, &map)
+                    .contains(&c));
+            }
+        }
+    }
 }
