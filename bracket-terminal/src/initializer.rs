@@ -187,7 +187,7 @@ impl BTermBuilder {
         };
         cb.fonts.push(BuilderFont {
             path: "vga8x16.png".to_string(),
-            dimensions: (8, 8),
+            dimensions: (8, 16),
             explicit_background: None,
         });
         cb.consoles.push(ConsoleType::SimpleConsole {
@@ -224,7 +224,7 @@ impl BTermBuilder {
         };
         cb.fonts.push(BuilderFont {
             path: "vga8x16.png".to_string(),
-            dimensions: (8, 8),
+            dimensions: (8, 16),
             explicit_background: None,
         });
         cb.consoles.push(ConsoleType::SimpleConsole {
