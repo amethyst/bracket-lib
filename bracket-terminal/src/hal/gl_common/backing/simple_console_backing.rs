@@ -121,7 +121,7 @@ impl SimpleConsoleBackend {
                 let glyph_left = f32::from(glyph_x) * glyph_size_x;
                 let glyph_right = f32::from(glyph_x + 1) * glyph_size_x;
                 let glyph_top = f32::from(glyph_y) * glyph_size_y;
-                let glyph_bottom = (f32::from(glyph_y) - 0.95) * glyph_size_y;
+                let glyph_bottom = (f32::from(glyph_y) - 0.999) * glyph_size_y;
 
                 self.push_point(
                     screen_x + step_x,
