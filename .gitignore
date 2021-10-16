@@ -4,4 +4,4 @@ Cargo.lock
 **/target
 **/wasm_help/staging
 .vscode/launch.json
-manual/book
+manual/book/*
