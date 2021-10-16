@@ -97,6 +97,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
     )?; // Additional resize to handle some X11 cases
 
     el.run(move |event, _, control_flow| {
+        let wait_time = BACKEND.lock().frame_sleep_time.unwrap_or(12); // Hoisted to reduce locks
         *control_flow = TICK_TYPE;
 
         if bterm.quitting {
@@ -116,7 +117,8 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                 wc.window().request_redraw();
             }
             Event::RedrawRequested { .. } => {
-                if wc.window().inner_size().width > 0 {
+                let execute_ms = now.elapsed().as_millis() as u64 - prev_ms as u64;
+                if execute_ms >= wait_time && wc.window().inner_size().width > 0 {
                     tock(
                         &mut bterm,
                         wc.window().scale_factor() as f32,
@@ -127,8 +129,14 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                         &now,
                     );
                     wc.swap_buffers().unwrap();
+
+                    if *control_flow != ControlFlow::Exit {
+                        let next_tick = now.elapsed().as_millis() as u64 - execute_ms;
+                        if next_tick >= wait_time {
+                            *control_flow = ControlFlow::WaitUntil(std::time::Instant::now() + std::time::Duration::from_millis(wait_time - next_tick));
+                        }
+                    }
                 }
-                crate::hal::fps_sleep(BACKEND.lock().frame_sleep_time, &now, prev_ms);
             }
             Event::LoopDestroyed => (),
             Event::WindowEvent { ref event, .. } => match event {
