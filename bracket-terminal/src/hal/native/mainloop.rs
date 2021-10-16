@@ -133,7 +133,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                     if *control_flow != ControlFlow::Exit {
                         let next_tick = now.elapsed().as_millis() as u64 - execute_ms;
                         if next_tick >= wait_time {
-                            *control_flow = ControlFlow::WaitUntil(std::time::Instant::now() + std::time::Duration::from_millis(wait_time - next_tick));
+                            *control_flow = ControlFlow::WaitUntil(std::time::Instant::now() + std::time::Duration::from_millis(next_tick - wait_time));
                         }
                     }
                 }
