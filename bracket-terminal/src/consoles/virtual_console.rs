@@ -77,7 +77,7 @@ impl VirtualConsole {
         }
 
         for (i, line) in lines.iter().enumerate() {
-            console.print(0, i as i32, &line);
+            console.print(0, i as i32, line);
         }
 
         console

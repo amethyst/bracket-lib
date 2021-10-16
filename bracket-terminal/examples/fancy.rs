@@ -13,7 +13,6 @@ impl GameState for State {
         draw_batch.target(1);
         draw_batch.cls();
 
-
         let simple_x = self.x as i32;
         let fancy_x = self.x + 20.0;
 
@@ -28,8 +27,8 @@ impl GameState for State {
             1,
             Degrees::new(0.0),
             PointF::new(1.0, 1.0),
-            ColorPair::new(WHITE,BLACK),
-            to_cp437('@')
+            ColorPair::new(WHITE, BLACK),
+            to_cp437('@'),
         );
 
         draw_batch.submit(0).expect("Batch error");
@@ -49,9 +48,7 @@ fn main() -> BError {
         .with_fps_cap(30.0)
         .build()?;
 
-    let gs = State {
-        x: 0.0,
-    };
+    let gs = State { x: 0.0 };
 
     main_loop(context, gs)
 }
