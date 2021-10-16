@@ -63,7 +63,7 @@ mod tests {
     // Tests that we make an RGB triplet at defaults and it is black.
     #[should_panic]
     fn test_unimplemented_dimensions() {
-        struct TestMap {};
+        struct TestMap {}
         impl BaseMap for TestMap {}
         impl Algorithm2D for TestMap {}
 
@@ -73,7 +73,7 @@ mod tests {
 
     #[test]
     fn test_in_bounds() {
-        struct TestMap {};
+        struct TestMap {}
         impl BaseMap for TestMap {}
         impl Algorithm2D for TestMap {
             fn dimensions(&self) -> Point {
@@ -89,7 +89,7 @@ mod tests {
 
     #[test]
     fn test_point2d_to_index() {
-        struct TestMap {};
+        struct TestMap {}
         impl BaseMap for TestMap {}
         impl Algorithm2D for TestMap {
             fn dimensions(&self) -> Point {
@@ -106,7 +106,7 @@ mod tests {
 
     #[test]
     fn test_index_to_point2d() {
-        struct TestMap {};
+        struct TestMap {}
         impl BaseMap for TestMap {}
         impl Algorithm2D for TestMap {
             fn dimensions(&self) -> Point {
