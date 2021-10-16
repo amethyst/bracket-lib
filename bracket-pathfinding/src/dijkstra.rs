@@ -67,6 +67,33 @@ impl DijkstraMap {
         d
     }
 
+    /// Construct a new Dijkstra map, ready to run. You must specify the map size, and link to an implementation
+    /// of a BaseMap trait that can generate exits lists. It then builds the map, giving you a result.
+    /// Starts is provided as a set of tuples, two per tile. The first is the tile index, the second the starting
+    /// weight (defaults to 0.0 on new)
+    pub fn new_weighted<T>(
+        size_x: T,
+        size_y: T,
+        starts: &[(usize, f32)],
+        map: &dyn BaseMap,
+        max_depth: f32,
+    ) -> DijkstraMap
+    where
+        T: TryInto<usize>,
+    {
+        let sz_x: usize = size_x.try_into().ok().unwrap();
+        let sz_y: usize = size_y.try_into().ok().unwrap();
+        let result: Vec<f32> = vec![MAX; sz_x * sz_y];
+        let mut d = DijkstraMap {
+            map: result,
+            size_x: sz_x,
+            size_y: sz_y,
+            max_depth,
+        };
+        DijkstraMap::build_weighted(&mut d, starts, map);
+        d
+    }
+
     /// Creates an empty Dijkstra map node.
     pub fn new_empty<T>(size_x: T, size_y: T, max_depth: f32) -> DijkstraMap
     where
@@ -108,6 +135,15 @@ impl DijkstraMap {
         RunThreaded::False
     }
 
+    #[cfg(feature = "threaded")]
+    fn build_helper_weighted(dm: &mut DijkstraMap, starts: &[(usize, f32)], map: &dyn BaseMap) -> RunThreaded {
+        if starts.len() >= THREADED_REQUIRED_STARTS {
+            DijkstraMap::build_parallel_weighted(dm, starts, map);
+            return RunThreaded::True;
+        }
+        RunThreaded::False
+    }
+
     /// Builds the Dijkstra map: iterate from each starting point, to each exit provided by BaseMap's
     /// exits implementation. Each step adds cost to the current depth, and is discarded if the new
     /// depth is further than the current depth.
@@ -143,8 +179,93 @@ impl DijkstraMap {
         }
     }
 
+    /// Builds the Dijkstra map: iterate from each starting point, to each exit provided by BaseMap's
+    /// exits implementation. Each step adds cost to the current depth, and is discarded if the new
+    /// depth is further than the current depth.
+    /// WARNING: Will give incorrect results when used with non-uniform exit costs. Much slower
+    /// algorithm required to support that.
+    /// Automatically branches to a parallel version if you provide more than 4 starting points
+    pub fn build_weighted(dm: &mut DijkstraMap, starts: &[(usize, f32)], map: &dyn BaseMap) {
+        let mapsize: usize = (dm.size_x * dm.size_y) as usize;
+        let mut open_list: VecDeque<(usize, f32)> = VecDeque::with_capacity(mapsize);
+
+        for start in starts {
+            open_list.push_back(*start);
+        }
+
+        while let Some((tile_idx, depth)) = open_list.pop_front() {
+            let exits = map.get_available_exits(tile_idx);
+            for (new_idx, add_depth) in exits {
+                let new_depth = depth + add_depth;
+                let prev_depth = dm.map[new_idx];
+                if new_depth >= prev_depth {
+                    continue;
+                }
+                if new_depth >= dm.max_depth {
+                    continue;
+                }
+                dm.map[new_idx] = new_depth;
+                open_list.push_back((new_idx, new_depth));
+            }
+        }
+    }
+
     /// Implementation of Parallel Dijkstra.
     #[cfg(feature = "threaded")]
+    fn build_parallel(dm: &mut DijkstraMap, starts: &[usize], map: &dyn BaseMap) {
+        let mapsize: usize = (dm.size_x * dm.size_y) as usize;
+        let mut layers: Vec<ParallelDm> = Vec::with_capacity(starts.len());
+        for start_chunk in starts.chunks(rayon::current_num_threads()) {
+            let mut layer = ParallelDm {
+                map: vec![MAX; mapsize],
+                max_depth: dm.max_depth,
+                starts: Vec::new(),
+            };
+            layer
+                .starts
+                .extend(start_chunk.iter().copied().map(|x| x as usize));
+            layers.push(layer);
+        }
+
+        let exits: Vec<SmallVec<[(usize, f32); 10]>> = (0..mapsize)
+            .map(|idx| map.get_available_exits(idx))
+            .collect();
+
+        // Run each map in parallel
+        layers.par_iter_mut().for_each(|l| {
+            let mut open_list: VecDeque<(usize, f32)> = VecDeque::with_capacity(mapsize);
+
+            for start in l.starts.iter().copied() {
+                open_list.push_back((start, 0.0));
+            }
+
+            while let Some((tile_idx, depth)) = open_list.pop_front() {
+                let exits = &exits[tile_idx];
+                for (new_idx, add_depth) in exits {
+                    let new_idx = *new_idx;
+                    let new_depth = depth + add_depth;
+                    let prev_depth = l.map[new_idx];
+                    if new_depth >= prev_depth {
+                        continue;
+                    }
+                    if new_depth >= l.max_depth {
+                        continue;
+                    }
+                    l.map[new_idx] = new_depth;
+                    open_list.push_back((new_idx, new_depth));
+                }
+            }
+        });
+
+        // Recombine down to a single result
+        for l in layers {
+            for i in 0..mapsize {
+                dm.map[i] = f32::min(dm.map[i], l.map[i]);
+            }
+        }
+    }
+
+        #[cfg(feature = "threaded")]
     fn build_parallel(dm: &mut DijkstraMap, starts: &[usize], map: &dyn BaseMap) {
         let mapsize: usize = (dm.size_x * dm.size_y) as usize;
         let mut layers: Vec<ParallelDm> = Vec::with_capacity(starts.len());
