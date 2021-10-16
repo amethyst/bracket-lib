@@ -18,7 +18,7 @@ impl Shader {
         unsafe {
             // vertex shader
             let vertex = gl.create_shader(glow::VERTEX_SHADER).unwrap();
-            gl.shader_source(vertex, &vertex_code);
+            gl.shader_source(vertex, vertex_code);
             gl.compile_shader(vertex);
             if !gl.get_shader_compile_status(vertex) {
                 log(&vertex_code);
@@ -28,7 +28,7 @@ impl Shader {
 
             // fragment Shader
             let fragment = gl.create_shader(glow::FRAGMENT_SHADER).unwrap();
-            gl.shader_source(fragment, &fragment_code);
+            gl.shader_source(fragment, fragment_code);
             gl.compile_shader(fragment);
             if !gl.get_shader_compile_status(fragment) {
                 log(&fragment_code);

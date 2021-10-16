@@ -98,7 +98,7 @@ impl BTerm {
         } else {
             return Err("Couldn't convert to u32".into());
         };
-        Ok(init_raw(w, h, window_title, platform_hints)?)
+        init_raw(w, h, window_title, platform_hints)
     }
 
     /// Quick initialization for when you just want an 8x8 font terminal

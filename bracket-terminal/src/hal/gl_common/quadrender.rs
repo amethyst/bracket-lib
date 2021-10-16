@@ -19,7 +19,7 @@ pub fn setup_quad(gl: &glow::Context) -> VertexArrayId {
         gl.bind_buffer(glow::ARRAY_BUFFER, Some(vertex_buffer));
         gl.buffer_data_u8_slice(
             glow::ARRAY_BUFFER,
-            &quad_vertices.align_to::<u8>().1,
+            quad_vertices.align_to::<u8>().1,
             glow::STATIC_DRAW,
         );
 

@@ -93,7 +93,7 @@ impl VertexArray {
                 gl,
                 gl.buffer_data_u8_slice(
                     glow::ARRAY_BUFFER,
-                    &self.vertex_buffer.align_to::<u8>().1,
+                    self.vertex_buffer.align_to::<u8>().1,
                     glow::STATIC_DRAW,
                 )
             );
@@ -102,7 +102,7 @@ impl VertexArray {
                 gl,
                 gl.buffer_data_u8_slice(
                     glow::ELEMENT_ARRAY_BUFFER,
-                    &self.index_buffer.align_to::<u8>().1,
+                    self.index_buffer.align_to::<u8>().1,
                     glow::STATIC_DRAW,
                 )
             );
