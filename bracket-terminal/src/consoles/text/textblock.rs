@@ -1,6 +1,7 @@
+use std::cmp;
 use crate::prelude::{string_to_cp437, Console, DrawBatch, FontCharType, Tile};
 use bracket_color::prelude::{ColorPair, RGB, RGBA};
-use bracket_geometry::prelude::Point;
+use bracket_geometry::prelude::{Point, Rect};
 
 pub struct TextBlock {
     x: i32,
@@ -61,6 +62,19 @@ impl TextBlock {
         self.cursor = (x, y);
     }
 
+    pub fn get_cursor(&self) -> Point {
+        Point::from_tuple(self.cursor)
+    }
+
+    pub fn get_origin(&self) -> Point {
+        Point::new(self.x, self.y)
+    }
+
+    pub fn set_origin(&mut self, origin: Point) {
+        self.x = origin.x;
+        self.y = origin.y;
+    }
+
     fn at(&self, x: i32, y: i32) -> usize {
         ((y * self.width) + x) as usize
     }
@@ -82,6 +96,18 @@ impl TextBlock {
     pub fn render_to_draw_batch(&self, draw_batch: &mut DrawBatch) {
         for y in 0..self.height {
             for x in 0..self.width {
+                draw_batch.set(
+                    Point::new(x + self.x, y + self.y),
+                    ColorPair::new(self.buffer[self.at(x, y)].fg, self.buffer[self.at(x, y)].bg),
+                    self.buffer[self.at(x, y)].glyph,
+                );
+            }
+        }
+    }
+
+    pub fn render_to_draw_batch_clip(&self, draw_batch: &mut DrawBatch, clip: &Rect) {
+        for y in cmp::max(0, clip.y1)..cmp::min(self.height, clip.y2) {
+            for x in cmp::max(0, clip.x1)..cmp::min(self.width, clip.x2) {
                 draw_batch.set(
                     Point::new(x + self.x, y + self.y),
                     ColorPair::new(self.buffer[self.at(x, y)].fg, self.buffer[self.at(x, y)].bg),
