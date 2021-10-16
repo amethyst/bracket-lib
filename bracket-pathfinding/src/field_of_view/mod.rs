@@ -165,7 +165,7 @@ mod tests {
                         let point = Point::new(x, y);
                         assert!(
                             r2 >= max_radius_sq || visible.contains(&point),
-                            format!("Interior point ({:?}) not in FOV({})", point, radius)
+                            "Interior point ({:?}) not in FOV({})", point, radius
                         );
                     }
                 }
@@ -192,7 +192,7 @@ mod tests {
                 let pos = Point::new(c.x - radius + i, c.y);
                 assert!(visible.contains(&pos));
                 let pos = Point::new(c.x - radius + i, c.y - 1);
-                assert!(visible.contains(&pos), format!("{:?} not in result", pos));
+                assert!(visible.contains(&pos), "{:?} not in result", pos);
                 let pos = Point::new(c.x - radius + i, c.y + 1);
                 assert!(visible.contains(&pos));
             }
