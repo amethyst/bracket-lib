@@ -60,6 +60,12 @@ fn on_resize(
     Ok(())
 }
 
+struct ResizeEvent {
+    physical_size: glutin::dpi::PhysicalSize<u32>,
+    dpi_scale_factor: f64,
+    send_event: bool,
+}
+
 pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<()> {
     let now = Instant::now();
     let mut prev_seconds = now.elapsed().as_secs();
@@ -96,6 +102,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
         true,
     )?; // Additional resize to handle some X11 cases
 
+    let mut queued_resize_event : Option<ResizeEvent> = None;
     el.run(move |event, _, control_flow| {
         let wait_time = BACKEND.lock().frame_sleep_time.unwrap_or(12); // Hoisted to reduce locks
         *control_flow = TICK_TYPE;
@@ -116,6 +123,14 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
             Event::MainEventsCleared => {
                 let execute_ms = now.elapsed().as_millis() as u64 - prev_ms as u64;
                 if execute_ms >= wait_time && wc.window().inner_size().width > 0 {
+                    if queued_resize_event.is_some() {
+                        if let Some(resize) = &queued_resize_event {
+                            wc.resize(resize.physical_size);
+                            on_resize(&mut bterm, resize.physical_size, resize.dpi_scale_factor, resize.send_event).unwrap();
+                        }
+                        queued_resize_event = None;
+                    }
+
                     tock(
                         &mut bterm,
                         wc.window().scale_factor() as f32,
@@ -127,12 +142,13 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                     );
                     wc.swap_buffers().unwrap();
 
-                    if *control_flow != ControlFlow::Exit {
+                    // I'm not convinced that this is doing anything
+                    /*if *control_flow != ControlFlow::Exit {
                         let next_tick = now.elapsed().as_millis() as u64 - execute_ms;
                         if next_tick >= wait_time {
                             *control_flow = ControlFlow::WaitUntil(std::time::Instant::now() + std::time::Duration::from_millis(next_tick - wait_time));
                         }
-                    }
+                    }*/
                 }
             }
             Event::RedrawRequested { .. } => {
@@ -147,14 +163,24 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
 
                     let scale_factor = wc.window().scale_factor();
                     let physical_size = wc.window().inner_size();
-                    wc.resize(physical_size);
-                    on_resize(&mut bterm, physical_size, scale_factor, true).unwrap();
+                    //wc.resize(physical_size);
+                    //on_resize(&mut bterm, physical_size, scale_factor, true).unwrap();
+                    queued_resize_event = Some(ResizeEvent{
+                        physical_size,
+                        dpi_scale_factor: scale_factor,
+                        send_event: true
+                    });
                 }
                 WindowEvent::Resized(_physical_size) => {
                     let scale_factor = wc.window().scale_factor();
                     let physical_size = wc.window().inner_size();
-                    wc.resize(physical_size);
-                    on_resize(&mut bterm, physical_size, scale_factor, true).unwrap();
+                    //wc.resize(physical_size);
+                    //on_resize(&mut bterm, physical_size, scale_factor, true).unwrap();
+                    queued_resize_event = Some(ResizeEvent{
+                        physical_size,
+                        dpi_scale_factor: scale_factor,
+                        send_event: true
+                    });
                 }
                 WindowEvent::CloseRequested => {
                     // If not using events, just close. Otherwise, push the event
