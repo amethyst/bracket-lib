@@ -114,9 +114,6 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                 clear_input_state(&mut bterm);
             }
             Event::MainEventsCleared => {
-                wc.window().request_redraw();
-            }
-            Event::RedrawRequested { .. } => {
                 let execute_ms = now.elapsed().as_millis() as u64 - prev_ms as u64;
                 if execute_ms >= wait_time && wc.window().inner_size().width > 0 {
                     tock(
@@ -137,6 +134,9 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                         }
                     }
                 }
+            }
+            Event::RedrawRequested { .. } => {
+                // Do nothing
             }
             Event::LoopDestroyed => (),
             Event::WindowEvent { ref event, .. } => match event {
