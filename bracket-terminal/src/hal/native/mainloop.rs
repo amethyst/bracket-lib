@@ -116,13 +116,13 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
             wc.window().set_inner_size(glutin::dpi::PhysicalSize::new(rr.0, rr.1));
         }*/
 
-        match event {
-            Event::NewEvents(_) => {
-                clear_input_state(&mut bterm);
-            }
+        let my_window_id = wc.window().id();
+
+        match &event {
             Event::MainEventsCleared => {
                 let execute_ms = now.elapsed().as_millis() as u64 - prev_ms as u64;
                 if execute_ms >= wait_time && wc.window().inner_size().width > 0 {
+                    let start_render = std::time::Instant::now();
                     if queued_resize_event.is_some() {
                         if let Some(resize) = &queued_resize_event {
                             wc.resize(resize.physical_size);
@@ -141,111 +141,124 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                         &now,
                     );
                     wc.swap_buffers().unwrap();
+                    let render_elapsed = start_render.elapsed().as_millis() as u64;
 
-                    // I'm not convinced that this is doing anything
-                    /*if *control_flow != ControlFlow::Exit {
-                        let next_tick = now.elapsed().as_millis() as u64 - execute_ms;
-                        if next_tick >= wait_time {
-                            *control_flow = ControlFlow::WaitUntil(std::time::Instant::now() + std::time::Duration::from_millis(next_tick - wait_time));
+                    if wait_time > render_elapsed {
+                        if *control_flow != ControlFlow::Exit {
+                            *control_flow = ControlFlow::WaitUntil(
+                                std::time::Instant::now() + std::time::Duration::from_millis(wait_time - render_elapsed)
+                            );
+                        } else {
+                            if *control_flow != ControlFlow::Exit {
+                                *control_flow = TICK_TYPE;
+                            }
                         }
-                    }*/
-                }
-            }
-            Event::RedrawRequested { .. } => {
-                // Do nothing
-            }
-            Event::LoopDestroyed => (),
-            Event::WindowEvent { ref event, .. } => match event {
-                WindowEvent::Moved(physical_position) => {
-                    bterm.on_event(BEvent::Moved {
-                        new_position: Point::new(physical_position.x, physical_position.y),
-                    });
-
-                    let scale_factor = wc.window().scale_factor();
-                    let physical_size = wc.window().inner_size();
-                    //wc.resize(physical_size);
-                    //on_resize(&mut bterm, physical_size, scale_factor, true).unwrap();
-                    queued_resize_event = Some(ResizeEvent{
-                        physical_size,
-                        dpi_scale_factor: scale_factor,
-                        send_event: true
-                    });
-                }
-                WindowEvent::Resized(_physical_size) => {
-                    let scale_factor = wc.window().scale_factor();
-                    let physical_size = wc.window().inner_size();
-                    //wc.resize(physical_size);
-                    //on_resize(&mut bterm, physical_size, scale_factor, true).unwrap();
-                    queued_resize_event = Some(ResizeEvent{
-                        physical_size,
-                        dpi_scale_factor: scale_factor,
-                        send_event: true
-                    });
-                }
-                WindowEvent::CloseRequested => {
-                    // If not using events, just close. Otherwise, push the event
-                    if !INPUT.lock().use_events {
-                        *control_flow = ControlFlow::Exit;
-                    } else {
-                        bterm.on_event(BEvent::CloseRequested);
                     }
-                }
-                WindowEvent::ReceivedCharacter(char) => {
-                    bterm.on_event(BEvent::Character { c: *char });
-                }
-                WindowEvent::Focused(focused) => {
-                    bterm.on_event(BEvent::Focused { focused: *focused });
-                }
-                WindowEvent::CursorMoved { position: pos, .. } => {
-                    bterm.on_mouse_position(pos.x, pos.y);
-                }
-                WindowEvent::CursorEntered { .. } => bterm.on_event(BEvent::CursorEntered),
-                WindowEvent::CursorLeft { .. } => bterm.on_event(BEvent::CursorLeft),
 
-                WindowEvent::MouseInput { button, state, .. } => {
-                    let button = match button {
-                        MouseButton::Left => 0,
-                        MouseButton::Right => 1,
-                        MouseButton::Middle => 2,
-                        MouseButton::Other(num) => 3 + *num as usize,
-                    };
-                    bterm.on_mouse_button(button, *state == glutin::event::ElementState::Pressed);
+                    // Moved from new events, which doesn't make sense
+                    clear_input_state(&mut bterm);
+                }
+            }
+            Event::WindowEvent{event, window_id} => {
+                // Fast return for other windows
+                if *window_id != my_window_id {
+                    //println!("Dropped event from other window");
+                    return;
                 }
 
-                WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
-                    let scale_factor = wc.window().scale_factor();
-                    let physical_size = wc.window().inner_size();
-                    wc.resize(physical_size);
-                    on_resize(&mut bterm, physical_size, scale_factor, false).unwrap();
-                    bterm.on_event(BEvent::ScaleFactorChanged {
-                        new_size: Point::new(new_inner_size.width, new_inner_size.height),
-                        dpi_scale_factor: scale_factor as f32,
-                    })
-                }
+                // Handle Window Events
+                match event {
+                    WindowEvent::Moved(physical_position) => {
+                        bterm.on_event(BEvent::Moved {
+                            new_position: Point::new(physical_position.x, physical_position.y),
+                        });
 
-                WindowEvent::KeyboardInput {
-                    input:
-                        glutin::event::KeyboardInput {
-                            virtual_keycode: Some(virtual_keycode),
-                            state,
-                            scancode,
-                            ..
-                        },
-                    ..
-                } => bterm.on_key(
-                    *virtual_keycode,
-                    *scancode,
-                    *state == glutin::event::ElementState::Pressed,
-                ),
+                        let scale_factor = wc.window().scale_factor();
+                        let physical_size = wc.window().inner_size();
+                        //wc.resize(physical_size);
+                        //on_resize(&mut bterm, physical_size, scale_factor, true).unwrap();
+                        queued_resize_event = Some(ResizeEvent{
+                            physical_size,
+                            dpi_scale_factor: scale_factor,
+                            send_event: true
+                        });
+                    }
+                    WindowEvent::Resized(_physical_size) => {
+                        let scale_factor = wc.window().scale_factor();
+                        let physical_size = wc.window().inner_size();
+                        //wc.resize(physical_size);
+                        //on_resize(&mut bterm, physical_size, scale_factor, true).unwrap();
+                        queued_resize_event = Some(ResizeEvent{
+                            physical_size,
+                            dpi_scale_factor: scale_factor,
+                            send_event: true
+                        });
+                    }
+                    WindowEvent::CloseRequested => {
+                        // If not using events, just close. Otherwise, push the event
+                        if !INPUT.lock().use_events {
+                            *control_flow = ControlFlow::Exit;
+                        } else {
+                            bterm.on_event(BEvent::CloseRequested);
+                        }
+                    }
+                    WindowEvent::ReceivedCharacter(char) => {
+                        bterm.on_event(BEvent::Character { c: *char });
+                    }
+                    WindowEvent::Focused(focused) => {
+                        bterm.on_event(BEvent::Focused { focused: *focused });
+                    }
+                    WindowEvent::CursorMoved { position: pos, .. } => {
+                        bterm.on_mouse_position(pos.x, pos.y);
+                    }
+                    WindowEvent::CursorEntered { .. } => bterm.on_event(BEvent::CursorEntered),
+                    WindowEvent::CursorLeft { .. } => bterm.on_event(BEvent::CursorLeft),
 
-                WindowEvent::ModifiersChanged(modifiers) => {
-                    bterm.shift = modifiers.shift();
-                    bterm.alt = modifiers.alt();
-                    bterm.control = modifiers.ctrl();
+                    WindowEvent::MouseInput { button, state, .. } => {
+                        let button = match button {
+                            MouseButton::Left => 0,
+                            MouseButton::Right => 1,
+                            MouseButton::Middle => 2,
+                            MouseButton::Other(num) => 3 + *num as usize,
+                        };
+                        bterm.on_mouse_button(button, *state == glutin::event::ElementState::Pressed);
+                    }
+
+                    WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
+                        let scale_factor = wc.window().scale_factor();
+                        let physical_size = wc.window().inner_size();
+                        wc.resize(physical_size);
+                        on_resize(&mut bterm, physical_size, scale_factor, false).unwrap();
+                        bterm.on_event(BEvent::ScaleFactorChanged {
+                            new_size: Point::new(new_inner_size.width, new_inner_size.height),
+                            dpi_scale_factor: scale_factor as f32,
+                        })
+                    }
+
+                    WindowEvent::KeyboardInput {
+                        input:
+                            glutin::event::KeyboardInput {
+                                virtual_keycode: Some(virtual_keycode),
+                                state,
+                                scancode,
+                                ..
+                            },
+                        ..
+                    } => bterm.on_key(
+                        *virtual_keycode,
+                        *scancode,
+                        *state == glutin::event::ElementState::Pressed,
+                    ),
+
+                    WindowEvent::ModifiersChanged(modifiers) => {
+                        bterm.shift = modifiers.shift();
+                        bterm.alt = modifiers.alt();
+                        bterm.control = modifiers.ctrl();
+                    }
+                    _ => {}
                 }
-                _ => (),
-            },
-            _ => (),
+            }
+            _ => {}
         }
     });
 }
