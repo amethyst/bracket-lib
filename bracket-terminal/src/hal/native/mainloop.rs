@@ -5,6 +5,7 @@ use crate::prelude::{BEvent, BTerm, GameState, BACKEND_INTERNAL, INPUT};
 use crate::{clear_input_state, BResult};
 use bracket_geometry::prelude::Point;
 use glow::HasContext;
+use glutin::event::StartCause;
 use glutin::{event::Event, event::MouseButton, event::WindowEvent, event_loop::ControlFlow};
 use std::time::Instant;
 
@@ -119,10 +120,19 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
         let my_window_id = wc.window().id();
 
         match &event {
-            Event::MainEventsCleared => {
+            /*Event::MainEventsCleared => {
                 let execute_ms = now.elapsed().as_millis() as u64 - prev_ms as u64;
                 if execute_ms >= wait_time && wc.window().inner_size().width > 0 {
-                    let start_render = std::time::Instant::now();
+                    wc.window().request_redraw();
+                }
+            }*/
+            Event::RedrawEventsCleared => {
+                if wc.window().inner_size().width == 0 {
+                    return;
+                }
+                *control_flow = ControlFlow::WaitUntil(Instant::now() + std::time::Duration::from_millis(wait_time));
+                let execute_ms = now.elapsed().as_millis() as u64 - prev_ms as u64;
+                if execute_ms >= wait_time {
                     if queued_resize_event.is_some() {
                         if let Some(resize) = &queued_resize_event {
                             wc.resize(resize.physical_size);
@@ -141,20 +151,6 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                         &now,
                     );
                     wc.swap_buffers().unwrap();
-                    let render_elapsed = start_render.elapsed().as_millis() as u64;
-
-                    if wait_time > render_elapsed {
-                        if *control_flow != ControlFlow::Exit {
-                            *control_flow = ControlFlow::WaitUntil(
-                                std::time::Instant::now() + std::time::Duration::from_millis(wait_time - render_elapsed)
-                            );
-                        } else {
-                            if *control_flow != ControlFlow::Exit {
-                                *control_flow = TICK_TYPE;
-                            }
-                        }
-                    }
-
                     // Moved from new events, which doesn't make sense
                     clear_input_state(&mut bterm);
                 }

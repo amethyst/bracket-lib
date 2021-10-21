@@ -33,8 +33,8 @@ ctrlc = { version = "~3.1", optional=true }
 anyhow = "~1.0"
 
 [target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
-glutin = {version = "0.26.0", optional = true }
-winit = { version = "0.24.0" }
+glutin = {version = "0.27.0", optional = true }
+winit = { version = "0.25.0" }
 
 [features]
 default = [ "opengl" ]
