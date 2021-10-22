@@ -5,7 +5,6 @@ use crate::prelude::{BEvent, BTerm, GameState, BACKEND_INTERNAL, INPUT};
 use crate::{clear_input_state, BResult};
 use bracket_geometry::prelude::Point;
 use glow::HasContext;
-use glutin::event::StartCause;
 use glutin::{event::Event, event::MouseButton, event::WindowEvent, event_loop::ControlFlow};
 use std::time::Instant;
 
@@ -39,8 +38,7 @@ fn on_resize(
             )
         );
     }
-    let new_fb =
-        Framebuffer::build_fbo(gl, physical_size.width as i32, physical_size.height as i32)?;
+    let new_fb = Framebuffer::build_fbo(gl, physical_size.width as i32, physical_size.height as i32)?;
     be.backing_buffer = Some(new_fb);
     bterm.on_event(BEvent::Resized {
         new_size: Point::new(physical_size.width, physical_size.height),
@@ -104,33 +102,24 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
     )?; // Additional resize to handle some X11 cases
 
     let mut queued_resize_event : Option<ResizeEvent> = None;
+    let spin_sleeper = spin_sleep::SpinSleeper::default();
+    let my_window_id = wc.window().id();
+
     el.run(move |event, _, control_flow| {
-        let wait_time = BACKEND.lock().frame_sleep_time.unwrap_or(12); // Hoisted to reduce locks
+        let wait_time = BACKEND.lock().frame_sleep_time.unwrap_or(33); // Hoisted to reduce locks
         *control_flow = TICK_TYPE;
 
         if bterm.quitting {
             *control_flow = ControlFlow::Exit;
         }
 
-        /*let rr = BACKEND.lock().resize_request;
-        if let Some(rr) = rr {
-            wc.window().set_inner_size(glutin::dpi::PhysicalSize::new(rr.0, rr.1));
-        }*/
-
-        let my_window_id = wc.window().id();
-
         match &event {
-            /*Event::MainEventsCleared => {
-                let execute_ms = now.elapsed().as_millis() as u64 - prev_ms as u64;
-                if execute_ms >= wait_time && wc.window().inner_size().width > 0 {
-                    wc.window().request_redraw();
-                }
-            }*/
             Event::RedrawEventsCleared => {
+                let frame_timer = Instant::now();
                 if wc.window().inner_size().width == 0 {
                     return;
                 }
-                *control_flow = ControlFlow::WaitUntil(Instant::now() + std::time::Duration::from_millis(wait_time));
+
                 let execute_ms = now.elapsed().as_millis() as u64 - prev_ms as u64;
                 if execute_ms >= wait_time {
                     if queued_resize_event.is_some() {
@@ -153,6 +142,17 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                     wc.swap_buffers().unwrap();
                     // Moved from new events, which doesn't make sense
                     clear_input_state(&mut bterm);
+                }
+
+                // Wait for an appropriate amount of time
+                let time_since_last_frame = frame_timer.elapsed().as_millis() as u64;
+                if time_since_last_frame < wait_time {
+                    let delay = u64::min(33, wait_time - time_since_last_frame);
+                    //println!("Frame time: {}ms, Delay: {}ms", time_since_last_frame, delay);
+                    //*control_flow = ControlFlow::WaitUntil(Instant::now() + std::time::Duration::from_millis(delay));
+                    spin_sleeper.sleep(std::time::Duration::from_millis(delay));
+                } else {
+                    //*control_flow = ControlFlow::WaitUntil(Instant::now() + std::time::Duration::from_millis(1));
                 }
             }
             Event::WindowEvent{event, window_id} => {
