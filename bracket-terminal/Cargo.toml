@@ -4,7 +4,7 @@ version = "0.8.5"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = true
-description = "ASCII/Codepage 437 terminal emulator with a game loop. Defaults to OpenGL, also support Amethyst, Curses and Crossterm for output. Part of the bracket-lib family."
+description = "ASCII/Codepage 437 terminal emulator with a game loop. Defaults to OpenGL, also support WebGPU (for Vulkan/Metal/WGPU), Curses and Crossterm for output. Part of the bracket-lib family."
 homepage = "https://github.com/thebracket/bracket-lib"
 repository = "https://github.com/thebracket/bracket-lib"
 readme = "README.md"
@@ -26,7 +26,6 @@ glow = { version = "0.10.0", optional = true }
 image = { version = "0.23.12", default-features = false, features = ["jpeg", "png"], optional = true }
 crossterm = { version = "~0.19", optional = true }
 pancurses = { version = "0.16.1", optional = true }
-amethyst = { version = "=0.15.0", features = [ "tiles" ], optional = true }
 ultraviolet = "~0.8.1"
 parking_lot = { version = "~0.11.1" }
 ctrlc = { version = "~3.1", optional=true }
@@ -42,8 +41,7 @@ default = [ "opengl" ]
 opengl = [ "glow", "image", "glutin" ]
 curses = [ "pancurses", "ctrlc" ]
 cross_term = [ "crossterm", "ctrlc" ]
-amethyst_engine_vulkan = [ "amethyst/vulkan", "image" ]
-amethyst_engine_metal = [ "amethyst/metal", "image" ]
+webgpu = []
 
 [dev-dependencies]
 bracket-random = { path = "../bracket-random", version = "~0.8.2" }

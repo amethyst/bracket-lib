@@ -44,8 +44,7 @@ Terminal mode:
 
 By default, `bracket-lib` runs in OpenGL mode (or WebGL if it detects that you are compiling for `wasm32-unknown-unknown`). If you want to use other rendering back-ends, *disable default features* and apply *one* of the following feature flags:
 
-* `amethyst_engine_vulkan` for Amethyst support, in `Vulkan` mode.
-* `amethyst_engine_metal` for Amethyst support, in `Metal` mode.
+* `webgpu` to use the `wgpu` system as a back-end, supporting Vulkan, Metal and WebGPU.
 * `crossterm` to use the excellent `Crossterm` terminal library.
 * `curses` to use `pancurses` for `ncurses` or `pdcurses` support depending upon your platform.
 

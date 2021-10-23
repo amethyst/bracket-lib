@@ -20,7 +20,7 @@ pub use consoles::console;
         feature = "crossterm",
         any(
             feature = "curses",
-            any(feature = "amethyst_engine_vulkan", feature = "amethyst_engine_metal")
+            feature = "webgpu",
         )
     )
 ))]
@@ -49,12 +49,6 @@ pub mod prelude {
 
     #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
     pub use crate::hal::GlCallback;
-
-    #[cfg(all(
-        not(feature = "opengl"),
-        any(feature = "amethyst_engine_vulkan", feature = "amethyst_engine_metal")
-    ))]
-    pub use amethyst::input::VirtualKeyCode;
 
     #[cfg(target_arch = "wasm32")]
     pub use crate::hal::VirtualKeyCode;

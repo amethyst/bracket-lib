@@ -20,8 +20,7 @@ threaded = [ "bracket-lib/threaded" ]
 opengl = [ "bracket-lib/opengl" ]
 curses = [ "bracket-lib/curses" ]
 crossterm = [ "bracket-lib/crossterm" ]
-amethyst_engine_vulkan = [ "bracket-lib/amethyst_engine_vulkan" ]
-amethyst_engine_metal = [ "bracket-lib/amethyst_engine_metal" ]
+webgpu = [ "bracket-lib/webgpu" ]
 
 [dependencies]
 bracket-lib = { path = "../", version = "~0.8.1", default-features = false }

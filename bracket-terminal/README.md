@@ -6,7 +6,7 @@ Bracket-terminal supports multiple back-ends:
 
 * The default is `OpenGL`, which works on just about everything. The GL back-end supports all features, including post-processing (retro screen effects) and layers.
 * The `WebGL` (WASM) back-end works in Web Assembly, allowing you to compile your `bracket-terminal`-based game for the web.
-* The `Amethyst` back-ends provide rendering in `Vulkan` and `Metal`. It currently supports everything except the post-processing effects.
+* The `webgpu` back-ends provide rendering in `Vulkan`, `Metal`, and `WebGPU`. It currently supports everything except the post-processing effects.
 * The `crossterm` back-end runs natively in your existing terminal. Graphical features are not supported.
 * The `curses` back-end runs natively in *NIX terminals, or in a `pdcurses` terminal emulator on Windows. Graphical features are not supported.
 
@@ -72,7 +72,6 @@ Run an example with `cargo run --example <name>`.
 You can run the `dwarfmap` example with different back-ends like this. The same principle applies to other back-ends:
 
 * *OpenGL* : `cargo run --example dwarfmap`
-* *Amethyst (Vulkan)*: `cargo run --example dwarfmap --no-default-features --features "amethyst_engine_vulkan"`
-* *Amethyst (Metal)*: `cargo run --example dwarfmap --no-default-features --features "amethyst_engine_metal"`
+* *WGPU*: `cargo run --example dwarfmap --no-default-features --features "webgpu"`
 * *Curses*: `cargo run --example dwarfmap --no-default-features --features "curses"`
 * *Crossterm*: (note that the feature is called `cross_term`) `cargo run --example dwarfmap --no-default-features --features "cross_term"`
