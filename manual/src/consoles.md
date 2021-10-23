@@ -64,7 +64,7 @@ Some builder functions provide global (whole program) functionality. These inclu
 * `with_font_bg(filename, character width, character height, color)` lets you register a font with an explicit background color that will be converted to transparent.
 * `with_vsync(bool)` lets you turn vertical refresh sync on or off. This uncaps your frame rate, but may lead to visual tearing on some systems.
 * `with_fullscreen(bool)` lets you specify that the game should try and run in full screen mode, as opposed to a window.
-* `with_fps_cap(fps)` lets you cap the maximum frames per second at which the game will render, explicitly sleeping to keep CPU load manageable.
+* `with_fps_cap(fps)` lets you cap the maximum frames per second at which the game will render, explicitly sleeping to keep CPU load manageable. If you don't specify an FPS cap, it defaults to 30 frames per second.
 * `with_platform_specific(hint)` is used for those times you need to tell a renderer something, but that feature can't work in all render targets. These will be documented in the render targets.
 * `with_advanced_input(bool)` lets you change the input mechanism from populating the key/mouse variables to a stream of keyboard/mouse events.
 * `with_automatic_console_resize(bool)` lets you change the behavior of resizing the window. Instead of scaling the console up or down to fit the window, a resize event re-calculates the size of the consoles and expands/shrinks them to fit. You can query the current size of a layer from the context in `tick`.
