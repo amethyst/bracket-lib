@@ -58,6 +58,7 @@ fn main() -> BError {
         .unwrap()
         .with_title("bracket-lib benchmark")
         .with_vsync(false)
+        .with_fps_cap(120.0)
         .build()?;
     main_loop(context, State::new())
 }

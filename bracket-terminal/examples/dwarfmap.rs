@@ -324,6 +324,7 @@ impl Algorithm3D for State {
 fn main() -> BError {
     let context = BTermBuilder::simple80x50()
         .with_title("Bracket Terminal Example - Dwarf Fortress Map Style")
+        .with_fps_cap(30.0)
         .build()?;
     let gs = State::new();
     main_loop(context, gs)
