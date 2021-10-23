@@ -47,6 +47,9 @@ pub mod prelude {
     #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
     pub use glutin::event::VirtualKeyCode;
 
+    #[cfg(feature = "webgpu")]
+    pub use crate::hal::VirtualKeyCode;
+
     #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
     pub use crate::hal::GlCallback;
 

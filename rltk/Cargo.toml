@@ -13,7 +13,7 @@ categories = ["game-engines", "graphics"]
 license = "MIT"
 
 [features]
-default = [ "opengl" ]
+default = [ "webgpu" ]
 specs = [ "bracket-lib/specs" ]
 serde = [ "bracket-lib/serde" ]
 threaded = [ "bracket-lib/threaded" ]

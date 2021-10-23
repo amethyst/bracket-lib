@@ -17,6 +17,12 @@ mod wasm;
 #[cfg(all(feature = "opengl", target_arch = "wasm32"))]
 pub use wasm::*;
 
+#[cfg(all(not(feature = "opengl"), feature = "webgpu"))]
+mod webgpu;
+
+#[cfg(all(not(feature = "opengl"), feature = "webgpu"))]
+pub use webgpu::*;
+
 #[cfg(not(feature = "opengl"))]
 #[cfg(all(not(feature = "opengl"), feature = "curses"))]
 mod curses;

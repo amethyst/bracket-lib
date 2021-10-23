@@ -24,7 +24,7 @@ exclude = [
 ]
 
 [features]
-default = [ "opengl" ]
+default = [ "webgpu" ]
 specs = [ "bracket-geometry/specs" ]
 serde = [ "bracket-color/serde", "bracket-geometry/serde", "bracket-random/serde" ]
 threaded = [ "bracket-pathfinding/threaded" ]
