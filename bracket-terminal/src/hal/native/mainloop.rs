@@ -38,7 +38,8 @@ fn on_resize(
             )
         );
     }
-    let new_fb = Framebuffer::build_fbo(gl, physical_size.width as i32, physical_size.height as i32)?;
+    let new_fb =
+        Framebuffer::build_fbo(gl, physical_size.width as i32, physical_size.height as i32)?;
     be.backing_buffer = Some(new_fb);
     bterm.on_event(BEvent::Resized {
         new_size: Point::new(physical_size.width, physical_size.height),
@@ -101,7 +102,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
         true,
     )?; // Additional resize to handle some X11 cases
 
-    let mut queued_resize_event : Option<ResizeEvent> = None;
+    let mut queued_resize_event: Option<ResizeEvent> = None;
     let spin_sleeper = spin_sleep::SpinSleeper::default();
     let my_window_id = wc.window().id();
 
@@ -125,7 +126,13 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                     if queued_resize_event.is_some() {
                         if let Some(resize) = &queued_resize_event {
                             wc.resize(resize.physical_size);
-                            on_resize(&mut bterm, resize.physical_size, resize.dpi_scale_factor, resize.send_event).unwrap();
+                            on_resize(
+                                &mut bterm,
+                                resize.physical_size,
+                                resize.dpi_scale_factor,
+                                resize.send_event,
+                            )
+                            .unwrap();
                         }
                         queued_resize_event = None;
                     }
@@ -155,7 +162,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                     //*control_flow = ControlFlow::WaitUntil(Instant::now() + std::time::Duration::from_millis(1));
                 }
             }
-            Event::WindowEvent{event, window_id} => {
+            Event::WindowEvent { event, window_id } => {
                 // Fast return for other windows
                 if *window_id != my_window_id {
                     //println!("Dropped event from other window");
@@ -173,10 +180,10 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                         let physical_size = wc.window().inner_size();
                         //wc.resize(physical_size);
                         //on_resize(&mut bterm, physical_size, scale_factor, true).unwrap();
-                        queued_resize_event = Some(ResizeEvent{
+                        queued_resize_event = Some(ResizeEvent {
                             physical_size,
                             dpi_scale_factor: scale_factor,
-                            send_event: true
+                            send_event: true,
                         });
                     }
                     WindowEvent::Resized(_physical_size) => {
@@ -184,10 +191,10 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                         let physical_size = wc.window().inner_size();
                         //wc.resize(physical_size);
                         //on_resize(&mut bterm, physical_size, scale_factor, true).unwrap();
-                        queued_resize_event = Some(ResizeEvent{
+                        queued_resize_event = Some(ResizeEvent {
                             physical_size,
                             dpi_scale_factor: scale_factor,
-                            send_event: true
+                            send_event: true,
                         });
                     }
                     WindowEvent::CloseRequested => {
@@ -217,7 +224,10 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                             MouseButton::Middle => 2,
                             MouseButton::Other(num) => 3 + *num as usize,
                         };
-                        bterm.on_mouse_button(button, *state == glutin::event::ElementState::Pressed);
+                        bterm.on_mouse_button(
+                            button,
+                            *state == glutin::event::ElementState::Pressed,
+                        );
                     }
 
                     WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
