@@ -22,6 +22,7 @@ exclude = [
     "rltk",
     "screenshots"
 ]
+resolver = "2" # Enables the new Cargo resolution engine
 
 [features]
 default = [ "webgpu" ]

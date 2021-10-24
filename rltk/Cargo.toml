@@ -11,6 +11,7 @@ readme = "README.md"
 keywords = ["roguelike", "cp437", "ascii", "virtual-terminal", "gamedev"]
 categories = ["game-engines", "graphics"]
 license = "MIT"
+resolver = "2" # Enables the new Cargo resolution engine
 
 [features]
 default = [ "webgpu" ]

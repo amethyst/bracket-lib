@@ -4,5 +4,6 @@ use crate::hal::PlatformGL;
 
 lazy_static! {
     pub static ref BACKEND: Mutex<PlatformGL> = Mutex::new(PlatformGL {
+        context_wrapper: None,
     });
 }

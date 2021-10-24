@@ -1,4 +1,16 @@
-pub struct PlatformGL {}
+use winit::{event_loop::EventLoop, window::Window};
+
+pub struct PlatformGL {
+    pub context_wrapper: Option<WrappedContext>,
+}
+
+unsafe impl Send for PlatformGL {}
+unsafe impl Sync for PlatformGL {}
+
+pub struct WrappedContext {
+    pub el: EventLoop<()>,
+    pub window: Window,
+}
 
 pub struct InitHints {
     pub vsync: bool,
