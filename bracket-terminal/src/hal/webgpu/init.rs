@@ -1,6 +1,7 @@
 use crate::{BResult, gamestate::BTerm};
 use super::{InitHints, BACKEND, WrappedContext};
-use winit::{dpi::LogicalSize, event::*, event_loop::{ControlFlow, EventLoop}, window::WindowBuilder};
+use wgpu::{Adapter, Instance, Surface};
+use winit::{dpi::LogicalSize, event::*, event_loop::{ControlFlow, EventLoop}, window::{Window, WindowBuilder}};
 
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
@@ -16,6 +17,9 @@ pub fn init_raw<S: ToString>(
             f64::from(height_pixels),
         ));
     let window = wb.build(&el).unwrap();
+
+    let (instance, surface, adapter) = pollster::block_on(init_adapter(&window));
+
     /*let windowed_context = ContextBuilder::new()
         .with_gl(platform_hints.gl_version)
         .with_gl_profile(platform_hints.gl_profile)
@@ -65,4 +69,22 @@ pub fn init_raw<S: ToString>(
         screen_burn_color: bracket_color::prelude::RGB::from_f32(0.0, 1.0, 1.0),
     };
     Ok(bterm)
+}
+
+async fn init_adapter(window: &Window) -> (Instance, Surface, Adapter) {
+    let size = window.inner_size();
+
+    // The instance is a handle to our GPU
+    // Backends::all => Vulkan + Metal + DX12 + Browser WebGPU
+    let instance = wgpu::Instance::new(wgpu::Backends::all());
+    let surface = unsafe { instance.create_surface(window) };
+    let adapter = instance.request_adapter(
+        &wgpu::RequestAdapterOptions {
+            power_preference: wgpu::PowerPreference::default(),
+            compatible_surface: Some(&surface),
+            force_fallback_adapter: false,
+        },
+    ).await.unwrap();
+
+    (instance, surface, adapter)
 }
