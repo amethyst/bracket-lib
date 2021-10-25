@@ -1,6 +1,6 @@
 use crate::{BResult, gamestate::BTerm};
-use super::{InitHints, BACKEND, WrappedContext};
-use wgpu::{Adapter, Instance, Surface};
+use super::{BACKEND, InitHints, WgpuLink, WrappedContext};
+use wgpu::{Adapter, Device, Instance, Queue, Surface, SurfaceConfiguration};
 use winit::{dpi::LogicalSize, event::*, event_loop::{ControlFlow, EventLoop}, window::{Window, WindowBuilder}};
 
 pub fn init_raw<S: ToString>(
@@ -18,7 +18,7 @@ pub fn init_raw<S: ToString>(
         ));
     let window = wb.build(&el).unwrap();
 
-    let (instance, surface, adapter) = pollster::block_on(init_adapter(&window));
+    let (instance, surface, adapter, device, queue, config) = pollster::block_on(init_adapter(&window));
 
     /*let windowed_context = ContextBuilder::new()
         .with_gl(platform_hints.gl_version)
@@ -47,6 +47,11 @@ pub fn init_raw<S: ToString>(
         el,
         window,
     });
+    be.wgpu = Some(WgpuLink{
+        instance, surface, adapter, device, queue, config,
+    });
+    be.frame_sleep_time = crate::hal::convert_fps_to_wait(platform_hints.frame_sleep_time);
+    be.resize_scaling = platform_hints.resize_scaling;
 
     let bterm = BTerm {
         width_pixels,
@@ -71,7 +76,7 @@ pub fn init_raw<S: ToString>(
     Ok(bterm)
 }
 
-async fn init_adapter(window: &Window) -> (Instance, Surface, Adapter) {
+async fn init_adapter(window: &Window) -> (Instance, Surface, Adapter, Device, Queue, SurfaceConfiguration) {
     let size = window.inner_size();
 
     // The instance is a handle to our GPU
@@ -86,5 +91,23 @@ async fn init_adapter(window: &Window) -> (Instance, Surface, Adapter) {
         },
     ).await.unwrap();
 
-    (instance, surface, adapter)
+    let (device, queue) = adapter.request_device(
+        &wgpu::DeviceDescriptor {
+            features: wgpu::Features::empty(),
+            limits: wgpu::Limits::default(),
+            label: None,
+        },
+        None, // Trace path
+    ).await.unwrap();
+
+    let config = wgpu::SurfaceConfiguration {
+        usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+        format: surface.get_preferred_format(&adapter).unwrap(),
+        width: size.width,
+        height: size.height,
+        present_mode: wgpu::PresentMode::Fifo,
+    };
+    surface.configure(&device, &config);
+
+    (instance, surface, adapter, device, queue, config)
 }

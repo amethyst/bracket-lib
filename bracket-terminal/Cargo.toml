@@ -43,7 +43,7 @@ default = [ "webgpu" ]
 opengl = [ "glow", "image", "glutin" ]
 curses = [ "pancurses", "ctrlc" ]
 cross_term = [ "crossterm", "ctrlc" ]
-webgpu = [ "wgpu", "pollster" ]
+webgpu = [ "wgpu", "pollster", "image" ]
 
 [dev-dependencies]
 bracket-random = { path = "../bracket-random", version = "~0.8.2" }
