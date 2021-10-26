@@ -1,14 +1,13 @@
 use crate::hal::WgpuLink;
 use wgpu::util::DeviceExt;
 
-pub struct IndexBuffer{
-    pub data : Vec<u16>,
-    pub usage : wgpu::BufferUsages,
+pub struct IndexBuffer {
+    pub data: Vec<u16>,
+    pub usage: wgpu::BufferUsages,
     pub buffer: Option<wgpu::Buffer>,
 }
 
-impl IndexBuffer
-{
+impl IndexBuffer {
     pub fn new(capacity: usize) -> Self {
         Self {
             data: vec![0; capacity],

@@ -16,13 +16,7 @@ pub use consoles::console;
 
 #[cfg(all(
     feature = "opengl",
-    any(
-        feature = "crossterm",
-        any(
-            feature = "curses",
-            feature = "webgpu",
-        )
-    )
+    any(feature = "crossterm", any(feature = "curses", feature = "webgpu",))
 ))]
 compile_error!("Default features (opengl) must be disabled for other back-ends");
 

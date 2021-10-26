@@ -1,10 +1,10 @@
+use super::index_array_helper::IndexBuffer;
+use super::vertex_array_helper::FloatBuffer;
 use crate::hal::{Font, Shader, WgpuLink};
 use crate::prelude::Tile;
 use crate::BResult;
 use bracket_color::prelude::RGBA;
 use wgpu::{BufferUsages, RenderPipeline};
-use super::index_array_helper::IndexBuffer;
-use super::vertex_array_helper::FloatBuffer;
 
 pub struct SimpleConsoleBackend {
     vao: FloatBuffer<f32>,
@@ -15,7 +15,13 @@ pub struct SimpleConsoleBackend {
 }
 
 impl SimpleConsoleBackend {
-    pub fn new(width: usize, height: usize, wgpu: &WgpuLink, shader: &Shader, font: &Font) -> SimpleConsoleBackend {
+    pub fn new(
+        width: usize,
+        height: usize,
+        wgpu: &WgpuLink,
+        shader: &Shader,
+        font: &Font,
+    ) -> SimpleConsoleBackend {
         let vertex_capacity: usize = (13 * width as usize * height as usize) * 4;
         let index_capacity: usize = 6 * width as usize * height as usize;
         let mut vao = SimpleConsoleBackend::init_buffer_for_console(vertex_capacity);
@@ -23,34 +29,33 @@ impl SimpleConsoleBackend {
         let index = IndexBuffer::new(index_capacity);
 
         // Setup the pipeline
-        let render_pipeline_layout = wgpu.device.create_pipeline_layout(
-            &wgpu::PipelineLayoutDescriptor{
-                label: None,
-                bind_group_layouts: &[font.bind_group_layout.as_ref().unwrap()],
-                push_constant_ranges: &[],
-            }
-        );
-        let render_pipeline = wgpu.device.create_render_pipeline(
-            &wgpu::RenderPipelineDescriptor{
+        let render_pipeline_layout =
+            wgpu.device
+                .create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+                    label: None,
+                    bind_group_layouts: &[font.bind_group_layout.as_ref().unwrap()],
+                    push_constant_ranges: &[],
+                });
+        let render_pipeline = wgpu
+            .device
+            .create_render_pipeline(&wgpu::RenderPipelineDescriptor {
                 label: None,
                 layout: Some(&render_pipeline_layout),
-                vertex: wgpu::VertexState{
+                vertex: wgpu::VertexState {
                     module: &shader.0,
                     entry_point: "main",
                     buffers: &[vao.descriptor()],
                 },
-                fragment: Some(wgpu::FragmentState{
+                fragment: Some(wgpu::FragmentState {
                     module: &shader.0,
                     entry_point: "main",
-                    targets:&[
-                        wgpu::ColorTargetState{
-                            format: wgpu.config.format,
-                            blend: Some(wgpu::BlendState::REPLACE),
-                            write_mask: wgpu::ColorWrites::ALL,
-                        }
-                    ]
+                    targets: &[wgpu::ColorTargetState {
+                        format: wgpu.config.format,
+                        blend: Some(wgpu::BlendState::REPLACE),
+                        write_mask: wgpu::ColorWrites::ALL,
+                    }],
                 }),
-                primitive: wgpu::PrimitiveState{
+                primitive: wgpu::PrimitiveState {
                     topology: wgpu::PrimitiveTopology::TriangleList,
                     strip_index_format: None,
                     front_face: wgpu::FrontFace::Ccw,
@@ -65,9 +70,8 @@ impl SimpleConsoleBackend {
                     count: 1,
                     mask: !0,
                     alpha_to_coverage_enabled: false,
-                }
-            }
-        );
+                },
+            });
 
         // Build the result
         let result = SimpleConsoleBackend {
@@ -80,13 +84,11 @@ impl SimpleConsoleBackend {
         result
     }
 
-    fn init_buffer_for_console(
-        vertex_capacity: usize,
-    ) -> FloatBuffer<f32> {
+    fn init_buffer_for_console(vertex_capacity: usize) -> FloatBuffer<f32> {
         FloatBuffer::<f32>::new(
             &[3, 4, 4, 2], // Pos, FG, BG, TexPos
             vertex_capacity,
-            BufferUsages::VERTEX
+            BufferUsages::VERTEX,
         )
     }
 
@@ -150,16 +152,19 @@ impl SimpleConsoleBackend {
         let step_x: f32 = scale * 2.0f32 / width as f32;
         let step_y: f32 = scale * 2.0f32 / height as f32;
 
-        let mut screen_y: f32 = -1.0 * scale + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
+        let mut screen_y: f32 = -1.0 * scale
+            + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
         let mut index_count: u16 = 0;
         for y in 0..height {
-            let mut screen_x: f32 = -1.0 * scale - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
+            let mut screen_x: f32 = -1.0 * scale
+                - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
             for x in 0..width {
                 let fg = tiles[((y * width) + x) as usize].fg;
                 let bg = tiles[((y * width) + x) as usize].bg;
                 let glyph = tiles[((y * width) + x) as usize].glyph;
                 let glyph_x = glyph % font_dimensions_glyphs.0 as u16;
-                let glyph_y = font_dimensions_glyphs.1 as u16 - (glyph / font_dimensions_glyphs.0 as u16);
+                let glyph_y =
+                    font_dimensions_glyphs.1 as u16 - (glyph / font_dimensions_glyphs.0 as u16);
 
                 let glyph_left = f32::from(glyph_x) * glyph_size_x;
                 let glyph_right = f32::from(glyph_x + 1) * glyph_size_x;
@@ -231,10 +236,14 @@ impl SimpleConsoleBackend {
         let mut be = BACKEND.lock();
         if let Some(wgpu) = be.wgpu.as_mut() {
             let output = wgpu.surface.get_current_texture()?;
-            let view = output.texture.create_view(&wgpu::TextureViewDescriptor::default());
-            let mut encoder = wgpu.device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
-                label: Some("Render Encoder"),
-            });
+            let view = output
+                .texture
+                .create_view(&wgpu::TextureViewDescriptor::default());
+            let mut encoder = wgpu
+                .device
+                .create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                    label: Some("Render Encoder"),
+                });
             {
                 let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                     label: Some("Render Pass"),
@@ -242,14 +251,12 @@ impl SimpleConsoleBackend {
                         view: &view,
                         resolve_target: None,
                         ops: wgpu::Operations {
-                            load: wgpu::LoadOp::Clear(
-                                wgpu::Color {
-                                    r: 0.0,
-                                    g: 0.0,
-                                    b: 0.0,
-                                    a: 1.0,
-                                }
-                            ),
+                            load: wgpu::LoadOp::Clear(wgpu::Color {
+                                r: 0.0,
+                                g: 0.0,
+                                b: 0.0,
+                                a: 1.0,
+                            }),
                             store: true,
                         },
                     }],
@@ -265,7 +272,6 @@ impl SimpleConsoleBackend {
             // submit will accept anything that implements IntoIter
             wgpu.queue.submit(std::iter::once(encoder.finish()));
             output.present();
-
         }
         Ok(())
     }

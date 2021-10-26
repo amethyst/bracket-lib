@@ -109,17 +109,15 @@ impl Font {
             height: self.height,
             depth_or_array_layers: 1,
         };
-        let tex = wgpu.device.create_texture(
-            &wgpu::TextureDescriptor{
-                size: texture_size,
-                mip_level_count: 1,
-                sample_count: 1,
-                dimension: wgpu::TextureDimension::D2,
-                format: wgpu::TextureFormat::Rgba8UnormSrgb,
-                usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
-                label: None,
-            }
-        );
+        let tex = wgpu.device.create_texture(&wgpu::TextureDescriptor {
+            size: texture_size,
+            mip_level_count: 1,
+            sample_count: 1,
+            dimension: wgpu::TextureDimension::D2,
+            format: wgpu::TextureFormat::Rgba8UnormSrgb,
+            usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::COPY_DST,
+            label: None,
+        });
         wgpu.queue.write_texture(
             wgpu::ImageCopyTexture {
                 texture: &tex,
@@ -128,12 +126,12 @@ impl Font {
                 aspect: wgpu::TextureAspect::All,
             },
             &data,
-            wgpu::ImageDataLayout{
+            wgpu::ImageDataLayout {
                 offset: 0,
                 bytes_per_row: std::num::NonZeroU32::new(4 * self.width),
                 rows_per_image: std::num::NonZeroU32::new(self.height),
             },
-            texture_size
+            texture_size,
         );
 
         // Build view and sampler
@@ -148,53 +146,51 @@ impl Font {
             ..Default::default()
         });
 
-        let texture_bind_group_layout = wgpu.device.create_bind_group_layout(
-            &wgpu::BindGroupLayoutDescriptor {
-                entries: &[
-                    wgpu::BindGroupLayoutEntry {
-                        binding: 0,
-                        visibility: wgpu::ShaderStages::FRAGMENT,
-                        ty: wgpu::BindingType::Texture {
-                            multisampled: false,
-                            view_dimension: wgpu::TextureViewDimension::D2,
-                            sample_type: wgpu::TextureSampleType::Float { filterable: true },
+        let texture_bind_group_layout =
+            wgpu.device
+                .create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+                    entries: &[
+                        wgpu::BindGroupLayoutEntry {
+                            binding: 0,
+                            visibility: wgpu::ShaderStages::FRAGMENT,
+                            ty: wgpu::BindingType::Texture {
+                                multisampled: false,
+                                view_dimension: wgpu::TextureViewDimension::D2,
+                                sample_type: wgpu::TextureSampleType::Float { filterable: true },
+                            },
+                            count: None,
                         },
-                        count: None,
-                    },
-                    wgpu::BindGroupLayoutEntry {
-                        binding: 1,
-                        visibility: wgpu::ShaderStages::FRAGMENT,
-                        ty: wgpu::BindingType::Sampler {
-                            // This is only for TextureSampleType::Depth
-                            comparison: false,
-                            // This should be true if the sample_type of the texture is:
-                            //     TextureSampleType::Float { filterable: true }
-                            // Otherwise you'll get an error.
-                            filtering: true,
+                        wgpu::BindGroupLayoutEntry {
+                            binding: 1,
+                            visibility: wgpu::ShaderStages::FRAGMENT,
+                            ty: wgpu::BindingType::Sampler {
+                                // This is only for TextureSampleType::Depth
+                                comparison: false,
+                                // This should be true if the sample_type of the texture is:
+                                //     TextureSampleType::Float { filterable: true }
+                                // Otherwise you'll get an error.
+                                filtering: true,
+                            },
+                            count: None,
                         },
-                        count: None,
-                    },
-                ],
-                label: Some("texture_bind_group_layout"),
-            }
-        );
+                    ],
+                    label: Some("texture_bind_group_layout"),
+                });
 
-        let bind_group = wgpu.device.create_bind_group(
-            &wgpu::BindGroupDescriptor {
-                layout: &texture_bind_group_layout,
-                entries: &[
-                    wgpu::BindGroupEntry {
-                        binding: 0,
-                        resource: wgpu::BindingResource::TextureView(&texture_view),
-                    },
-                    wgpu::BindGroupEntry {
-                        binding: 1,
-                        resource: wgpu::BindingResource::Sampler(&sampler),
-                    }
-                ],
-                label: Some("diffuse_bind_group"),
-            }
-        );
+        let bind_group = wgpu.device.create_bind_group(&wgpu::BindGroupDescriptor {
+            layout: &texture_bind_group_layout,
+            entries: &[
+                wgpu::BindGroupEntry {
+                    binding: 0,
+                    resource: wgpu::BindingResource::TextureView(&texture_view),
+                },
+                wgpu::BindGroupEntry {
+                    binding: 1,
+                    resource: wgpu::BindingResource::Sampler(&sampler),
+                },
+            ],
+            label: Some("diffuse_bind_group"),
+        });
 
         self.view = Some(texture_view);
         self.sampler = Some(sampler);

@@ -1,6 +1,6 @@
+use crate::hal::{ConsoleBacking, PlatformGL};
 use lazy_static::*;
 use parking_lot::Mutex;
-use crate::hal::{ConsoleBacking, PlatformGL};
 
 lazy_static! {
     pub static ref BACKEND: Mutex<PlatformGL> = Mutex::new(PlatformGL {

@@ -1,8 +1,13 @@
-use std::time::Instant;
-use crate::{BResult, gamestate::{BTerm, GameState}, input::{BEvent, clear_input_state}, prelude::{BACKEND, BACKEND_INTERNAL, INPUT, SimpleConsole}};
+use super::{ConsoleBacking, Font, SimpleConsoleBackend, CONSOLE_BACKING};
+use crate::{
+    gamestate::{BTerm, GameState},
+    input::{clear_input_state, BEvent},
+    prelude::{SimpleConsole, BACKEND, BACKEND_INTERNAL, INPUT},
+    BResult,
+};
 use bracket_geometry::prelude::Point;
+use std::time::Instant;
 use winit::{dpi::PhysicalSize, event::*, event_loop::ControlFlow};
-use super::{CONSOLE_BACKING, ConsoleBacking, Font, SimpleConsoleBackend};
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
@@ -159,10 +164,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                             MouseButton::Middle => 2,
                             MouseButton::Other(num) => 3 + *num as usize,
                         };
-                        bterm.on_mouse_button(
-                            button,
-                            *state == ElementState::Pressed,
-                        );
+                        bterm.on_mouse_button(button, *state == ElementState::Pressed);
                     }
 
                     WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
@@ -185,11 +187,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                                 ..
                             },
                         ..
-                    } => bterm.on_key(
-                        *virtual_keycode,
-                        *scancode,
-                        *state == ElementState::Pressed,
-                    ),
+                    } => bterm.on_key(*virtual_keycode, *scancode, *state == ElementState::Pressed),
 
                     WindowEvent::ModifiersChanged(modifiers) => {
                         bterm.shift = modifiers.shift();
@@ -425,65 +423,64 @@ pub(crate) fn rebuild_consoles() {
                     );
                     sc.needs_resize_internal = false;
                 }
-            }
-            /*ConsoleBacking::Sparse { backing } => {
-                let mut sc = bi.consoles[i]
-                    .console
-                    .as_any_mut()
-                    .downcast_mut::<SparseConsole>()
-                    .unwrap();
-                if sc.is_dirty {
-                    backing.rebuild_vertices(
-                        sc.height,
-                        sc.width,
-                        sc.offset_x,
-                        sc.offset_y,
-                        sc.scale,
-                        sc.scale_center,
-                        &sc.tiles,
-                        glyph_dimensions,
-                    );
-                    sc.needs_resize_internal = false;
-                }
-            }
-            ConsoleBacking::Fancy { backing } => {
-                let mut fc = bi.consoles[i]
-                    .console
-                    .as_any_mut()
-                    .downcast_mut::<FlexiConsole>()
-                    .unwrap();
-                if fc.is_dirty {
-                    fc.tiles.sort_by(|a, b| a.z_order.cmp(&b.z_order));
-                    backing.rebuild_vertices(
-                        fc.height,
-                        fc.width,
-                        fc.offset_x,
-                        fc.offset_y,
-                        fc.scale,
-                        fc.scale_center,
-                        &fc.tiles,
-                        glyph_dimensions,
-                    );
-                    fc.needs_resize_internal = false;
-                }
-            }
-            ConsoleBacking::Sprite { backing } => {
-                let mut sc = bi.consoles[i]
-                    .console
-                    .as_any_mut()
-                    .downcast_mut::<SpriteConsole>()
-                    .unwrap();
-                if sc.is_dirty {
-                    sc.sprites.sort_by(|a, b| a.z_order.cmp(&b.z_order));
-                    backing.rebuild_vertices(
-                        sc.height,
-                        sc.width,
-                        &sc.sprites,
-                        &ss[sc.sprite_sheet],
-                    );
-                    sc.needs_resize_internal = false;
-                }
-            }*/
+            } /*ConsoleBacking::Sparse { backing } => {
+                  let mut sc = bi.consoles[i]
+                      .console
+                      .as_any_mut()
+                      .downcast_mut::<SparseConsole>()
+                      .unwrap();
+                  if sc.is_dirty {
+                      backing.rebuild_vertices(
+                          sc.height,
+                          sc.width,
+                          sc.offset_x,
+                          sc.offset_y,
+                          sc.scale,
+                          sc.scale_center,
+                          &sc.tiles,
+                          glyph_dimensions,
+                      );
+                      sc.needs_resize_internal = false;
+                  }
+              }
+              ConsoleBacking::Fancy { backing } => {
+                  let mut fc = bi.consoles[i]
+                      .console
+                      .as_any_mut()
+                      .downcast_mut::<FlexiConsole>()
+                      .unwrap();
+                  if fc.is_dirty {
+                      fc.tiles.sort_by(|a, b| a.z_order.cmp(&b.z_order));
+                      backing.rebuild_vertices(
+                          fc.height,
+                          fc.width,
+                          fc.offset_x,
+                          fc.offset_y,
+                          fc.scale,
+                          fc.scale_center,
+                          &fc.tiles,
+                          glyph_dimensions,
+                      );
+                      fc.needs_resize_internal = false;
+                  }
+              }
+              ConsoleBacking::Sprite { backing } => {
+                  let mut sc = bi.consoles[i]
+                      .console
+                      .as_any_mut()
+                      .downcast_mut::<SpriteConsole>()
+                      .unwrap();
+                  if sc.is_dirty {
+                      sc.sprites.sort_by(|a, b| a.z_order.cmp(&b.z_order));
+                      backing.rebuild_vertices(
+                          sc.height,
+                          sc.width,
+                          &sc.sprites,
+                          &ss[sc.sprite_sheet],
+                      );
+                      sc.needs_resize_internal = false;
+                  }
+              }*/
         }
     }
 }
@@ -497,16 +494,15 @@ pub(crate) fn render_consoles() -> BResult<()> {
         match c {
             ConsoleBacking::Simple { backing } => {
                 backing.wgpu_draw(font)?;
-            }
-            /*ConsoleBacking::Sparse { backing } => {
-                backing.gl_draw(font, shader)?;
-            }
-            ConsoleBacking::Fancy { backing } => {
-                backing.gl_draw(font, shader)?;
-            }
-            ConsoleBacking::Sprite { backing } => {
-                backing.gl_draw(bi.sprite_sheets[0].backing.as_ref().unwrap(), shader)?;
-            }*/
+            } /*ConsoleBacking::Sparse { backing } => {
+                  backing.gl_draw(font, shader)?;
+              }
+              ConsoleBacking::Fancy { backing } => {
+                  backing.gl_draw(font, shader)?;
+              }
+              ConsoleBacking::Sprite { backing } => {
+                  backing.gl_draw(bi.sprite_sheets[0].backing.as_ref().unwrap(), shader)?;
+              }*/
         }
     }
     Ok(())
@@ -530,45 +526,49 @@ pub(crate) fn check_console_backing() {
                         &bit.fonts[cons.font_index],
                     ),
                 });
-            }/*else if let Some(sp) = cons_any.downcast_ref::<SparseConsole>() {
-                consoles.push(ConsoleBacking::Sparse {
-                    backing: SparseConsoleBackend::new(
-                        sp.width as usize,
-                        sp.height as usize,
-                        be.gl.as_ref().unwrap(),
-                    ),
-                });
-            } else if let Some(sp) = cons_any.downcast_ref::<FlexiConsole>() {
-                consoles.push(ConsoleBacking::Fancy {
-                    backing: FancyConsoleBackend::new(
-                        sp.width as usize,
-                        sp.height as usize,
-                        be.gl.as_ref().unwrap(),
-                    ),
-                });
-            } else if let Some(sp) = cons_any.downcast_ref::<SpriteConsole>() {
-                consoles.push(ConsoleBacking::Sprite {
-                    backing: SpriteConsoleBackend::new(
-                        sp.width as usize,
-                        sp.height as usize,
-                        be.gl.as_ref().unwrap(),
-                    ),
-                });
-            } else {
-                panic!("Unknown console type.");
-            }*/
+            } /*else if let Some(sp) = cons_any.downcast_ref::<SparseConsole>() {
+                  consoles.push(ConsoleBacking::Sparse {
+                      backing: SparseConsoleBackend::new(
+                          sp.width as usize,
+                          sp.height as usize,
+                          be.gl.as_ref().unwrap(),
+                      ),
+                  });
+              } else if let Some(sp) = cons_any.downcast_ref::<FlexiConsole>() {
+                  consoles.push(ConsoleBacking::Fancy {
+                      backing: FancyConsoleBackend::new(
+                          sp.width as usize,
+                          sp.height as usize,
+                          be.gl.as_ref().unwrap(),
+                      ),
+                  });
+              } else if let Some(sp) = cons_any.downcast_ref::<SpriteConsole>() {
+                  consoles.push(ConsoleBacking::Sprite {
+                      backing: SpriteConsoleBackend::new(
+                          sp.width as usize,
+                          sp.height as usize,
+                          be.gl.as_ref().unwrap(),
+                      ),
+                  });
+              } else {
+                  panic!("Unknown console type.");
+              }*/
         }
     }
 }
 
-fn clear_screen_pass()-> Result<(), wgpu::SurfaceError> {
+fn clear_screen_pass() -> Result<(), wgpu::SurfaceError> {
     let mut be = BACKEND.lock();
     if let Some(wgpu) = be.wgpu.as_mut() {
         let output = wgpu.surface.get_current_texture()?;
-        let view = output.texture.create_view(&wgpu::TextureViewDescriptor::default());
-        let mut encoder = wgpu.device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
-            label: Some("Render Encoder"),
-        });
+        let view = output
+            .texture
+            .create_view(&wgpu::TextureViewDescriptor::default());
+        let mut encoder = wgpu
+            .device
+            .create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                label: Some("Render Encoder"),
+            });
         {
             let _render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                 label: Some("Render Pass"),

@@ -1,5 +1,5 @@
-use wgpu::util::DeviceExt;
 use crate::hal::WgpuLink;
+use wgpu::util::DeviceExt;
 
 pub struct FloatBuffer<T>
 where
