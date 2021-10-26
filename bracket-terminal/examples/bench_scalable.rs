@@ -55,7 +55,7 @@ impl GameState for State {
     }
 }
 
-#[cfg(feature = "opengl")]
+#[cfg(any(feature = "opengl", feature = "webgpu"))]
 fn main() -> BError {
     let context = BTermBuilder::simple(80, 45)
         .unwrap()
@@ -67,7 +67,7 @@ fn main() -> BError {
     main_loop(context, State::new())
 }
 
-#[cfg(not(feature = "opengl"))]
+#[cfg(not(any(feature = "opengl", feature = "webgpu")))]
 fn main() {
     println!("OpenGL only.");
 }
