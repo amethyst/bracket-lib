@@ -999,7 +999,7 @@ impl BTerm {
         }
     }
 
-    #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
+    #[cfg(all(any(feature = "opengl", feature = "webgpu"), not(target_arch = "wasm32")))]
     /// Manually override the character size for the current terminal. Use with caution!
     pub fn set_char_size(&mut self, width: u32, height: u32) {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
@@ -1007,7 +1007,7 @@ impl BTerm {
             .set_char_size(width, height);
     }
 
-    #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
+    #[cfg(all(any(feature = "opengl", feature = "webgpu"), not(target_arch = "wasm32")))]
     /// Manually override the character size for the current terminal. Use with caution!
     pub fn set_char_size_and_resize_window(&mut self, _width: u32, _height: u32) {
         /*
@@ -1042,7 +1042,7 @@ impl BTerm {
     }
 
     /// Add a sprite to the current console
-    #[cfg(feature = "opengl")]
+    #[cfg(any(feature = "opengl", feature = "webgpu"))]
     pub fn add_sprite(&mut self, destination: Rect, z_order: i32, tint: RGBA, index: usize) {
         let mut bi = BACKEND_INTERNAL.lock();
         let as_any = bi.consoles[self.active_console].console.as_any_mut();
