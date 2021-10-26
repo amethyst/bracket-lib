@@ -1,5 +1,5 @@
-use crate::{BResult, gamestate::BTerm};
-use super::{BACKEND, InitHints, WgpuLink, WrappedContext};
+use crate::{BResult, gamestate::BTerm, prelude::BACKEND_INTERNAL};
+use super::{BACKEND, InitHints, Shader, WgpuLink, WrappedContext};
 use wgpu::{Adapter, Device, Instance, Queue, Surface, SurfaceConfiguration};
 use winit::{dpi::LogicalSize, event::*, event_loop::{ControlFlow, EventLoop}, window::{Window, WindowBuilder}};
 
@@ -40,6 +40,36 @@ pub fn init_raw<S: ToString>(
     }*/
 
     // Bunch more goes here
+
+    // Shaders
+    let mut shaders: Vec<Shader> = Vec::new();
+    shaders.push(Shader::new(&device, include_str!("shader_source/console_with_vg.wgsl")));
+    /*shaders.push(Shader::new(
+        &gl,
+        shader_strings::CONSOLE_NO_BG_VS,
+        shader_strings::CONSOLE_NO_BG_FS,
+    ));
+    shaders.push(Shader::new(
+        &gl,
+        shader_strings::BACKING_VS,
+        shader_strings::BACKING_FS,
+    ));
+    shaders.push(Shader::new(
+        &gl,
+        shader_strings::SCANLINES_VS,
+        shader_strings::SCANLINES_FS,
+    ));
+    shaders.push(Shader::new(
+        &gl,
+        shader_strings::FANCY_CONSOLE_VS,
+        shader_strings::FANCY_CONSOLE_FS,
+    ));
+    shaders.push(Shader::new(
+        &gl,
+        shader_strings::SPRITE_CONSOLE_VS,
+        shader_strings::SPRITE_CONSOLE_FS,
+    ));*/
+    BACKEND_INTERNAL.lock().shaders = shaders;
 
     // Store the backend
     let mut be = BACKEND.lock();

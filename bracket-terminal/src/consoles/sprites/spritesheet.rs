@@ -1,7 +1,6 @@
 use crate::prelude::{Font, Sprite};
 use bracket_geometry::prelude::Rect;
 
-#[derive(Clone)]
 pub struct SpriteSheet {
     pub filename: String,
     pub sprites: Vec<Sprite>,

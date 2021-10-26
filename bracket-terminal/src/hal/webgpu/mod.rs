@@ -11,6 +11,8 @@ pub use backend::*;
 mod mainloop;
 pub use mainloop::*;
 pub use winit::event::VirtualKeyCode;
+mod backing;
+pub(crate) use backing::*;
 
 pub fn log(s: &str) {
     println!("{}", s);

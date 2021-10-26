@@ -1,10 +1,8 @@
 use std::time::Instant;
-
-use crate::{BResult, gamestate::{BTerm, GameState}, input::{BEvent, clear_input_state}, prelude::{INPUT, BACKEND, BACKEND_INTERNAL}};
+use crate::{BResult, gamestate::{BTerm, GameState}, input::{BEvent, clear_input_state}, prelude::{BACKEND, BACKEND_INTERNAL, INPUT, SimpleConsole}};
 use bracket_geometry::prelude::Point;
-use winit::{dpi::PhysicalSize, event::*, event_loop::{ControlFlow, EventLoop}, window::WindowBuilder};
-
-use super::Font;
+use winit::{dpi::PhysicalSize, event::*, event_loop::ControlFlow};
+use super::{CONSOLE_BACKING, ConsoleBacking, Font, SimpleConsoleBackend};
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
@@ -29,9 +27,9 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
         }
 
         for s in bit.sprite_sheets.iter_mut() {
-            //let mut f = Font::new(&s.filename.to_string(), 1, 1, (1, 1));
-            //f.setup_gl_texture(gl)?;
-            //s.backing = Some(f);
+            let mut f = Font::new(&s.filename.to_string(), 1, 1, (1, 1));
+            f.setup_wgpu_texture(wgpu)?;
+            s.backing = Some(f);
         }
     }
 
@@ -96,11 +94,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                 let time_since_last_frame = frame_timer.elapsed().as_millis() as u64;
                 if time_since_last_frame < wait_time {
                     let delay = u64::min(33, wait_time - time_since_last_frame);
-                    //println!("Frame time: {}ms, Delay: {}ms", time_since_last_frame, delay);
-                    //*control_flow = ControlFlow::WaitUntil(Instant::now() + std::time::Duration::from_millis(delay));
                     spin_sleeper.sleep(std::time::Duration::from_millis(delay));
-                } else {
-                    //*control_flow = ControlFlow::WaitUntil(Instant::now() + std::time::Duration::from_millis(1));
                 }
             }
             Event::WindowEvent { event, window_id } => {
@@ -299,7 +293,7 @@ fn tock<GS: GameState>(
     }
 
     // Clear the screen
-    clear_screen_pass();
+    //clear_screen_pass();
     /*unsafe {
         let be = BACKEND.lock();
         be.gl.as_ref().unwrap().clear_color(0.0, 0.0, 0.0, 1.0);
@@ -400,9 +394,9 @@ fn tock<GS: GameState>(
 }
 
 pub(crate) fn rebuild_consoles() {
-    /*let mut consoles = CONSOLE_BACKING.lock();
+    let mut consoles = CONSOLE_BACKING.lock();
     let mut bi = BACKEND_INTERNAL.lock();
-    let ss = bi.sprite_sheets.clone();
+    //let ss = bi.sprite_sheets.clone();
     for (i, c) in consoles.iter_mut().enumerate() {
         let font_index = bi.consoles[i].font_index;
         let glyph_dimensions = bi.fonts[font_index].font_dimensions_glyphs;
@@ -415,7 +409,10 @@ pub(crate) fn rebuild_consoles() {
                     .downcast_mut::<SimpleConsole>()
                     .unwrap();
                 if sc.is_dirty {
+                    let be = BACKEND.lock();
+                    let wgpu = be.wgpu.as_ref().unwrap();
                     backing.rebuild_vertices(
+                        wgpu,
                         sc.height,
                         sc.width,
                         &sc.tiles,
@@ -429,7 +426,7 @@ pub(crate) fn rebuild_consoles() {
                     sc.needs_resize_internal = false;
                 }
             }
-            ConsoleBacking::Sparse { backing } => {
+            /*ConsoleBacking::Sparse { backing } => {
                 let mut sc = bi.consoles[i]
                     .console
                     .as_any_mut()
@@ -486,23 +483,22 @@ pub(crate) fn rebuild_consoles() {
                     );
                     sc.needs_resize_internal = false;
                 }
-            }
+            }*/
         }
-    }*/
+    }
 }
 
 pub(crate) fn render_consoles() -> BResult<()> {
-    /*let bi = BACKEND_INTERNAL.lock();
+    let bi = BACKEND_INTERNAL.lock();
     let mut consoles = CONSOLE_BACKING.lock();
     for (i, c) in consoles.iter_mut().enumerate() {
         let cons = &bi.consoles[i];
         let font = &bi.fonts[cons.font_index];
-        let shader = &bi.shaders[cons.shader_index];
         match c {
             ConsoleBacking::Simple { backing } => {
-                backing.gl_draw(font, shader)?;
+                backing.wgpu_draw(font)?;
             }
-            ConsoleBacking::Sparse { backing } => {
+            /*ConsoleBacking::Sparse { backing } => {
                 backing.gl_draw(font, shader)?;
             }
             ConsoleBacking::Fancy { backing } => {
@@ -510,28 +506,31 @@ pub(crate) fn render_consoles() -> BResult<()> {
             }
             ConsoleBacking::Sprite { backing } => {
                 backing.gl_draw(bi.sprite_sheets[0].backing.as_ref().unwrap(), shader)?;
-            }
+            }*/
         }
-    }*/
+    }
     Ok(())
 }
 
 pub(crate) fn check_console_backing() {
-    /*let mut be = BACKEND.lock();
+    let be = BACKEND.lock();
     let mut consoles = CONSOLE_BACKING.lock();
     if consoles.is_empty() {
         // Easy case: there are no consoles so we need to make them all.
-        for cons in &BACKEND_INTERNAL.lock().consoles {
+        let bit = BACKEND_INTERNAL.lock();
+        for cons in &bit.consoles {
             let cons_any = cons.console.as_any();
             if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
                 consoles.push(ConsoleBacking::Simple {
                     backing: SimpleConsoleBackend::new(
                         st.width as usize,
                         st.height as usize,
-                        be.gl.as_mut().unwrap(),
+                        be.wgpu.as_ref().unwrap(),
+                        &bit.shaders[0],
+                        &bit.fonts[cons.font_index],
                     ),
                 });
-            } else if let Some(sp) = cons_any.downcast_ref::<SparseConsole>() {
+            }/*else if let Some(sp) = cons_any.downcast_ref::<SparseConsole>() {
                 consoles.push(ConsoleBacking::Sparse {
                     backing: SparseConsoleBackend::new(
                         sp.width as usize,
@@ -557,9 +556,9 @@ pub(crate) fn check_console_backing() {
                 });
             } else {
                 panic!("Unknown console type.");
-            }
+            }*/
         }
-    }*/
+    }
 }
 
 fn clear_screen_pass()-> Result<(), wgpu::SurfaceError> {
