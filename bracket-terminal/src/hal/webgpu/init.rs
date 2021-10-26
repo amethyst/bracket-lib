@@ -51,13 +51,14 @@ pub fn init_raw<S: ToString>(
     let mut shaders: Vec<Shader> = Vec::new();
     shaders.push(Shader::new(
         &device,
-        include_str!("shader_source/console_with_vg.wgsl"),
+        include_str!("shader_source/console_with_bg.wgsl"),
     ));
-    /*shaders.push(Shader::new(
-        &gl,
-        shader_strings::CONSOLE_NO_BG_VS,
-        shader_strings::CONSOLE_NO_BG_FS,
+    shaders.push(Shader::new(
+        &device,
+        include_str!("shader_source/console_no_bg.wgsl"),
     ));
+
+    /*
     shaders.push(Shader::new(
         &gl,
         shader_strings::BACKING_VS,

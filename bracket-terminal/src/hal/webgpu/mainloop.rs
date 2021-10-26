@@ -489,7 +489,7 @@ pub(crate) fn render_consoles() -> BResult<()> {
     let bi = BACKEND_INTERNAL.lock();
     let mut consoles = CONSOLE_BACKING.lock();
     let output = BACKEND.lock().wgpu.as_ref().unwrap().surface.get_current_texture()?;
-    clear_screen_pass(&output);
+    clear_screen_pass(&output)?;
     for (i, c) in consoles.iter_mut().enumerate() {
         let cons = &bi.consoles[i];
         let font = &bi.fonts[cons.font_index];
