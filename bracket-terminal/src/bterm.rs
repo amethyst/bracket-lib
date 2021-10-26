@@ -978,7 +978,7 @@ impl BTerm {
             .set_translation_mode(translation)
     }
 
-    #[cfg(feature = "opengl")]
+    #[cfg(any(feature = "opengl", feature="webgpu"))]
     /// Change the active font for the layer. DO NOT USE WITH AMETHYST YET.
     pub fn set_active_font(&mut self, font_index: usize, resize_to_natural_dimensions: bool) {
         let mut be = BACKEND_INTERNAL.lock();

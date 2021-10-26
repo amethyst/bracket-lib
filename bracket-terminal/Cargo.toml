@@ -74,24 +74,19 @@ required-features = [ "opengl" ]
 [[example]]
 name = "bench_scalable"
 path = "examples/bench_scalable.rs"
-required-features = [ "opengl" ]
 
 [[example]]
 name = "fontswitch"
 path = "examples/fontswitch.rs"
-required-features = [ "opengl" ]
 
 [[example]]
 name = "squishy"
 path = "examples/squishy.rs"
-required-features = [ "opengl" ]
 
 [[example]]
 name = "flexible"
 path = "examples/flexible.rs"
-required-features = [ "opengl" ]
 
 [[example]]
 name = "sprites"
 path = "examples/sprites.rs"
-required-features = [ "opengl" ]
