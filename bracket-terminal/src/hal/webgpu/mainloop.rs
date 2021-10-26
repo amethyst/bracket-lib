@@ -1,10 +1,5 @@
-use super::{ConsoleBacking, Font, SimpleConsoleBackend, CONSOLE_BACKING};
-use crate::{
-    gamestate::{BTerm, GameState},
-    input::{clear_input_state, BEvent},
-    prelude::{SimpleConsole, BACKEND, BACKEND_INTERNAL, INPUT},
-    BResult,
-};
+use super::{CONSOLE_BACKING, ConsoleBacking, Font, SimpleConsoleBackend, SparseConsoleBackend};
+use crate::{BResult, gamestate::{BTerm, GameState}, input::{clear_input_state, BEvent}, prelude::{BACKEND, BACKEND_INTERNAL, INPUT, SimpleConsole, SparseConsole}};
 use bracket_geometry::prelude::Point;
 use std::time::Instant;
 use winit::{dpi::PhysicalSize, event::*, event_loop::ControlFlow};
@@ -423,14 +418,18 @@ pub(crate) fn rebuild_consoles() {
                     );
                     sc.needs_resize_internal = false;
                 }
-            } /*ConsoleBacking::Sparse { backing } => {
+            }
+            ConsoleBacking::Sparse { backing } => {
                   let mut sc = bi.consoles[i]
                       .console
                       .as_any_mut()
                       .downcast_mut::<SparseConsole>()
                       .unwrap();
                   if sc.is_dirty {
+                    let be = BACKEND.lock();
+                    let wgpu = be.wgpu.as_ref().unwrap();
                       backing.rebuild_vertices(
+                          wgpu,
                           sc.height,
                           sc.width,
                           sc.offset_x,
@@ -443,7 +442,7 @@ pub(crate) fn rebuild_consoles() {
                       sc.needs_resize_internal = false;
                   }
               }
-              ConsoleBacking::Fancy { backing } => {
+              /*ConsoleBacking::Fancy { backing } => {
                   let mut fc = bi.consoles[i]
                       .console
                       .as_any_mut()
@@ -488,15 +487,17 @@ pub(crate) fn rebuild_consoles() {
 pub(crate) fn render_consoles() -> BResult<()> {
     let bi = BACKEND_INTERNAL.lock();
     let mut consoles = CONSOLE_BACKING.lock();
+    let output = BACKEND.lock().wgpu.as_ref().unwrap().surface.get_current_texture()?;
     for (i, c) in consoles.iter_mut().enumerate() {
         let cons = &bi.consoles[i];
         let font = &bi.fonts[cons.font_index];
         match c {
             ConsoleBacking::Simple { backing } => {
-                backing.wgpu_draw(font)?;
-            } /*ConsoleBacking::Sparse { backing } => {
-                  backing.gl_draw(font, shader)?;
-              }
+                backing.wgpu_draw(&output, font)?;
+            }
+            ConsoleBacking::Sparse { backing } => {
+                  backing.wgpu_draw(&output, font)?;
+            }/*
               ConsoleBacking::Fancy { backing } => {
                   backing.gl_draw(font, shader)?;
               }
@@ -505,6 +506,7 @@ pub(crate) fn render_consoles() -> BResult<()> {
               }*/
         }
     }
+    output.present();
     Ok(())
 }
 
@@ -522,19 +524,19 @@ pub(crate) fn check_console_backing() {
                         st.width as usize,
                         st.height as usize,
                         be.wgpu.as_ref().unwrap(),
-                        &bit.shaders[0],
+                        &bit.shaders[cons.shader_index],
                         &bit.fonts[cons.font_index],
                     ),
                 });
-            } /*else if let Some(sp) = cons_any.downcast_ref::<SparseConsole>() {
+            } else if let Some(sp) = cons_any.downcast_ref::<SparseConsole>() {
                   consoles.push(ConsoleBacking::Sparse {
                       backing: SparseConsoleBackend::new(
-                          sp.width as usize,
-                          sp.height as usize,
-                          be.gl.as_ref().unwrap(),
+                          be.wgpu.as_ref().unwrap(),
+                          &bit.shaders[cons.shader_index],
+                        &bit.fonts[cons.font_index]
                       ),
                   });
-              } else if let Some(sp) = cons_any.downcast_ref::<FlexiConsole>() {
+              }/* else if let Some(sp) = cons_any.downcast_ref::<FlexiConsole>() {
                   consoles.push(ConsoleBacking::Fancy {
                       backing: FancyConsoleBackend::new(
                           sp.width as usize,

@@ -4,7 +4,7 @@ use crate::hal::{Font, Shader, WgpuLink};
 use crate::prelude::Tile;
 use crate::BResult;
 use bracket_color::prelude::RGBA;
-use wgpu::{BufferUsages, RenderPipeline};
+use wgpu::{BufferUsages, RenderPipeline, SurfaceTexture};
 
 pub struct SimpleConsoleBackend {
     vao: FloatBuffer<f32>,
@@ -231,11 +231,10 @@ impl SimpleConsoleBackend {
         self.index.update_buffer(wgpu);
     }
 
-    pub fn wgpu_draw(&mut self, font: &Font) -> BResult<()> {
+    pub fn wgpu_draw(&mut self, output: &SurfaceTexture, font: &Font) -> BResult<()> {
         use crate::hal::BACKEND;
         let mut be = BACKEND.lock();
         if let Some(wgpu) = be.wgpu.as_mut() {
-            let output = wgpu.surface.get_current_texture()?;
             let view = output
                 .texture
                 .create_view(&wgpu::TextureViewDescriptor::default());
@@ -251,12 +250,13 @@ impl SimpleConsoleBackend {
                         view: &view,
                         resolve_target: None,
                         ops: wgpu::Operations {
-                            load: wgpu::LoadOp::Clear(wgpu::Color {
+                            /*load: wgpu::LoadOp::Clear(wgpu::Color {
                                 r: 0.0,
                                 g: 0.0,
                                 b: 0.0,
                                 a: 1.0,
-                            }),
+                            }),*/
+                            load: wgpu::LoadOp::Load,
                             store: true,
                         },
                     }],
@@ -271,7 +271,7 @@ impl SimpleConsoleBackend {
 
             // submit will accept anything that implements IntoIter
             wgpu.queue.submit(std::iter::once(encoder.finish()));
-            output.present();
+            //output.present();
         }
         Ok(())
     }
