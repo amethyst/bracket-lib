@@ -1,6 +1,7 @@
 use super::{CONSOLE_BACKING, ConsoleBacking, Font, SimpleConsoleBackend, SparseConsoleBackend};
 use crate::{BResult, gamestate::{BTerm, GameState}, input::{clear_input_state, BEvent}, prelude::{BACKEND, BACKEND_INTERNAL, INPUT, SimpleConsole, SparseConsole}};
 use bracket_geometry::prelude::Point;
+use wgpu::SurfaceTexture;
 use std::time::Instant;
 use winit::{dpi::PhysicalSize, event::*, event_loop::ControlFlow};
 
@@ -488,6 +489,7 @@ pub(crate) fn render_consoles() -> BResult<()> {
     let bi = BACKEND_INTERNAL.lock();
     let mut consoles = CONSOLE_BACKING.lock();
     let output = BACKEND.lock().wgpu.as_ref().unwrap().surface.get_current_texture()?;
+    clear_screen_pass(&output);
     for (i, c) in consoles.iter_mut().enumerate() {
         let cons = &bi.consoles[i];
         let font = &bi.fonts[cons.font_index];
@@ -559,10 +561,9 @@ pub(crate) fn check_console_backing() {
     }
 }
 
-fn clear_screen_pass() -> Result<(), wgpu::SurfaceError> {
+fn clear_screen_pass(output: &SurfaceTexture) -> Result<(), wgpu::SurfaceError> {
     let mut be = BACKEND.lock();
     if let Some(wgpu) = be.wgpu.as_mut() {
-        let output = wgpu.surface.get_current_texture()?;
         let view = output
             .texture
             .create_view(&wgpu::TextureViewDescriptor::default());
@@ -593,7 +594,6 @@ fn clear_screen_pass() -> Result<(), wgpu::SurfaceError> {
 
         // submit will accept anything that implements IntoIter
         wgpu.queue.submit(std::iter::once(encoder.finish()));
-        output.present();
 
         Ok(())
     } else {
