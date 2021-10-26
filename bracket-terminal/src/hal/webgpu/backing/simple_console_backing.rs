@@ -138,8 +138,11 @@ impl SimpleConsoleBackend {
     ) {
         if needs_resize {
             let vertex_capacity: usize = (13 * width as usize * height as usize) * 4;
+            let index_capacity: usize = 6 * width as usize * height as usize;
             self.vao.data.clear();
             self.vao.data.resize(vertex_capacity, 0.0);
+            self.index.data.clear();
+            self.index.data.resize(index_capacity, 0);
         }
 
         self.vertex_counter = 0;
