@@ -8,7 +8,6 @@ where
     pub data: Vec<T>,
     pub attributes: Vec<wgpu::VertexAttribute>,
     total_size: wgpu::BufferAddress,
-    row_len: usize,
     pub buffer: Option<wgpu::Buffer>,
     usage: wgpu::BufferUsages,
 }
@@ -45,7 +44,6 @@ where
             data: Vec::new(),
             attributes,
             total_size: cumulative_size,
-            row_len: cumulative_len,
             buffer: None,
             usage,
         }
@@ -75,10 +73,6 @@ where
 
     pub fn update_buffer(&mut self, wgpu: &WgpuLink) {
         self.build(wgpu);
-    }
-
-    pub fn len(&self) -> u32 {
-        (self.data.len() / self.row_len) as u32
     }
 
     pub fn slice(&self) -> wgpu::BufferSlice {
