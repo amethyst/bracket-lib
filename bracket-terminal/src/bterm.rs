@@ -492,7 +492,7 @@ impl BTerm {
     }
 
     /// Set a tile with "fancy" additional attributes
-    #[cfg(feature = "opengl")]
+    #[cfg(any(feature = "opengl", feature="webgpu"))]
     #[allow(clippy::too_many_arguments)]
     pub fn set_fancy<COLOR, COLOR2, GLYPH, ANGLE>(
         &mut self,
@@ -525,7 +525,7 @@ impl BTerm {
     }
 
     /// Set a tile with "fancy" additional attributes
-    #[cfg(not(feature = "opengl"))]
+    #[cfg(not(any(feature = "opengl", feature = "webgpu")))]
     pub fn set_fancy<COLOR, COLOR2, GLYPH, ANGLE>(
         &mut self,
         _position: PointF,
@@ -1033,7 +1033,7 @@ impl BTerm {
     }
 
     /// Register a sprite sheet (OpenGL - native or WASM - only)
-    #[cfg(feature = "opengl")]
+    #[cfg(any(feature = "opengl", feature="webgpu"))]
     pub fn register_spritesheet(&mut self, ss: SpriteSheet) -> usize {
         let mut bi = BACKEND_INTERNAL.lock();
         let id = bi.sprite_sheets.len();
