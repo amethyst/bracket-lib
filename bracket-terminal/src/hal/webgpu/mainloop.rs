@@ -1,5 +1,15 @@
-use super::{CONSOLE_BACKING, ConsoleBacking, FancyConsoleBackend, Font, Framebuffer, SimpleConsoleBackend, SparseConsoleBackend, SpriteConsoleBackend, quadrender::QuadRender};
-use crate::{BResult, gamestate::{BTerm, GameState}, input::{clear_input_state, BEvent}, prelude::{BACKEND, BACKEND_INTERNAL, FlexiConsole, INPUT, SimpleConsole, SparseConsole, SpriteConsole}};
+use super::{
+    quadrender::QuadRender, ConsoleBacking, FancyConsoleBackend, Font, Framebuffer,
+    SimpleConsoleBackend, SparseConsoleBackend, SpriteConsoleBackend, CONSOLE_BACKING,
+};
+use crate::{
+    gamestate::{BTerm, GameState},
+    input::{clear_input_state, BEvent},
+    prelude::{
+        FlexiConsole, SimpleConsole, SparseConsole, SpriteConsole, BACKEND, BACKEND_INTERNAL, INPUT,
+    },
+    BResult,
+};
 use bracket_geometry::prelude::Point;
 use std::{rc::Rc, time::Instant};
 use wgpu::{SurfaceTexture, TextureView, TextureViewDescriptor};
@@ -433,51 +443,51 @@ pub(crate) fn rebuild_consoles() {
                 }
             }
             ConsoleBacking::Fancy { backing } => {
-                  let mut fc = bi.consoles[i]
-                      .console
-                      .as_any_mut()
-                      .downcast_mut::<FlexiConsole>()
-                      .unwrap();
-                  if fc.is_dirty {
+                let mut fc = bi.consoles[i]
+                    .console
+                    .as_any_mut()
+                    .downcast_mut::<FlexiConsole>()
+                    .unwrap();
+                if fc.is_dirty {
                     let be = BACKEND.lock();
                     let wgpu = be.wgpu.as_ref().unwrap();
-                      fc.tiles.sort_by(|a, b| a.z_order.cmp(&b.z_order));
-                      backing.rebuild_vertices(
-                          wgpu,
-                          fc.height,
-                          fc.width,
-                          fc.offset_x,
-                          fc.offset_y,
-                          fc.scale,
-                          fc.scale_center,
-                          &fc.tiles,
-                          glyph_dimensions,
-                      );
-                      fc.needs_resize_internal = false;
-                  }
-              }
-              ConsoleBacking::Sprite { backing } => {
-                  let ss = bi.sprite_sheets.clone();
-                  let mut sc = bi.consoles[i]
-                      .console
-                      .as_any_mut()
-                      .downcast_mut::<SpriteConsole>()
-                      .unwrap();
+                    fc.tiles.sort_by(|a, b| a.z_order.cmp(&b.z_order));
+                    backing.rebuild_vertices(
+                        wgpu,
+                        fc.height,
+                        fc.width,
+                        fc.offset_x,
+                        fc.offset_y,
+                        fc.scale,
+                        fc.scale_center,
+                        &fc.tiles,
+                        glyph_dimensions,
+                    );
+                    fc.needs_resize_internal = false;
+                }
+            }
+            ConsoleBacking::Sprite { backing } => {
+                let ss = bi.sprite_sheets.clone();
+                let mut sc = bi.consoles[i]
+                    .console
+                    .as_any_mut()
+                    .downcast_mut::<SpriteConsole>()
+                    .unwrap();
 
-                  if sc.is_dirty {
+                if sc.is_dirty {
                     let be = BACKEND.lock();
                     let wgpu = be.wgpu.as_ref().unwrap();
-                      sc.sprites.sort_by(|a, b| a.z_order.cmp(&b.z_order));
-                      backing.rebuild_vertices(
-                          wgpu,
-                          sc.height,
-                          sc.width,
-                          &sc.sprites,
-                          &ss[sc.sprite_sheet],
-                      );
-                      sc.needs_resize_internal = false;
-                  }
-              }
+                    sc.sprites.sort_by(|a, b| a.z_order.cmp(&b.z_order));
+                    backing.rebuild_vertices(
+                        wgpu,
+                        sc.height,
+                        sc.width,
+                        &sc.sprites,
+                        &ss[sc.sprite_sheet],
+                    );
+                    sc.needs_resize_internal = false;
+                }
+            }
         }
     }
 }
@@ -501,7 +511,7 @@ pub(crate) fn render_consoles() -> BResult<()> {
                 backing.wgpu_draw(font)?;
             }
             ConsoleBacking::Sprite { backing } => {
-                  backing.wgpu_draw(&bi.sprite_sheets[0].backing.as_ref().unwrap())?;
+                backing.wgpu_draw(&bi.sprite_sheets[0].backing.as_ref().unwrap())?;
             }
         }
     }
@@ -535,25 +545,25 @@ pub(crate) fn check_console_backing() {
                     ),
                 });
             } else if let Some(sp) = cons_any.downcast_ref::<FlexiConsole>() {
-                  consoles.push(ConsoleBacking::Fancy {
-                      backing: FancyConsoleBackend::new(
+                consoles.push(ConsoleBacking::Fancy {
+                    backing: FancyConsoleBackend::new(
                         be.wgpu.as_ref().unwrap(),
-                   &bit.shaders[3],
-                    &bit.fonts[cons.font_index],
-                      ),
-                  });
-              } else if let Some(sp) = cons_any.downcast_ref::<SpriteConsole>() {
+                        &bit.shaders[3],
+                        &bit.fonts[cons.font_index],
+                    ),
+                });
+            } else if let Some(sp) = cons_any.downcast_ref::<SpriteConsole>() {
                 //let bi = BACKEND_INTERNAL.lock();
-                  consoles.push(ConsoleBacking::Sprite {
-                      backing: SpriteConsoleBackend::new(
-                          be.wgpu.as_ref().unwrap(),
-                          &bit.shaders[4],
-                          &bit.sprite_sheets[0].backing.as_ref().unwrap(),
-                      ),
-                  });
-              } else {
-                  panic!("Unknown console type.");
-              }
+                consoles.push(ConsoleBacking::Sprite {
+                    backing: SpriteConsoleBackend::new(
+                        be.wgpu.as_ref().unwrap(),
+                        &bit.shaders[4],
+                        &bit.sprite_sheets[0].backing.as_ref().unwrap(),
+                    ),
+                });
+            } else {
+                panic!("Unknown console type.");
+            }
         }
     }
 }

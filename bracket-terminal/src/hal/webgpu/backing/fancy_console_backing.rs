@@ -4,8 +4,8 @@ use crate::hal::{Font, Shader, WgpuLink};
 use crate::prelude::{FlexiTile, Tile};
 use crate::BResult;
 use bracket_color::prelude::RGBA;
-use wgpu::{BufferUsages, RenderPipeline, SurfaceTexture, TextureView};
 use bracket_geometry::prelude::PointF;
+use wgpu::{BufferUsages, RenderPipeline, SurfaceTexture, TextureView};
 
 pub struct FancyConsoleBackend {
     vao: FloatBuffer<f32>,
@@ -14,11 +14,7 @@ pub struct FancyConsoleBackend {
 }
 
 impl FancyConsoleBackend {
-    pub fn new(
-        wgpu: &WgpuLink,
-        shader: &Shader,
-        font: &Font,
-    ) -> FancyConsoleBackend {
+    pub fn new(wgpu: &WgpuLink, shader: &Shader, font: &Font) -> FancyConsoleBackend {
         let mut vao = FancyConsoleBackend::init_buffer_for_console(1000);
         let mut index = IndexBuffer::new(1000);
         vao.update_buffer(wgpu);
@@ -69,7 +65,11 @@ impl FancyConsoleBackend {
                 },
             });
 
-        FancyConsoleBackend { vao, render_pipeline, index }
+        FancyConsoleBackend {
+            vao,
+            render_pipeline,
+            index,
+        }
     }
 
     fn init_buffer_for_console(vertex_capacity: usize) -> FloatBuffer<f32> {

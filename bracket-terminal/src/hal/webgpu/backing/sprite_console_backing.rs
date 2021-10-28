@@ -13,7 +13,7 @@ pub struct SpriteConsoleBackend {
 }
 
 impl SpriteConsoleBackend {
-    pub fn new(wgpu:&WgpuLink, shader: &Shader, font: &Font,) -> SpriteConsoleBackend {
+    pub fn new(wgpu: &WgpuLink, shader: &Shader, font: &Font) -> SpriteConsoleBackend {
         let mut vao = SpriteConsoleBackend::init_buffer_for_console(0);
         let mut index = IndexBuffer::new(0);
         vao.update_buffer(wgpu);
@@ -64,7 +64,11 @@ impl SpriteConsoleBackend {
                 },
             });
 
-        SpriteConsoleBackend { vao, index, render_pipeline }
+        SpriteConsoleBackend {
+            vao,
+            index,
+            render_pipeline,
+        }
     }
 
     fn init_buffer_for_console(vertex_capacity: usize) -> FloatBuffer<f32> {
@@ -97,7 +101,7 @@ impl SpriteConsoleBackend {
     #[allow(clippy::too_many_arguments)]
     pub fn rebuild_vertices(
         &mut self,
-        wgpu:&WgpuLink,
+        wgpu: &WgpuLink,
         height: u32,
         width: u32,
         sprites: &[RenderSprite],

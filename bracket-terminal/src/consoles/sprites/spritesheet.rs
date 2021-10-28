@@ -1,6 +1,6 @@
-use std::rc::Rc;
 use crate::prelude::{Font, Sprite};
 use bracket_geometry::prelude::Rect;
+use std::rc::Rc;
 
 #[derive(Clone)]
 pub struct SpriteSheet {
