@@ -492,7 +492,7 @@ impl BTerm {
     }
 
     /// Set a tile with "fancy" additional attributes
-    #[cfg(any(feature = "opengl", feature="webgpu"))]
+    #[cfg(any(feature = "opengl", feature = "webgpu"))]
     #[allow(clippy::too_many_arguments)]
     pub fn set_fancy<COLOR, COLOR2, GLYPH, ANGLE>(
         &mut self,
@@ -978,7 +978,7 @@ impl BTerm {
             .set_translation_mode(translation)
     }
 
-    #[cfg(any(feature = "opengl", feature="webgpu"))]
+    #[cfg(any(feature = "opengl", feature = "webgpu"))]
     /// Change the active font for the layer. DO NOT USE WITH AMETHYST YET.
     pub fn set_active_font(&mut self, font_index: usize, resize_to_natural_dimensions: bool) {
         let mut be = BACKEND_INTERNAL.lock();
@@ -999,7 +999,10 @@ impl BTerm {
         }
     }
 
-    #[cfg(all(any(feature = "opengl", feature = "webgpu"), not(target_arch = "wasm32")))]
+    #[cfg(all(
+        any(feature = "opengl", feature = "webgpu"),
+        not(target_arch = "wasm32")
+    ))]
     /// Manually override the character size for the current terminal. Use with caution!
     pub fn set_char_size(&mut self, width: u32, height: u32) {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
@@ -1007,7 +1010,10 @@ impl BTerm {
             .set_char_size(width, height);
     }
 
-    #[cfg(all(any(feature = "opengl", feature = "webgpu"), not(target_arch = "wasm32")))]
+    #[cfg(all(
+        any(feature = "opengl", feature = "webgpu"),
+        not(target_arch = "wasm32")
+    ))]
     /// Manually override the character size for the current terminal. Use with caution!
     pub fn set_char_size_and_resize_window(&mut self, _width: u32, _height: u32) {
         /*
@@ -1033,7 +1039,7 @@ impl BTerm {
     }
 
     /// Register a sprite sheet (OpenGL - native or WASM - only)
-    #[cfg(any(feature = "opengl", feature="webgpu"))]
+    #[cfg(any(feature = "opengl", feature = "webgpu"))]
     pub fn register_spritesheet(&mut self, ss: SpriteSheet) -> usize {
         let mut bi = BACKEND_INTERNAL.lock();
         let id = bi.sprite_sheets.len();

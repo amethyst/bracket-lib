@@ -13,6 +13,9 @@ pub use mainloop::*;
 pub use winit::event::VirtualKeyCode;
 mod backing;
 pub(crate) use backing::*;
+mod framebuffer;
+pub(crate) use framebuffer::*;
+mod quadrender;
 
 pub fn log(s: &str) {
     println!("{}", s);

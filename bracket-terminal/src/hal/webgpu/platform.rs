@@ -1,6 +1,8 @@
 use wgpu::{Adapter, Device, Instance, Queue, Surface, SurfaceConfiguration};
 use winit::{event_loop::EventLoop, window::Window};
 
+use super::Framebuffer;
+
 pub struct PlatformGL {
     pub context_wrapper: Option<WrappedContext>,
     pub wgpu: Option<WgpuLink>,
@@ -18,6 +20,7 @@ pub struct WgpuLink {
     pub device: Device,
     pub queue: Queue,
     pub config: SurfaceConfiguration,
+    pub backing_buffer: Framebuffer,
 }
 
 unsafe impl Send for PlatformGL {}

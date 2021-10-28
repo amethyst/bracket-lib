@@ -4,20 +4,16 @@ use crate::hal::{Font, Shader, WgpuLink};
 use crate::prelude::SparseTile;
 use crate::BResult;
 use bracket_color::prelude::RGBA;
-use wgpu::{BufferUsages, RenderPipeline, SurfaceTexture};
+use wgpu::{BufferUsages, RenderPipeline, SurfaceTexture, TextureView};
 
 pub struct SparseConsoleBackend {
-    vao: FloatBuffer::<f32>,
+    vao: FloatBuffer<f32>,
     index: IndexBuffer,
     render_pipeline: RenderPipeline,
 }
 
 impl SparseConsoleBackend {
-    pub fn new(
-        wgpu: &WgpuLink,
-        shader: &Shader,
-        font: &Font,
-    ) -> SparseConsoleBackend {
+    pub fn new(wgpu: &WgpuLink, shader: &Shader, font: &Font) -> SparseConsoleBackend {
         let vao = SparseConsoleBackend::init_buffer_for_console(1000);
         let index = IndexBuffer::new(1000);
 
@@ -64,15 +60,16 @@ impl SparseConsoleBackend {
                     mask: !0,
                     alpha_to_coverage_enabled: false,
                 },
-            }
-        );
+            });
 
-        SparseConsoleBackend { vao, index, render_pipeline }
+        SparseConsoleBackend {
+            vao,
+            index,
+            render_pipeline,
+        }
     }
 
-    fn init_buffer_for_console(
-        vertex_capacity: usize,
-    ) -> FloatBuffer::<f32> {
+    fn init_buffer_for_console(vertex_capacity: usize) -> FloatBuffer<f32> {
         FloatBuffer::<f32>::new(
             &[3, 4, 4, 2], // Pos, FG, BG, TexPos
             vertex_capacity,
@@ -194,13 +191,10 @@ impl SparseConsoleBackend {
         self.index.update_buffer(wgpu);
     }
 
-    pub fn wgpu_draw(&mut self, output: &SurfaceTexture, font: &Font) -> BResult<()> {
+    pub fn wgpu_draw(&mut self, font: &Font) -> BResult<()> {
         use crate::hal::BACKEND;
         let mut be = BACKEND.lock();
         if let Some(wgpu) = be.wgpu.as_mut() {
-            let view = output
-                .texture
-                .create_view(&wgpu::TextureViewDescriptor::default());
             let mut encoder = wgpu
                 .device
                 .create_command_encoder(&wgpu::CommandEncoderDescriptor {
@@ -210,7 +204,7 @@ impl SparseConsoleBackend {
                 let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                     label: Some("Render Pass"),
                     color_attachments: &[wgpu::RenderPassColorAttachment {
-                        view: &view,
+                        view: wgpu.backing_buffer.view(),
                         resolve_target: None,
                         ops: wgpu::Operations {
                             load: wgpu::LoadOp::Load,

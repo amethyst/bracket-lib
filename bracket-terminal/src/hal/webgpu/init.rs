@@ -1,5 +1,5 @@
 use super::{InitHints, Shader, WgpuLink, WrappedContext, BACKEND};
-use crate::{gamestate::BTerm, prelude::BACKEND_INTERNAL, BResult};
+use crate::{gamestate::BTerm, hal::Framebuffer, prelude::BACKEND_INTERNAL, BResult};
 use wgpu::{Adapter, Device, Instance, Queue, Surface, SurfaceConfiguration};
 use winit::{
     dpi::LogicalSize,
@@ -57,13 +57,12 @@ pub fn init_raw<S: ToString>(
         &device,
         include_str!("shader_source/console_no_bg.wgsl"),
     ));
+    shaders.push(Shader::new(
+        &device,
+        include_str!("shader_source/backing_plain.wgsl"),
+    ));
 
     /*
-    shaders.push(Shader::new(
-        &gl,
-        shader_strings::BACKING_VS,
-        shader_strings::BACKING_FS,
-    ));
     shaders.push(Shader::new(
         &gl,
         shader_strings::SCANLINES_VS,
@@ -81,6 +80,18 @@ pub fn init_raw<S: ToString>(
     ));*/
     BACKEND_INTERNAL.lock().shaders = shaders;
 
+    // Build the backing frame-buffer
+    let initial_dpi_factor = window.scale_factor();
+    let backing_buffer = Framebuffer::new(
+        &device,
+        surface.get_preferred_format(&adapter).unwrap(),
+        (width_pixels as f64 * initial_dpi_factor) as u32,
+        (height_pixels as f64 * initial_dpi_factor) as u32,
+    );
+
+    // Build a simple quad rendering VAO
+    //let quad_vao = setup_quad(&gl);
+
     // Store the backend
     let mut be = BACKEND.lock();
     be.context_wrapper = Some(WrappedContext { el, window });
@@ -91,6 +102,7 @@ pub fn init_raw<S: ToString>(
         device,
         queue,
         config,
+        backing_buffer,
     });
     be.frame_sleep_time = crate::hal::convert_fps_to_wait(platform_hints.frame_sleep_time);
     be.resize_scaling = platform_hints.resize_scaling;

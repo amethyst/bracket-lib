@@ -1,8 +1,16 @@
-use super::{CONSOLE_BACKING, ConsoleBacking, Font, SimpleConsoleBackend, SparseConsoleBackend};
-use crate::{BResult, gamestate::{BTerm, GameState}, input::{clear_input_state, BEvent}, prelude::{BACKEND, BACKEND_INTERNAL, INPUT, SimpleConsole, SparseConsole}};
+use super::{
+    quadrender::QuadRender, ConsoleBacking, Font, Framebuffer, SimpleConsoleBackend,
+    SparseConsoleBackend, CONSOLE_BACKING,
+};
+use crate::{
+    gamestate::{BTerm, GameState},
+    input::{clear_input_state, BEvent},
+    prelude::{SimpleConsole, SparseConsole, BACKEND, BACKEND_INTERNAL, INPUT},
+    BResult,
+};
 use bracket_geometry::prelude::Point;
-use wgpu::SurfaceTexture;
 use std::time::Instant;
+use wgpu::{SurfaceTexture, TextureView, TextureViewDescriptor};
 use winit::{dpi::PhysicalSize, event::*, event_loop::ControlFlow};
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
@@ -19,7 +27,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
     let mut prev_ms = now.elapsed().as_millis();
     let mut frames = 0;
 
-    {
+    let mut backing_flip: QuadRender = {
         let be = BACKEND.lock();
         let wgpu = be.wgpu.as_ref().unwrap();
         let mut bit = BACKEND_INTERNAL.lock();
@@ -32,7 +40,9 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
             f.setup_wgpu_texture(wgpu)?;
             s.backing = Some(f);
         }
-    }
+
+        QuadRender::new(wgpu, &bit.shaders[2])
+    };
 
     // We're doing a little dance here to get around lifetime/borrow checking.
     // Removing the context data from BTerm in an atomic swap, so it isn't borrowed after move.
@@ -85,6 +95,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                         &mut prev_seconds,
                         &mut prev_ms,
                         &now,
+                        &mut backing_flip,
                     );
                     //wc.swap_buffers().unwrap();
                     // Moved from new events, which doesn't make sense
@@ -223,6 +234,14 @@ fn on_resize(
     }
 
     // Backing buffer resizing
+    let mut be = BACKEND.lock();
+    let mut wgpu = be.wgpu.as_mut().unwrap();
+    wgpu.backing_buffer = Framebuffer::new(
+        &wgpu.device,
+        wgpu.surface.get_preferred_format(&wgpu.adapter).unwrap(),
+        physical_size.width,
+        physical_size.height,
+    );
 
     // Messaging
     bterm.on_event(BEvent::Resized {
@@ -254,6 +273,7 @@ fn tock<GS: GameState>(
     prev_seconds: &mut u64,
     prev_ms: &mut u128,
     now: &Instant,
+    backing_flip: &mut QuadRender,
 ) {
     // Check that the console backings match our actual consoles
     check_console_backing();
@@ -349,6 +369,20 @@ fn tock<GS: GameState>(
             be.gl.as_ref().unwrap().draw_arrays(glow::TRIANGLES, 0, 6);
         }
     }
+    */
+
+    // Present the output now that we've done all the layers and
+    // backing buffer/post-process
+    if let Some(wgpu) = BACKEND.lock().wgpu.as_ref() {
+        if let Ok(current_tex) = wgpu.surface.get_current_texture() {
+            let target = current_tex
+                .texture
+                .create_view(&TextureViewDescriptor::default());
+            backing_flip.render(&wgpu, &target);
+            current_tex.present();
+        }
+    }
+    /*
 
     // Screenshot handler
     {
@@ -421,29 +455,28 @@ pub(crate) fn rebuild_consoles() {
                 }
             }
             ConsoleBacking::Sparse { backing } => {
-                  let mut sc = bi.consoles[i]
-                      .console
-                      .as_any_mut()
-                      .downcast_mut::<SparseConsole>()
-                      .unwrap();
-                  if sc.is_dirty {
+                let mut sc = bi.consoles[i]
+                    .console
+                    .as_any_mut()
+                    .downcast_mut::<SparseConsole>()
+                    .unwrap();
+                if sc.is_dirty {
                     let be = BACKEND.lock();
                     let wgpu = be.wgpu.as_ref().unwrap();
-                      backing.rebuild_vertices(
-                          wgpu,
-                          sc.height,
-                          sc.width,
-                          sc.offset_x,
-                          sc.offset_y,
-                          sc.scale,
-                          sc.scale_center,
-                          &sc.tiles,
-                          glyph_dimensions,
-                      );
-                      sc.needs_resize_internal = false;
-                  }
-              }
-              /*ConsoleBacking::Fancy { backing } => {
+                    backing.rebuild_vertices(
+                        wgpu,
+                        sc.height,
+                        sc.width,
+                        sc.offset_x,
+                        sc.offset_y,
+                        sc.scale,
+                        sc.scale_center,
+                        &sc.tiles,
+                        glyph_dimensions,
+                    );
+                    sc.needs_resize_internal = false;
+                }
+            } /*ConsoleBacking::Fancy { backing } => {
                   let mut fc = bi.consoles[i]
                       .console
                       .as_any_mut()
@@ -488,18 +521,18 @@ pub(crate) fn rebuild_consoles() {
 pub(crate) fn render_consoles() -> BResult<()> {
     let bi = BACKEND_INTERNAL.lock();
     let mut consoles = CONSOLE_BACKING.lock();
-    let output = BACKEND.lock().wgpu.as_ref().unwrap().surface.get_current_texture()?;
-    clear_screen_pass(&output)?;
+    //let output = BACKEND.lock().backing_buffer.as_ref().unwrap().view();
+    clear_screen_pass()?;
     for (i, c) in consoles.iter_mut().enumerate() {
         let cons = &bi.consoles[i];
         let font = &bi.fonts[cons.font_index];
         match c {
             ConsoleBacking::Simple { backing } => {
-                backing.wgpu_draw(&output, font)?;
+                backing.wgpu_draw(font)?;
             }
             ConsoleBacking::Sparse { backing } => {
-                  backing.wgpu_draw(&output, font)?;
-            }/*
+                backing.wgpu_draw(font)?;
+            } /*
               ConsoleBacking::Fancy { backing } => {
                   backing.gl_draw(font, shader)?;
               }
@@ -508,7 +541,6 @@ pub(crate) fn render_consoles() -> BResult<()> {
               }*/
         }
     }
-    output.present();
     Ok(())
 }
 
@@ -531,14 +563,14 @@ pub(crate) fn check_console_backing() {
                     ),
                 });
             } else if let Some(sp) = cons_any.downcast_ref::<SparseConsole>() {
-                  consoles.push(ConsoleBacking::Sparse {
-                      backing: SparseConsoleBackend::new(
-                          be.wgpu.as_ref().unwrap(),
-                          &bit.shaders[cons.shader_index],
-                        &bit.fonts[cons.font_index]
-                      ),
-                  });
-              }/* else if let Some(sp) = cons_any.downcast_ref::<FlexiConsole>() {
+                consoles.push(ConsoleBacking::Sparse {
+                    backing: SparseConsoleBackend::new(
+                        be.wgpu.as_ref().unwrap(),
+                        &bit.shaders[cons.shader_index],
+                        &bit.fonts[cons.font_index],
+                    ),
+                });
+            } /* else if let Some(sp) = cons_any.downcast_ref::<FlexiConsole>() {
                   consoles.push(ConsoleBacking::Fancy {
                       backing: FancyConsoleBackend::new(
                           sp.width as usize,
@@ -561,12 +593,9 @@ pub(crate) fn check_console_backing() {
     }
 }
 
-fn clear_screen_pass(output: &SurfaceTexture) -> Result<(), wgpu::SurfaceError> {
+fn clear_screen_pass() -> Result<(), wgpu::SurfaceError> {
     let mut be = BACKEND.lock();
     if let Some(wgpu) = be.wgpu.as_mut() {
-        let view = output
-            .texture
-            .create_view(&wgpu::TextureViewDescriptor::default());
         let mut encoder = wgpu
             .device
             .create_command_encoder(&wgpu::CommandEncoderDescriptor {
@@ -576,7 +605,7 @@ fn clear_screen_pass(output: &SurfaceTexture) -> Result<(), wgpu::SurfaceError> 
             let _render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                 label: Some("Render Pass"),
                 color_attachments: &[wgpu::RenderPassColorAttachment {
-                    view: &view,
+                    view: wgpu.backing_buffer.view(),
                     resolve_target: None,
                     ops: wgpu::Operations {
                         load: wgpu::LoadOp::Clear(wgpu::Color {

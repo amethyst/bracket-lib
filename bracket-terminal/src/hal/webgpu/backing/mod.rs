@@ -6,8 +6,8 @@ pub(crate) use sparse_console_backing::*;
 pub(crate) use fancy_console_backing::*;
 mod sprite_console_backing;
 pub(crate) use sprite_console_backing::*;*/
-mod index_array_helper;
-mod vertex_array_helper;
+pub(crate) mod index_array_helper;
+pub(crate) mod vertex_array_helper;
 
 pub(crate) enum ConsoleBacking {
     Simple { backing: SimpleConsoleBackend },
