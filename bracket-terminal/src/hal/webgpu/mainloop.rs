@@ -12,7 +12,7 @@ use crate::{
 };
 use bracket_geometry::prelude::Point;
 use std::{rc::Rc, time::Instant};
-use wgpu::{SurfaceTexture, TextureView, TextureViewDescriptor};
+use wgpu::{TextureViewDescriptor};
 use winit::{dpi::PhysicalSize, event::*, event_loop::ControlFlow};
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
@@ -91,7 +91,6 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
 
                     tock(
                         &mut bterm,
-                        window.scale_factor() as f32,
                         &mut gamestate,
                         &mut frames,
                         &mut prev_seconds,
@@ -268,7 +267,6 @@ fn on_resize(
 /// Internal handling of the main loop.
 fn tock<GS: GameState>(
     bterm: &mut BTerm,
-    scale_factor: f32,
     gamestate: &mut GS,
     frames: &mut i32,
     prev_seconds: &mut u64,
@@ -296,24 +294,6 @@ fn tock<GS: GameState>(
 
     // Console structure - doesn't really have to be every frame...
     rebuild_consoles();
-
-    // Bind to the backing buffer
-    if bterm.post_scanlines {
-        /*let be = BACKEND.lock();
-        be.backing_buffer
-            .as_ref()
-            .unwrap()
-            .bind(be.gl.as_ref().unwrap());
-        */
-    }
-
-    // Clear the screen
-    //clear_screen_pass();
-    /*unsafe {
-        let be = BACKEND.lock();
-        be.gl.as_ref().unwrap().clear_color(0.0, 0.0, 0.0, 1.0);
-        be.gl.as_ref().unwrap().clear(glow::COLOR_BUFFER_BIT);
-    }*/
 
     // Run the main loop
     gamestate.tick(bterm);
@@ -343,8 +323,9 @@ fn tock<GS: GameState>(
             let target = current_tex
                 .texture
                 .create_view(&TextureViewDescriptor::default());
-            backing_flip.render(&wgpu, &target);
-            current_tex.present();
+            if backing_flip.render(&wgpu, &target).is_ok() {
+                current_tex.present();
+            }
         }
     }
     /*
@@ -536,7 +517,7 @@ pub(crate) fn check_console_backing() {
                         &bit.fonts[cons.font_index],
                     ),
                 });
-            } else if let Some(sp) = cons_any.downcast_ref::<SparseConsole>() {
+            } else if let Some(_sp) = cons_any.downcast_ref::<SparseConsole>() {
                 consoles.push(ConsoleBacking::Sparse {
                     backing: SparseConsoleBackend::new(
                         be.wgpu.as_ref().unwrap(),
@@ -544,7 +525,7 @@ pub(crate) fn check_console_backing() {
                         &bit.fonts[cons.font_index],
                     ),
                 });
-            } else if let Some(sp) = cons_any.downcast_ref::<FlexiConsole>() {
+            } else if let Some(_sp) = cons_any.downcast_ref::<FlexiConsole>() {
                 consoles.push(ConsoleBacking::Fancy {
                     backing: FancyConsoleBackend::new(
                         be.wgpu.as_ref().unwrap(),
@@ -552,7 +533,7 @@ pub(crate) fn check_console_backing() {
                         &bit.fonts[cons.font_index],
                     ),
                 });
-            } else if let Some(sp) = cons_any.downcast_ref::<SpriteConsole>() {
+            } else if let Some(_sp) = cons_any.downcast_ref::<SpriteConsole>() {
                 //let bi = BACKEND_INTERNAL.lock();
                 consoles.push(ConsoleBacking::Sprite {
                     backing: SpriteConsoleBackend::new(

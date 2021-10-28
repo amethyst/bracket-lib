@@ -3,8 +3,7 @@ use crate::{gamestate::BTerm, hal::Framebuffer, prelude::BACKEND_INTERNAL, BResu
 use wgpu::{Adapter, Device, Instance, Queue, Surface, SurfaceConfiguration};
 use winit::{
     dpi::LogicalSize,
-    event::*,
-    event_loop::{ControlFlow, EventLoop},
+    event_loop::EventLoop,
     window::{Window, WindowBuilder},
 };
 

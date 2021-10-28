@@ -1,10 +1,8 @@
-use wgpu::{Device, Extent3d, Sampler, Texture, TextureFormat, TextureView};
+use wgpu::{Device, Sampler, TextureFormat, TextureView};
 
 pub struct Framebuffer {
-    texture: Texture,
     view: TextureView,
     sampler: Sampler,
-    extent: Extent3d,
 }
 
 impl Framebuffer {
@@ -40,10 +38,8 @@ impl Framebuffer {
         });
 
         Self {
-            texture,
             view,
             sampler,
-            extent: size,
         }
     }
 

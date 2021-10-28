@@ -4,7 +4,7 @@ use crate::hal::{Font, Shader, WgpuLink};
 use crate::prelude::SparseTile;
 use crate::BResult;
 use bracket_color::prelude::RGBA;
-use wgpu::{BufferUsages, RenderPipeline, SurfaceTexture, TextureView};
+use wgpu::{BufferUsages, RenderPipeline};
 
 pub struct SparseConsoleBackend {
     vao: FloatBuffer<f32>,

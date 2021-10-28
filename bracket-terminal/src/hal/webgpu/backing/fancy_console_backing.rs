@@ -1,11 +1,11 @@
 use super::index_array_helper::IndexBuffer;
 use super::vertex_array_helper::FloatBuffer;
 use crate::hal::{Font, Shader, WgpuLink};
-use crate::prelude::{FlexiTile, Tile};
+use crate::prelude::FlexiTile;
 use crate::BResult;
 use bracket_color::prelude::RGBA;
 use bracket_geometry::prelude::PointF;
-use wgpu::{BufferUsages, RenderPipeline, SurfaceTexture, TextureView};
+use wgpu::{BufferUsages, RenderPipeline};
 
 pub struct FancyConsoleBackend {
     vao: FloatBuffer<f32>,

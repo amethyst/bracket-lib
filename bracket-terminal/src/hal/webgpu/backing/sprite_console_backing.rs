@@ -1,10 +1,10 @@
 use super::index_array_helper::IndexBuffer;
 use super::vertex_array_helper::FloatBuffer;
 use crate::hal::{Font, Shader, WgpuLink};
-use crate::prelude::{RenderSprite, SpriteSheet, Tile};
+use crate::prelude::{RenderSprite, SpriteSheet};
 use crate::BResult;
 use bracket_color::prelude::RGBA;
-use wgpu::{BufferUsages, RenderPipeline, SurfaceTexture, TextureView};
+use wgpu::{BufferUsages, RenderPipeline};
 
 pub struct SpriteConsoleBackend {
     vao: FloatBuffer<f32>,
