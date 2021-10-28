@@ -375,6 +375,12 @@ fn tock<GS: GameState>(
     // backing buffer/post-process
     if let Some(wgpu) = BACKEND.lock().wgpu.as_ref() {
         if let Ok(current_tex) = wgpu.surface.get_current_texture() {
+            backing_flip.update_uniform(
+                wgpu, 
+                bterm.post_scanlines,
+                bterm.post_screenburn,
+                bterm.screen_burn_color
+            );
             let target = current_tex
                 .texture
                 .create_view(&TextureViewDescriptor::default());
