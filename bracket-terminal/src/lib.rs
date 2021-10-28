@@ -15,8 +15,8 @@ pub type FontCharType = u16;
 pub use consoles::console;
 
 #[cfg(all(
-    feature = "opengl",
-    any(feature = "crossterm", any(feature = "curses", feature = "webgpu",))
+    any(feature = "opengl",feature = "webgpu"),
+    any(feature = "crossterm", feature = "curses")
 ))]
 compile_error!("Default features (opengl) must be disabled for other back-ends");
 
@@ -41,7 +41,7 @@ pub mod prelude {
     #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
     pub use glutin::event::VirtualKeyCode;
 
-    #[cfg(feature = "webgpu")]
+    #[cfg(all(feature = "webgpu", not(feature = "opengl")))]
     pub use crate::hal::VirtualKeyCode;
 
     #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]

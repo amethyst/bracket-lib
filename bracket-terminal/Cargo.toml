@@ -40,7 +40,7 @@ winit = { version = "0.25.0" }
 spin_sleep = "1.0.0"
 
 [features]
-default = [ "webgpu" ]
+default = [ "opengl" ]
 opengl = [ "glow", "image", "glutin" ]
 curses = [ "pancurses", "ctrlc" ]
 cross_term = [ "crossterm", "ctrlc" ]
