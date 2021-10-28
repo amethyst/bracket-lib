@@ -61,18 +61,12 @@ pub fn init_raw<S: ToString>(
         &device,
         include_str!("shader_source/backing_plain.wgsl"),
     ));
+    shaders.push(Shader::new(
+        &device,
+        include_str!("shader_source/fancy.wgsl"),
+    ));
 
     /*
-    shaders.push(Shader::new(
-        &gl,
-        shader_strings::SCANLINES_VS,
-        shader_strings::SCANLINES_FS,
-    ));
-    shaders.push(Shader::new(
-        &gl,
-        shader_strings::FANCY_CONSOLE_VS,
-        shader_strings::FANCY_CONSOLE_FS,
-    ));
     shaders.push(Shader::new(
         &gl,
         shader_strings::SPRITE_CONSOLE_VS,

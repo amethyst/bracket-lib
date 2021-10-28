@@ -1,13 +1,5 @@
-use super::{
-    quadrender::QuadRender, ConsoleBacking, Font, Framebuffer, SimpleConsoleBackend,
-    SparseConsoleBackend, CONSOLE_BACKING,
-};
-use crate::{
-    gamestate::{BTerm, GameState},
-    input::{clear_input_state, BEvent},
-    prelude::{SimpleConsole, SparseConsole, BACKEND, BACKEND_INTERNAL, INPUT},
-    BResult,
-};
+use super::{CONSOLE_BACKING, ConsoleBacking, FancyConsoleBackend, Font, Framebuffer, SimpleConsoleBackend, SparseConsoleBackend, quadrender::QuadRender};
+use crate::{BResult, gamestate::{BTerm, GameState}, input::{clear_input_state, BEvent}, prelude::{BACKEND, BACKEND_INTERNAL, FlexiConsole, INPUT, SimpleConsole, SparseConsole}};
 use bracket_geometry::prelude::Point;
 use std::time::Instant;
 use wgpu::{SurfaceTexture, TextureView, TextureViewDescriptor};
@@ -328,48 +320,6 @@ fn tock<GS: GameState>(
         }
     }*/
 
-    /*if bterm.post_scanlines {
-        // Now we return to the primary screen
-        let be = BACKEND.lock();
-        be.backing_buffer
-            .as_ref()
-            .unwrap()
-            .default(be.gl.as_ref().unwrap());
-        unsafe {
-            let bi = BACKEND_INTERNAL.lock();
-            if bterm.post_scanlines {
-                bi.shaders[3].useProgram(be.gl.as_ref().unwrap());
-                bi.shaders[3].setVec3(
-                    be.gl.as_ref().unwrap(),
-                    "screenSize",
-                    scale_factor * bterm.width_pixels as f32,
-                    scale_factor * bterm.height_pixels as f32,
-                    0.0,
-                );
-                bi.shaders[3].setBool(be.gl.as_ref().unwrap(), "screenBurn", bterm.post_screenburn);
-                bi.shaders[3].setVec3(
-                    be.gl.as_ref().unwrap(),
-                    "screenBurnColor",
-                    bterm.screen_burn_color.r,
-                    bterm.screen_burn_color.g,
-                    bterm.screen_burn_color.b,
-                );
-            } else {
-                bi.shaders[2].useProgram(be.gl.as_ref().unwrap());
-            }
-            be.gl
-                .as_ref()
-                .unwrap()
-                .bind_vertex_array(Some(be.quad_vao.unwrap()));
-            be.gl.as_ref().unwrap().bind_texture(
-                glow::TEXTURE_2D,
-                Some(be.backing_buffer.as_ref().unwrap().texture),
-            );
-            be.gl.as_ref().unwrap().draw_arrays(glow::TRIANGLES, 0, 6);
-        }
-    }
-    */
-
     // Present the output now that we've done all the layers and
     // backing buffer/post-process
     if let Some(wgpu) = BACKEND.lock().wgpu.as_ref() {
@@ -481,15 +431,19 @@ pub(crate) fn rebuild_consoles() {
                     );
                     sc.needs_resize_internal = false;
                 }
-            } /*ConsoleBacking::Fancy { backing } => {
+            } 
+            ConsoleBacking::Fancy { backing } => {
                   let mut fc = bi.consoles[i]
                       .console
                       .as_any_mut()
                       .downcast_mut::<FlexiConsole>()
                       .unwrap();
                   if fc.is_dirty {
+                    let be = BACKEND.lock();
+                    let wgpu = be.wgpu.as_ref().unwrap();
                       fc.tiles.sort_by(|a, b| a.z_order.cmp(&b.z_order));
                       backing.rebuild_vertices(
+                          wgpu,
                           fc.height,
                           fc.width,
                           fc.offset_x,
@@ -502,7 +456,7 @@ pub(crate) fn rebuild_consoles() {
                       fc.needs_resize_internal = false;
                   }
               }
-              ConsoleBacking::Sprite { backing } => {
+              /*ConsoleBacking::Sprite { backing } => {
                   let mut sc = bi.consoles[i]
                       .console
                       .as_any_mut()
@@ -537,10 +491,10 @@ pub(crate) fn render_consoles() -> BResult<()> {
             }
             ConsoleBacking::Sparse { backing } => {
                 backing.wgpu_draw(font)?;
-            } /*
-              ConsoleBacking::Fancy { backing } => {
-                  backing.gl_draw(font, shader)?;
-              }
+            }
+            ConsoleBacking::Fancy { backing } => {
+                backing.wgpu_draw(font)?;
+            }/*
               ConsoleBacking::Sprite { backing } => {
                   backing.gl_draw(bi.sprite_sheets[0].backing.as_ref().unwrap(), shader)?;
               }*/
@@ -575,15 +529,15 @@ pub(crate) fn check_console_backing() {
                         &bit.fonts[cons.font_index],
                     ),
                 });
-            } /* else if let Some(sp) = cons_any.downcast_ref::<FlexiConsole>() {
+            } else if let Some(sp) = cons_any.downcast_ref::<FlexiConsole>() {
                   consoles.push(ConsoleBacking::Fancy {
                       backing: FancyConsoleBackend::new(
-                          sp.width as usize,
-                          sp.height as usize,
-                          be.gl.as_ref().unwrap(),
+                        be.wgpu.as_ref().unwrap(),
+                   &bit.shaders[3],
+                    &bit.fonts[cons.font_index],
                       ),
                   });
-              } else if let Some(sp) = cons_any.downcast_ref::<SpriteConsole>() {
+              }/* else if let Some(sp) = cons_any.downcast_ref::<SpriteConsole>() {
                   consoles.push(ConsoleBacking::Sprite {
                       backing: SpriteConsoleBackend::new(
                           sp.width as usize,
