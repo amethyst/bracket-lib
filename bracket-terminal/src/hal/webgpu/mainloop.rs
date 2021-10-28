@@ -234,7 +234,6 @@ fn on_resize(
     }
 
     // Backing buffer resizing
-    let mut be = BACKEND.lock();
     let mut wgpu = be.wgpu.as_mut().unwrap();
     wgpu.backing_buffer = Framebuffer::new(
         &wgpu.device,
