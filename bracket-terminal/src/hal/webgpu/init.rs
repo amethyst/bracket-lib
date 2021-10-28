@@ -65,13 +65,11 @@ pub fn init_raw<S: ToString>(
         &device,
         include_str!("shader_source/fancy.wgsl"),
     ));
-
-    /*
     shaders.push(Shader::new(
-        &gl,
-        shader_strings::SPRITE_CONSOLE_VS,
-        shader_strings::SPRITE_CONSOLE_FS,
-    ));*/
+        &device,
+        include_str!("shader_source/sprites.wgsl"),
+    ));
+
     BACKEND_INTERNAL.lock().shaders = shaders;
 
     // Build the backing frame-buffer

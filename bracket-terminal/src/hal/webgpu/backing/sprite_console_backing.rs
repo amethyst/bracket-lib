@@ -1,34 +1,77 @@
-use crate::hal::{Font, Shader, VertexArray, VertexArrayEntry};
-use crate::prelude::{RenderSprite, SpriteSheet};
+use super::index_array_helper::IndexBuffer;
+use super::vertex_array_helper::FloatBuffer;
+use crate::hal::{Font, Shader, WgpuLink};
+use crate::prelude::{RenderSprite, SpriteSheet, Tile};
 use crate::BResult;
 use bracket_color::prelude::RGBA;
+use wgpu::{BufferUsages, RenderPipeline, SurfaceTexture, TextureView};
 
 pub struct SpriteConsoleBackend {
-    vao: VertexArray,
+    vao: FloatBuffer<f32>,
+    index: IndexBuffer,
+    render_pipeline: RenderPipeline,
 }
 
 impl SpriteConsoleBackend {
-    pub fn new(_width: usize, _height: usize, gl: &glow::Context) -> SpriteConsoleBackend {
-        let vao = SpriteConsoleBackend::init_gl_for_console(gl, 1000, 100);
-        SpriteConsoleBackend { vao }
+    pub fn new(wgpu:&WgpuLink, shader: &Shader, font: &Font,) -> SpriteConsoleBackend {
+        let mut vao = SpriteConsoleBackend::init_buffer_for_console(0);
+        let mut index = IndexBuffer::new(0);
+        vao.update_buffer(wgpu);
+        index.update_buffer(wgpu);
+
+        // Setup the pipeline
+        let render_pipeline_layout =
+            wgpu.device
+                .create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+                    label: None,
+                    bind_group_layouts: &[font.bind_group_layout.as_ref().unwrap()],
+                    push_constant_ranges: &[],
+                });
+        let render_pipeline = wgpu
+            .device
+            .create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+                label: None,
+                layout: Some(&render_pipeline_layout),
+                vertex: wgpu::VertexState {
+                    module: &shader.0,
+                    entry_point: "main",
+                    buffers: &[vao.descriptor()],
+                },
+                fragment: Some(wgpu::FragmentState {
+                    module: &shader.0,
+                    entry_point: "main",
+                    targets: &[wgpu::ColorTargetState {
+                        format: wgpu.config.format,
+                        blend: Some(wgpu::BlendState::ALPHA_BLENDING),
+                        write_mask: wgpu::ColorWrites::ALL,
+                    }],
+                }),
+                primitive: wgpu::PrimitiveState {
+                    topology: wgpu::PrimitiveTopology::TriangleList,
+                    strip_index_format: None,
+                    front_face: wgpu::FrontFace::Ccw,
+                    //cull_mode: Some(wgpu::Face::Back),
+                    cull_mode: None,
+                    polygon_mode: wgpu::PolygonMode::Fill,
+                    clamp_depth: false,
+                    conservative: false,
+                },
+                depth_stencil: None,
+                multisample: wgpu::MultisampleState {
+                    count: 1,
+                    mask: !0,
+                    alpha_to_coverage_enabled: false,
+                },
+            });
+
+        SpriteConsoleBackend { vao, index, render_pipeline }
     }
 
-    fn init_gl_for_console(
-        gl: &glow::Context,
-        vertex_capacity: usize,
-        index_capacity: usize,
-    ) -> VertexArray {
-        VertexArray::float_builder(
-            gl,
-            &[
-                VertexArrayEntry { index: 0, size: 2 }, // Position
-                VertexArrayEntry { index: 1, size: 2 }, // Transform (x/y)
-                VertexArrayEntry { index: 2, size: 4 }, // Color
-                VertexArrayEntry { index: 3, size: 2 }, // Texture Coordinate
-                VertexArrayEntry { index: 4, size: 2 }, // Scale
-            ],
+    fn init_buffer_for_console(vertex_capacity: usize) -> FloatBuffer<f32> {
+        FloatBuffer::<f32>::new(
+            &[2, 2, 4, 2, 2], // Pos, XY Transform, Tint, TexPos, Scale
             vertex_capacity,
-            index_capacity,
+            BufferUsages::VERTEX,
         )
     }
 
@@ -54,6 +97,7 @@ impl SpriteConsoleBackend {
     #[allow(clippy::too_many_arguments)]
     pub fn rebuild_vertices(
         &mut self,
+        wgpu:&WgpuLink,
         height: u32,
         width: u32,
         sprites: &[RenderSprite],
@@ -65,10 +109,10 @@ impl SpriteConsoleBackend {
         let offset_x = (width as f32 / 2.0) * scale_x;
         let offset_y = (height as f32 / 2.0) * scale_y;
 
-        self.vao.vertex_buffer.clear();
-        self.vao.index_buffer.clear();
+        self.vao.data.clear();
+        self.index.data.clear();
 
-        let mut index_count: i32 = 0;
+        let mut index_count: u16 = 0;
         for s in sprites.iter() {
             let sprite_sheet = &sprite_sheet;
             let ss_x = 1.0 / sprite_sheet.backing.as_ref().unwrap().width as f32;
@@ -94,7 +138,7 @@ impl SpriteConsoleBackend {
             sd.y1 = height as i32 - s.destination.y2;
 
             SpriteConsoleBackend::push_point(
-                &mut self.vao.vertex_buffer,
+                &mut self.vao.data,
                 0.5,
                 0.5,
                 (sd.x2 as f32 * scale_x) - offset_x,
@@ -105,7 +149,7 @@ impl SpriteConsoleBackend {
                 scale,
             );
             SpriteConsoleBackend::push_point(
-                &mut self.vao.vertex_buffer,
+                &mut self.vao.data,
                 0.5,
                 -0.5,
                 (sd.x2 as f32 * scale_x) - offset_x,
@@ -116,7 +160,7 @@ impl SpriteConsoleBackend {
                 scale,
             );
             SpriteConsoleBackend::push_point(
-                &mut self.vao.vertex_buffer,
+                &mut self.vao.data,
                 -0.5,
                 -0.5,
                 (sd.x1 as f32 * scale_x) - offset_x,
@@ -127,7 +171,7 @@ impl SpriteConsoleBackend {
                 scale,
             );
             SpriteConsoleBackend::push_point(
-                &mut self.vao.vertex_buffer,
+                &mut self.vao.data,
                 -0.5,
                 0.5,
                 (sd.x1 as f32 * scale_x) - offset_x,
@@ -138,21 +182,59 @@ impl SpriteConsoleBackend {
                 scale,
             );
 
-            self.vao.index_buffer.push(index_count);
-            self.vao.index_buffer.push(1 + index_count);
-            self.vao.index_buffer.push(3 + index_count);
-            self.vao.index_buffer.push(1 + index_count);
-            self.vao.index_buffer.push(2 + index_count);
-            self.vao.index_buffer.push(3 + index_count);
+            self.index.data.push(index_count);
+            self.index.data.push(1 + index_count);
+            self.index.data.push(3 + index_count);
+            self.index.data.push(1 + index_count);
+            self.index.data.push(2 + index_count);
+            self.index.data.push(3 + index_count);
 
             index_count += 4;
         }
 
-        self.vao.upload_buffers();
+        self.vao.update_buffer(wgpu);
+        self.index.update_buffer(wgpu);
     }
 
-    pub fn gl_draw(&mut self, font: &Font, shader: &Shader) -> BResult<()> {
-        self.vao.draw_elements(shader, font);
+    pub fn wgpu_draw(&mut self, font: &Font) -> BResult<()> {
+        use crate::hal::BACKEND;
+        let mut be = BACKEND.lock();
+        if let Some(wgpu) = be.wgpu.as_mut() {
+            let mut encoder = wgpu
+                .device
+                .create_command_encoder(&wgpu::CommandEncoderDescriptor {
+                    label: Some("Render Encoder"),
+                });
+            {
+                let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                    label: Some("Render Pass"),
+                    color_attachments: &[wgpu::RenderPassColorAttachment {
+                        view: wgpu.backing_buffer.view(),
+                        resolve_target: None,
+                        ops: wgpu::Operations {
+                            /*load: wgpu::LoadOp::Clear(wgpu::Color {
+                                r: 0.0,
+                                g: 0.0,
+                                b: 0.0,
+                                a: 1.0,
+                            }),*/
+                            load: wgpu::LoadOp::Load,
+                            store: true,
+                        },
+                    }],
+                    depth_stencil_attachment: None,
+                });
+                render_pass.set_pipeline(&self.render_pipeline);
+                render_pass.set_bind_group(0, font.bind_group.as_ref().unwrap(), &[]);
+                render_pass.set_vertex_buffer(0, self.vao.slice());
+                render_pass.set_index_buffer(self.index.slice(), wgpu::IndexFormat::Uint16);
+                render_pass.draw_indexed(0..self.index.len(), 0, 0..1);
+            }
+
+            // submit will accept anything that implements IntoIter
+            wgpu.queue.submit(std::iter::once(encoder.finish()));
+            //output.present();
+        }
         Ok(())
     }
 }
