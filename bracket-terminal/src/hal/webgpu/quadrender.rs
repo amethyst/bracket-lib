@@ -1,8 +1,8 @@
-use bracket_color::prelude::RGB;
-use wgpu::{Buffer, BufferUsages, TextureView};
-use crate::BResult;
 use super::{vertex_array_helper::FloatBuffer, Shader, WgpuLink};
+use crate::BResult;
+use bracket_color::prelude::RGB;
 use wgpu::util::DeviceExt;
+use wgpu::{Buffer, BufferUsages, TextureView};
 
 /// Render helper to present the backing buffer to the active
 /// surface, including any post-process effects.
@@ -58,10 +58,10 @@ impl QuadRender {
         quad_buffer.build(wgpu);
 
         // Build the pipeline
-        let uniform_layout = wgpu.device.create_bind_group_layout(
-            &wgpu::BindGroupLayoutDescriptor{
-                entries: &[
-                    wgpu::BindGroupLayoutEntry{
+        let uniform_layout =
+            wgpu.device
+                .create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+                    entries: &[wgpu::BindGroupLayoutEntry {
                         binding: 0,
                         visibility: wgpu::ShaderStages::FRAGMENT,
                         ty: wgpu::BindingType::Buffer {
@@ -70,20 +70,15 @@ impl QuadRender {
                             min_binding_size: None,
                         },
                         count: None,
-                    }
-                ],
-                label: None,
-            }
-        );
+                    }],
+                    label: None,
+                });
 
         let render_pipeline_layout =
             wgpu.device
                 .create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
                     label: None,
-                    bind_group_layouts: &[
-                        &texture_bind_group_layout,
-                        &uniform_layout,
-                    ],
+                    bind_group_layouts: &[&texture_bind_group_layout, &uniform_layout],
                     push_constant_ranges: &[],
                 });
         let render_pipeline = wgpu
@@ -121,17 +116,16 @@ impl QuadRender {
                     mask: !0,
                     alpha_to_coverage_enabled: false,
                 },
-            }
-        );
+            });
 
         let uniform = QuadUniform::empty();
-        let uniform_buffer = wgpu.device.create_buffer_init(
-            &wgpu::util::BufferInitDescriptor {
+        let uniform_buffer = wgpu
+            .device
+            .create_buffer_init(&wgpu::util::BufferInitDescriptor {
                 label: Some("Post Process Buffer"),
                 contents: bytemuck::cast_slice(&[uniform]),
                 usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
-            }
-        );
+            });
 
         // Build the result
         Self {
@@ -161,13 +155,13 @@ impl QuadRender {
             1.0,
         ];
 
-        let uniform_buffer = wgpu.device.create_buffer_init(
-            &wgpu::util::BufferInitDescriptor {
+        let uniform_buffer = wgpu
+            .device
+            .create_buffer_init(&wgpu::util::BufferInitDescriptor {
                 label: Some("Post Process Buffer"),
                 contents: bytemuck::cast_slice(&[self.uniform]),
                 usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
-            }
-        );
+            });
         self.uniform_buffer = uniform_buffer;
     }
 
@@ -196,12 +190,12 @@ impl QuadRender {
 
             let uniform_bind_group = wgpu.device.create_bind_group(&wgpu::BindGroupDescriptor {
                 layout: &self.uniform_layout,
-                entries: &[
-                    wgpu::BindGroupEntry {
-                        binding: 0,
-                        resource: wgpu::BindingResource::Buffer(self.uniform_buffer.as_entire_buffer_binding()),
-                    }
-                ],
+                entries: &[wgpu::BindGroupEntry {
+                    binding: 0,
+                    resource: wgpu::BindingResource::Buffer(
+                        self.uniform_buffer.as_entire_buffer_binding(),
+                    ),
+                }],
                 label: None,
             });
 
