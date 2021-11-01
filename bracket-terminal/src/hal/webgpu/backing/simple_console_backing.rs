@@ -1,3 +1,5 @@
+//! Maps a Simple Console to WGPU backing
+
 use super::index_array_helper::IndexBuffer;
 use super::vertex_array_helper::FloatBuffer;
 use crate::hal::{Font, Shader, WgpuLink};
@@ -6,15 +8,23 @@ use crate::BResult;
 use bracket_color::prelude::RGBA;
 use wgpu::{BufferUsages, RenderPipeline};
 
+/// Provide WGPU rendering services for a Simple Console
 pub struct SimpleConsoleBackend {
+    /// The vertex buffer
     vao: FloatBuffer<f32>,
+    /// The index buffer
     index: IndexBuffer,
+    /// # elements in the index
     index_counter: usize,
+    /// # elements in the vertex list
     vertex_counter: usize,
+    /// The WGPU render pipeline
     render_pipeline: RenderPipeline,
 }
 
 impl SimpleConsoleBackend {
+    /// Create a new simple console backend. Call this from the main loop's
+    /// console rebuild.
     pub fn new(
         width: usize,
         height: usize,
@@ -84,6 +94,7 @@ impl SimpleConsoleBackend {
         result
     }
 
+    /// Creates a buffer definition mapped to the simple console shader.
     fn init_buffer_for_console(vertex_capacity: usize) -> FloatBuffer<f32> {
         FloatBuffer::<f32>::new(
             &[3, 4, 4, 2], // Pos, FG, BG, TexPos
@@ -230,10 +241,11 @@ impl SimpleConsoleBackend {
             screen_y += step_y;
         }
 
-        self.vao.update_buffer(wgpu);
-        self.index.update_buffer(wgpu);
+        self.vao.build(wgpu);
+        self.index.build(wgpu);
     }
 
+    /// Renders the console via wgpu.
     pub fn wgpu_draw(&mut self, font: &Font) -> BResult<()> {
         use crate::hal::BACKEND;
         let mut be = BACKEND.lock();

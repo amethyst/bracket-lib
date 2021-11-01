@@ -1,3 +1,5 @@
+//! Provides wgpu support back-end.
+
 mod platform;
 pub use platform::*;
 mod init;

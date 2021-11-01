@@ -1,3 +1,5 @@
+//! WGPU Main Loop
+
 use super::{
     quadrender::QuadRender, ConsoleBacking, FancyConsoleBackend, Font, Framebuffer,
     SimpleConsoleBackend, SparseConsoleBackend, SpriteConsoleBackend, WgpuLink, CONSOLE_BACKING,

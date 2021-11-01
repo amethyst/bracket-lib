@@ -1,3 +1,4 @@
+//! WGPU Definition of a font
 use crate::prelude::embedding;
 use crate::BResult;
 use bracket_color::prelude::RGB;

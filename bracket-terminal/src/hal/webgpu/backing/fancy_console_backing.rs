@@ -1,3 +1,5 @@
+//! Provides a map between fancy/flexible consoles and webgpu back-end.
+
 use super::index_array_helper::IndexBuffer;
 use super::vertex_array_helper::FloatBuffer;
 use crate::hal::{Font, Shader, WgpuLink};
@@ -7,18 +9,26 @@ use bracket_color::prelude::RGBA;
 use bracket_geometry::prelude::PointF;
 use wgpu::{BufferUsages, RenderPipeline};
 
+/// Provides a mapping between fancy/flexible terminals and webgpu.
+/// Maintains a vertex buffer of font positions, an index buffer,
+/// and its own pipeline.
 pub struct FancyConsoleBackend {
+    /// The vertex buffer representing how to draw this console.
     vao: FloatBuffer<f32>,
+    /// The index buffer representing how to draw this console.
     index: IndexBuffer,
+    /// The WGPU render pipeline used to render fancy consoles.
     render_pipeline: RenderPipeline,
 }
 
 impl FancyConsoleBackend {
+    /// Instantiate a new FancyConsoleBackend. This should be called from the
+    /// "rebuild consoles" step of the main loop.
     pub fn new(wgpu: &WgpuLink, shader: &Shader, font: &Font) -> FancyConsoleBackend {
         let mut vao = FancyConsoleBackend::init_buffer_for_console(1000);
         let mut index = IndexBuffer::new(1000);
-        vao.update_buffer(wgpu);
-        index.update_buffer(wgpu);
+        vao.build(wgpu);
+        index.build(wgpu);
 
         // Setup the pipeline
         let render_pipeline_layout =
@@ -72,6 +82,7 @@ impl FancyConsoleBackend {
         }
     }
 
+    /// Creates a vertex buffer matching the appropriate shader (fancy.wgsl)
     fn init_buffer_for_console(vertex_capacity: usize) -> FloatBuffer<f32> {
         FloatBuffer::<f32>::new(
             &[3, 4, 4, 2, 3, 2], // Pos, fg, col, tex, rot, scale
@@ -220,10 +231,13 @@ impl FancyConsoleBackend {
             index_count += 4;
         }
 
-        self.vao.update_buffer(wgpu);
-        self.index.update_buffer(wgpu);
+        self.vao.build(wgpu);
+        self.index.build(wgpu);
     }
 
+    /// Uses WGPU to render the console. Note that it grabs its own accessor
+    /// to the backend mutex, so it doesn't need to be passed in - AND CANNOT
+    /// BE LOCKED when you call this, or things will deadlock.
     pub fn wgpu_draw(&mut self, font: &Font) -> BResult<()> {
         use crate::hal::BACKEND;
         let mut be = BACKEND.lock();
@@ -240,12 +254,6 @@ impl FancyConsoleBackend {
                         view: wgpu.backing_buffer.view(),
                         resolve_target: None,
                         ops: wgpu::Operations {
-                            /*load: wgpu::LoadOp::Clear(wgpu::Color {
-                                r: 0.0,
-                                g: 0.0,
-                                b: 0.0,
-                                a: 1.0,
-                            }),*/
                             load: wgpu::LoadOp::Load,
                             store: true,
                         },

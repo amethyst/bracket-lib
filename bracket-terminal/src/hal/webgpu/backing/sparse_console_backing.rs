@@ -1,3 +1,4 @@
+//! Provides a wgpu mapping to the sparse consoele
 use super::index_array_helper::IndexBuffer;
 use super::vertex_array_helper::FloatBuffer;
 use crate::hal::{Font, Shader, WgpuLink};
@@ -6,13 +7,18 @@ use crate::BResult;
 use bracket_color::prelude::RGBA;
 use wgpu::{BufferUsages, RenderPipeline};
 
+/// Maps the Sparse Console type to a wgpu back-end.
 pub struct SparseConsoleBackend {
+    /// Vertex buffer to use
     vao: FloatBuffer<f32>,
+    /// Index buffer to use
     index: IndexBuffer,
+    /// WGPU Render Pipeline to use
     render_pipeline: RenderPipeline,
 }
 
 impl SparseConsoleBackend {
+    /// Creates a new sparse console back-end, called from mainloop's rebuild consoles.
     pub fn new(wgpu: &WgpuLink, shader: &Shader, font: &Font) -> SparseConsoleBackend {
         let vao = SparseConsoleBackend::init_buffer_for_console(1000);
         let index = IndexBuffer::new(1000);
@@ -69,6 +75,7 @@ impl SparseConsoleBackend {
         }
     }
 
+    /// Creates a vertex buffer with the right mappings to use the sparse console shader.
     fn init_buffer_for_console(vertex_capacity: usize) -> FloatBuffer<f32> {
         FloatBuffer::<f32>::new(
             &[3, 4, 4, 2], // Pos, FG, BG, TexPos
@@ -187,8 +194,8 @@ impl SparseConsoleBackend {
             index_count += 4;
         }
 
-        self.vao.update_buffer(wgpu);
-        self.index.update_buffer(wgpu);
+        self.vao.build(wgpu);
+        self.index.build(wgpu);
     }
 
     pub fn wgpu_draw(&mut self, font: &Font) -> BResult<()> {

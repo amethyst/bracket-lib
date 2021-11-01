@@ -1,3 +1,5 @@
+//! Provides helper-code to map between console representations and wgpu.
+
 mod simple_console_backing;
 pub(crate) use simple_console_backing::*;
 mod sparse_console_backing;

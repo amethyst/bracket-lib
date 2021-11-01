@@ -1,3 +1,5 @@
+//! Provides a wgpu implementation of a backing buffer.
+
 use wgpu::{Device, Sampler, TextureFormat, TextureView};
 
 pub struct Framebuffer {

@@ -1,14 +1,21 @@
+//! Provides a wrapper for wgpu vertex buffers, including attribute mapping.
 use crate::hal::WgpuLink;
 use wgpu::util::DeviceExt;
 
+/// Maps a vector to a wgpu buffer.
 pub struct FloatBuffer<T>
 where
     T: bytemuck::Pod,
 {
+    /// The underlying buffer data
     pub data: Vec<T>,
+    /// A map of attribute types represented by this buffer
     pub attributes: Vec<wgpu::VertexAttribute>,
+    /// The total size of a vertex buffer row
     total_size: wgpu::BufferAddress,
+    /// The actual WGPU buffer, if any.
     pub buffer: Option<wgpu::Buffer>,
+    /// Usages, generally set to VERTEX
     usage: wgpu::BufferUsages,
 }
 
@@ -16,6 +23,10 @@ impl<T> FloatBuffer<T>
 where
     T: bytemuck::Pod,
 {
+    /// Create a new vertex buffer. Layout specifies the size of each
+    /// attribute. E.g. [4,3,2] will use float4, float3, float2 entries.
+    /// Capacity is vector capacity.
+    /// Usage is usually VERTEX.
     pub fn new(layout: &[usize], capacity: usize, usage: wgpu::BufferUsages) -> Self {
         let mut attributes = Vec::with_capacity(capacity);
 
@@ -49,6 +60,7 @@ where
         }
     }
 
+    /// Create a vertex buffer descriptor for pipelines.
     pub fn descriptor(&self) -> wgpu::VertexBufferLayout {
         wgpu::VertexBufferLayout {
             array_stride: self.total_size,
@@ -57,6 +69,8 @@ where
         }
     }
 
+    /// If a previous buffer exists, drop it.
+    /// Map the backing store to a new vertex array.
     pub fn build(&mut self, wgpu: &WgpuLink) {
         if let Some(buf) = &mut self.buffer {
             std::mem::drop(buf);
@@ -71,10 +85,7 @@ where
         );
     }
 
-    pub fn update_buffer(&mut self, wgpu: &WgpuLink) {
-        self.build(wgpu);
-    }
-
+    /// Maps the vertex buffer to a render-friendly slice.
     pub fn slice(&self) -> wgpu::BufferSlice {
         self.buffer.as_ref().unwrap().slice(..)
     }

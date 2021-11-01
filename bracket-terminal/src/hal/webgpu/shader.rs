@@ -1,3 +1,4 @@
+//! Helper to load a shader from WGSL
 use wgpu::ShaderModule;
 
 pub struct Shader(pub ShaderModule);

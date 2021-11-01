@@ -1,3 +1,5 @@
+//! Helper to render a single full-screen quad
+
 use super::{vertex_array_helper::FloatBuffer, Shader, WgpuLink};
 use crate::BResult;
 use bracket_color::prelude::RGB;

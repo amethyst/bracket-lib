@@ -1,3 +1,4 @@
+//! Sprite console mapping for wgpu
 use super::index_array_helper::IndexBuffer;
 use super::vertex_array_helper::FloatBuffer;
 use crate::hal::{Font, Shader, WgpuLink};
@@ -6,18 +7,23 @@ use crate::BResult;
 use bracket_color::prelude::RGBA;
 use wgpu::{BufferUsages, RenderPipeline};
 
+/// Mapping between a sparse console and wgpu rendering
 pub struct SpriteConsoleBackend {
+    /// Vertex buffer to use
     vao: FloatBuffer<f32>,
+    /// Index buffer to use
     index: IndexBuffer,
+    /// WGPU render pipeline
     render_pipeline: RenderPipeline,
 }
 
 impl SpriteConsoleBackend {
+    /// Create a new sprite console back-end. Called from the main loop's console rebuild.
     pub fn new(wgpu: &WgpuLink, shader: &Shader, font: &Font) -> SpriteConsoleBackend {
         let mut vao = SpriteConsoleBackend::init_buffer_for_console(0);
         let mut index = IndexBuffer::new(0);
-        vao.update_buffer(wgpu);
-        index.update_buffer(wgpu);
+        vao.build(wgpu);
+        index.build(wgpu);
 
         // Setup the pipeline
         let render_pipeline_layout =
@@ -71,6 +77,7 @@ impl SpriteConsoleBackend {
         }
     }
 
+    /// Maps a vertex buffer to the appropriate shader.
     fn init_buffer_for_console(vertex_capacity: usize) -> FloatBuffer<f32> {
         FloatBuffer::<f32>::new(
             &[2, 2, 4, 2, 2], // Pos, XY Transform, Tint, TexPos, Scale
@@ -196,8 +203,8 @@ impl SpriteConsoleBackend {
             index_count += 4;
         }
 
-        self.vao.update_buffer(wgpu);
-        self.index.update_buffer(wgpu);
+        self.vao.build(wgpu);
+        self.index.build(wgpu);
     }
 
     pub fn wgpu_draw(&mut self, font: &Font) -> BResult<()> {
