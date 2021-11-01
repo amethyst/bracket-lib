@@ -1,6 +1,7 @@
 use super::{
     quadrender::QuadRender, ConsoleBacking, FancyConsoleBackend, Font, Framebuffer,
     SimpleConsoleBackend, SparseConsoleBackend, SpriteConsoleBackend, CONSOLE_BACKING,
+    WgpuLink,
 };
 use crate::{
     gamestate::{BTerm, GameState},
@@ -14,6 +15,7 @@ use bracket_geometry::prelude::Point;
 use std::{rc::Rc, time::Instant};
 use wgpu::{TextureViewDescriptor};
 use winit::{dpi::PhysicalSize, event::*, event_loop::ControlFlow};
+use std::mem::size_of;
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
@@ -312,59 +314,29 @@ fn tock<GS: GameState>(
 
     // Present the output now that we've done all the layers and
     // backing buffer/post-process
-    if let Some(wgpu) = BACKEND.lock().wgpu.as_ref() {
-        if let Ok(current_tex) = wgpu.surface.get_current_texture() {
-            backing_flip.update_uniform(
-                wgpu,
-                bterm.post_scanlines,
-                bterm.post_screenburn,
-                bterm.screen_burn_color,
-            );
-            let target = current_tex
-                .texture
-                .create_view(&TextureViewDescriptor::default());
-            if backing_flip.render(&wgpu, &target).is_ok() {
-                current_tex.present();
+    {
+        let mut be = BACKEND.lock();
+        if let Some(wgpu) = be.wgpu.as_ref() {
+            if let Ok(current_tex) = wgpu.surface.get_current_texture() {
+                backing_flip.update_uniform(
+                    wgpu,
+                    bterm.post_scanlines,
+                    bterm.post_screenburn,
+                    bterm.screen_burn_color,
+                );
+                let target = current_tex
+                    .texture
+                    .create_view(&TextureViewDescriptor::default());
+                if backing_flip.render(&wgpu, &target).is_ok() {
+                    if let Some(filename) = &be.request_screenshot {
+                        take_screenshot(filename, &wgpu, bterm, &current_tex.texture);
+                    }
+                    be.request_screenshot = None;
+                    current_tex.present();
+                }
             }
         }
     }
-    /*
-
-    // Screenshot handler
-    {
-        let mut be = BACKEND.lock();
-        if let Some(filename) = &be.request_screenshot {
-            let w = (bterm.width_pixels as f32) as u32;
-            let h = (bterm.height_pixels as f32) as u32;
-            let gl = be.gl.as_ref().unwrap();
-
-            let mut img = image::DynamicImage::new_rgba8(w, h);
-            let pixels = img.as_mut_rgba8().unwrap();
-
-            unsafe {
-                gl.pixel_store_i32(glow::PACK_ALIGNMENT, 1);
-                gl.read_pixels(
-                    0,
-                    0,
-                    w as i32,
-                    h as i32,
-                    glow::RGBA,
-                    glow::UNSIGNED_BYTE,
-                    glow::PixelPackData::Slice(pixels),
-                );
-            }
-
-            image::save_buffer(
-                &filename,
-                &image::imageops::flip_vertical(&img),
-                w,
-                h,
-                image::ColorType::Rgba8,
-            )
-            .expect("Failed to save buffer to the specified path");
-        }
-        be.request_screenshot = None;
-    }*/
 }
 
 pub(crate) fn rebuild_consoles() {
@@ -583,5 +555,106 @@ fn clear_screen_pass() -> Result<(), wgpu::SurfaceError> {
         Ok(())
     } else {
         Err(wgpu::SurfaceError::OutOfMemory)
+    }
+}
+
+fn take_screenshot(filename: &str, wgpu: &WgpuLink, bterm: &BTerm, texture: &wgpu::Texture) {
+    use std::fs::File;
+    use std::io::Write;
+
+    let w = (bterm.width_pixels as f32) as usize;
+    let h = (bterm.height_pixels as f32) as usize;
+    println!("Taking screenshot {} = {}x{}", filename, w, h);
+    let buffer_dimensions = BufferDimensions::new(w, h);
+    let output_buffer = wgpu.device.create_buffer(&wgpu::BufferDescriptor {
+        label: None,
+        size: (buffer_dimensions.padded_bytes_per_row * buffer_dimensions.height) as u64,
+        usage: wgpu::BufferUsages::MAP_READ | wgpu::BufferUsages::COPY_DST,
+        mapped_at_creation: false,
+    });
+    let texture_extent = wgpu::Extent3d {
+        width: buffer_dimensions.width as u32,
+        height: buffer_dimensions.height as u32,
+        depth_or_array_layers: 1,
+    };
+
+    let mut encoder = wgpu
+        .device
+        .create_command_encoder(&wgpu::CommandEncoderDescriptor {
+            label: Some("Render Encoder"),
+        });
+
+    println!("Copying texture to buffer");
+    encoder.copy_texture_to_buffer(
+        texture.as_image_copy(),
+        wgpu::ImageCopyBuffer {
+            buffer: &output_buffer,
+            layout: wgpu::ImageDataLayout {
+                offset: 0,
+                bytes_per_row: Some(
+                    std::num::NonZeroU32::new(buffer_dimensions.padded_bytes_per_row as u32)
+                        .unwrap(),
+                ),
+                rows_per_image: None,
+            },
+        },
+        texture_extent,
+    );
+    wgpu.queue.submit(std::iter::once(encoder.finish()));
+    println!("Saving PNG");
+
+    let buffer_slice = output_buffer.slice(..);
+    let buffer_future = buffer_slice.map_async(wgpu::MapMode::Read);
+    wgpu.device.poll(wgpu::Maintain::Wait);
+    if let Ok(()) = pollster::block_on(buffer_future) {
+        let padded_buffer = buffer_slice.get_mapped_range();
+        let mut png_encoder = png::Encoder::new(
+            File::create(filename).unwrap(),
+            buffer_dimensions.width as u32,
+            buffer_dimensions.height as u32,
+        );
+        png_encoder.set_depth(png::BitDepth::Eight);
+        png_encoder.set_color(png::ColorType::RGBA);
+        let mut png_writer = png_encoder
+            .write_header()
+            .unwrap()
+            .into_stream_writer_with_size(buffer_dimensions.unpadded_bytes_per_row);
+
+        // from the padded_buffer we write just the unpadded bytes into the image
+        for chunk in padded_buffer.chunks(buffer_dimensions.padded_bytes_per_row) {
+            png_writer
+                .write_all(&chunk[..buffer_dimensions.unpadded_bytes_per_row])
+                .unwrap();
+        }
+        png_writer.finish().unwrap();
+
+        // With the current interface, we have to make sure all mapped views are
+        // dropped before we unmap the buffer.
+        println!("Unmapping");
+        std::mem::drop(padded_buffer);
+        output_buffer.unmap();
+    }
+}
+
+struct BufferDimensions {
+    width: usize,
+    height: usize,
+    unpadded_bytes_per_row: usize,
+    padded_bytes_per_row: usize,
+}
+
+impl BufferDimensions {
+    fn new(width: usize, height: usize) -> Self {
+        let bytes_per_pixel = size_of::<u32>();
+        let unpadded_bytes_per_row = width * bytes_per_pixel;
+        let align = wgpu::COPY_BYTES_PER_ROW_ALIGNMENT as usize;
+        let padded_bytes_per_row_padding = (align - unpadded_bytes_per_row % align) % align;
+        let padded_bytes_per_row = unpadded_bytes_per_row + padded_bytes_per_row_padding;
+        Self {
+            width,
+            height,
+            unpadded_bytes_per_row,
+            padded_bytes_per_row,
+        }
     }
 }

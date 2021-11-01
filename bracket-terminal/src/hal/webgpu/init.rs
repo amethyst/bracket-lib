@@ -25,27 +25,6 @@ pub fn init_raw<S: ToString>(
     let (instance, surface, adapter, device, queue, config) =
         pollster::block_on(init_adapter(&window));
 
-    /*let windowed_context = ContextBuilder::new()
-        .with_gl(platform_hints.gl_version)
-        .with_gl_profile(platform_hints.gl_profile)
-        .with_hardware_acceleration(Some(true))
-        .with_vsync(platform_hints.vsync)
-        .with_srgb(platform_hints.srgb)
-        .build_windowed(wb, &el)?;
-    let windowed_context = unsafe { windowed_context.make_current().unwrap() };*/
-
-    /*if platform_hints.fullscreen {
-        if let Some(mh) = el.available_monitors().next() {
-            windowed_context
-                .window()
-                .set_fullscreen(Some(winit::window::Fullscreen::Borderless(Some(mh))));
-        } else {
-            return Err("No available monitor found".into());
-        }
-    }*/
-
-    // Bunch more goes here
-
     // Shaders
     let mut shaders: Vec<Shader> = Vec::new();
     shaders.push(Shader::new(
@@ -159,7 +138,7 @@ async fn init_adapter(
         .unwrap();
 
     let config = wgpu::SurfaceConfiguration {
-        usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+        usage: wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::COPY_SRC,
         format: surface.get_preferred_format(&adapter).unwrap(),
         width: size.width,
         height: size.height,
