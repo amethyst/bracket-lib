@@ -11,17 +11,17 @@ readme = "README.md"
 keywords = ["roguelike", "cp437", "ascii", "virtual-terminal", "gamedev"]
 categories = ["game-engines", "graphics"]
 license = "MIT"
+resolver = "2" # Enables the new Cargo resolution engine
 
 [features]
-default = [ "opengl" ]
+default = [ "webgpu" ]
 specs = [ "bracket-lib/specs" ]
 serde = [ "bracket-lib/serde" ]
 threaded = [ "bracket-lib/threaded" ]
 opengl = [ "bracket-lib/opengl" ]
 curses = [ "bracket-lib/curses" ]
 crossterm = [ "bracket-lib/crossterm" ]
-amethyst_engine_vulkan = [ "bracket-lib/amethyst_engine_vulkan" ]
-amethyst_engine_metal = [ "bracket-lib/amethyst_engine_metal" ]
+webgpu = [ "bracket-lib/webgpu" ]
 
 [dependencies]
 bracket-lib = { path = "../", version = "~0.8.1", default-features = false }

@@ -1,11 +1,12 @@
 use crate::prelude::{Font, Sprite};
 use bracket_geometry::prelude::Rect;
+use std::rc::Rc;
 
 #[derive(Clone)]
 pub struct SpriteSheet {
     pub filename: String,
     pub sprites: Vec<Sprite>,
-    pub backing: Option<Font>,
+    pub backing: Option<Rc<Box<Font>>>,
 }
 
 impl SpriteSheet {

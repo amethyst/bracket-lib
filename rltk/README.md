@@ -52,7 +52,7 @@ RLTK supports a number of *feature flags* to let you use it the way you want.
 * By default, the `opengl` feature will use WebGL or native OpenGL to render your consoles with a pseudo-terminal.
 * You can disable `opengl` and enable `curses` to render to `ncurses` or `pdcurses` (depending upon your platform). All of the demos are available as console-only now, via `cargo run --example curses14-dwarfmap --features curses --no-default-features` (substitute `curses` for `ex` in the example names, and specify the feature set).
 * You can disable `opengl` and enable `crossterm` to render to the native console via the `crossterm` library (examples use the `crossterm` prefix). For example, `cargo run --example crossterm18-textsprites --no-default-features --features="crossterm"`
-* You can disable `opengl` and enable `amethyst_engine_vulkan` or `amethyst_engine_metal` to render via the [Amethyst game engine](https://github.com/amethyst/amethyst). The examples are prefixed with `av` and `am` (for Vulkan and Metal respectively). For example, `cargo run --example av13-textblock --no-default-features --features amethyst_engine_vulkan` will run example 13 on Vulkan.
+* You can disable `opengl` and enable `webgpu`. The examples are prefixed with `wgpu`.For example, `cargo run --example av13-textblock --no-default-features --features wgpu` will run example 13 on WebGPU (Picking Vulkan/Metal/WebGPU).
 
 ## Examples
 

@@ -22,17 +22,17 @@ exclude = [
     "rltk",
     "screenshots"
 ]
+resolver = "2" # Enables the new Cargo resolution engine
 
 [features]
-default = [ "opengl" ]
+default = [ "webgpu" ]
 specs = [ "bracket-geometry/specs" ]
 serde = [ "bracket-color/serde", "bracket-geometry/serde", "bracket-random/serde" ]
 threaded = [ "bracket-pathfinding/threaded" ]
 opengl = [ "bracket-terminal/opengl" ]
 curses = [ "bracket-terminal/curses" ]
 crossterm = [ "bracket-terminal/cross_term" ]
-amethyst_engine_vulkan = [ "bracket-terminal/amethyst_engine_vulkan" ]
-amethyst_engine_metal = [ "bracket-terminal/amethyst_engine_metal" ]
+webgpu = [ "bracket-terminal/webgpu" ]
 
 [dependencies]
 bracket-algorithm-traits = { path = "./bracket-algorithm-traits", version = "~0.8.2" }

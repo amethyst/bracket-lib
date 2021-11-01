@@ -17,6 +17,12 @@ mod wasm;
 #[cfg(all(feature = "opengl", target_arch = "wasm32"))]
 pub use wasm::*;
 
+#[cfg(all(not(feature = "opengl"), feature = "webgpu"))]
+mod webgpu;
+
+#[cfg(all(not(feature = "opengl"), feature = "webgpu"))]
+pub use webgpu::*;
+
 #[cfg(not(feature = "opengl"))]
 #[cfg(all(not(feature = "opengl"), feature = "curses"))]
 mod curses;
@@ -33,21 +39,8 @@ pub use crossterm_be::*;
 
 #[cfg(all(
     not(feature = "opengl"),
-    any(feature = "amethyst_engine_vulkan", feature = "amethyst_engine_metal")
-))]
-mod amethyst_be;
-
-#[cfg(all(
-    not(feature = "opengl"),
-    any(feature = "amethyst_engine_vulkan", feature = "amethyst_engine_metal")
-))]
-pub use amethyst_be::*;
-
-#[cfg(all(
-    not(feature = "opengl"),
     not(feature = "curses"),
-    not(feature = "amethyst_engine_vulkan"),
-    not(feature = "amethyst_engine_metal"),
+    not(feature = "webgpu"),
     not(feature = "crossterm")
 ))]
 mod dummy;
@@ -55,8 +48,7 @@ mod dummy;
 #[cfg(all(
     not(feature = "opengl"),
     not(feature = "curses"),
-    not(feature = "amethyst_engine_vulkan"),
-    not(feature = "amethyst_engine_metal"),
+    not(feature = "webgpu"),
     not(feature = "crossterm")
 ))]
 pub use dummy::*;

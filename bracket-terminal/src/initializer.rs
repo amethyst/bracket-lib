@@ -404,7 +404,7 @@ impl BTermBuilder {
     }
 
     /// Adds a fancy (supporting per-glyph offsets, rotation, etc.) console. OpenGL only for now.
-    #[cfg(feature = "opengl")]
+    #[cfg(any(feature = "opengl", feature = "webgpu"))]
     pub fn with_fancy_console<S: ToString, T>(mut self, width: T, height: T, font: S) -> Self
     where
         T: TryInto<u32>,
@@ -422,7 +422,7 @@ impl BTermBuilder {
     }
 
     /// Adds a sprite console
-    #[cfg(feature = "opengl")]
+    #[cfg(any(feature = "opengl", feature = "webgpu"))]
     pub fn with_sprite_console<T>(mut self, width: T, height: T, sprite_sheet: usize) -> Self
     where
         T: TryInto<u32>,
@@ -469,14 +469,17 @@ impl BTermBuilder {
     }
 
     /// Enable resize changing console size, rather than scaling. Native OpenGL only.
-    #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
+    #[cfg(all(
+        any(feature = "opengl", feature = "webgpu"),
+        not(target_arch = "wasm32")
+    ))]
     pub fn with_automatic_console_resize(mut self, resize_scaling: bool) -> Self {
         self.platform_hints.resize_scaling = resize_scaling;
         self
     }
 
     /// Register a sprite sheet
-    #[cfg(feature = "opengl")]
+    #[cfg(any(feature = "opengl", feature = "webgpu"))]
     pub fn with_sprite_sheet(mut self, ss: SpriteSheet) -> Self {
         self.sprite_sheets.push(ss);
         self
@@ -502,7 +505,7 @@ impl BTermBuilder {
             font_map.insert(font_path, font_id?);
         }
 
-        #[cfg(feature = "opengl")]
+        #[cfg(any(feature = "opengl", feature = "webgpu"))]
         for ss in self.sprite_sheets {
             context.register_spritesheet(ss);
         }

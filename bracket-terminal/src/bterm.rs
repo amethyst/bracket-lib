@@ -492,7 +492,7 @@ impl BTerm {
     }
 
     /// Set a tile with "fancy" additional attributes
-    #[cfg(feature = "opengl")]
+    #[cfg(any(feature = "opengl", feature = "webgpu"))]
     #[allow(clippy::too_many_arguments)]
     pub fn set_fancy<COLOR, COLOR2, GLYPH, ANGLE>(
         &mut self,
@@ -525,7 +525,7 @@ impl BTerm {
     }
 
     /// Set a tile with "fancy" additional attributes
-    #[cfg(not(feature = "opengl"))]
+    #[cfg(not(any(feature = "opengl", feature = "webgpu")))]
     pub fn set_fancy<COLOR, COLOR2, GLYPH, ANGLE>(
         &mut self,
         _position: PointF,
@@ -978,7 +978,7 @@ impl BTerm {
             .set_translation_mode(translation)
     }
 
-    #[cfg(feature = "opengl")]
+    #[cfg(any(feature = "opengl", feature = "webgpu"))]
     /// Change the active font for the layer. DO NOT USE WITH AMETHYST YET.
     pub fn set_active_font(&mut self, font_index: usize, resize_to_natural_dimensions: bool) {
         let mut be = BACKEND_INTERNAL.lock();
@@ -999,7 +999,10 @@ impl BTerm {
         }
     }
 
-    #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
+    #[cfg(all(
+        any(feature = "opengl", feature = "webgpu"),
+        not(target_arch = "wasm32")
+    ))]
     /// Manually override the character size for the current terminal. Use with caution!
     pub fn set_char_size(&mut self, width: u32, height: u32) {
         BACKEND_INTERNAL.lock().consoles[self.active_console]
@@ -1007,7 +1010,10 @@ impl BTerm {
             .set_char_size(width, height);
     }
 
-    #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
+    #[cfg(all(
+        any(feature = "opengl", feature = "webgpu"),
+        not(target_arch = "wasm32")
+    ))]
     /// Manually override the character size for the current terminal. Use with caution!
     pub fn set_char_size_and_resize_window(&mut self, _width: u32, _height: u32) {
         /*
@@ -1021,19 +1027,25 @@ impl BTerm {
     }
 
     /// Take a screenshot - Native only
-    #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
+    #[cfg(all(
+        any(feature = "opengl", feature = "webgpu"),
+        not(target_arch = "wasm32")
+    ))]
     pub fn screenshot<S: ToString>(&mut self, filename: S) {
         BACKEND.lock().request_screenshot = Some(filename.to_string());
     }
 
     /// Take a screenshot - Native only
-    #[cfg(not(all(feature = "opengl", not(target_arch = "wasm32"))))]
+    #[cfg(not(all(
+        any(feature = "opengl", feature = "webgpu"),
+        not(target_arch = "wasm32")
+    )))]
     pub fn screenshot<S: ToString>(&mut self, _filename: S) {
         // Do nothing
     }
 
     /// Register a sprite sheet (OpenGL - native or WASM - only)
-    #[cfg(feature = "opengl")]
+    #[cfg(any(feature = "opengl", feature = "webgpu"))]
     pub fn register_spritesheet(&mut self, ss: SpriteSheet) -> usize {
         let mut bi = BACKEND_INTERNAL.lock();
         let id = bi.sprite_sheets.len();
@@ -1042,7 +1054,7 @@ impl BTerm {
     }
 
     /// Add a sprite to the current console
-    #[cfg(feature = "opengl")]
+    #[cfg(any(feature = "opengl", feature = "webgpu"))]
     pub fn add_sprite(&mut self, destination: Rect, z_order: i32, tint: RGBA, index: usize) {
         let mut bi = BACKEND_INTERNAL.lock();
         let as_any = bi.consoles[self.active_console].console.as_any_mut();

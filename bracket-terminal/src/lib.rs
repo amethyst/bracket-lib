@@ -15,14 +15,8 @@ pub type FontCharType = u16;
 pub use consoles::console;
 
 #[cfg(all(
-    feature = "opengl",
-    any(
-        feature = "crossterm",
-        any(
-            feature = "curses",
-            any(feature = "amethyst_engine_vulkan", feature = "amethyst_engine_metal")
-        )
-    )
+    any(feature = "opengl", feature = "webgpu"),
+    any(feature = "crossterm", feature = "curses")
 ))]
 compile_error!("Default features (opengl) must be disabled for other back-ends");
 
@@ -47,14 +41,11 @@ pub mod prelude {
     #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
     pub use glutin::event::VirtualKeyCode;
 
+    #[cfg(all(feature = "webgpu", not(feature = "opengl")))]
+    pub use crate::hal::VirtualKeyCode;
+
     #[cfg(all(feature = "opengl", not(target_arch = "wasm32")))]
     pub use crate::hal::GlCallback;
-
-    #[cfg(all(
-        not(feature = "opengl"),
-        any(feature = "amethyst_engine_vulkan", feature = "amethyst_engine_metal")
-    ))]
-    pub use amethyst::input::VirtualKeyCode;
 
     #[cfg(target_arch = "wasm32")]
     pub use crate::hal::VirtualKeyCode;
