@@ -1,7 +1,7 @@
 //! Provides a wgpu mapping to the sparse consoele
 use super::index_array_helper::IndexBuffer;
 use super::vertex_array_helper::FloatBuffer;
-use crate::hal::{Font, Shader, WgpuLink};
+use crate::hal::{Font, Shader, WgpuLink, scaler::FontScaler};
 use crate::prelude::SparseTile;
 use crate::BResult;
 use bracket_color::prelude::RGBA;
@@ -111,15 +111,10 @@ impl SparseConsoleBackend {
         scale: f32,
         scale_center: (i32, i32),
         tiles: &[SparseTile],
-        font_dimensions_glyphs: (u32, u32),
+        font_scaler: FontScaler,
     ) {
         self.vao.data.clear();
         self.index.data.clear();
-
-        let glyphs_on_font_x = font_dimensions_glyphs.0 as f32;
-        let glyphs_on_font_y = font_dimensions_glyphs.1 as f32;
-        let glyph_size_x: f32 = 1.0 / glyphs_on_font_x;
-        let glyph_size_y: f32 = 1.0 / glyphs_on_font_y;
 
         let step_x: f32 = scale * 2.0 / width as f32;
         let step_y: f32 = scale * 2.0 / height as f32;
@@ -138,14 +133,7 @@ impl SparseConsoleBackend {
             let fg = t.fg;
             let bg = t.bg;
             let glyph = t.glyph;
-            let glyph_x = glyph % font_dimensions_glyphs.0 as u16;
-            let glyph_y =
-                font_dimensions_glyphs.1 as u16 - (glyph / font_dimensions_glyphs.0 as u16);
-
-            let glyph_left = f32::from(glyph_x) * glyph_size_x;
-            let glyph_right = f32::from(glyph_x + 1) * glyph_size_x;
-            let glyph_top = f32::from(glyph_y) * glyph_size_y;
-            let glyph_bottom = f32::from(glyph_y - 1) * glyph_size_y;
+            let gp = font_scaler.glyph_position(glyph);
 
             SparseConsoleBackend::push_point(
                 &mut self.vao.data,
@@ -153,8 +141,8 @@ impl SparseConsoleBackend {
                 screen_y + step_y,
                 fg,
                 bg,
-                glyph_right,
-                glyph_top,
+                gp.glyph_right,
+                gp.glyph_top,
             );
             SparseConsoleBackend::push_point(
                 &mut self.vao.data,
@@ -162,8 +150,8 @@ impl SparseConsoleBackend {
                 screen_y,
                 fg,
                 bg,
-                glyph_right,
-                glyph_bottom,
+                gp.glyph_right,
+                gp.glyph_bottom,
             );
             SparseConsoleBackend::push_point(
                 &mut self.vao.data,
@@ -171,8 +159,8 @@ impl SparseConsoleBackend {
                 screen_y,
                 fg,
                 bg,
-                glyph_left,
-                glyph_bottom,
+                gp.glyph_left,
+                gp.glyph_bottom,
             );
             SparseConsoleBackend::push_point(
                 &mut self.vao.data,
@@ -180,8 +168,8 @@ impl SparseConsoleBackend {
                 screen_y + step_y,
                 fg,
                 bg,
-                glyph_left,
-                glyph_top,
+                gp.glyph_left,
+                gp.glyph_top,
             );
 
             self.index.data.push(index_count);

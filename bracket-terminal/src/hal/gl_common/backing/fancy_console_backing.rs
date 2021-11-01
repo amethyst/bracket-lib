@@ -1,3 +1,4 @@
+use crate::hal::scaler::FontScaler;
 use crate::hal::{Font, Shader, VertexArray, VertexArrayEntry};
 use crate::prelude::FlexiTile;
 use crate::BResult;
@@ -66,7 +67,7 @@ impl FancyConsoleBackend {
         scale: f32,
         scale_center: (i32, i32),
         tiles: &[FlexiTile],
-        font_dimensions_glyphs: (u32, u32),
+        font_scaler: FontScaler,
     ) {
         if tiles.is_empty() {
             return;
@@ -74,11 +75,6 @@ impl FancyConsoleBackend {
 
         self.vao.vertex_buffer.clear();
         self.vao.index_buffer.clear();
-
-        let glyphs_on_font_x = font_dimensions_glyphs.0 as f32;
-        let glyphs_on_font_y = font_dimensions_glyphs.1 as f32;
-        let glyph_size_x: f32 = 1.0 / glyphs_on_font_x;
-        let glyph_size_y: f32 = 1.0 / glyphs_on_font_y;
 
         let step_x: f32 = scale * 2.0 / width as f32;
         let step_y: f32 = scale * 2.0 / height as f32;
@@ -98,14 +94,7 @@ impl FancyConsoleBackend {
             let fg = t.fg;
             let bg = t.bg;
             let glyph = t.glyph;
-            let glyph_x = glyph % font_dimensions_glyphs.0 as u16;
-            let glyph_y =
-                font_dimensions_glyphs.1 as u16 - (glyph / font_dimensions_glyphs.0 as u16);
-
-            let glyph_left = f32::from(glyph_x) * glyph_size_x;
-            let glyph_right = f32::from(glyph_x + 1) * glyph_size_x;
-            let glyph_top = f32::from(glyph_y) * glyph_size_y;
-            let glyph_bottom = f32::from(glyph_y - 1) * glyph_size_y;
+            let gp = font_scaler.glyph_position(glyph);
 
             let rot_center_x = screen_x + (step_x / 2.0);
             let rot_center_y = screen_y + (step_y / 2.0);
@@ -116,8 +105,8 @@ impl FancyConsoleBackend {
                 screen_y + step_y,
                 fg,
                 bg,
-                glyph_right,
-                glyph_top,
+                gp.glyph_right,
+                gp.glyph_top,
                 t.rotation,
                 rot_center_x,
                 rot_center_y,
@@ -129,8 +118,8 @@ impl FancyConsoleBackend {
                 screen_y,
                 fg,
                 bg,
-                glyph_right,
-                glyph_bottom,
+                gp.glyph_right,
+                gp.glyph_bottom,
                 t.rotation,
                 rot_center_x,
                 rot_center_y,
@@ -142,8 +131,8 @@ impl FancyConsoleBackend {
                 screen_y,
                 fg,
                 bg,
-                glyph_left,
-                glyph_bottom,
+                gp.glyph_left,
+                gp.glyph_bottom,
                 t.rotation,
                 rot_center_x,
                 rot_center_y,
@@ -155,8 +144,8 @@ impl FancyConsoleBackend {
                 screen_y + step_y,
                 fg,
                 bg,
-                glyph_left,
-                glyph_top,
+                gp.glyph_left,
+                gp.glyph_top,
                 t.rotation,
                 rot_center_x,
                 rot_center_y,
