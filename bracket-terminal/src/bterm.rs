@@ -1027,13 +1027,19 @@ impl BTerm {
     }
 
     /// Take a screenshot - Native only
-    #[cfg(all(any(feature = "opengl", feature = "webgpu"), not(target_arch = "wasm32")))]
+    #[cfg(all(
+        any(feature = "opengl", feature = "webgpu"),
+        not(target_arch = "wasm32")
+    ))]
     pub fn screenshot<S: ToString>(&mut self, filename: S) {
         BACKEND.lock().request_screenshot = Some(filename.to_string());
     }
 
     /// Take a screenshot - Native only
-    #[cfg(not(all(any(feature = "opengl", feature = "webgpu"), not(target_arch = "wasm32"))))]
+    #[cfg(not(all(
+        any(feature = "opengl", feature = "webgpu"),
+        not(target_arch = "wasm32")
+    )))]
     pub fn screenshot<S: ToString>(&mut self, _filename: S) {
         // Do nothing
     }

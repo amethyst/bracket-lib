@@ -37,10 +37,7 @@ impl Framebuffer {
             ..Default::default()
         });
 
-        Self {
-            view,
-            sampler,
-        }
+        Self { view, sampler }
     }
 
     pub fn view(&self) -> &TextureView {

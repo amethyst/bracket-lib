@@ -15,7 +15,7 @@ pub type FontCharType = u16;
 pub use consoles::console;
 
 #[cfg(all(
-    any(feature = "opengl",feature = "webgpu"),
+    any(feature = "opengl", feature = "webgpu"),
     any(feature = "crossterm", feature = "curses")
 ))]
 compile_error!("Default features (opengl) must be disabled for other back-ends");

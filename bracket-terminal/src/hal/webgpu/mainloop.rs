@@ -1,7 +1,6 @@
 use super::{
     quadrender::QuadRender, ConsoleBacking, FancyConsoleBackend, Font, Framebuffer,
-    SimpleConsoleBackend, SparseConsoleBackend, SpriteConsoleBackend, CONSOLE_BACKING,
-    WgpuLink,
+    SimpleConsoleBackend, SparseConsoleBackend, SpriteConsoleBackend, WgpuLink, CONSOLE_BACKING,
 };
 use crate::{
     gamestate::{BTerm, GameState},
@@ -12,10 +11,10 @@ use crate::{
     BResult,
 };
 use bracket_geometry::prelude::Point;
-use std::{rc::Rc, time::Instant};
-use wgpu::{TextureViewDescriptor};
-use winit::{dpi::PhysicalSize, event::*, event_loop::ControlFlow};
 use std::mem::size_of;
+use std::{rc::Rc, time::Instant};
+use wgpu::TextureViewDescriptor;
+use winit::{dpi::PhysicalSize, event::*, event_loop::ControlFlow};
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
