@@ -58,6 +58,13 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
     let el = unwrap.el;
     let window = unwrap.window;
 
+    on_resize(
+        &mut bterm,
+        window.inner_size(),
+        window.scale_factor(),
+        true,
+    )?; // Additional resize to handle some X11 cases
+
     let mut queued_resize_event: Option<ResizeEvent> = None;
     let spin_sleeper = spin_sleep::SpinSleeper::default();
     let my_window_id = window.id();
