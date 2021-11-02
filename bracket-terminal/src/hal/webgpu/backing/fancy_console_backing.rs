@@ -2,7 +2,7 @@
 
 use super::index_array_helper::IndexBuffer;
 use super::vertex_array_helper::FloatBuffer;
-use crate::hal::{Font, Shader, WgpuLink, scaler::FontScaler};
+use crate::hal::{Font, Shader, WgpuLink, scaler::{FontScaler, ScreenScaler}};
 use crate::prelude::FlexiTile;
 use crate::BResult;
 use bracket_color::prelude::RGBA;
@@ -125,6 +125,7 @@ impl FancyConsoleBackend {
         scale_center: (i32, i32),
         tiles: &[FlexiTile],
         font_scaler: FontScaler,
+        screen_scaler: &ScreenScaler,
     ) {
         if tiles.is_empty() {
             return;
@@ -133,21 +134,28 @@ impl FancyConsoleBackend {
         self.vao.data.clear();
         self.index.data.clear();
 
-        let step_x: f32 = scale * 2.0 / width as f32;
-        let step_y: f32 = scale * 2.0 / height as f32;
+        let (step_x, step_y, left_x, top_y) = {
+            let (step_x, step_y) = screen_scaler.calc_step(width, height, scale);
+            let (left_x, top_y) = screen_scaler.top_left_pixel();
+
+            (step_x, step_y, left_x, top_y)
+        };
+
+        //let step_x: f32 = scale * 2.0 / width as f32;
+        //let step_y: f32 = scale * 2.0 / height as f32;
 
         let mut index_count: u16 = 0;
-        let screen_x_start: f32 = -1.0 * scale
-            - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
-        let screen_y_start: f32 = -1.0 * scale
-            + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
+        //let screen_x_start: f32 = -1.0 * scale
+        //    - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
+        //let screen_y_start: f32 = -1.0 * scale
+        //    + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
 
         for t in tiles.iter() {
             let x = t.position.x;
             let y = t.position.y;
 
-            let screen_x = ((step_x * x) + screen_x_start) + offset_x;
-            let screen_y = ((step_y * y) + screen_y_start) + offset_y;
+            let screen_x = ((step_x * x) + left_x) + offset_x;
+            let screen_y = ((step_y * y) + top_y) + offset_y;
             let fg = t.fg;
             let bg = t.bg;
             let glyph = t.glyph;

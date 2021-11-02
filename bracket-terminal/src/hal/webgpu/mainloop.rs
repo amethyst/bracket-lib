@@ -223,6 +223,7 @@ fn on_resize(
     //println!("{:#?}", physical_size);
     INPUT.lock().set_scale_factor(dpi_scale_factor);
     let mut be = BACKEND.lock();
+    be.screen_scaler.change_physical_size(physical_size.width, physical_size.height, dpi_scale_factor as f32);
     if send_event {
         bterm.resize_pixels(
             physical_size.width as u32,
@@ -371,6 +372,7 @@ pub(crate) fn rebuild_consoles() {
                         sc.scale_center,
                         sc.needs_resize_internal,
                         FontScaler::new(glyph_dimensions, tex_dimensions),
+                        &be.screen_scaler,
                     );
                     sc.needs_resize_internal = false;
                 }
@@ -394,6 +396,7 @@ pub(crate) fn rebuild_consoles() {
                         sc.scale_center,
                         &sc.tiles,
                         FontScaler::new(glyph_dimensions, tex_dimensions),
+                        &be.screen_scaler,
                     );
                     sc.needs_resize_internal = false;
                 }
@@ -418,6 +421,7 @@ pub(crate) fn rebuild_consoles() {
                         fc.scale_center,
                         &fc.tiles,
                         FontScaler::new(glyph_dimensions, tex_dimensions),
+                        &be.screen_scaler,
                     );
                     fc.needs_resize_internal = false;
                 }

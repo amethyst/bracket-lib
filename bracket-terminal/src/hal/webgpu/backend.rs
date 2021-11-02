@@ -1,6 +1,6 @@
 //! Defines the BACKEND static used by wgpu.
 
-use crate::hal::{ConsoleBacking, PlatformGL};
+use crate::hal::{ConsoleBacking, PlatformGL, scaler::ScreenScaler};
 use lazy_static::*;
 use parking_lot::Mutex;
 
@@ -12,6 +12,7 @@ lazy_static! {
         resize_request: None,
         request_screenshot: None,
         frame_sleep_time: None,
+        screen_scaler: ScreenScaler::default()
     });
 }
 

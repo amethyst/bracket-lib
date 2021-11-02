@@ -2,7 +2,7 @@
 
 use super::index_array_helper::IndexBuffer;
 use super::vertex_array_helper::FloatBuffer;
-use crate::hal::{Font, Shader, WgpuLink, scaler::FontScaler};
+use crate::hal::{Font, Shader, WgpuLink, scaler::{FontScaler, ScreenScaler}};
 use crate::prelude::Tile;
 use crate::BResult;
 use bracket_color::prelude::RGBA;
@@ -146,6 +146,7 @@ impl SimpleConsoleBackend {
         scale_center: (i32, i32),
         needs_resize: bool,
         font_scaler: FontScaler,
+        screen_scaler: &ScreenScaler,
     ) {
         if needs_resize {
             let vertex_capacity: usize = (13 * width as usize * height as usize) * 4;
@@ -159,15 +160,22 @@ impl SimpleConsoleBackend {
         self.vertex_counter = 0;
         self.index_counter = 0;
 
-        let step_x: f32 = scale * 2.0f32 / width as f32;
-        let step_y: f32 = scale * 2.0f32 / height as f32;
+        let (step_x, step_y, left_x, top_y) = {
+            let (step_x, step_y) = screen_scaler.calc_step(width, height, scale);
+            let (left_x, top_y) = screen_scaler.top_left_pixel();
 
-        let mut screen_y: f32 = -1.0 * scale
-            + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
+            (step_x, step_y, left_x, top_y)
+        };
+
+        //let step_x: f32 = scale * 2.0f32 / width as f32;
+        //let step_y: f32 = scale * 2.0f32 / height as f32;
+
+        //let mut screen_y: f32 = -1.0 * scale
+        //    + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
         let mut index_count: u16 = 0;
+        let mut screen_y = top_y;
         for y in 0..height {
-            let mut screen_x: f32 = -1.0 * scale
-                - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
+            let mut screen_x = left_x;
             for x in 0..width {
                 let fg = tiles[((y * width) + x) as usize].fg;
                 let bg = tiles[((y * width) + x) as usize].bg;
