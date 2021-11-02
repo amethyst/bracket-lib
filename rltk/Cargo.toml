@@ -14,7 +14,7 @@ license = "MIT"
 resolver = "2" # Enables the new Cargo resolution engine
 
 [features]
-default = [ "webgpu" ]
+default = [ "opengl" ]
 specs = [ "bracket-lib/specs" ]
 serde = [ "bracket-lib/serde" ]
 threaded = [ "bracket-lib/threaded" ]
