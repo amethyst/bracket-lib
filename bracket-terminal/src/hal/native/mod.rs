@@ -7,6 +7,8 @@ pub use mainloop::*;
 use parking_lot::Mutex;
 use std::any::Any;
 
+use super::scaler::ScreenScaler;
+
 pub type GlCallback = fn(&mut dyn Any, &glow::Context);
 
 lazy_static! {
@@ -20,6 +22,7 @@ lazy_static! {
         resize_scaling: false,
         resize_request: None,
         request_screenshot: None,
+        screen_scaler: ScreenScaler::default(),
     });
 }
 
@@ -37,6 +40,7 @@ pub struct PlatformGL {
     pub resize_scaling: bool,
     pub resize_request: Option<(u32, u32)>,
     pub request_screenshot: Option<String>,
+    pub screen_scaler: ScreenScaler,
 }
 
 unsafe impl Send for PlatformGL {}
@@ -56,6 +60,11 @@ pub struct InitHints {
     pub srgb: bool,
     pub frame_sleep_time: Option<f32>,
     pub resize_scaling: bool,
+    pub desired_gutter: u32,
+}
+
+fn default_gutter_size() -> u32 {
+    32
 }
 
 impl InitHints {
@@ -69,6 +78,7 @@ impl InitHints {
             srgb: true,
             frame_sleep_time: None,
             resize_scaling: false,
+            desired_gutter: default_gutter_size(),
         }
     }
 }
@@ -84,6 +94,7 @@ impl Default for InitHints {
             srgb: true,
             frame_sleep_time: None,
             resize_scaling: false,
+            desired_gutter: default_gutter_size(),
         }
     }
 }
