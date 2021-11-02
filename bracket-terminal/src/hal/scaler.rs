@@ -50,12 +50,12 @@ pub struct ScreenScaler {
     pub smooth_gutter_y: u32,
     pub physical_size: (u32, u32),
     pub scale_factor: f32,
-    gutter_left: u32,
-    gutter_right: u32,
-    gutter_top: u32,
-    gutter_bottom: u32,
-    available_width: u32,
-    available_height: u32,
+    pub gutter_left: u32,
+    pub gutter_right: u32,
+    pub gutter_top: u32,
+    pub gutter_bottom: u32,
+    pub available_width: u32,
+    pub available_height: u32,
 }
 
 impl ScreenScaler {
@@ -153,8 +153,8 @@ impl ScreenScaler {
             self.gutter_bottom = half_gutter+1 + extra_bottom;
         }
 
-        self.available_width = self.physical_size.0 - total_gutter;
-        self.available_height = self.physical_size.1 - total_gutter;
+        self.available_width = self.physical_size.0 - (total_gutter + extra_left + extra_right);
+        self.available_height = self.physical_size.1 - (total_gutter + extra_top + extra_bottom);
     }
 
     pub fn pixel_to_screen(&self, x: u32, y: u32) -> (f32, f32) {
