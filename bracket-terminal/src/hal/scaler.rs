@@ -1,4 +1,4 @@
-use glutin::dpi::LogicalSize;
+use winit::dpi::LogicalSize;
 
 /// Provides a consistent font to texture coordinates mapping service.
 pub struct FontScaler {
