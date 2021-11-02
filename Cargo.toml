@@ -25,7 +25,7 @@ exclude = [
 resolver = "2" # Enables the new Cargo resolution engine
 
 [features]
-default = [ "webgpu" ]
+default = [ "opengl" ]
 specs = [ "bracket-geometry/specs" ]
 serde = [ "bracket-color/serde", "bracket-geometry/serde", "bracket-random/serde" ]
 threaded = [ "bracket-pathfinding/threaded" ]
