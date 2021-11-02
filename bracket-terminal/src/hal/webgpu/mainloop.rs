@@ -214,16 +214,33 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
     });
 }
 
+fn largest_active_font() -> (u32, u32) {
+    let bi = BACKEND_INTERNAL.lock();
+    let mut max_width = 0;
+    let mut max_height = 0;
+    bi.consoles.iter().for_each(|c| {
+        let size = bi.fonts[c.font_index].tile_size;
+        if size.0 > max_width {
+            max_width = size.0;
+        }
+        if size.1 > max_height {
+            max_height = size.1;
+        }
+    });
+    (max_width, max_height)
+}
+
 fn on_resize(
     bterm: &mut BTerm,
     physical_size: PhysicalSize<u32>,
     dpi_scale_factor: f64,
     send_event: bool,
 ) -> BResult<()> {
+    let font_max_size = largest_active_font();
     //println!("{:#?}", physical_size);
     INPUT.lock().set_scale_factor(dpi_scale_factor);
     let mut be = BACKEND.lock();
-    be.screen_scaler.change_physical_size(physical_size.width, physical_size.height, dpi_scale_factor as f32);
+    be.screen_scaler.change_physical_size_smooth(physical_size.width, physical_size.height, dpi_scale_factor as f32, font_max_size);
     if send_event {
         bterm.resize_pixels(
             physical_size.width as u32,

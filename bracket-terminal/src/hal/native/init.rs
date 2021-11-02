@@ -16,6 +16,7 @@ pub fn init_raw<S: ToString>(
     let el = EventLoop::new();
     let wb = WindowBuilder::new()
         .with_title(window_title.to_string())
+        .with_min_inner_size(scaler.new_window_size())
         .with_inner_size(scaler.new_window_size());
     let windowed_context = ContextBuilder::new()
         .with_gl(platform_hints.gl_version)

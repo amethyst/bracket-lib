@@ -46,6 +46,8 @@ impl FontScaler {
 
 pub struct ScreenScaler {
     pub desired_gutter: u32,
+    pub smooth_gutter_x: u32,
+    pub smooth_gutter_y: u32,
     pub physical_size: (u32, u32),
     pub scale_factor: f32,
     gutter_left: u32,
@@ -60,6 +62,8 @@ impl ScreenScaler {
     pub fn default() -> Self {
         Self {
             desired_gutter: 0,
+            smooth_gutter_x: 0,
+            smooth_gutter_y: 0,
             physical_size: (0, 0),
             scale_factor: 1.0,
             gutter_left: 0,
@@ -74,6 +78,8 @@ impl ScreenScaler {
     pub fn new(desired_gutter: u32, desired_width: u32, desired_height: u32) -> Self {
         let mut result = Self {
             desired_gutter,
+            smooth_gutter_x: 0,
+            smooth_gutter_y: 0,
             physical_size: (desired_width, desired_height),
             scale_factor: 1.0,
             gutter_left: 0,
@@ -108,19 +114,43 @@ impl ScreenScaler {
         self.recalculate_coordinates();
     }
 
+    pub fn change_physical_size_smooth(&mut self, width: u32, height: u32, scale: f32, max_font: (u32, u32)) {
+        self.scale_factor = scale;
+        self.physical_size.0 = width;
+        self.physical_size.1 = height;
+
+        let (remainder_x, remainder_y) = (width % max_font.0, height % max_font.1);
+        self.smooth_gutter_x = remainder_x * 2;
+        self.smooth_gutter_y = remainder_y * 2;
+
+        self.recalculate_coordinates();
+    }
+
     fn recalculate_coordinates(&mut self) {
         let total_gutter = (self.desired_gutter as f32 * self.scale_factor) as u32;
         let half_gutter = total_gutter / 2;
-        if total_gutter % 2 == 0 {
-            self.gutter_left = half_gutter;
-            self.gutter_right = half_gutter;
-            self.gutter_top = half_gutter;
-            self.gutter_bottom = half_gutter;
+
+        let (extra_left, extra_right) = if self.smooth_gutter_x % 2 == 0 {
+            (self.smooth_gutter_x/2, self.smooth_gutter_x/2)
         } else {
-            self.gutter_left = half_gutter;
-            self.gutter_right = half_gutter+1;
-            self.gutter_top = half_gutter;
-            self.gutter_bottom = half_gutter+1;
+            ((self.smooth_gutter_x/2)+1, self.smooth_gutter_x/2)
+        };
+        let (extra_top, extra_bottom) = if self.smooth_gutter_y % 2 == 0 {
+            (self.smooth_gutter_y/2, self.smooth_gutter_y/2)
+        } else {
+            ((self.smooth_gutter_y/2)+1, self.smooth_gutter_y/2)
+        };
+
+        if total_gutter % 2 == 0 {
+            self.gutter_left = half_gutter + extra_left;
+            self.gutter_right = half_gutter + extra_right;
+            self.gutter_top = half_gutter + extra_top;
+            self.gutter_bottom = half_gutter + extra_bottom;
+        } else {
+            self.gutter_left = half_gutter + extra_left;
+            self.gutter_right = half_gutter+1 + extra_right;
+            self.gutter_top = half_gutter + extra_top;
+            self.gutter_bottom = half_gutter+1 + extra_bottom;
         }
 
         self.available_width = self.physical_size.0 - total_gutter;
