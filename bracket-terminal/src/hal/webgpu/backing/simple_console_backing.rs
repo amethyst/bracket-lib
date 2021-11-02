@@ -20,6 +20,8 @@ pub struct SimpleConsoleBackend {
     vertex_counter: usize,
     /// The WGPU render pipeline
     render_pipeline: RenderPipeline,
+    /// For dirty optimization
+    previous_console: Option<Vec<Tile>>,
 }
 
 impl SimpleConsoleBackend {
@@ -90,6 +92,7 @@ impl SimpleConsoleBackend {
             vertex_counter: 0,
             index_counter: 0,
             render_pipeline,
+            previous_console: None,
         };
         result
     }
@@ -139,7 +142,7 @@ impl SimpleConsoleBackend {
         wgpu: &WgpuLink,
         height: u32,
         width: u32,
-        tiles: &[Tile],
+        tiles: &Vec<Tile>,
         offset_x: f32,
         offset_y: f32,
         scale: f32,
@@ -148,6 +151,17 @@ impl SimpleConsoleBackend {
         font_scaler: FontScaler,
         screen_scaler: &ScreenScaler,
     ) {
+        if !needs_resize {
+            if let Some(old) = &self.previous_console {
+                if old.len() == tiles.len() {
+                    let no_change = tiles.iter().zip(old.iter()).all(|(a, b)| *a==*b);
+                    if no_change {
+                        return;
+                    }
+                }
+            }
+        }
+
         if needs_resize {
             let vertex_capacity: usize = (13 * width as usize * height as usize) * 4;
             let index_capacity: usize = 6 * width as usize * height as usize;
@@ -240,6 +254,7 @@ impl SimpleConsoleBackend {
 
         self.vao.build(wgpu);
         self.index.build(wgpu);
+        self.previous_console = Some(tiles.clone());
     }
 
     /// Renders the console via wgpu.

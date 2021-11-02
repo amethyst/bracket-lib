@@ -7,6 +7,7 @@ use bracket_geometry::prelude::Rect;
 use std::any::Any;
 
 /// Internal storage structure for sparse tiles.
+#[derive(Clone, Copy, PartialEq)]
 pub struct SparseTile {
     pub idx: usize,
     pub glyph: FontCharType,

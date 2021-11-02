@@ -15,6 +15,8 @@ pub struct SparseConsoleBackend {
     index: IndexBuffer,
     /// WGPU Render Pipeline to use
     render_pipeline: RenderPipeline,
+    /// No change optimization
+    previous_console : Option<Vec<SparseTile>>,
 }
 
 impl SparseConsoleBackend {
@@ -72,6 +74,7 @@ impl SparseConsoleBackend {
             vao,
             index,
             render_pipeline,
+            previous_console: None,
         }
     }
 
@@ -110,10 +113,19 @@ impl SparseConsoleBackend {
         offset_y: f32,
         scale: f32,
         scale_center: (i32, i32),
-        tiles: &[SparseTile],
+        tiles: &Vec<SparseTile>,
         font_scaler: FontScaler,
         screen_scaler: &ScreenScaler,
     ) {
+        if let Some(old) = &self.previous_console {
+            if old.len() == tiles.len() {
+                let no_change = tiles.iter().zip(old.iter()).all(|(a, b)| *a==*b);
+                if no_change {
+                    return;
+                }
+            }
+        }
+
         self.vao.data.clear();
         self.index.data.clear();
 
@@ -192,6 +204,7 @@ impl SparseConsoleBackend {
 
         self.vao.build(wgpu);
         self.index.build(wgpu);
+        self.previous_console = Some(tiles.clone());
     }
 
     pub fn wgpu_draw(&mut self, font: &Font) -> BResult<()> {

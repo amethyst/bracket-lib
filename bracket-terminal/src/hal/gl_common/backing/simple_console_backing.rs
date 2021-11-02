@@ -8,6 +8,7 @@ pub struct SimpleConsoleBackend {
     vao: VertexArray,
     vertex_counter: usize,
     index_counter: usize,
+    previous_console : Option<Vec<Tile>>,
 }
 
 impl SimpleConsoleBackend {
@@ -19,6 +20,7 @@ impl SimpleConsoleBackend {
             vao,
             vertex_counter: 0,
             index_counter: 0,
+            previous_console: None,
         };
         result.vao.vertex_buffer.resize(vertex_capacity, 0.0);
         result.vao.index_buffer.resize(index_capacity, 0);
@@ -78,7 +80,7 @@ impl SimpleConsoleBackend {
         &mut self,
         height: u32,
         width: u32,
-        tiles: &[Tile],
+        tiles: &Vec<Tile>,
         offset_x: f32,
         offset_y: f32,
         scale: f32,
@@ -86,6 +88,17 @@ impl SimpleConsoleBackend {
         needs_resize: bool,
         font_scaler: FontScaler,
     ) {
+        if !needs_resize {
+            if let Some(old) = &self.previous_console {
+                if old.len() == tiles.len() {
+                    let no_change = tiles.iter().zip(old.iter()).all(|(a, b)| *a==*b);
+                    if no_change {
+                        return;
+                    }
+                }
+            }
+        }
+
         if needs_resize {
             let vertex_capacity: usize = (13 * width as usize * height as usize) * 4;
             let index_capacity: usize = 6 * width as usize * height as usize;
@@ -93,6 +106,7 @@ impl SimpleConsoleBackend {
             self.vao.index_buffer.clear();
             self.vao.vertex_buffer.resize(vertex_capacity, 0.0);
             self.vao.index_buffer.resize(index_capacity, 0);
+            self.previous_console = None;
         }
 
         self.vertex_counter = 0;
@@ -175,6 +189,7 @@ impl SimpleConsoleBackend {
         }
 
         self.vao.upload_buffers();
+        self.previous_console = Some(tiles.clone());
     }
 
     pub fn gl_draw(&mut self, font: &Font, shader: &Shader) -> BResult<()> {
