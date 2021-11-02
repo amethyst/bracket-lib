@@ -120,8 +120,8 @@ impl ScreenScaler {
         self.physical_size.1 = height;
 
         let (remainder_x, remainder_y) = (width % max_font.0, height % max_font.1);
-        self.smooth_gutter_x = remainder_x * 2;
-        self.smooth_gutter_y = remainder_y * 2;
+        self.smooth_gutter_x = remainder_x;
+        self.smooth_gutter_y = remainder_y;
 
         self.recalculate_coordinates();
     }
