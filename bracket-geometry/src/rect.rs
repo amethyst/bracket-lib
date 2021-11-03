@@ -82,8 +82,8 @@ impl Rect {
     where
         F: FnMut(Point),
     {
-        for y in self.y1..=self.y2 {
-            for x in self.x1..=self.x2 {
+        for y in self.y1..self.y2 {
+            for x in self.x1..self.x2 {
                 f(Point::new(x, y));
             }
         }
@@ -185,8 +185,8 @@ mod tests {
             points.insert(p);
         });
         assert!(points.contains(&Point::new(0, 0)));
-        assert!(points.contains(&Point::new(1, 0)));
-        assert!(points.contains(&Point::new(0, 1)));
-        assert!(points.contains(&Point::new(1, 1)));
+        assert!(!points.contains(&Point::new(1, 0)));
+        assert!(!points.contains(&Point::new(0, 1)));
+        assert!(!points.contains(&Point::new(1, 1)));
     }
 }
