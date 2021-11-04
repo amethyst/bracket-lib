@@ -57,11 +57,14 @@ fn on_resize(
             )
         );
     }
-    let new_fb =
-        Framebuffer::build_fbo(gl, physical_size.width as i32, physical_size.height as i32)?;
+    let new_fb = Framebuffer::build_fbo(
+        gl, 
+        physical_size.width as i32, 
+        physical_size.height as i32
+    )?;
     be.backing_buffer = Some(new_fb);
     bterm.on_event(BEvent::Resized {
-        new_size: Point::new(physical_size.width, physical_size.height),
+        new_size: Point::new(be.screen_scaler.available_width, be.screen_scaler.available_height),
         dpi_scale_factor: dpi_scale_factor as f32,
     });
 
