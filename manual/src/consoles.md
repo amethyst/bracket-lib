@@ -68,6 +68,7 @@ Some builder functions provide global (whole program) functionality. These inclu
 * `with_platform_specific(hint)` is used for those times you need to tell a renderer something, but that feature can't work in all render targets. These will be documented in the render targets.
 * `with_advanced_input(bool)` lets you change the input mechanism from populating the key/mouse variables to a stream of keyboard/mouse events.
 * `with_automatic_console_resize(bool)` lets you change the behavior of resizing the window. Instead of scaling the console up or down to fit the window, a resize event re-calculates the size of the consoles and expands/shrinks them to fit. You can query the current size of a layer from the context in `tick`.
+* `with_gutter(size)` adds a gutter around the window, allowing you to letterbox it. This is helpful for alleviating missing characters with rounded windows.
 
 These provide a fair amount of control over the general program. If you want to use layers, or get fancy with your consoles, you often need to specify per-layer information.
 
