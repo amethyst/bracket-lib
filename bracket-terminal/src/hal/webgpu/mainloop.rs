@@ -88,7 +88,6 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                 if execute_ms >= wait_time {
                     if queued_resize_event.is_some() {
                         if let Some(resize) = &queued_resize_event {
-                            //window..resize(resize.physical_size);
                             on_resize(
                                 &mut bterm,
                                 resize.physical_size,
@@ -274,7 +273,7 @@ fn on_resize(
 
     // Messaging
     bterm.on_event(BEvent::Resized {
-        new_size: Point::new(physical_size.width, physical_size.height),
+        new_size: Point::new(be.screen_scaler.available_width, be.screen_scaler.available_height),
         dpi_scale_factor: dpi_scale_factor as f32,
     });
 
@@ -284,8 +283,8 @@ fn on_resize(
         let num_consoles = bit.consoles.len();
         for i in 0..num_consoles {
             let font_size = bit.fonts[bit.consoles[i].font_index].tile_size;
-            let chr_w = physical_size.width as u32 / font_size.0;
-            let chr_h = physical_size.height as u32 / font_size.1;
+            let chr_w = be.screen_scaler.available_width / font_size.0;
+            let chr_h = be.screen_scaler.available_height / font_size.1;
             bit.consoles[i].console.set_char_size(chr_w, chr_h);
         }
     }
@@ -367,6 +366,7 @@ fn tock<GS: GameState>(
 }
 
 pub(crate) fn rebuild_consoles() {
+    let must_resize = BACKEND.lock().screen_scaler.get_resized_and_reset();
     let mut consoles = CONSOLE_BACKING.lock();
     let mut bi = BACKEND_INTERNAL.lock();
     //let ss = bi.sprite_sheets.clone();
@@ -394,7 +394,7 @@ pub(crate) fn rebuild_consoles() {
                         sc.offset_y,
                         sc.scale,
                         sc.scale_center,
-                        sc.needs_resize_internal,
+                        sc.needs_resize_internal || must_resize,
                         FontScaler::new(glyph_dimensions, tex_dimensions),
                         &be.screen_scaler,
                     );
@@ -421,6 +421,7 @@ pub(crate) fn rebuild_consoles() {
                         &sc.tiles,
                         FontScaler::new(glyph_dimensions, tex_dimensions),
                         &be.screen_scaler,
+                        must_resize,
                     );
                     sc.needs_resize_internal = false;
                 }

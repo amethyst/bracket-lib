@@ -53,6 +53,7 @@ pub(crate) fn check_console_backing() {
 }
 
 pub(crate) fn rebuild_consoles() {
+    let must_resize = BACKEND.lock().screen_scaler.get_resized_and_reset();
     let mut consoles = CONSOLE_BACKING.lock();
     let mut bi = BACKEND_INTERNAL.lock();
     let ss = bi.sprite_sheets.clone();
@@ -77,7 +78,7 @@ pub(crate) fn rebuild_consoles() {
                         sc.offset_y,
                         sc.scale,
                         sc.scale_center,
-                        sc.needs_resize_internal,
+                        sc.needs_resize_internal || must_resize,
                         FontScaler::new(glyph_dimensions, tex_dimensions),
                     );
                     sc.needs_resize_internal = false;
@@ -99,6 +100,7 @@ pub(crate) fn rebuild_consoles() {
                         sc.scale_center,
                         &sc.tiles,
                         FontScaler::new(glyph_dimensions, tex_dimensions),
+                        must_resize,
                     );
                     sc.needs_resize_internal = false;
                 }

@@ -60,12 +60,15 @@ impl SparseConsoleBackend {
         scale_center: (i32, i32),
         tiles: &Vec<SparseTile>,
         font_scaler: FontScaler,
+        needs_resize: bool,
     ) {
-        if let Some(old) = &self.previous_console {
-            if old.len() == tiles.len() {
-                let no_change = tiles.iter().zip(old.iter()).all(|(a, b)| *a==*b);
-                if no_change {
-                    return;
+        if !needs_resize {
+            if let Some(old) = &self.previous_console {
+                if old.len() == tiles.len() {
+                    let no_change = tiles.iter().zip(old.iter()).all(|(a, b)| *a==*b);
+                    if no_change {
+                        return;
+                    }
                 }
             }
         }

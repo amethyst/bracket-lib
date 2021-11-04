@@ -73,8 +73,8 @@ fn on_resize(
         let num_consoles = bit.consoles.len();
         for i in 0..num_consoles {
             let font_size = bit.fonts[bit.consoles[i].font_index].tile_size;
-            let chr_w = physical_size.width as u32 / font_size.0;
-            let chr_h = physical_size.height as u32 / font_size.1;
+            let chr_w = be.screen_scaler.available_width / font_size.0;
+            let chr_h = be.screen_scaler.available_height / font_size.1;
             bit.consoles[i].console.set_char_size(chr_w, chr_h);
         }
     }

@@ -56,6 +56,8 @@ pub struct ScreenScaler {
     pub gutter_bottom: u32,
     pub available_width: u32,
     pub available_height: u32,
+    aspect_ratio: f32,
+    resized: bool,
 }
 
 impl ScreenScaler {
@@ -72,6 +74,8 @@ impl ScreenScaler {
             gutter_bottom: 0,
             available_width: 0,
             available_height: 0,
+            aspect_ratio: 1.0,
+            resized: true,
         }
     }
 
@@ -88,12 +92,15 @@ impl ScreenScaler {
             gutter_bottom: 0,
             available_width: 0,
             available_height: 0,
+            aspect_ratio: desired_height as f32 / desired_width as f32,
+            resized: true,
         };
         result.recalculate_coordinates();
         result
     }
 
-    pub fn new_window_size(&self) -> LogicalSize<u32> {
+    pub fn new_window_size(&mut self) -> LogicalSize<u32> {
+        self.aspect_ratio = (self.physical_size.1 + self.desired_gutter) as f32 / (self.physical_size.0 + self.desired_gutter) as f32;
         LogicalSize::new(
             self.physical_size.0 + self.desired_gutter,
             self.physical_size.1 + self.desired_gutter,
@@ -119,9 +126,16 @@ impl ScreenScaler {
         self.physical_size.0 = width;
         self.physical_size.1 = height;
 
-        let (remainder_x, remainder_y) = (width % max_font.0, height % max_font.1);
-        self.smooth_gutter_x = remainder_x;
-        self.smooth_gutter_y = remainder_y;
+        let mut desired_y = (width as f32 * self.aspect_ratio) as u32;
+        desired_y -= desired_y % max_font.1;
+
+        if desired_y < height {
+            self.smooth_gutter_y = height - desired_y;
+        } else {
+            let mut desired_x = (height as f32 / self.aspect_ratio) as u32;
+            desired_x -= desired_x % max_font.0;
+            self.smooth_gutter_x = width - desired_x;
+        }
 
         self.recalculate_coordinates();
     }
@@ -155,6 +169,7 @@ impl ScreenScaler {
 
         self.available_width = self.physical_size.0 - (total_gutter + extra_left + extra_right);
         self.available_height = self.physical_size.1 - (total_gutter + extra_top + extra_bottom);
+        self.resized = true;
     }
 
     pub fn pixel_to_screen(&self, x: u32, y: u32) -> (f32, f32) {
@@ -182,5 +197,11 @@ impl ScreenScaler {
             ((rx - lx) * scale) / width as f32,
             ((by - ty) * scale) / height as f32,
         )
+    }
+
+    pub fn get_resized_and_reset(&mut self) -> bool {
+        let result = self.resized;
+        self.resized = false;
+        result
     }
 }

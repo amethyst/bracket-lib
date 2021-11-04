@@ -151,7 +151,7 @@ impl SimpleConsoleBackend {
         font_scaler: FontScaler,
         screen_scaler: &ScreenScaler,
     ) {
-        if !needs_resize {
+        /*if !needs_resize {
             if let Some(old) = &self.previous_console {
                 if old.len() == tiles.len() {
                     let no_change = tiles.iter().zip(old.iter()).all(|(a, b)| *a==*b);
@@ -160,7 +160,7 @@ impl SimpleConsoleBackend {
                     }
                 }
             }
-        }
+        }*/
 
         if needs_resize {
             let vertex_capacity: usize = (13 * width as usize * height as usize) * 4;
