@@ -17,3 +17,7 @@ pub mod prelude {
     pub use crate::link_resource;
     pub use crate::*;
 }
+
+pub mod embedding {
+    pub use bracket_lib::prelude::EMBED;
+}
