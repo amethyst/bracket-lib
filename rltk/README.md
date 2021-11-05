@@ -2,6 +2,10 @@
 
 You can find the original C++ project here: [https://github.com/thebracket/rltk](https://github.com/thebracket/rltk).
 
+**BREAKING CHANGE ALERT**: The `crossterm` feature is now `cross_term` if you are using `bracket-terminal` directly. It's still `crossterm` for `bracket-lib` and `rltk`.
+
+**IMPORTANT**: If you are running the `webgpu` backend, you need to add `resolver = 2` to your `Cargo.toml` file. WGPU requires it for platform selection.
+
 > **Note**: `rltk_rs` is now a wrapper for `bracket-lib`. It maps all namespaces to work with the old `rltk` and `rltk::prelude` namespaces, including renaming `BTerm` and `BTermBuilder` for you. The Roguelike tutorial compiles unchanged with it.
 
 You can read a tutorial series on writing a Roguelike with this library at: [https://bfnightly.bracketproductions.com/rustbook/](https://bfnightly.bracketproductions.com/rustbook/)

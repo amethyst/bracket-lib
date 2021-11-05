@@ -8,6 +8,10 @@
 
 Early work has begun on writing a manual. You can find it in the `manual` folder, or [read it online](https://bfnightly.bracketproductions.com/bracket-lib/what_is_it.html).
 
+**BREAKING CHANGE ALERT**: The `crossterm` feature is now `cross_term` if you are using `bracket-terminal` directly. It's still `crossterm` for `bracket-lib` and `rltk`.
+
+**IMPORTANT**: If you are running the `webgpu` backend, you need to add `resolver = 2` to your `Cargo.toml` file. WGPU requires it for platform selection.
+
 ## What happened to RLTK?
 
 This *is* RLTK, renamed because it is increasingly finding usage outside of just Roguelikes. It's also been divided into a number of crates, to make it easy to pick-and-choose the features you need.

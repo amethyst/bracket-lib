@@ -12,6 +12,8 @@ Bracket-terminal supports multiple back-ends:
 
 **BREAKING CHANGE ALERT**: The `crossterm` feature is now `cross_term` if you are using `bracket-terminal` directly. It's still `crossterm` for `bracket-lib` and `rltk`.
 
+**IMPORTANT**: If you are running the `webgpu` backend, you need to add `resolver = 2` to your `Cargo.toml` file. WGPU requires it for platform selection.
+
 ## Why `bracket-terminal` and not direct console rendering?
 
 Bracket-terminal can do terminal rendering, but if that is your only target you may be better off using `crossterm`. Bracket-terminal gets you a few features you don't find elsewhere:
