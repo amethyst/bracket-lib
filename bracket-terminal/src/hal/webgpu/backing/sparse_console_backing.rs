@@ -1,7 +1,7 @@
 //! Provides a wgpu mapping to the sparse consoele
 use super::index_array_helper::IndexBuffer;
 use super::vertex_array_helper::FloatBuffer;
-use crate::hal::{Font, Shader, WgpuLink};
+use crate::hal::{Font, Shader, WgpuLink, scaler::{FontScaler, ScreenScaler}};
 use crate::prelude::SparseTile;
 use crate::BResult;
 use bracket_color::prelude::RGBA;
@@ -15,6 +15,8 @@ pub struct SparseConsoleBackend {
     index: IndexBuffer,
     /// WGPU Render Pipeline to use
     render_pipeline: RenderPipeline,
+    /// No change optimization
+    previous_console : Option<Vec<SparseTile>>,
 }
 
 impl SparseConsoleBackend {
@@ -72,6 +74,7 @@ impl SparseConsoleBackend {
             vao,
             index,
             render_pipeline,
+            previous_console: None,
         }
     }
 
@@ -110,42 +113,50 @@ impl SparseConsoleBackend {
         offset_y: f32,
         scale: f32,
         scale_center: (i32, i32),
-        tiles: &[SparseTile],
-        font_dimensions_glyphs: (u32, u32),
+        tiles: &Vec<SparseTile>,
+        font_scaler: FontScaler,
+        screen_scaler: &ScreenScaler,
+        must_resize: bool,
     ) {
+        if !must_resize {
+            if let Some(old) = &self.previous_console {
+                if old.len() == tiles.len() {
+                    let no_change = tiles.iter().zip(old.iter()).all(|(a, b)| *a==*b);
+                    if no_change {
+                        return;
+                    }
+                }
+            }
+        }
+
         self.vao.data.clear();
         self.index.data.clear();
 
-        let glyphs_on_font_x = font_dimensions_glyphs.0 as f32;
-        let glyphs_on_font_y = font_dimensions_glyphs.1 as f32;
-        let glyph_size_x: f32 = 1.0 / glyphs_on_font_x;
-        let glyph_size_y: f32 = 1.0 / glyphs_on_font_y;
+        let (step_x, step_y, left_x, top_y) = {
+            let (step_x, step_y) = screen_scaler.calc_step(width, height, scale);
+            let (left_x, top_y) = screen_scaler.top_left_pixel();
 
-        let step_x: f32 = scale * 2.0 / width as f32;
-        let step_y: f32 = scale * 2.0 / height as f32;
+            (step_x, step_y, left_x, top_y)
+        };
+
+        //let step_x: f32 = scale * 2.0 / width as f32;
+        //let step_y: f32 = scale * 2.0 / height as f32;
 
         let mut index_count: u16 = 0;
-        let screen_x_start: f32 = -1.0 * scale
-            - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
-        let screen_y_start: f32 = -1.0 * scale
-            + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
+        //let screen_x_start: f32 = -1.0 * scale
+        //    - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
+        //let screen_y_start: f32 = -1.0 * scale
+        //    + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
         for t in tiles.iter() {
             let x = t.idx % width as usize;
             let y = t.idx / width as usize;
 
-            let screen_x = ((step_x * x as f32) + screen_x_start) + offset_x;
-            let screen_y = ((step_y * y as f32) + screen_y_start) + offset_y;
+            let screen_x = ((step_x * x as f32) + left_x) + offset_x;
+            let screen_y = ((step_y * y as f32) + top_y) + offset_y;
             let fg = t.fg;
             let bg = t.bg;
             let glyph = t.glyph;
-            let glyph_x = glyph % font_dimensions_glyphs.0 as u16;
-            let glyph_y =
-                font_dimensions_glyphs.1 as u16 - (glyph / font_dimensions_glyphs.0 as u16);
-
-            let glyph_left = f32::from(glyph_x) * glyph_size_x;
-            let glyph_right = f32::from(glyph_x + 1) * glyph_size_x;
-            let glyph_top = f32::from(glyph_y) * glyph_size_y;
-            let glyph_bottom = f32::from(glyph_y - 1) * glyph_size_y;
+            let gp = font_scaler.glyph_position(glyph);
 
             SparseConsoleBackend::push_point(
                 &mut self.vao.data,
@@ -153,8 +164,8 @@ impl SparseConsoleBackend {
                 screen_y + step_y,
                 fg,
                 bg,
-                glyph_right,
-                glyph_top,
+                gp.glyph_right,
+                gp.glyph_top,
             );
             SparseConsoleBackend::push_point(
                 &mut self.vao.data,
@@ -162,8 +173,8 @@ impl SparseConsoleBackend {
                 screen_y,
                 fg,
                 bg,
-                glyph_right,
-                glyph_bottom,
+                gp.glyph_right,
+                gp.glyph_bottom,
             );
             SparseConsoleBackend::push_point(
                 &mut self.vao.data,
@@ -171,8 +182,8 @@ impl SparseConsoleBackend {
                 screen_y,
                 fg,
                 bg,
-                glyph_left,
-                glyph_bottom,
+                gp.glyph_left,
+                gp.glyph_bottom,
             );
             SparseConsoleBackend::push_point(
                 &mut self.vao.data,
@@ -180,8 +191,8 @@ impl SparseConsoleBackend {
                 screen_y + step_y,
                 fg,
                 bg,
-                glyph_left,
-                glyph_top,
+                gp.glyph_left,
+                gp.glyph_top,
             );
 
             self.index.data.push(index_count);
@@ -196,6 +207,7 @@ impl SparseConsoleBackend {
 
         self.vao.build(wgpu);
         self.index.build(wgpu);
+        self.previous_console = Some(tiles.clone());
     }
 
     pub fn wgpu_draw(&mut self, font: &Font) -> BResult<()> {

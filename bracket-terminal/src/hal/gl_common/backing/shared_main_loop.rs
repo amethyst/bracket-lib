@@ -1,3 +1,4 @@
+use crate::hal::scaler::FontScaler;
 use crate::hal::{
     ConsoleBacking, FancyConsoleBackend, SimpleConsoleBackend, SparseConsoleBackend,
     SpriteConsoleBackend, BACKEND, CONSOLE_BACKING,
@@ -52,12 +53,14 @@ pub(crate) fn check_console_backing() {
 }
 
 pub(crate) fn rebuild_consoles() {
+    let must_resize = BACKEND.lock().screen_scaler.get_resized_and_reset();
     let mut consoles = CONSOLE_BACKING.lock();
     let mut bi = BACKEND_INTERNAL.lock();
     let ss = bi.sprite_sheets.clone();
     for (i, c) in consoles.iter_mut().enumerate() {
         let font_index = bi.consoles[i].font_index;
         let glyph_dimensions = bi.fonts[font_index].font_dimensions_glyphs;
+        let tex_dimensions = bi.fonts[font_index].font_dimensions_texture;
         let cons = &mut bi.consoles[i];
         match c {
             ConsoleBacking::Simple { backing } => {
@@ -75,8 +78,8 @@ pub(crate) fn rebuild_consoles() {
                         sc.offset_y,
                         sc.scale,
                         sc.scale_center,
-                        sc.needs_resize_internal,
-                        glyph_dimensions,
+                        sc.needs_resize_internal || must_resize,
+                        FontScaler::new(glyph_dimensions, tex_dimensions),
                     );
                     sc.needs_resize_internal = false;
                 }
@@ -96,7 +99,8 @@ pub(crate) fn rebuild_consoles() {
                         sc.scale,
                         sc.scale_center,
                         &sc.tiles,
-                        glyph_dimensions,
+                        FontScaler::new(glyph_dimensions, tex_dimensions),
+                        must_resize,
                     );
                     sc.needs_resize_internal = false;
                 }
@@ -117,7 +121,7 @@ pub(crate) fn rebuild_consoles() {
                         fc.scale,
                         fc.scale_center,
                         &fc.tiles,
-                        glyph_dimensions,
+                        FontScaler::new(glyph_dimensions, tex_dimensions),
                     );
                     fc.needs_resize_internal = false;
                 }

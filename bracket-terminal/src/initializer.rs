@@ -485,6 +485,17 @@ impl BTermBuilder {
         self
     }
 
+    /// Request a pixel gutter around the rendered area. The gutter is
+    /// applied with half at each side of the screen, centering it. If you
+    /// want a 4 pixel gutter on every side, request a gutter size of 8.
+    pub fn with_gutter(mut self, desired_gutter: u32) -> Self {
+        #[cfg(any(feature = "opengl", feature = "webgpu"))]
+        {
+        self.platform_hints.desired_gutter = desired_gutter;
+        }
+        self
+    }
+
     /// Combine all of the builder parameters, and return an BTerm context ready to go.
     pub fn build(self) -> BResult<BTerm> {
         let mut context = init_raw(

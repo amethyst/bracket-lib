@@ -1,9 +1,10 @@
 use super::BACKEND;
 use crate::hal::native::{shader_strings, WrappedContext};
+use crate::hal::scaler::ScreenScaler;
 use crate::hal::{setup_quad, Framebuffer, Shader};
 use crate::prelude::{BTerm, InitHints, BACKEND_INTERNAL};
 use crate::BResult;
-use glutin::{dpi::LogicalSize, event_loop::EventLoop, window::WindowBuilder, ContextBuilder};
+use glutin::{event_loop::EventLoop, window::WindowBuilder, ContextBuilder};
 
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
@@ -11,13 +12,12 @@ pub fn init_raw<S: ToString>(
     window_title: S,
     platform_hints: InitHints,
 ) -> BResult<BTerm> {
+    let mut scaler = ScreenScaler::new(platform_hints.desired_gutter, width_pixels, height_pixels);
     let el = EventLoop::new();
     let wb = WindowBuilder::new()
         .with_title(window_title.to_string())
-        .with_inner_size(LogicalSize::new(
-            f64::from(width_pixels),
-            f64::from(height_pixels),
-        ));
+        .with_min_inner_size(scaler.new_window_size())
+        .with_inner_size(scaler.new_window_size());
     let windowed_context = ContextBuilder::new()
         .with_gl(platform_hints.gl_version)
         .with_gl_profile(platform_hints.gl_profile)
@@ -79,10 +79,11 @@ pub fn init_raw<S: ToString>(
 
     // Build the backing frame-buffer
     let initial_dpi_factor = windowed_context.window().scale_factor();
+    scaler.change_logical_size(width_pixels, height_pixels, initial_dpi_factor as f32);
     let backing_fbo = Framebuffer::build_fbo(
         &gl,
-        (width_pixels as f64 * initial_dpi_factor) as i32,
-        (height_pixels as f64 * initial_dpi_factor) as i32,
+        scaler.physical_size.0 as i32,
+        scaler.physical_size.1 as i32,
     )?;
 
     // Build a simple quad rendering VAO
@@ -98,6 +99,7 @@ pub fn init_raw<S: ToString>(
     be.backing_buffer = Some(backing_fbo);
     be.frame_sleep_time = crate::hal::convert_fps_to_wait(platform_hints.frame_sleep_time);
     be.resize_scaling = platform_hints.resize_scaling;
+    be.screen_scaler = scaler;
 
     BACKEND_INTERNAL.lock().shaders = shaders;
 

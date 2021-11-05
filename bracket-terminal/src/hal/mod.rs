@@ -53,6 +53,9 @@ mod dummy;
 ))]
 pub use dummy::*;
 
+#[cfg(any(feature = "opengl", feature = "webgpu"))]
+mod scaler;
+
 /// Provides a base abstract platform for BTerm to run on, with specialized content.
 pub struct BTermPlatform {
     pub platform: PlatformGL,

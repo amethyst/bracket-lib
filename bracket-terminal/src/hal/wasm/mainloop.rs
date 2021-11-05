@@ -32,7 +32,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
         for s in bit.sprite_sheets.iter_mut() {
             let mut f = Font::new(&s.filename.to_string(), 1, 1, (1, 1));
             f.setup_gl_texture(gl)?;
-            s.backing = Some(f);
+            s.backing = Some(Rc::new(Box::new(f)));
         }
     }
 

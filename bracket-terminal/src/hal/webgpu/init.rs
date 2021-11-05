@@ -1,7 +1,7 @@
 //! WGPU Initialization Service
 
 use super::{InitHints, Shader, WgpuLink, WrappedContext, BACKEND};
-use crate::{gamestate::BTerm, hal::Framebuffer, prelude::BACKEND_INTERNAL, BResult};
+use crate::{gamestate::BTerm, hal::Framebuffer, prelude::BACKEND_INTERNAL, BResult, hal::scaler::ScreenScaler};
 use wgpu::{Adapter, Device, Instance, Queue, Surface, SurfaceConfiguration};
 use winit::{
     dpi::LogicalSize,
@@ -15,13 +15,12 @@ pub fn init_raw<S: ToString>(
     window_title: S,
     platform_hints: InitHints,
 ) -> BResult<BTerm> {
+    let mut scaler = ScreenScaler::new(platform_hints.desired_gutter, width_pixels, height_pixels);
     let el = EventLoop::new();
     let wb = WindowBuilder::new()
         .with_title(window_title.to_string())
-        .with_inner_size(LogicalSize::new(
-            f64::from(width_pixels),
-            f64::from(height_pixels),
-        ));
+        .with_min_inner_size(scaler.new_window_size())
+        .with_inner_size(scaler.new_window_size());
     let window = wb.build(&el).unwrap();
 
     let (instance, surface, adapter, device, queue, config) =
@@ -54,11 +53,12 @@ pub fn init_raw<S: ToString>(
 
     // Build the backing frame-buffer
     let initial_dpi_factor = window.scale_factor();
+    scaler.change_logical_size(width_pixels, height_pixels, initial_dpi_factor as f32);
     let backing_buffer = Framebuffer::new(
         &device,
         surface.get_preferred_format(&adapter).unwrap(),
-        (width_pixels as f64 * initial_dpi_factor) as u32,
-        (height_pixels as f64 * initial_dpi_factor) as u32,
+        scaler.physical_size.0,
+        scaler.physical_size.1,
     );
 
     // Build a simple quad rendering VAO
@@ -78,6 +78,7 @@ pub fn init_raw<S: ToString>(
     });
     be.frame_sleep_time = crate::hal::convert_fps_to_wait(platform_hints.frame_sleep_time);
     be.resize_scaling = platform_hints.resize_scaling;
+    be.screen_scaler = scaler;
 
     let bterm = BTerm {
         width_pixels,
@@ -139,8 +140,10 @@ async fn init_adapter(
         .await
         .unwrap();
 
+    //println!("{:?}", adapter.get_info());
+
     let config = wgpu::SurfaceConfiguration {
-        usage: wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::COPY_SRC,
+        usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
         format: surface.get_preferred_format(&adapter).unwrap(),
         width: size.width,
         height: size.height,

@@ -11,6 +11,7 @@ use crate::{
         FlexiConsole, SimpleConsole, SparseConsole, SpriteConsole, BACKEND, BACKEND_INTERNAL, INPUT,
     },
     BResult,
+    hal::scaler::FontScaler,
 };
 use bracket_geometry::prelude::Point;
 use std::mem::size_of;
@@ -57,6 +58,13 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
     let el = unwrap.el;
     let window = unwrap.window;
 
+    on_resize(
+        &mut bterm,
+        window.inner_size(),
+        window.scale_factor(),
+        true,
+    )?; // Additional resize to handle some X11 cases
+
     let mut queued_resize_event: Option<ResizeEvent> = None;
     let spin_sleeper = spin_sleep::SpinSleeper::default();
     let my_window_id = window.id();
@@ -80,7 +88,6 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                 if execute_ms >= wait_time {
                     if queued_resize_event.is_some() {
                         if let Some(resize) = &queued_resize_event {
-                            //window..resize(resize.physical_size);
                             on_resize(
                                 &mut bterm,
                                 resize.physical_size,
@@ -213,15 +220,33 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
     });
 }
 
+fn largest_active_font() -> (u32, u32) {
+    let bi = BACKEND_INTERNAL.lock();
+    let mut max_width = 0;
+    let mut max_height = 0;
+    bi.consoles.iter().for_each(|c| {
+        let size = bi.fonts[c.font_index].tile_size;
+        if size.0 > max_width {
+            max_width = size.0;
+        }
+        if size.1 > max_height {
+            max_height = size.1;
+        }
+    });
+    (max_width, max_height)
+}
+
 fn on_resize(
     bterm: &mut BTerm,
     physical_size: PhysicalSize<u32>,
     dpi_scale_factor: f64,
     send_event: bool,
 ) -> BResult<()> {
+    let font_max_size = largest_active_font();
     //println!("{:#?}", physical_size);
     INPUT.lock().set_scale_factor(dpi_scale_factor);
     let mut be = BACKEND.lock();
+    be.screen_scaler.change_physical_size_smooth(physical_size.width, physical_size.height, dpi_scale_factor as f32, font_max_size);
     if send_event {
         bterm.resize_pixels(
             physical_size.width as u32,
@@ -248,7 +273,7 @@ fn on_resize(
 
     // Messaging
     bterm.on_event(BEvent::Resized {
-        new_size: Point::new(physical_size.width, physical_size.height),
+        new_size: Point::new(be.screen_scaler.available_width, be.screen_scaler.available_height),
         dpi_scale_factor: dpi_scale_factor as f32,
     });
 
@@ -258,8 +283,8 @@ fn on_resize(
         let num_consoles = bit.consoles.len();
         for i in 0..num_consoles {
             let font_size = bit.fonts[bit.consoles[i].font_index].tile_size;
-            let chr_w = physical_size.width as u32 / font_size.0;
-            let chr_h = physical_size.height as u32 / font_size.1;
+            let chr_w = be.screen_scaler.available_width / font_size.0;
+            let chr_h = be.screen_scaler.available_height / font_size.1;
             bit.consoles[i].console.set_char_size(chr_w, chr_h);
         }
     }
@@ -330,7 +355,7 @@ fn tock<GS: GameState>(
                     .create_view(&TextureViewDescriptor::default());
                 if backing_flip.render(&wgpu, &target).is_ok() {
                     if let Some(filename) = &be.request_screenshot {
-                        take_screenshot(filename, &wgpu, bterm, &current_tex.texture);
+                        take_screenshot(filename, &wgpu, bterm, &wgpu.backing_buffer.texture);
                     }
                     be.request_screenshot = None;
                     current_tex.present();
@@ -341,12 +366,14 @@ fn tock<GS: GameState>(
 }
 
 pub(crate) fn rebuild_consoles() {
+    let must_resize = BACKEND.lock().screen_scaler.get_resized_and_reset();
     let mut consoles = CONSOLE_BACKING.lock();
     let mut bi = BACKEND_INTERNAL.lock();
     //let ss = bi.sprite_sheets.clone();
     for (i, c) in consoles.iter_mut().enumerate() {
         let font_index = bi.consoles[i].font_index;
         let glyph_dimensions = bi.fonts[font_index].font_dimensions_glyphs;
+        let tex_dimensions = bi.fonts[font_index].font_dimensions_texture;
         let cons = &mut bi.consoles[i];
         match c {
             ConsoleBacking::Simple { backing } => {
@@ -367,8 +394,9 @@ pub(crate) fn rebuild_consoles() {
                         sc.offset_y,
                         sc.scale,
                         sc.scale_center,
-                        sc.needs_resize_internal,
-                        glyph_dimensions,
+                        sc.needs_resize_internal || must_resize,
+                        FontScaler::new(glyph_dimensions, tex_dimensions),
+                        &be.screen_scaler,
                     );
                     sc.needs_resize_internal = false;
                 }
@@ -391,7 +419,9 @@ pub(crate) fn rebuild_consoles() {
                         sc.scale,
                         sc.scale_center,
                         &sc.tiles,
-                        glyph_dimensions,
+                        FontScaler::new(glyph_dimensions, tex_dimensions),
+                        &be.screen_scaler,
+                        must_resize,
                     );
                     sc.needs_resize_internal = false;
                 }
@@ -415,7 +445,8 @@ pub(crate) fn rebuild_consoles() {
                         fc.scale,
                         fc.scale_center,
                         &fc.tiles,
-                        glyph_dimensions,
+                        FontScaler::new(glyph_dimensions, tex_dimensions),
+                        &be.screen_scaler,
                     );
                     fc.needs_resize_internal = false;
                 }
@@ -565,7 +596,7 @@ fn take_screenshot(filename: &str, wgpu: &WgpuLink, bterm: &BTerm, texture: &wgp
 
     let w = (bterm.width_pixels as f32) as usize;
     let h = (bterm.height_pixels as f32) as usize;
-    println!("Taking screenshot {} = {}x{}", filename, w, h);
+    //println!("Taking screenshot {} = {}x{}", filename, w, h);
     let buffer_dimensions = BufferDimensions::new(w, h);
     let output_buffer = wgpu.device.create_buffer(&wgpu::BufferDescriptor {
         label: None,
@@ -585,7 +616,7 @@ fn take_screenshot(filename: &str, wgpu: &WgpuLink, bterm: &BTerm, texture: &wgp
             label: Some("Render Encoder"),
         });
 
-    println!("Copying texture to buffer");
+    //println!("Copying texture to buffer");
     encoder.copy_texture_to_buffer(
         texture.as_image_copy(),
         wgpu::ImageCopyBuffer {
@@ -602,7 +633,7 @@ fn take_screenshot(filename: &str, wgpu: &WgpuLink, bterm: &BTerm, texture: &wgp
         texture_extent,
     );
     wgpu.queue.submit(std::iter::once(encoder.finish()));
-    println!("Saving PNG");
+    //println!("Saving PNG");
 
     let buffer_slice = output_buffer.slice(..);
     let buffer_future = buffer_slice.map_async(wgpu::MapMode::Read);
@@ -631,7 +662,7 @@ fn take_screenshot(filename: &str, wgpu: &WgpuLink, bterm: &BTerm, texture: &wgp
 
         // With the current interface, we have to make sure all mapped views are
         // dropped before we unmap the buffer.
-        println!("Unmapping");
+        //println!("Unmapping");
         std::mem::drop(padded_buffer);
         output_buffer.unmap();
     }

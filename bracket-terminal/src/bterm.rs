@@ -244,13 +244,22 @@ impl BTerm {
             self.width_pixels as f32 / max_sizes.0 as f32,
             self.height_pixels as f32 / max_sizes.1 as f32,
         );
-        let offsets = (
+        let mut offsets = (
             center_x as f32 * font_size.0 * (scale - 1.0),
             center_y as f32 * font_size.1 * (scale - 1.0),
         );
 
-        let w = self.width_pixels as f32 * scale;
-        let h = self.height_pixels as f32 * scale;
+        let w : f32;
+        let h : f32;
+
+        {
+            let be = crate::hal::BACKEND.lock();
+            w = be.screen_scaler.available_width as f32;
+            h = be.screen_scaler.available_height as f32;
+            offsets.0 -= be.screen_scaler.gutter_left as f32;
+            offsets.1 -= be.screen_scaler.gutter_top as f32;
+        }
+
         let extent_x = (pos.0 as f32 + offsets.0) / w;
         let extent_y = (pos.1 as f32 + offsets.1) / h;
         let mouse_x = f32::min(extent_x * max_sizes.0 as f32, max_sizes.0 as f32 - 1.0);

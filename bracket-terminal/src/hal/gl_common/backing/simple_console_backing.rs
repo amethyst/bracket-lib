@@ -1,4 +1,5 @@
-use crate::hal::{Font, Shader, VertexArray, VertexArrayEntry};
+use crate::hal::scaler::FontScaler;
+use crate::hal::{Font, Shader, VertexArray, VertexArrayEntry, BACKEND};
 use crate::prelude::Tile;
 use crate::BResult;
 use bracket_color::prelude::RGBA;
@@ -7,6 +8,7 @@ pub struct SimpleConsoleBackend {
     vao: VertexArray,
     vertex_counter: usize,
     index_counter: usize,
+    previous_console : Option<Vec<Tile>>,
 }
 
 impl SimpleConsoleBackend {
@@ -18,6 +20,7 @@ impl SimpleConsoleBackend {
             vao,
             vertex_counter: 0,
             index_counter: 0,
+            previous_console: None,
         };
         result.vao.vertex_buffer.resize(vertex_capacity, 0.0);
         result.vao.index_buffer.resize(index_capacity, 0);
@@ -77,14 +80,25 @@ impl SimpleConsoleBackend {
         &mut self,
         height: u32,
         width: u32,
-        tiles: &[Tile],
+        tiles: &Vec<Tile>,
         offset_x: f32,
         offset_y: f32,
         scale: f32,
         scale_center: (i32, i32),
         needs_resize: bool,
-        font_dimensions_glyphs: (u32, u32),
+        font_scaler: FontScaler,
     ) {
+        if !needs_resize {
+            if let Some(old) = &self.previous_console {
+                if old.len() == tiles.len() {
+                    let no_change = tiles.iter().zip(old.iter()).all(|(a, b)| *a==*b);
+                    if no_change {
+                        return;
+                    }
+                }
+            }
+        }
+
         if needs_resize {
             let vertex_capacity: usize = (13 * width as usize * height as usize) * 4;
             let index_capacity: usize = 6 * width as usize * height as usize;
@@ -92,44 +106,40 @@ impl SimpleConsoleBackend {
             self.vao.index_buffer.clear();
             self.vao.vertex_buffer.resize(vertex_capacity, 0.0);
             self.vao.index_buffer.resize(index_capacity, 0);
+            self.previous_console = None;
         }
 
         self.vertex_counter = 0;
         self.index_counter = 0;
-        let glyphs_on_font_x = font_dimensions_glyphs.0 as f32;
-        let glyphs_on_font_y = font_dimensions_glyphs.1 as f32;
-        let glyph_size_x: f32 = 1.0f32 / glyphs_on_font_x;
-        let glyph_size_y: f32 = 1.0f32 / glyphs_on_font_y;
 
-        let step_x: f32 = scale * 2.0f32 / width as f32;
-        let step_y: f32 = scale * 2.0f32 / height as f32;
+        let (step_x, step_y, left_x, top_y) = {
+            let be = BACKEND.lock();
+            let (step_x, step_y) = be.screen_scaler.calc_step(width, height, scale);
+            let (left_x, top_y) = be.screen_scaler.top_left_pixel();
+
+            (step_x, step_y, left_x, top_y)
+        };
+
+        //let step_x: f32 = scale * 2.0f32 / width as f32;
+        //let step_y: f32 = scale * 2.0f32 / height as f32;
 
         let mut index_count: i32 = 0;
-        let mut screen_y: f32 = -1.0 * scale
-            + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
+        let mut screen_y: f32 = top_y;
         for y in 0..height {
-            let mut screen_x: f32 = -1.0 * scale
-                - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
+            let mut screen_x: f32 = left_x;
             for x in 0..width {
                 let fg = tiles[((y * width) + x) as usize].fg;
                 let bg = tiles[((y * width) + x) as usize].bg;
                 let glyph = tiles[((y * width) + x) as usize].glyph;
-                let glyph_x = glyph % font_dimensions_glyphs.0 as u16;
-                let glyph_y =
-                    font_dimensions_glyphs.1 as u16 - (glyph / font_dimensions_glyphs.0 as u16);
-
-                let glyph_left = f32::from(glyph_x) * glyph_size_x;
-                let glyph_right = f32::from(glyph_x + 1) * glyph_size_x;
-                let glyph_top = f32::from(glyph_y) * glyph_size_y;
-                let glyph_bottom = (f32::from(glyph_y) - 0.999) * glyph_size_y;
+                let gp = font_scaler.glyph_position(glyph);
 
                 self.push_point(
                     screen_x + step_x,
                     screen_y + step_y,
                     fg,
                     bg,
-                    glyph_right,
-                    glyph_top,
+                    gp.glyph_right,
+                    gp.glyph_top,
                     offset_x,
                     offset_y,
                 );
@@ -138,8 +148,8 @@ impl SimpleConsoleBackend {
                     screen_y,
                     fg,
                     bg,
-                    glyph_right,
-                    glyph_bottom,
+                    gp.glyph_right,
+                    gp.glyph_bottom,
                     offset_x,
                     offset_y,
                 );
@@ -148,8 +158,8 @@ impl SimpleConsoleBackend {
                     screen_y,
                     fg,
                     bg,
-                    glyph_left,
-                    glyph_bottom,
+                    gp.glyph_left,
+                    gp.glyph_bottom,
                     offset_x,
                     offset_y,
                 );
@@ -158,8 +168,8 @@ impl SimpleConsoleBackend {
                     screen_y + step_y,
                     fg,
                     bg,
-                    glyph_left,
-                    glyph_top,
+                    gp.glyph_left,
+                    gp.glyph_top,
                     offset_x,
                     offset_y,
                 );
@@ -179,6 +189,7 @@ impl SimpleConsoleBackend {
         }
 
         self.vao.upload_buffers();
+        self.previous_console = Some(tiles.clone());
     }
 
     pub fn gl_draw(&mut self, font: &Font, shader: &Shader) -> BResult<()> {

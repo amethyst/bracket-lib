@@ -3,6 +3,7 @@
 use wgpu::{Adapter, Device, Instance, Queue, Surface, SurfaceConfiguration};
 use winit::{event_loop::EventLoop, window::Window};
 use super::Framebuffer;
+use crate::hal::scaler::{ ScreenScaler, default_gutter_size };
 
 /// Defines the WGPU platform
 pub struct PlatformGL {
@@ -19,6 +20,8 @@ pub struct PlatformGL {
     pub resize_request: Option<(u32, u32)>,
     /// Are we requesting a screenshot?
     pub request_screenshot: Option<String>,
+    /// Screen scaling system
+    pub screen_scaler: ScreenScaler,
 }
 
 pub struct WgpuLink {
@@ -44,6 +47,7 @@ pub struct InitHints {
     pub fullscreen: bool,
     pub frame_sleep_time: Option<f32>,
     pub resize_scaling: bool,
+    pub desired_gutter: u32,
 }
 
 impl InitHints {
@@ -53,6 +57,7 @@ impl InitHints {
             fullscreen: false,
             frame_sleep_time: None,
             resize_scaling: false,
+            desired_gutter: default_gutter_size(),
         }
     }
 }

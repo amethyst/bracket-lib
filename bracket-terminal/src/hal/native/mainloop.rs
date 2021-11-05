@@ -11,15 +11,33 @@ use std::time::Instant;
 
 const TICK_TYPE: ControlFlow = ControlFlow::Poll;
 
+fn largest_active_font() -> (u32, u32) {
+    let bi = BACKEND_INTERNAL.lock();
+    let mut max_width = 0;
+    let mut max_height = 0;
+    bi.consoles.iter().for_each(|c| {
+        let size = bi.fonts[c.font_index].tile_size;
+        if size.0 > max_width {
+            max_width = size.0;
+        }
+        if size.1 > max_height {
+            max_height = size.1;
+        }
+    });
+    (max_width, max_height)
+}
+
 fn on_resize(
     bterm: &mut BTerm,
     physical_size: glutin::dpi::PhysicalSize<u32>,
     dpi_scale_factor: f64,
     send_event: bool,
 ) -> BResult<()> {
+    let font_max_size = largest_active_font();
     //println!("{:#?}", physical_size);
     INPUT.lock().set_scale_factor(dpi_scale_factor);
     let mut be = BACKEND.lock();
+    be.screen_scaler.change_physical_size_smooth(physical_size.width, physical_size.height, dpi_scale_factor as f32, font_max_size);
     if send_event {
         bterm.resize_pixels(
             physical_size.width as u32,
@@ -39,11 +57,14 @@ fn on_resize(
             )
         );
     }
-    let new_fb =
-        Framebuffer::build_fbo(gl, physical_size.width as i32, physical_size.height as i32)?;
+    let new_fb = Framebuffer::build_fbo(
+        gl, 
+        physical_size.width as i32, 
+        physical_size.height as i32
+    )?;
     be.backing_buffer = Some(new_fb);
     bterm.on_event(BEvent::Resized {
-        new_size: Point::new(physical_size.width, physical_size.height),
+        new_size: Point::new(be.screen_scaler.available_width, be.screen_scaler.available_height),
         dpi_scale_factor: dpi_scale_factor as f32,
     });
 
@@ -52,8 +73,8 @@ fn on_resize(
         let num_consoles = bit.consoles.len();
         for i in 0..num_consoles {
             let font_size = bit.fonts[bit.consoles[i].font_index].tile_size;
-            let chr_w = physical_size.width as u32 / font_size.0;
-            let chr_h = physical_size.height as u32 / font_size.1;
+            let chr_w = be.screen_scaler.available_width / font_size.0;
+            let chr_h = be.screen_scaler.available_height / font_size.1;
             bit.consoles[i].console.set_char_size(chr_w, chr_h);
         }
     }
