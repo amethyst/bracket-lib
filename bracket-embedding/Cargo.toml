@@ -1,0 +1,16 @@
+[package]
+name = "bracket-embedding"
+version = "0.8.0"
+edition = "2018"
+publish = false
+description = "Provides resource embedding services for bracket-lib"
+homepage = "https://github.com/thebracket/bracket-lib"
+repository = "https://github.com/thebracket/bracket-lib"
+readme = "README.md"
+keywords = ["roguelike", "gamedev", "terminal", "ascii", "cp437"]
+categories = ["game-engines"]
+license = "MIT"
+
+[dependencies]
+parking_lot = { version = "~0.11.1" }
+lazy_static = "1.4.0"

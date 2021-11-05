@@ -363,8 +363,8 @@ impl Console for VirtualConsole {
                 let cell = layer.get_mut(x as usize, y as usize).unwrap();
                 let idx = self.at(x as i32, y as i32);
                 cell.ch = u32::from(self.tiles[idx].glyph);
-                cell.fg = self.tiles[idx].fg.to_xp();
-                cell.bg = self.tiles[idx].bg.to_xp();
+                cell.fg = self.tiles[idx].fg.into();
+                cell.bg = self.tiles[idx].bg.into();
             }
         }
 

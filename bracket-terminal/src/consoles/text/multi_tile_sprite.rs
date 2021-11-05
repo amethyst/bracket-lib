@@ -1,5 +1,5 @@
 use crate::prelude::{string_to_cp437, BTerm, DrawBatch, FontCharType, Tile, XpFile};
-use bracket_color::prelude::{ColorPair, RGB, RGBA};
+use bracket_color::prelude::{ColorPair, RGBA};
 use bracket_geometry::prelude::Point;
 
 /// Represents a sprite consisting of multiple glyphs/colors, occupying multiple console locations.
@@ -85,8 +85,8 @@ impl MultiTileSprite {
                     if !cell.bg.is_transparent() {
                         let idx = (y * (dimensions.x as usize)) + (x as usize);
                         tiles[idx].glyph = cell.ch as FontCharType;
-                        tiles[idx].fg = RGB::from_xp(cell.fg).into();
-                        tiles[idx].bg = RGB::from_xp(cell.bg).into();
+                        tiles[idx].fg = cell.fg.into();
+                        tiles[idx].bg = cell.bg.into();
                     }
                 }
             }

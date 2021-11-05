@@ -1,5 +1,3 @@
-#[cfg(feature = "rex")]
-use crate::prelude::XpColor;
 use crate::prelude::{HSV, RGBA};
 use std::convert::From;
 use std::ops;
@@ -228,26 +226,6 @@ impl RGB {
             g: (green1 + green2) as f32 / 255.0,
             b: (blue1 + blue2) as f32 / 255.0,
         })
-    }
-
-    /// Converts an xp file color component to an RGB
-    #[cfg(feature = "rex")]
-    #[must_use]
-    pub fn from_xp(col: XpColor) -> Self {
-        Self::from_u8(col.r, col.g, col.b)
-    }
-
-    /// Converts an RGB to an xp file color component
-    #[allow(clippy::cast_sign_loss)]
-    #[allow(clippy::cast_possible_truncation)]
-    #[cfg(feature = "rex")]
-    #[must_use]
-    pub fn to_xp(&self) -> XpColor {
-        XpColor::new(
-            (self.r * 255.0) as u8,
-            (self.g * 255.0) as u8,
-            (self.b * 255.0) as u8,
-        )
     }
 
     /// Converts an RGB triple to an HSV triple.
