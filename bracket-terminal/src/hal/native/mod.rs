@@ -6,8 +6,7 @@ use crate::hal::ConsoleBacking;
 pub use mainloop::*;
 use parking_lot::Mutex;
 use std::any::Any;
-
-use super::scaler::ScreenScaler;
+use crate::hal::scaler::{ScreenScaler, default_gutter_size};
 
 pub type GlCallback = fn(&mut dyn Any, &glow::Context);
 
@@ -61,10 +60,6 @@ pub struct InitHints {
     pub frame_sleep_time: Option<f32>,
     pub resize_scaling: bool,
     pub desired_gutter: u32,
-}
-
-fn default_gutter_size() -> u32 {
-    32
 }
 
 impl InitHints {

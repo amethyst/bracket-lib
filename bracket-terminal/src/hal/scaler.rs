@@ -1,5 +1,20 @@
 use winit::dpi::LogicalSize;
 
+#[cfg(any(target_os = "windows", target_os = "macos"))]
+pub(crate) fn default_gutter_size() -> u32 {
+    // Testing showed that an 8-pixel gutter is enough to fix
+    // Big Sur and Windows 11.
+    8
+}
+
+#[cfg(not(any(target_os = "windows", target_os = "macos")))]
+pub(crate) fn default_gutter_size() -> u32 {
+    // Testing showed that an 8-pixel gutter is enough to fix
+    // Big Sur and Windows 11.
+    0
+}
+
+
 /// Provides a consistent font to texture coordinates mapping service.
 pub struct FontScaler {
     font_dimensions_glyphs: (u16, u16),

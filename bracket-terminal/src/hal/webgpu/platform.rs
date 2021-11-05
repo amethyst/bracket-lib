@@ -3,7 +3,7 @@
 use wgpu::{Adapter, Device, Instance, Queue, Surface, SurfaceConfiguration};
 use winit::{event_loop::EventLoop, window::Window};
 use super::Framebuffer;
-use crate::hal::scaler::ScreenScaler;
+use crate::hal::scaler::{ ScreenScaler, default_gutter_size };
 
 /// Defines the WGPU platform
 pub struct PlatformGL {
@@ -60,8 +60,4 @@ impl InitHints {
             desired_gutter: default_gutter_size(),
         }
     }
-}
-
-fn default_gutter_size() -> u32 {
-    32
 }

@@ -140,7 +140,7 @@ async fn init_adapter(
         .await
         .unwrap();
 
-    println!("{:?}", adapter.get_info());
+    //println!("{:?}", adapter.get_info());
 
     let config = wgpu::SurfaceConfiguration {
         usage: wgpu::TextureUsages::RENDER_ATTACHMENT,

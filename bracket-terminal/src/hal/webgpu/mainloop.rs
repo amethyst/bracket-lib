@@ -596,7 +596,7 @@ fn take_screenshot(filename: &str, wgpu: &WgpuLink, bterm: &BTerm, texture: &wgp
 
     let w = (bterm.width_pixels as f32) as usize;
     let h = (bterm.height_pixels as f32) as usize;
-    println!("Taking screenshot {} = {}x{}", filename, w, h);
+    //println!("Taking screenshot {} = {}x{}", filename, w, h);
     let buffer_dimensions = BufferDimensions::new(w, h);
     let output_buffer = wgpu.device.create_buffer(&wgpu::BufferDescriptor {
         label: None,
@@ -616,7 +616,7 @@ fn take_screenshot(filename: &str, wgpu: &WgpuLink, bterm: &BTerm, texture: &wgp
             label: Some("Render Encoder"),
         });
 
-    println!("Copying texture to buffer");
+    //println!("Copying texture to buffer");
     encoder.copy_texture_to_buffer(
         texture.as_image_copy(),
         wgpu::ImageCopyBuffer {
@@ -633,7 +633,7 @@ fn take_screenshot(filename: &str, wgpu: &WgpuLink, bterm: &BTerm, texture: &wgp
         texture_extent,
     );
     wgpu.queue.submit(std::iter::once(encoder.finish()));
-    println!("Saving PNG");
+    //println!("Saving PNG");
 
     let buffer_slice = output_buffer.slice(..);
     let buffer_future = buffer_slice.map_async(wgpu::MapMode::Read);
@@ -662,7 +662,7 @@ fn take_screenshot(filename: &str, wgpu: &WgpuLink, bterm: &BTerm, texture: &wgp
 
         // With the current interface, we have to make sure all mapped views are
         // dropped before we unmap the buffer.
-        println!("Unmapping");
+        //println!("Unmapping");
         std::mem::drop(padded_buffer);
         output_buffer.unmap();
     }
