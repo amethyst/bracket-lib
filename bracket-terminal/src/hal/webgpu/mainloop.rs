@@ -510,6 +510,7 @@ pub(crate) fn check_console_backing() {
         // Easy case: there are no consoles so we need to make them all.
         let bit = BACKEND_INTERNAL.lock();
         for cons in &bit.consoles {
+            println!("{}", cons.shader_index);
             let cons_any = cons.console.as_any();
             if let Some(st) = cons_any.downcast_ref::<SimpleConsole>() {
                 consoles.push(ConsoleBacking::Simple {

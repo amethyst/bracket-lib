@@ -36,10 +36,10 @@ var s_font: sampler;
 [[stage(fragment)]]
 fn main(in: VertexOutput) -> [[location(0)]] vec4<f32> {
     let original : vec4<f32> = textureSample(t_font, s_font, in.tex_coords);
-    if (original.r < 0.1 || original.g < 0.1 || original.b < 0.1) {
+    if (original.r < 0.01 && original.g < 0.01 && original.b < 0.01) {
         discard;
     }
-    if ((original.r > 0.1 || original.g > 0.1 || original.b > 0.1) && original.a > 0.1) {
+    if ((original.r > 0.1 || original.g > 0.1 || original.b > 0.1) || original.a > 0.1) {
         return original * in.fg;
     } else {
         return in.bg;
