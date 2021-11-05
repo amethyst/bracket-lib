@@ -355,7 +355,7 @@ fn tock<GS: GameState>(
                     .create_view(&TextureViewDescriptor::default());
                 if backing_flip.render(&wgpu, &target).is_ok() {
                     if let Some(filename) = &be.request_screenshot {
-                        take_screenshot(filename, &wgpu, bterm, &current_tex.texture);
+                        take_screenshot(filename, &wgpu, bterm, &wgpu.backing_buffer.texture);
                     }
                     be.request_screenshot = None;
                     current_tex.present();
