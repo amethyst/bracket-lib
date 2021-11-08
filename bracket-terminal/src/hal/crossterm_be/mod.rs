@@ -40,7 +40,7 @@ lazy_static! {
     pub static ref BACKEND: Mutex<PlatformGL> = Mutex::new(PlatformGL {
         old_width: 0,
         old_height: 0,
-        frame_sleep_time: None
+        frame_sleep_time: None,
     });
 }
 

@@ -222,18 +222,18 @@ impl BTerm {
     }
 
     /// Applies the current physical mouse position to the active console, and translates the coordinates into that console's coordinate space.
-    #[cfg(feature = "curses")]
+    #[cfg(any(feature = "curses", feature = "cross_term"))]
     pub fn mouse_pos(&self) -> (i32, i32) {
         (self.mouse_pos.0, self.mouse_pos.1)
     }
 
     ///
-    #[cfg(feature = "curses")]
+    #[cfg(any(feature = "curses", feature = "cross_term"))]
     fn pixel_to_char_pos(&self, pos: (i32, i32), _console: &Box<dyn Console>) -> (i32, i32) {
         pos
     }
 
-    #[cfg(not(feature = "curses"))]
+    #[cfg(not(any(feature = "curses", feature = "cross_term")))]
     fn pixel_to_char_pos(&self, pos: (i32, i32), console: &Box<dyn Console>) -> (i32, i32) {
         let max_sizes = console.get_char_size();
         let (scale, center_x, center_y) = console.get_scale();
@@ -269,7 +269,7 @@ impl BTerm {
     }
 
     /// Applies the current physical mouse position to the active console, and translates the coordinates into that console's coordinate space.
-    #[cfg(not(feature = "curses"))]
+    #[cfg(not(any(feature = "curses", feature = "cross_term")))]
     pub fn mouse_pos(&self) -> (i32, i32) {
         let bi = BACKEND_INTERNAL.lock();
         let active_console = &bi.consoles[self.active_console].console;
