@@ -45,9 +45,6 @@ mod palette;
 mod rgb;
 /// Import RGBA color support
 mod rgba;
-/// Import REX Paint Support
-#[cfg(feature = "rex")]
-mod xpcolor;
 
 /// Exports the color functions/types in the `prelude` namespace.
 pub mod prelude {
@@ -59,6 +56,4 @@ pub mod prelude {
     pub use crate::palette::*;
     pub use crate::rgb::*;
     pub use crate::rgba::*;
-    #[cfg(feature = "rex")]
-    pub use crate::xpcolor::*;
 }

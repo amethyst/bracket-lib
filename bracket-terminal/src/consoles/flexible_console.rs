@@ -2,8 +2,9 @@ use crate::prelude::{
     string_to_cp437, to_cp437, CharacterTranslationMode, ColoredTextSpans, Console, FontCharType,
     TextAlign, XpLayer,
 };
-use bracket_color::prelude::{XpColor, RGBA};
+use bracket_color::prelude::RGBA;
 use bracket_geometry::prelude::{PointF, Rect};
+use bracket_rex::prelude::XpColor;
 use std::any::Any;
 
 /// Internal storage structure for sparse tiles.
@@ -363,8 +364,8 @@ impl Console for FlexiConsole {
             let y = c.position.y as usize;
             let cell = layer.get_mut(x as usize, y as usize).unwrap();
             cell.ch = u32::from(c.glyph);
-            cell.fg = c.fg.to_xp();
-            cell.bg = c.bg.to_xp();
+            cell.fg = XpColor::from(c.fg);
+            cell.bg = XpColor::from(c.bg);
         }
 
         layer

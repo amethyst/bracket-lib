@@ -1,5 +1,5 @@
 //! WGPU Definition of a font
-use crate::prelude::embedding;
+use bracket_embedding::prelude::EMBED;
 use crate::BResult;
 use bracket_color::prelude::RGB;
 use image::GenericImageView;
@@ -47,7 +47,7 @@ impl Font {
     }
 
     fn load_image(filename: &str) -> image::DynamicImage {
-        let resource = embedding::EMBED.lock().get_resource(filename.to_string());
+        let resource = EMBED.lock().get_resource(filename.to_string());
         match resource {
             None => image::open(std::path::Path::new(&filename.to_string()))
                 .expect("Failed to load texture"),

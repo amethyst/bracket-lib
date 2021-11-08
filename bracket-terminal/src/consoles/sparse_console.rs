@@ -2,7 +2,7 @@ use crate::prelude::{
     string_to_cp437, to_cp437, CharacterTranslationMode, ColoredTextSpans, Console, FontCharType,
     TextAlign, XpLayer,
 };
-use bracket_color::prelude::{XpColor, RGBA};
+use bracket_color::prelude::RGBA;
 use bracket_geometry::prelude::Rect;
 use std::any::Any;
 
@@ -334,7 +334,7 @@ impl Console for SparseConsole {
         for y in 0..self.height {
             for x in 0..self.width {
                 let cell = layer.get_mut(x as usize, y as usize).unwrap();
-                cell.bg = XpColor::TRANSPARENT;
+                cell.bg = bracket_rex::prelude::XpColor::TRANSPARENT;
             }
         }
 
@@ -343,8 +343,8 @@ impl Console for SparseConsole {
             let y = c.idx / self.width as usize;
             let cell = layer.get_mut(x as usize, y as usize).unwrap();
             cell.ch = u32::from(c.glyph);
-            cell.fg = c.fg.to_xp();
-            cell.bg = c.bg.to_xp();
+            cell.fg = c.fg.into();
+            cell.bg = c.bg.into();
         }
 
         layer

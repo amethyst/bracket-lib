@@ -16,12 +16,12 @@ exclude = [
 ]
 
 [dependencies]
-bracket-color = { path = "../bracket-color", version = "~0.8.2", features = [ "rex", "palette" ] }
+bracket-color = { path = "../bracket-color", version = "~0.8.2", features = [ "palette" ] }
 bracket-geometry = { path = "../bracket-geometry", version = "~0.8.3" }
-flate2 = "1.0.20"
+bracket-rex = { path = "../bracket-rex", version = "~0.8.0" }
+bracket-embedding = { path = "../bracket-embedding", version = "~0.8.0" }
 lazy_static = "1.4.0"
 object-pool = "0.5.3"
-byteorder = "1.4.2"
 glow = { version = "0.10.0", optional = true }
 image = { version = "0.23.12", default-features = false, features = ["jpeg", "png"], optional = true }
 png = { version = "0.16", optional = true }

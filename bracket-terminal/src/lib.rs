@@ -2,12 +2,12 @@
 extern crate lazy_static;
 mod bterm;
 mod consoles;
-pub mod embedding;
 mod gamestate;
 mod hal;
 mod initializer;
 mod input;
 pub mod rex;
+pub use bracket_embedding::prelude::{EMBED, link_resource, embedded_resource};
 
 pub type BResult<T> = anyhow::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 pub(crate) use input::clear_input_state;
@@ -24,8 +24,7 @@ pub mod prelude {
 
     pub use crate::bterm::*;
     pub use crate::consoles::*;
-    pub use crate::embedding;
-    pub use crate::embedding::EMBED;
+    pub use bracket_embedding::prelude::{EMBED, link_resource, embedded_resource};
     pub use crate::gamestate::GameState;
     pub use crate::hal::{init_raw, BTermPlatform, Font, InitHints, Shader, BACKEND};
     pub use crate::initializer::*;
@@ -68,21 +67,5 @@ macro_rules! add_wasm_support {
         pub fn wasm_main() {
             main().expect("Error in main");
         }
-    };
-}
-
-#[macro_export]
-macro_rules! embedded_resource {
-    ($resource_name : ident, $filename : expr) => {
-        const $resource_name: &'static [u8] = include_bytes!($filename);
-    };
-}
-
-#[macro_export]
-macro_rules! link_resource {
-    ($resource_name : ident, $filename : expr) => {
-        EMBED
-            .lock()
-            .add_resource($filename.to_string(), $resource_name);
     };
 }

@@ -1,5 +1,3 @@
-#[cfg(feature = "rex")]
-use crate::prelude::XpColor;
 use crate::prelude::{HtmlColorConversionError, HSV, RGB};
 use std::convert::From;
 use std::ops;
@@ -281,19 +279,6 @@ impl RGBA {
             b: self.b,
             a: self.a + range * percent,
         }
-    }
-
-    /// Converts an RGB to an xp file color component
-    #[allow(clippy::cast_sign_loss)]
-    #[allow(clippy::cast_possible_truncation)]
-    #[cfg(feature = "rex")]
-    #[must_use]
-    pub fn to_xp(&self) -> XpColor {
-        XpColor::new(
-            (self.r * 255.0) as u8,
-            (self.g * 255.0) as u8,
-            (self.b * 255.0) as u8,
-        )
     }
 }
 
