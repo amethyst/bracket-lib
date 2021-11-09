@@ -4,6 +4,7 @@ use crate::hal::scaler::ScreenScaler;
 use crate::hal::{setup_quad, Framebuffer, Shader};
 use crate::prelude::{BTerm, InitHints, BACKEND_INTERNAL};
 use crate::BResult;
+use glow::HasContext;
 use glutin::{event_loop::EventLoop, window::WindowBuilder, ContextBuilder};
 
 pub fn init_raw<S: ToString>(
@@ -42,6 +43,13 @@ pub fn init_raw<S: ToString>(
             windowed_context.get_proc_address(ptr) as *const _
         })
     };
+
+    #[cfg(debug_assertions)]
+    unsafe {
+        let gl_version = gl.get_parameter_string(glow::VERSION);
+        let shader_version = gl.get_parameter_string(glow::SHADING_LANGUAGE_VERSION);
+        println!("Initialized OpenGL with: {}, Shader Language Version: {}", gl_version, shader_version);
+    }
 
     // Load our basic shaders
     let mut shaders: Vec<Shader> = Vec::new();

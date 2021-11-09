@@ -65,11 +65,11 @@ pub struct InitHints {
 impl InitHints {
     pub fn new() -> Self {
         Self {
-            vsync: true,
+            vsync: false,
             fullscreen: false,
-            gl_version: glutin::GlRequest::Latest,
+            gl_version: glutin::GlRequest::Specific(glutin::Api::OpenGl, (3, 2)),
             gl_profile: glutin::GlProfile::Core,
-            hardware_acceleration: true,
+            hardware_acceleration: false,
             srgb: true,
             frame_sleep_time: None,
             resize_scaling: false,
@@ -81,11 +81,11 @@ impl InitHints {
 impl Default for InitHints {
     fn default() -> Self {
         Self {
-            vsync: true,
+            vsync: false,
             fullscreen: false,
-            gl_version: glutin::GlRequest::Latest,
+            gl_version: glutin::GlRequest::Specific(glutin::Api::OpenGl, (3, 2)),
             gl_profile: glutin::GlProfile::Core,
-            hardware_acceleration: true,
+            hardware_acceleration: false,
             srgb: true,
             frame_sleep_time: None,
             resize_scaling: false,
