@@ -63,6 +63,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
         window.inner_size(),
         window.scale_factor(),
         true,
+        &mut backing_flip,
     )?; // Additional resize to handle some X11 cases
 
     let mut queued_resize_event: Option<ResizeEvent> = None;
@@ -93,6 +94,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                                 resize.physical_size,
                                 resize.dpi_scale_factor,
                                 resize.send_event,
+                                &mut backing_flip,
                             )
                             .unwrap();
                         }
@@ -189,7 +191,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                         let scale_factor = window.scale_factor();
                         let physical_size = window.inner_size();
                         //wc.resize(physical_size);
-                        on_resize(&mut bterm, physical_size, scale_factor, false).unwrap();
+                        on_resize(&mut bterm, physical_size, scale_factor, false, &mut backing_flip,).unwrap();
                         bterm.on_event(BEvent::ScaleFactorChanged {
                             new_size: Point::new(new_inner_size.width, new_inner_size.height),
                             dpi_scale_factor: scale_factor as f32,
@@ -241,11 +243,13 @@ fn on_resize(
     physical_size: PhysicalSize<u32>,
     dpi_scale_factor: f64,
     send_event: bool,
+    backing_flip: &mut QuadRender,
 ) -> BResult<()> {
     let font_max_size = largest_active_font();
     //println!("{:#?}", physical_size);
     INPUT.lock().set_scale_factor(dpi_scale_factor);
     let mut be = BACKEND.lock();
+    let (l, r, t, b) = be.screen_scaler.get_backing_buffer_output_coordinates();
     be.screen_scaler.change_physical_size_smooth(physical_size.width, physical_size.height, dpi_scale_factor as f32, font_max_size);
     if send_event {
         bterm.resize_pixels(
@@ -257,19 +261,11 @@ fn on_resize(
 
     // WGPU resizing
     if let Some(mut wgpu) = be.wgpu.as_mut() {
+        backing_flip.update_buffer_with_gutter(wgpu, l, r, t, b);
         wgpu.config.width = physical_size.width;
         wgpu.config.height = physical_size.height;
         wgpu.surface.configure(&wgpu.device, &wgpu.config);
     }
-
-    // Backing buffer resizing
-    let mut wgpu = be.wgpu.as_mut().unwrap();
-    wgpu.backing_buffer = Framebuffer::new(
-        &wgpu.device,
-        wgpu.surface.get_preferred_format(&wgpu.adapter).unwrap(),
-        physical_size.width,
-        physical_size.height,
-    );
 
     // Messaging
     bterm.on_event(BEvent::Resized {
@@ -280,6 +276,17 @@ fn on_resize(
     // Consoles
     let mut bit = BACKEND_INTERNAL.lock();
     if be.resize_scaling && send_event {
+        // Backing buffer resizing
+        let w = be.screen_scaler.available_width;
+        let h = be.screen_scaler.available_height;
+        let mut wgpu = be.wgpu.as_mut().unwrap();
+        wgpu.backing_buffer = Framebuffer::new(
+            &wgpu.device,
+            wgpu.surface.get_preferred_format(&wgpu.adapter).unwrap(),
+            w,
+            h,
+        );
+
         let num_consoles = bit.consoles.len();
         for i in 0..num_consoles {
             let font_size = bit.fonts[bit.consoles[i].font_index].tile_size;
