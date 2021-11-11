@@ -64,6 +64,7 @@ pub struct ScreenScaler {
     pub smooth_gutter_x: u32,
     pub smooth_gutter_y: u32,
     pub physical_size: (u32, u32),
+    pub logical_size: (u32, u32),
     pub scale_factor: f32,
     pub gutter_left: u32,
     pub gutter_right: u32,
@@ -82,6 +83,7 @@ impl ScreenScaler {
             smooth_gutter_x: 0,
             smooth_gutter_y: 0,
             physical_size: (0, 0),
+            logical_size: (0, 0),
             scale_factor: 1.0,
             gutter_left: 0,
             gutter_right: 0,
@@ -100,6 +102,7 @@ impl ScreenScaler {
             smooth_gutter_x: 0,
             smooth_gutter_y: 0,
             physical_size: (desired_width, desired_height),
+            logical_size: (desired_width, desired_height),
             scale_factor: 1.0,
             gutter_left: 0,
             gutter_right: 0,
@@ -116,6 +119,7 @@ impl ScreenScaler {
 
     pub fn new_window_size(&mut self) -> LogicalSize<u32> {
         self.aspect_ratio = (self.physical_size.1 + self.desired_gutter) as f32 / (self.physical_size.0 + self.desired_gutter) as f32;
+        self.logical_size = self.physical_size;
         LogicalSize::new(
             self.physical_size.0 + self.desired_gutter,
             self.physical_size.1 + self.desired_gutter,
@@ -189,19 +193,19 @@ impl ScreenScaler {
 
     pub fn pixel_to_screen(&self, x: u32, y: u32) -> (f32, f32) {
         (
-            ((x as f32 / self.physical_size.0 as f32) * 2.0) - 1.0,
-            ((y as f32 / self.physical_size.1 as f32) * 2.0) - 1.0,
+            ((x as f32 / self.logical_size.0 as f32) * 2.0) - 1.0,
+            ((y as f32 / self.logical_size.1 as f32) * 2.0) - 1.0,
         )
     }
 
     pub fn top_left_pixel(&self) -> (f32, f32) {
-        self.pixel_to_screen(self.gutter_left, self.gutter_top)
+        self.pixel_to_screen(0, 0)
     }
 
     pub fn bottom_right_pixel(&self) -> (f32, f32) {
         self.pixel_to_screen(
-            self.physical_size.0 - self.gutter_right,
-            self.physical_size.1 - self.gutter_bottom
+            self.logical_size.0,
+            self.logical_size.1
         )
     }
 
@@ -218,5 +222,24 @@ impl ScreenScaler {
         let result = self.resized;
         self.resized = false;
         result
+    }
+
+    fn pixel_to_screen_physical(&self, x: u32, y: u32) -> (f32, f32) {
+        (
+            ((x as f32 / self.physical_size.0 as f32) * 2.0) - 1.0,
+            ((y as f32 / self.physical_size.1 as f32) * 2.0) - 1.0,
+        )
+    }
+
+    pub fn get_backing_buffer_output_coordinates(&self) -> (f32, f32, f32, f32) {
+        let (left, bottom) = self.pixel_to_screen_physical(
+            self.gutter_left,
+            self.gutter_top,
+        );
+        let (right, top) = self.pixel_to_screen_physical(
+            self.physical_size.0 - self.gutter_right,
+            self.physical_size.1 - self.gutter_bottom,
+        );
+        (left, right, top, bottom)
     }
 }

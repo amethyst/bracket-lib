@@ -90,8 +90,8 @@ pub fn init_raw<S: ToString>(
     scaler.change_logical_size(width_pixels, height_pixels, initial_dpi_factor as f32);
     let backing_fbo = Framebuffer::build_fbo(
         &gl,
-        scaler.physical_size.0 as i32,
-        scaler.physical_size.1 as i32,
+        scaler.logical_size.0 as i32,
+        scaler.logical_size.1 as i32,
     )?;
 
     // Build a simple quad rendering VAO

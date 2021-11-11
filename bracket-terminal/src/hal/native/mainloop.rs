@@ -38,6 +38,8 @@ fn on_resize(
     INPUT.lock().set_scale_factor(dpi_scale_factor);
     let mut be = BACKEND.lock();
     be.screen_scaler.change_physical_size_smooth(physical_size.width, physical_size.height, dpi_scale_factor as f32, font_max_size);
+    let (l, r, t, b) = be.screen_scaler.get_backing_buffer_output_coordinates();
+    be.quad_vao = Some(setup_quad_gutter(be.gl.as_ref().unwrap(), l, r, t, b));
     if send_event {
         bterm.resize_pixels(
             physical_size.width as u32,
@@ -57,12 +59,12 @@ fn on_resize(
             )
         );
     }
-    let new_fb = Framebuffer::build_fbo(
+    /*let new_fb = Framebuffer::build_fbo(
         gl, 
         physical_size.width as i32, 
         physical_size.height as i32
     )?;
-    be.backing_buffer = Some(new_fb);
+    be.backing_buffer = Some(new_fb);*/
     bterm.on_event(BEvent::Resized {
         new_size: Point::new(be.screen_scaler.available_width, be.screen_scaler.available_height),
         dpi_scale_factor: dpi_scale_factor as f32,
@@ -70,6 +72,16 @@ fn on_resize(
 
     let mut bit = BACKEND_INTERNAL.lock();
     if be.resize_scaling && send_event {
+        // Framebuffer must be rebuilt because render target changed
+        let new_fb = Framebuffer::build_fbo(
+            gl,
+            be.screen_scaler.available_width as i32,
+            be.screen_scaler.available_height as i32
+        )?;
+        be.backing_buffer = Some(new_fb);
+        be.screen_scaler.logical_size.0 = be.screen_scaler.available_width;
+        be.screen_scaler.logical_size.1 = be.screen_scaler.available_height;
+
         let num_consoles = bit.consoles.len();
         for i in 0..num_consoles {
             let font_size = bit.fonts[bit.consoles[i].font_index].tile_size;
@@ -323,15 +335,18 @@ fn tock<GS: GameState>(
     rebuild_consoles();
 
     // Bind to the backing buffer
-    if bterm.post_scanlines {
+    {
         let be = BACKEND.lock();
         be.backing_buffer
             .as_ref()
             .unwrap()
             .bind(be.gl.as_ref().unwrap());
+        unsafe {
+            be.gl.as_ref().unwrap().viewport(0, 0, be.screen_scaler.logical_size.0 as i32, be.screen_scaler.logical_size.1 as i32);
+        }
     }
 
-    // Clear the screen
+    // Clear the backing buffer
     unsafe {
         let be = BACKEND.lock();
         be.gl.as_ref().unwrap().clear_color(0.0, 0.0, 0.0, 1.0);
@@ -353,7 +368,7 @@ fn tock<GS: GameState>(
         }
     }
 
-    if bterm.post_scanlines {
+    {
         // Now we return to the primary screen
         let be = BACKEND.lock();
         be.backing_buffer
@@ -361,6 +376,11 @@ fn tock<GS: GameState>(
             .unwrap()
             .default(be.gl.as_ref().unwrap());
         unsafe {
+            // And clear it, resetting the viewport
+            be.gl.as_ref().unwrap().viewport(0, 0, be.screen_scaler.physical_size.0 as i32, be.screen_scaler.physical_size.1 as i32);
+            be.gl.as_ref().unwrap().clear_color(0.0, 0.0, 0.0, 1.0);
+            be.gl.as_ref().unwrap().clear(glow::COLOR_BUFFER_BIT);
+
             let bi = BACKEND_INTERNAL.lock();
             if bterm.post_scanlines {
                 bi.shaders[3].useProgram(be.gl.as_ref().unwrap());
