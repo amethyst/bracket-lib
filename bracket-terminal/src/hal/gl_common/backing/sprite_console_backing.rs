@@ -76,8 +76,8 @@ impl SpriteConsoleBackend {
             let sprite_pos = sprite_sheet.sprites[s.index].sheet_location;
             let sprite_left = sprite_pos.x1 as f32 * ss_x;
             let sprite_bottom = sprite_pos.y1 as f32 * ss_y;
-            let sprite_right = sprite_pos.x2 as f32 * ss_x;
-            let sprite_top = sprite_pos.y2 as f32 * ss_y;
+            let sprite_right = (sprite_pos.x2-1) as f32 * ss_x;
+            let sprite_top = (sprite_pos.y2-1) as f32 * ss_y;
 
             let render_width = s.destination.width() as f32;
             let sprite_width = sprite_pos.width() as f32;
