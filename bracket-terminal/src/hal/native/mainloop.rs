@@ -323,7 +323,7 @@ fn tock<GS: GameState>(
     rebuild_consoles();
 
     // Bind to the backing buffer
-    if bterm.post_scanlines {
+    {
         let be = BACKEND.lock();
         be.backing_buffer
             .as_ref()
@@ -331,7 +331,7 @@ fn tock<GS: GameState>(
             .bind(be.gl.as_ref().unwrap());
     }
 
-    // Clear the screen
+    // Clear the backing buffer
     unsafe {
         let be = BACKEND.lock();
         be.gl.as_ref().unwrap().clear_color(0.0, 0.0, 0.0, 1.0);
@@ -353,7 +353,7 @@ fn tock<GS: GameState>(
         }
     }
 
-    if bterm.post_scanlines {
+    {
         // Now we return to the primary screen
         let be = BACKEND.lock();
         be.backing_buffer
@@ -361,6 +361,10 @@ fn tock<GS: GameState>(
             .unwrap()
             .default(be.gl.as_ref().unwrap());
         unsafe {
+            // And clear it
+            be.gl.as_ref().unwrap().clear_color(0.0, 0.0, 0.0, 1.0);
+            be.gl.as_ref().unwrap().clear(glow::COLOR_BUFFER_BIT);
+
             let bi = BACKEND_INTERNAL.lock();
             if bterm.post_scanlines {
                 bi.shaders[3].useProgram(be.gl.as_ref().unwrap());
