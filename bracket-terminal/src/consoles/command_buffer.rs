@@ -535,7 +535,6 @@ impl DrawBatch {
 
     /// Draws a box, starting at x/y with the extents width/height using CP437 line characters. With render order.
     pub fn draw_box_with_z(&mut self, pos: Rect, color: ColorPair, z: u32) -> &mut Self {
-        let z = self.next_z();
         self.batch.push((z, DrawCommand::Box { pos, color }));
         self.needs_sort = true;
         self
@@ -550,7 +549,6 @@ impl DrawBatch {
 
     /// Draws a non-filled (hollow) box, starting at x/y with the extents width/height using CP437 line characters. With render order.
     pub fn draw_hollow_box_with_z(&mut self, pos: Rect, color: ColorPair, z: u32) -> &mut Self {
-        let z = self.next_z();
         self.batch.push((z, DrawCommand::HollowBox { pos, color }));
         self.needs_sort = true;
         self
