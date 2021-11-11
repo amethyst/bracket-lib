@@ -112,21 +112,22 @@ impl SimpleConsoleBackend {
         self.vertex_counter = 0;
         self.index_counter = 0;
 
-        let (step_x, step_y, left_x, top_y) = {
+        let (step_x, step_y) = {
             let be = BACKEND.lock();
             let (step_x, step_y) = be.screen_scaler.calc_step(width, height, scale);
-            let (left_x, top_y) = be.screen_scaler.top_left_pixel();
 
-            (step_x, step_y, left_x, top_y)
+            (step_x, step_y)
         };
 
         //let step_x: f32 = scale * 2.0f32 / width as f32;
         //let step_y: f32 = scale * 2.0f32 / height as f32;
 
         let mut index_count: i32 = 0;
-        let mut screen_y: f32 = top_y;
+        let mut screen_y: f32 = -1.0 * scale
+            + 2.0 * (scale_center.1 - height as i32 / 2) as f32 * (scale - 1.0) / height as f32;
         for y in 0..height {
-            let mut screen_x: f32 = left_x;
+            let mut screen_x: f32 = -1.0 * scale
+                - 2.0 * (scale_center.0 - width as i32 / 2) as f32 * (scale - 1.0) / width as f32;
             for x in 0..width {
                 let fg = tiles[((y * width) + x) as usize].fg;
                 let bg = tiles[((y * width) + x) as usize].bg;

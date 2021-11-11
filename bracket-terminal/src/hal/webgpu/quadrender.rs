@@ -54,8 +54,12 @@ impl QuadRender {
         // Build the vertex buffer
         let mut quad_buffer = FloatBuffer::new(&[2, 2], 24, BufferUsages::VERTEX);
         quad_buffer.data = vec![
-            -1.0, 1.0, 0.0, 0.0, -1.0, -1.0, 0.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 0.0, 0.0,
-            1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0,
+            -1.0, 1.0, 0.0, 0.0,
+            -1.0, -1.0, 0.0, 1.0,
+            1.0, -1.0, 1.0, 1.0,
+            -1.0, 1.0, 0.0, 0.0,
+            1.0, -1.0, 1.0, 1.0,
+            1.0, 1.0, 1.0, 0.0,
         ];
         quad_buffer.build(wgpu);
 
@@ -228,6 +232,18 @@ impl QuadRender {
         // submit will accept anything that implements IntoIter
         wgpu.queue.submit(std::iter::once(encoder.finish()));
         Ok(())
+    }
+
+    pub fn update_buffer_with_gutter(&mut self, wgpu: &WgpuLink, left: f32, right: f32, top: f32, bottom: f32) {
+        self.quad_buffer.data = vec![
+            left, top, 0.0, 0.0,
+            left, bottom ,0.0, 1.0,
+            right, bottom, 1.0, 1.0,
+            left, top, 0.0, 0.0,
+            right, bottom, 1.0, 1.0,
+            right, top, 1.0, 0.0,
+        ];
+        self.quad_buffer.build(wgpu);
     }
 }
 

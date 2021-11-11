@@ -57,8 +57,8 @@ pub fn init_raw<S: ToString>(
     let backing_buffer = Framebuffer::new(
         &device,
         surface.get_preferred_format(&adapter).unwrap(),
-        scaler.physical_size.0,
-        scaler.physical_size.1,
+        scaler.logical_size.0,
+        scaler.logical_size.1,
     );
 
     // Build a simple quad rendering VAO
