@@ -5,7 +5,7 @@ pub fn init_raw<S: ToString>(
     width_pixels: u32,
     height_pixels: u32,
     _window_title: S,
-    _platform_hints: InitHints,
+    platform_hints: InitHints,
 ) -> BResult<BTerm> {
     use super::super::*;
     use super::*;
@@ -77,6 +77,7 @@ pub fn init_raw<S: ToString>(
     be.gl = Some(gl);
     be.quad_vao = Some(quad_vao);
     be.backing_buffer = Some(backing_fbo);
+    be.screen_scaler = ScreenScaler::new(platform_hints.desired_gutter, width_pixels, height_pixels);
 
     BACKEND_INTERNAL.lock().shaders = shaders;
 
