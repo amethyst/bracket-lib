@@ -117,6 +117,8 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                         new_size: bracket_geometry::prelude::Point::new(x, y),
                         dpi_scale_factor: 1.0,
                     });
+                    // Force a full redraw
+                    output_buffer = None;
                 }
                 _ => {}
             }
@@ -181,7 +183,7 @@ fn full_redraw() -> BResult<Vec<OutputBuffer>> {
     let mut bi = BACKEND_INTERNAL.lock();
 
     let (width, height) = crossterm::terminal::size()?;
-    let mut buffer = vec![OutputBuffer::default(); height as usize * width as usize];
+    let mut buffer = vec![OutputBuffer::default(); (height as usize + 2) * width as usize];
 
     // Tell each console to draw itself
     for cons in &mut bi.consoles {
@@ -192,14 +194,14 @@ fn full_redraw() -> BResult<Vec<OutputBuffer>> {
                 let mut idx = 0;
                 let mut last_bg = RGBA::new();
                 let mut last_fg = RGBA::new();
-                for y in 0..st.height {
+                for y in 0..u32::min(st.height, height as u32) {
                     queue!(
                         stdout(),
                         cursor::MoveTo(0, st.height as u16 - (y as u16 + 1))
                     )
                     .expect("Command fail");
                     let mut buf_idx = (st.height as u16 - (y as u16 + 1)) as usize * width as usize;
-                    for x in 0..st.width {
+                    for x in 0..u32::min(st.width, width as u32) {
                         let t = &st.tiles[idx];
                         if t.fg != last_fg {
                             queue!(
@@ -298,9 +300,9 @@ fn partial_redraw(buffer: &mut Vec<OutputBuffer>) {
             if st.is_dirty {
                 st.clear_dirty();
                 let mut idx = 0;
-                for y in 0..st.height {
+                for y in 0..u32::min(st.height, height as u32) {
                     let mut buf_idx = (st.height as u16 - (y as u16 + 1)) as usize * width as usize;
-                    for x in 0..st.width {
+                    for x in 0..u32::min(st.width, width as u32) {
                         let t = &st.tiles[idx];
                         let new_output = OutputBuffer {
                             glyph: to_char(t.glyph as u8),
