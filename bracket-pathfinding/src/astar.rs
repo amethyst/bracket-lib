@@ -19,7 +19,7 @@ where
 /// `destination` is the index of the target tile.
 /// `success` is true if it reached the target, false otherwise.
 /// `steps` is a vector of each step towards the target, *including* the starting position.
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct NavigationPath {
     pub destination: usize,
     pub success: bool,
@@ -173,4 +173,146 @@ impl AStar {
         }
         result
     }
+}
+
+#[cfg(test)]
+mod test {
+    use bracket_geometry::prelude::{Point, DistanceAlg};
+    use bracket_algorithm_traits::prelude::{BaseMap, Algorithm2D};
+    use smallvec::SmallVec;
+    use crate::astar::a_star_search;
+
+    pub const MAP_WIDTH: usize = 80;
+    pub const MAP_HEIGHT: usize = 20;
+    pub const MAP_TILES: usize = MAP_WIDTH * MAP_HEIGHT;
+    pub const START_POINT: Point = Point::constant(0, 0);
+    pub const END_POINT: Point = Point::constant(2, 2);
+
+    pub struct Map {
+        pub tiles: Vec<char>,
+    }
+
+    impl Map {
+        pub fn new(walls: Vec<Point>) -> Self {
+            let mut tiles = Self {
+                tiles: vec!['.'; MAP_TILES],
+            };
+
+            for point in walls {
+                let idx = tiles.point2d_to_index(point);
+                tiles.tiles[idx] = '#';
+            }
+
+            tiles
+        }
+
+        fn valid_exit(&self, loc: Point, delta: Point) -> Option<usize> {
+            let destination = loc + delta;
+
+            if destination.x < 0 || destination.y < 0 {
+                return None
+            }
+
+            let idx = self.point2d_to_index(destination);
+            if self.in_bounds(destination) && self.tiles[idx] == '.' {
+                Some(idx)
+            } else {
+                None
+            }
+        }
+    }
+
+    impl BaseMap for Map {
+        fn is_opaque(&self, idx: usize) -> bool {
+            self.tiles[idx as usize] == '#'
+        }
+
+        fn get_available_exits(&self, idx: usize) -> SmallVec<[(usize, f32); 10]> {
+            let mut exits = SmallVec::new();
+            let location = self.index_to_point2d(idx);
+
+            if let Some(idx) = self.valid_exit(location, Point::new(-1, 0)) {
+                exits.push((idx, 1.0))
+            }
+            if let Some(idx) = self.valid_exit(location, Point::new(1, 0)) {
+                exits.push((idx, 1.0))
+            }
+            if let Some(idx) = self.valid_exit(location, Point::new(0, -1)) {
+                exits.push((idx, 1.0))
+            }
+            if let Some(idx) = self.valid_exit(location, Point::new(0, 1)) {
+                exits.push((idx, 1.0))
+            }
+
+            if let Some(idx) = self.valid_exit(location, Point::new(-1, -1)) {
+                exits.push((idx, 1.4))
+            }
+            if let Some(idx) = self.valid_exit(location, Point::new(1, -1)) {
+                exits.push((idx, 1.4))
+            }
+            if let Some(idx) = self.valid_exit(location, Point::new(-1, 1)) {
+                exits.push((idx, 1.4))
+            }
+            if let Some(idx) = self.valid_exit(location, Point::new(1, 1)) {
+                exits.push((idx, 1.4))
+            }
+
+            exits
+        }
+
+        fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
+            DistanceAlg::Pythagoras
+                .distance2d(self.index_to_point2d(idx1), self.index_to_point2d(idx2))
+        }
+    }
+
+    impl Algorithm2D for Map {
+        fn dimensions(&self) -> Point {
+            Point::new(MAP_WIDTH, MAP_HEIGHT)
+        }
+    }
+
+    #[test]
+    fn test_no_wall_exit() {
+        let map = Map::new(vec![]);
+
+        let path = a_star_search(
+            map.point2d_to_index(START_POINT),
+            map.point2d_to_index(END_POINT),
+            &map);
+        let steps: Vec<Point> = path.steps.iter().map(|e| map.index_to_point2d(*e)).collect();
+        assert!(path.success);
+        assert_eq!(steps[0], Point {x: 0, y: 0});
+        assert_eq!(steps[1], Point {x: 1, y: 1});
+        assert_eq!(steps[2], Point {x: 2, y: 2});
+    }
+
+    #[test]
+    fn test_one_wall_exit() {
+        let map = Map::new(vec![Point::new(1, 1)]);
+
+        let path = a_star_search(
+            map.point2d_to_index(START_POINT),
+            map.point2d_to_index(END_POINT),
+            &map);
+        let steps: Vec<Point> = path.steps.iter().map(|e| map.index_to_point2d(*e)).collect();
+        assert!(path.success);
+        assert_eq!(steps[0], Point {x: 0, y: 0});
+        assert_eq!(steps[1], Point {x: 1, y: 0});
+        assert_eq!(steps[2], Point {x: 2, y: 1});
+        assert_eq!(steps[3], Point {x: 2, y: 2});
+    }
+
+    #[test]
+    fn test_no_exit() {
+        let map = Map::new(vec![Point::new(0, 1), Point::new(1, 1), Point::new(1, 0)]);
+
+        let path = a_star_search(
+            map.point2d_to_index(START_POINT),
+            map.point2d_to_index(END_POINT),
+            &map);
+
+        assert!(!path.success)
+    }
+
 }
