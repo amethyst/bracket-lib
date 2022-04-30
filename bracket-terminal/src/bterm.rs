@@ -78,6 +78,7 @@ pub struct BTerm {
     pub post_scanlines: bool,
     pub post_screenburn: bool,
     pub screen_burn_color: bracket_color::prelude::RGB,
+    pub mouse_visible: bool,
 }
 
 impl BTerm {
@@ -327,6 +328,11 @@ impl BTerm {
     // Change the screen-burn color
     pub fn screen_burn_color(&mut self, color: bracket_color::prelude::RGB) {
         self.screen_burn_color = color;
+    }
+
+    // Set the mouse cursor visibility
+    pub fn with_mouse_visibility(&mut self, with_visibility: bool) {
+        self.mouse_visible = with_visibility;
     }
 
     /// Internal: mark a key press

@@ -148,6 +148,8 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
             *control_flow = ControlFlow::Exit;
         }
 
+        wc.window().set_cursor_visible(bterm.mouse_visible);
+
         match &event {
             Event::RedrawEventsCleared => {
                 let frame_timer = Instant::now();
