@@ -55,6 +55,7 @@ members = [
     "rltk",
     "bracket-rex",
     "bracket-embedding",
+    "bracket-bevy"
 ]
 
 # Comment this out for releases
