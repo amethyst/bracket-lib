@@ -8,8 +8,9 @@ pub(crate) fn load_terminals(
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    // TODO: Make this optional
-    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+    if context.with_ortho_camera {
+        commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+    }
 
     // Setup the new context
     let mut new_context = BracketContext::new();

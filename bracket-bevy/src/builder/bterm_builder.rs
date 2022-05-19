@@ -5,13 +5,15 @@ use crate::{TerminalBuilderFont, TerminalLayer, load_terminals, update_consoles}
 pub struct BTermBuilder {
     pub(crate) fonts: Vec<TerminalBuilderFont>,
     pub(crate) layers: Vec<TerminalLayer>,
+    pub(crate) with_ortho_camera: bool,
 }
 
 impl BTermBuilder {
     pub fn simple_80x50() -> Self {
         Self {
             fonts: vec![TerminalBuilderFont::new("terminal8x8.png", 16, 16)],
-            layers: vec![TerminalLayer::Simple{ font_index: 0, width: 80, height: 50 }]
+            layers: vec![TerminalLayer::Simple{ font_index: 0, width: 80, height: 50 }],
+            with_ortho_camera: true,
         }
     }
 }
