@@ -1,5 +1,5 @@
 use bevy::{prelude::*, diagnostic::{FrameTimeDiagnosticsPlugin, Diagnostics}};
-use bracket_bevy::*;
+use bracket_bevy::prelude::*;
 
 
 fn main() {
