@@ -13,8 +13,6 @@ pub(crate) struct SimpleConsole {
 }
 
 
-const SIZE_TMP : f32 = 8.0;
-
 impl SimpleConsole {
     pub fn new(font_index: usize, width: usize, height: usize) -> Self {
         Self {
@@ -36,7 +34,7 @@ impl SimpleConsole {
         ];
     }
 
-    pub fn build_mesh(&self, chars_per_row: u16, n_rows: u16) -> Mesh {
+    pub fn build_mesh(&self, chars_per_row: u16, n_rows: u16, font_height_pixels: (f32, f32)) -> Mesh {
         let mut vertices: Vec<[f32; 3]> = Vec::with_capacity(self.width * self.height * 4);
         let mut normals: Vec<[f32; 3]> = Vec::with_capacity(self.width * self.height * 4);
         let mut uv: Vec<[f32; 2]> = Vec::with_capacity(self.width * self.height * 4);
@@ -46,14 +44,14 @@ impl SimpleConsole {
         let half_height = self.height as f32 / 2.0;
         let half_width = self.width as f32 / 2.0;
         for y in 0..self.height {
-            let screen_y = (y as f32 - half_height) * SIZE_TMP;
+            let screen_y = (y as f32 - half_height) * font_height_pixels.1;
             let mut idx = (self.height-1 -y) * self.width;
             for x in 0..self.width {
-                let screen_x = (x as f32 - half_width) * SIZE_TMP;
+                let screen_x = (x as f32 - half_width) * font_height_pixels.0;
                 vertices.push([ screen_x, screen_y, 0.0 ]);
-                vertices.push([ screen_x + SIZE_TMP, screen_y, 0.0 ]);
-                vertices.push([ screen_x, screen_y + SIZE_TMP, 0.0 ]);
-                vertices.push([ screen_x + SIZE_TMP, screen_y + SIZE_TMP, 0.0 ]);
+                vertices.push([ screen_x + font_height_pixels.0, screen_y, 0.0 ]);
+                vertices.push([ screen_x, screen_y + font_height_pixels.1, 0.0 ]);
+                vertices.push([ screen_x + font_height_pixels.0, screen_y + font_height_pixels.1, 0.0 ]);
                 for _ in 0..4 {
                     normals.push([0.0, 1.0, 0.0]);
                 }

@@ -19,7 +19,7 @@ pub(crate) fn load_terminals(
     for font in context.fonts.iter() {
         let texture_handle = asset_server.load(&font.filename);
         let material_handle = materials.add(ColorMaterial::from(texture_handle.clone()));
-        new_context.fonts.push(FontStore::new(texture_handle, material_handle, font.chars_per_row, font.n_rows));
+        new_context.fonts.push(FontStore::new(texture_handle, material_handle, font.chars_per_row, font.n_rows, font.font_height_pixels));
     }
 
     // Setup the consoles
@@ -27,7 +27,11 @@ pub(crate) fn load_terminals(
         match terminal {
             TerminalLayer::Simple { font_index, width, height } => {
                 let mut console = SimpleConsole::new(*font_index, *width, *height);
-                let mesh = console.build_mesh(new_context.fonts[console.font_index].chars_per_row, new_context.fonts[console.font_index].n_rows);
+                let mesh = console.build_mesh(
+                    new_context.fonts[console.font_index].chars_per_row, 
+                    new_context.fonts[console.font_index].n_rows,
+                    new_context.fonts[console.font_index].font_height_pixels
+                );
                 let mesh_handle = meshes.add(mesh);
                 console.mesh_handle=Some(mesh_handle.clone());
 

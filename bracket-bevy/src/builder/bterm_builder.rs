@@ -11,7 +11,7 @@ pub struct BTermBuilder {
 impl BTermBuilder {
     pub fn simple_80x50() -> Self {
         Self {
-            fonts: vec![TerminalBuilderFont::new("terminal8x8.png", 16, 16)],
+            fonts: vec![TerminalBuilderFont::new("terminal8x8.png", 16, 16, (8.0, 8.0))],
             layers: vec![TerminalLayer::Simple{ font_index: 0, width: 80, height: 50 }],
             with_ortho_camera: true,
         }

@@ -6,6 +6,7 @@ pub(crate) struct FontStore {
     pub(crate) material_handle: Handle<ColorMaterial>,
     pub(crate) chars_per_row: u16,
     pub(crate) n_rows: u16,
+    pub(crate) font_height_pixels: (f32, f32),
 }
 
 impl FontStore {
@@ -13,13 +14,15 @@ impl FontStore {
         _texture_handle: Handle<Image>, 
         material_handle: Handle<ColorMaterial>, 
         chars_per_row: u16, 
-        n_rows: u16
+        n_rows: u16,
+        font_height_pixels: (f32, f32),
     ) -> Self {
         Self {
             //texture_handle, 
             material_handle, 
             chars_per_row, 
-            n_rows
+            n_rows,
+            font_height_pixels,
         }
     }
 }
