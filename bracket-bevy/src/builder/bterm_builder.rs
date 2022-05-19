@@ -1,4 +1,4 @@
-use bevy::prelude::Plugin;
+use bevy::prelude::{Plugin, CoreStage, SystemStage};
 use crate::{TerminalBuilderFont, TerminalLayer, load_terminals, update_consoles};
 
 #[derive(Clone)]
@@ -22,6 +22,7 @@ impl Plugin for BTermBuilder {
     fn build(&self, app: &mut bevy::prelude::App) {
         app.insert_resource(self.clone());
         app.add_startup_system(load_terminals);
+        app.add_stage_after(CoreStage::Update, "bracket_term_update", SystemStage::single_threaded());
         app.add_system(update_consoles);
     }
 }
