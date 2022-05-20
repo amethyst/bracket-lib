@@ -18,6 +18,7 @@ fn tick(
     ctx.set_layer(0);
     ctx.cls();
     ctx.print(1, 1, "Hello Bracket-Bevy World ☻");
+    ctx.print_color(1, 2, "Now in color!", Color::GREEN);
 
     let mut fps = 0.0;
     if let Some(fps_diagnostic) = diagnostics.get(FrameTimeDiagnosticsPlugin::FPS) {
@@ -25,5 +26,5 @@ fn tick(
             fps = fps_avg.round();
         }
     }
-    ctx.print(1, 3, format!("Frames per Second: {fps}"));
+    ctx.print_color(1, 4, format!("Frames per Second: {fps}"), Color::YELLOW);
 }

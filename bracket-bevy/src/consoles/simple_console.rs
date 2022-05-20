@@ -1,14 +1,29 @@
-use bevy::{prelude::{Component, Handle, Mesh}, render::mesh::{PrimitiveTopology, Indices}};
+use bevy::{prelude::{Component, Handle, Mesh, Color}, render::mesh::{PrimitiveTopology, Indices}};
 use crate::cp437::string_to_cp437;
 
 #[derive(Component)]
 pub struct SimpleConsoleMarker(pub usize);
 
+#[derive(Clone, Copy)]
+pub(crate) struct TerminalGlyph {
+    glyph: u16,
+    foreground: [f32; 4]
+}
+
+impl Default for TerminalGlyph {
+    fn default() -> Self {
+        Self {
+            glyph: 65,
+            foreground: Color::WHITE.as_rgba_f32(),
+        }
+    }
+}
+
 pub(crate) struct SimpleConsole {
     pub(crate) font_index: usize,
     pub(crate) width: usize,
     pub(crate) height: usize,
-    pub(crate) terminal: Vec<u16>,
+    pub(crate) terminal: Vec<TerminalGlyph>,
     pub(crate) mesh_handle: Option<Handle<Mesh>>
 }
 
@@ -16,7 +31,7 @@ pub(crate) struct SimpleConsole {
 impl SimpleConsole {
     pub fn new(font_index: usize, width: usize, height: usize) -> Self {
         Self {
-            font_index, width, height, terminal: vec![65; width*height],
+            font_index, width, height, terminal: vec![TerminalGlyph::default(); width*height],
             mesh_handle: None,
         }
     }
@@ -55,17 +70,16 @@ impl SimpleConsole {
                 for _ in 0..4 {
                     normals.push([0.0, 1.0, 0.0]);
                 }
-                let tex = self.texture_coords(self.terminal[idx], chars_per_row, n_rows);
+                let tex = self.texture_coords(self.terminal[idx].glyph, chars_per_row, n_rows);
                 uv.push([tex[0], tex[3]]);
                 uv.push([tex[2], tex[3]]);
                 uv.push([tex[0], tex[1]]);
                 uv.push([tex[2], tex[1]]);
 
-                // Not convinced this does anything at all
-                colors.push([1.0, 0.0, 0.0, 1.0]);
-                colors.push([1.0, 0.0, 0.0, 1.0]);
-                colors.push([1.0, 0.0, 0.0, 1.0]);
-                colors.push([1.0, 0.0, 0.0, 1.0]);
+                colors.push(self.terminal[idx].foreground);
+                colors.push(self.terminal[idx].foreground);
+                colors.push(self.terminal[idx].foreground);
+                colors.push(self.terminal[idx].foreground);
 
                 indices.push(index_count);
                 indices.push(index_count+1);
@@ -83,7 +97,7 @@ impl SimpleConsole {
         mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, vertices);
         mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
         mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, uv);
-        //mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, colors);
+        mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, colors);
         mesh.set_indices(Some(Indices::U32(indices)));
         mesh
     }
@@ -93,7 +107,7 @@ impl SimpleConsole {
         for y in 0..self.height {
             let mut idx = y * self.width;
             for _ in 0..self.width {
-                let tex = self.texture_coords(self.terminal[idx], chars_per_row, n_rows);
+                let tex = self.texture_coords(self.terminal[idx].glyph, chars_per_row, n_rows);
                 uv.push([tex[0], tex[3]]);
                 uv.push([tex[2], tex[3]]);
                 uv.push([tex[0], tex[1]]);
@@ -104,15 +118,39 @@ impl SimpleConsole {
         uv
     }
 
+    pub fn build_colors(&self) -> Vec<[f32; 4]> {
+        let mut colors: Vec<[f32; 4]> = Vec::with_capacity(self.width * self.height * 4);
+        for y in 0..self.height {
+            let mut idx = y * self.width;
+            for _ in 0..self.width {
+                colors.push(self.terminal[idx].foreground);
+                colors.push(self.terminal[idx].foreground);
+                colors.push(self.terminal[idx].foreground);
+                colors.push(self.terminal[idx].foreground);
+                idx += 1;
+            }
+        }
+        colors
+    }
+
     pub fn cls(&mut self) {
-        self.terminal.iter_mut().for_each(|c| *c = 32);
+        self.terminal.iter_mut().for_each(|c| c.glyph = 32);
     }
 
     pub fn print<S: ToString>(&mut self, mut x: usize, y: usize, text: S) {
         let bytes = string_to_cp437(&text.to_string());
         for glyph in bytes {
             let idx = self.at(x, y);
-            self.terminal[idx] = glyph;
+            self.terminal[idx] = TerminalGlyph{ glyph, foreground: Color::WHITE.as_rgba_f32() };
+            x += 1;
+        }
+    }
+
+    pub fn print_color<S: ToString>(&mut self, mut x: usize, y: usize, text: S, foreground: Color) {
+        let bytes = string_to_cp437(&text.to_string());
+        for glyph in bytes {
+            let idx = self.at(x, y);
+            self.terminal[idx] = TerminalGlyph{ glyph, foreground: foreground.as_rgba_f32() };
             x += 1;
         }
     }

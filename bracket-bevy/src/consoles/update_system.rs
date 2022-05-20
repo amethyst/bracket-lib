@@ -14,6 +14,7 @@ pub fn update_consoles(
                     ctx.fonts[terminal.font_index].chars_per_row,
                     ctx.fonts[terminal.font_index].n_rows,
                 ));
+                mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, terminal.build_colors());
             }
         }
     }

@@ -1,3 +1,5 @@
+use bevy::prelude::Color;
+
 use crate::{fonts::FontStore, consoles::SimpleConsole};
 
 pub struct BracketContext {
@@ -21,5 +23,9 @@ impl BracketContext {
 
     pub fn print<S: ToString>(&mut self, x: usize, y: usize, text: S) {
         self.terminals[self.current_layer].print(x, y, text);
+    }
+
+    pub fn print_color<S: ToString>(&mut self, x: usize, y: usize, text: S, foreground: Color) {
+        self.terminals[self.current_layer].print_color(x, y, text, foreground)
     }
 }
