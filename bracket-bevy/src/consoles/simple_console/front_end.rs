@@ -1,7 +1,5 @@
 use bevy::{prelude::{Assets, Mesh, Commands, Handle, Color}, sprite::ColorMaterial};
-
 use crate::{fonts::FontStore, consoles::ConsoleFrontEnd, prelude::string_to_cp437};
-
 use super::{TerminalGlyph, back_end::{SimpleConsoleBackend, SimpleBackendWithBackground}};
 
 pub(crate) struct SimpleConsole {
@@ -22,7 +20,9 @@ impl SimpleConsole {
     }
 
     pub(crate) fn initialize(&mut self, fonts: &[FontStore], meshes: &mut Assets<Mesh>, base_z: f32) {
-        let mut back_end = SimpleBackendWithBackground::new(
+        let back_end = SimpleBackendWithBackground::new(
+            &self,
+            meshes,
             fonts[self.font_index].chars_per_row,
             fonts[self.font_index].n_rows,
             fonts[self.font_index].font_height_pixels,
@@ -30,11 +30,6 @@ impl SimpleConsole {
             self.height,
             base_z,
         );
-        let mesh =  back_end.build_mesh(
-            &self
-        );
-        let mesh_handle = meshes.add(mesh);
-        back_end.mesh_handle=Some(mesh_handle.clone());
         self.back_end = Some(Box::new(back_end));
     }
 
