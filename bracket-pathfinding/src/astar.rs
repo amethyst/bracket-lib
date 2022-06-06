@@ -105,17 +105,17 @@ impl AStar {
 
     /// Adds a successor; if we're at the end, marks success.
     fn add_successor(&mut self, q: Node, idx: usize, cost: f32, map: &dyn BaseMap) {
-        let distance = self.distance_to_end(idx, map);
+        let distance_to_end = self.distance_to_end(idx, map);
         let s = Node {
             idx,
-            f: distance + cost,
-            g: cost,
+            f: q.g + cost + distance_to_end,
+            g: q.g + cost,
         };
 
         // If a node with the same position as successor is in the open list with a lower f, skip add
         let mut should_add = true;
         if let Some(e) = self.parents.get(&idx) {
-            if e.1 < s.f {
+            if e.1 < s.g {
                 should_add = false;
             }
         }
@@ -127,7 +127,7 @@ impl AStar {
 
         if should_add {
             self.open_list.push(s);
-            self.parents.insert(idx, (q.idx, q.f));
+            self.parents.insert(idx, (q.idx, s.g));
         }
     }
 
@@ -164,7 +164,7 @@ impl AStar {
             // Generate successors
             map.get_available_exits(q.idx)
                 .iter()
-                .for_each(|s| self.add_successor(q, s.0, s.1 + q.f, map));
+                .for_each(|s| self.add_successor(q, s.0, s.1, map));
 
             if self.closed_list.contains_key(&q.idx) {
                 self.closed_list.remove(&q.idx);
