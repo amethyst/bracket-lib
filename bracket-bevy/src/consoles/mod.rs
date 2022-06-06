@@ -12,5 +12,5 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn print(&mut self, x: usize, y: usize, text: &str);
     fn print_color(&mut self, x: usize, y: usize, text: &str, foreground: Color, background: Color);
 
-    fn update_mesh(&self, ctx: &BracketContext, meshes: &mut Assets<Mesh>);
+    fn update_mesh(&mut self, ctx: &BracketContext, meshes: &mut Assets<Mesh>);
 }

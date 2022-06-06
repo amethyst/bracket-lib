@@ -16,6 +16,8 @@ pub(crate) struct SimpleBackendWithBackground {
     pub(crate) width: usize,
     pub(crate) height: usize,
     pub(crate) base_z: f32,
+    last_background: Option<Vec<[f32; 4]>>,
+    pub(crate) background_changed: bool,
 }
 
 impl SimpleBackendWithBackground {
@@ -38,6 +40,8 @@ impl SimpleBackendWithBackground {
             width,
             height,
             base_z,
+            last_background: None,
+            background_changed: true,
         };
         let mesh = back_end.build_mesh(parent);
         let mesh_handle = meshes.add(mesh);
@@ -237,6 +241,23 @@ impl SimpleBackendWithBackground {
         }
         colors
     }
+
+    fn check_for_background_changes(&mut self, terminals: &[crate::consoles::TerminalGlyph]) {
+        let background: Vec<[f32; 4]> = terminals.iter().map(|c| c.background).collect();
+        if let Some(bg) = &mut self.last_background {
+            let changed = bg.iter().zip(background.iter()).any(|(b1, b2)| b1 != b2);
+
+            if !changed {
+                self.background_changed = false;
+            } else {
+                self.last_background = Some(background);
+                self.background_changed = true;
+            }
+        } else {
+            self.last_background = Some(background);
+            self.background_changed = true;
+        }
+    }
 }
 
 impl SimpleConsoleBackend for SimpleBackendWithBackground {
@@ -247,9 +268,11 @@ impl SimpleConsoleBackend for SimpleBackendWithBackground {
                 mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, self.build_colors(front_end));
             }
         }
-        if let Some(mesh_handle) = &self.bg_mesh_handle {
-            if let Some(mesh) = meshes.get_mut(mesh_handle.clone()) {
-                mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, self.build_bg_colors(front_end));
+        if self.background_changed {
+            if let Some(mesh_handle) = &self.bg_mesh_handle {
+                if let Some(mesh) = meshes.get_mut(mesh_handle.clone()) {
+                    mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, self.build_bg_colors(front_end));
+                }
             }
         }
     }
@@ -275,5 +298,13 @@ impl SimpleConsoleBackend for SimpleBackendWithBackground {
                 })
                 .insert(SimpleConsoleMarker(idx));
         }
+    }
+
+    fn clear_dirty(&mut self) {
+        self.background_changed = false;
+    }
+
+    fn update_dirty(&mut self, terminals: &[crate::consoles::TerminalGlyph]) {
+        self.check_for_background_changes(terminals);
     }
 }

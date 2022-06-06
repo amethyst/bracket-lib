@@ -100,9 +100,19 @@ impl ConsoleFrontEnd for SimpleConsole {
         }
     }
 
-    fn update_mesh(&self, _ctx: &crate::BracketContext, meshes: &mut bevy::prelude::Assets<Mesh>) {
+    fn update_mesh(
+        &mut self,
+        _ctx: &crate::BracketContext,
+        meshes: &mut bevy::prelude::Assets<Mesh>,
+    ) {
+        if let Some(back_end) = &mut self.back_end {
+            back_end.update_dirty(&self.terminal);
+        }
         if let Some(back_end) = &self.back_end {
             back_end.update_mesh(&self, meshes);
+        }
+        if let Some(back_end) = &mut self.back_end {
+            back_end.clear_dirty();
         }
     }
 }
