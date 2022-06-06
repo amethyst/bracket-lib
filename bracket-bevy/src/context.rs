@@ -1,5 +1,5 @@
+use crate::{consoles::ConsoleFrontEnd, fonts::FontStore};
 use bevy::prelude::Color;
-use crate::{fonts::FontStore, consoles::{ConsoleFrontEnd}};
 use parking_lot::Mutex;
 
 pub struct BracketContext {
@@ -10,7 +10,11 @@ pub struct BracketContext {
 
 impl BracketContext {
     pub(crate) fn new() -> Self {
-        Self { fonts: Vec::new(), terminals: Mutex::new(Vec::new()), current_layer: 0 }
+        Self {
+            fonts: Vec::new(),
+            terminals: Mutex::new(Vec::new()),
+            current_layer: 0,
+        }
     }
 
     pub fn set_layer(&mut self, layer: usize) {
@@ -25,7 +29,20 @@ impl BracketContext {
         self.terminals.lock()[self.current_layer].print(x, y, &text.to_string());
     }
 
-    pub fn print_color<S: ToString>(&self, x: usize, y: usize, text: S, foreground: Color, background: Color) {
-        self.terminals.lock()[self.current_layer].print_color(x, y, &text.to_string(), foreground, background)
+    pub fn print_color<S: ToString>(
+        &self,
+        x: usize,
+        y: usize,
+        text: S,
+        foreground: Color,
+        background: Color,
+    ) {
+        self.terminals.lock()[self.current_layer].print_color(
+            x,
+            y,
+            &text.to_string(),
+            foreground,
+            background,
+        )
     }
 }

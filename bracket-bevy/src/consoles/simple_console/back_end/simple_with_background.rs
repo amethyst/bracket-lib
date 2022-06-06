@@ -1,5 +1,9 @@
-use bevy::{prelude::*, render::mesh::{PrimitiveTopology, Indices}, sprite::MaterialMesh2dBundle};
 use crate::consoles::{SimpleConsole, SimpleConsoleMarker};
+use bevy::{
+    prelude::*,
+    render::mesh::{Indices, PrimitiveTopology},
+    sprite::MaterialMesh2dBundle,
+};
 
 use super::SimpleConsoleBackend;
 
@@ -15,7 +19,16 @@ pub(crate) struct SimpleBackendWithBackground {
 }
 
 impl SimpleBackendWithBackground {
-    pub(crate) fn new(parent: &SimpleConsole, meshes: &mut Assets<Mesh>, chars_per_row: u16, n_rows: u16, font_height_pixels: (f32, f32), width: usize, height: usize, base_z: f32) -> Self {
+    pub(crate) fn new(
+        parent: &SimpleConsole,
+        meshes: &mut Assets<Mesh>,
+        chars_per_row: u16,
+        n_rows: u16,
+        font_height_pixels: (f32, f32),
+        width: usize,
+        height: usize,
+        base_z: f32,
+    ) -> Self {
         let mut back_end = Self {
             mesh_handle: None,
             bg_mesh_handle: None,
@@ -26,16 +39,16 @@ impl SimpleBackendWithBackground {
             height,
             base_z,
         };
-        let mesh =  back_end.build_mesh(parent);
+        let mesh = back_end.build_mesh(parent);
         let mesh_handle = meshes.add(mesh);
         let bg_mesh = back_end.build_bg_mesh(parent);
         let bg_handle = meshes.add(bg_mesh);
-        back_end.mesh_handle=Some(mesh_handle);
+        back_end.mesh_handle = Some(mesh_handle);
         back_end.bg_mesh_handle = Some(bg_handle);
         back_end
     }
 
-    fn texture_coords(&self, glyph: u16) -> [f32;4] {
+    fn texture_coords(&self, glyph: u16) -> [f32; 4] {
         let base_x = glyph % self.chars_per_row;
         let base_y = glyph / self.n_rows;
         let scale_x = 1.0 / self.chars_per_row as f32;
@@ -43,8 +56,8 @@ impl SimpleBackendWithBackground {
         return [
             base_x as f32 * scale_x,
             base_y as f32 * scale_y,
-            (base_x+1) as f32 * scale_x,
-            (base_y+1) as f32 * scale_y,
+            (base_x + 1) as f32 * scale_x,
+            (base_y + 1) as f32 * scale_y,
         ];
     }
 
@@ -61,13 +74,25 @@ impl SimpleBackendWithBackground {
         // Build the foreground
         for y in 0..self.height {
             let screen_y = (y as f32 - half_height) * self.font_height_pixels.1;
-            let mut idx = (self.height-1 -y) * self.width;
+            let mut idx = (self.height - 1 - y) * self.width;
             for x in 0..self.width {
                 let screen_x = (x as f32 - half_width) * self.font_height_pixels.0;
-                vertices.push([ screen_x, screen_y, self.base_z+0.5 ]);
-                vertices.push([ screen_x + self.font_height_pixels.0, screen_y, self.base_z+0.5 ]);
-                vertices.push([ screen_x, screen_y + self.font_height_pixels.1, self.base_z+0.5 ]);
-                vertices.push([ screen_x + self.font_height_pixels.0, screen_y + self.font_height_pixels.1, self.base_z+0.5 ]);
+                vertices.push([screen_x, screen_y, self.base_z + 0.5]);
+                vertices.push([
+                    screen_x + self.font_height_pixels.0,
+                    screen_y,
+                    self.base_z + 0.5,
+                ]);
+                vertices.push([
+                    screen_x,
+                    screen_y + self.font_height_pixels.1,
+                    self.base_z + 0.5,
+                ]);
+                vertices.push([
+                    screen_x + self.font_height_pixels.0,
+                    screen_y + self.font_height_pixels.1,
+                    self.base_z + 0.5,
+                ]);
                 for _ in 0..4 {
                     normals.push([0.0, 1.0, 0.0]);
                 }
@@ -83,12 +108,12 @@ impl SimpleBackendWithBackground {
                 colors.push(parent.terminal[idx].foreground);
 
                 indices.push(index_count);
-                indices.push(index_count+1);
-                indices.push(index_count+2);
+                indices.push(index_count + 1);
+                indices.push(index_count + 2);
 
-                indices.push(index_count+3);
-                indices.push(index_count+2);
-                indices.push(index_count+1);
+                indices.push(index_count + 3);
+                indices.push(index_count + 2);
+                indices.push(index_count + 1);
 
                 index_count += 4;
                 idx += 1;
@@ -116,13 +141,17 @@ impl SimpleBackendWithBackground {
         // Build the background
         for y in 0..self.height {
             let screen_y = (y as f32 - half_height) * self.font_height_pixels.1;
-            let mut idx = (self.height-1 -y) * self.width;
+            let mut idx = (self.height - 1 - y) * self.width;
             for x in 0..self.width {
                 let screen_x = (x as f32 - half_width) * self.font_height_pixels.0;
-                vertices.push([ screen_x, screen_y, self.base_z ]);
-                vertices.push([ screen_x + self.font_height_pixels.0, screen_y, self.base_z ]);
-                vertices.push([ screen_x, screen_y + self.font_height_pixels.1, self.base_z ]);
-                vertices.push([ screen_x + self.font_height_pixels.0, screen_y + self.font_height_pixels.1, self.base_z ]);
+                vertices.push([screen_x, screen_y, self.base_z]);
+                vertices.push([screen_x + self.font_height_pixels.0, screen_y, self.base_z]);
+                vertices.push([screen_x, screen_y + self.font_height_pixels.1, self.base_z]);
+                vertices.push([
+                    screen_x + self.font_height_pixels.0,
+                    screen_y + self.font_height_pixels.1,
+                    self.base_z,
+                ]);
                 for _ in 0..4 {
                     normals.push([0.0, 1.0, 0.0]);
                 }
@@ -138,12 +167,12 @@ impl SimpleBackendWithBackground {
                 colors.push(parent.terminal[idx].background);
 
                 indices.push(index_count);
-                indices.push(index_count+1);
-                indices.push(index_count+2);
+                indices.push(index_count + 1);
+                indices.push(index_count + 2);
 
-                indices.push(index_count+3);
-                indices.push(index_count+2);
-                indices.push(index_count+1);
+                indices.push(index_count + 3);
+                indices.push(index_count + 2);
+                indices.push(index_count + 1);
 
                 index_count += 4;
                 idx += 1;
@@ -214,9 +243,7 @@ impl SimpleConsoleBackend for SimpleBackendWithBackground {
     fn update_mesh(&self, front_end: &SimpleConsole, meshes: &mut Assets<Mesh>) {
         if let Some(mesh_handle) = &self.mesh_handle {
             if let Some(mesh) = meshes.get_mut(mesh_handle.clone()) {
-                mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, self.build_uvs(
-                    front_end,
-                ));
+                mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, self.build_uvs(front_end));
                 mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, self.build_colors(front_end));
             }
         }
@@ -229,22 +256,24 @@ impl SimpleConsoleBackend for SimpleBackendWithBackground {
 
     fn spawn(&self, commands: &mut Commands, material: Handle<ColorMaterial>, idx: usize) {
         if let Some(mesh_handle) = &self.bg_mesh_handle {
-            commands.spawn_bundle(MaterialMesh2dBundle {
-                mesh: mesh_handle.clone().into(),
-                transform: Transform::default(),
-                material: material.clone(),
-                ..default()
-            })
-            .insert(SimpleConsoleMarker(idx));
+            commands
+                .spawn_bundle(MaterialMesh2dBundle {
+                    mesh: mesh_handle.clone().into(),
+                    transform: Transform::default(),
+                    material: material.clone(),
+                    ..default()
+                })
+                .insert(SimpleConsoleMarker(idx));
         }
         if let Some(mesh_handle) = &self.mesh_handle {
-            commands.spawn_bundle(MaterialMesh2dBundle {
-                mesh: mesh_handle.clone().into(),
-                transform: Transform::default(),
-                material: material.clone(),
-                ..default()
-            })
-            .insert(SimpleConsoleMarker(idx));
+            commands
+                .spawn_bundle(MaterialMesh2dBundle {
+                    mesh: mesh_handle.clone().into(),
+                    transform: Transform::default(),
+                    material: material.clone(),
+                    ..default()
+                })
+                .insert(SimpleConsoleMarker(idx));
         }
     }
 }

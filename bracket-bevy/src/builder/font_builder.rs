@@ -7,12 +7,17 @@ pub(crate) struct TerminalBuilderFont {
 }
 
 impl TerminalBuilderFont {
-    pub(crate) fn new<S: ToString>(image_filename: S, chars_per_row: u16, n_rows: u16, font_height_pixels: (f32, f32)) -> Self {
+    pub(crate) fn new<S: ToString>(
+        image_filename: S,
+        chars_per_row: u16,
+        n_rows: u16,
+        font_height_pixels: (f32, f32),
+    ) -> Self {
         Self {
             filename: image_filename.to_string(),
             chars_per_row,
             n_rows,
-            font_height_pixels
+            font_height_pixels,
         }
     }
 }

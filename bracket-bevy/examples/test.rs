@@ -1,6 +1,8 @@
-use bevy::{prelude::*, diagnostic::{FrameTimeDiagnosticsPlugin, Diagnostics}};
+use bevy::{
+    diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin},
+    prelude::*,
+};
 use bracket_bevy::prelude::*;
-
 
 fn main() {
     App::new()
@@ -11,10 +13,7 @@ fn main() {
         .run();
 }
 
-fn tick(
-    mut ctx: ResMut<BracketContext>,
-    diagnostics: Res<Diagnostics>,
-) {
+fn tick(mut ctx: ResMut<BracketContext>, diagnostics: Res<Diagnostics>) {
     ctx.set_layer(0);
     ctx.cls();
     ctx.print(1, 1, "Hello Bracket-Bevy World ☻");
@@ -26,5 +25,11 @@ fn tick(
             fps = fps_avg.round();
         }
     }
-    ctx.print_color(1, 4, format!("Frames per Second: {fps}"), Color::YELLOW, Color::BLACK);
+    ctx.print_color(
+        1,
+        4,
+        format!("Frames per Second: {fps}"),
+        Color::YELLOW,
+        Color::BLACK,
+    );
 }
