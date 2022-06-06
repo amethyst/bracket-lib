@@ -1,5 +1,5 @@
-use bevy::{prelude::{Res, Commands, AssetServer, ResMut, Assets, Mesh, OrthographicCameraBundle, Transform, default}, sprite::{ColorMaterial, MaterialMesh2dBundle}};
-use crate::{BTermBuilder, BracketContext, fonts::FontStore, TerminalLayer, SimpleConsole, SimpleConsoleMarker};
+use bevy::{prelude::{Res, Commands, AssetServer, ResMut, Assets, Mesh, OrthographicCameraBundle}, sprite::ColorMaterial};
+use crate::{BTermBuilder, BracketContext, fonts::FontStore, TerminalLayer, SimpleConsole};
 
 pub(crate) fn load_terminals(
     context: Res<BTermBuilder>,
@@ -27,24 +27,9 @@ pub(crate) fn load_terminals(
         match terminal {
             TerminalLayer::Simple { font_index, width, height } => {
                 let mut console = SimpleConsole::new(*font_index, *width, *height);
-                let mesh = console.build_mesh(
-                    new_context.fonts[console.font_index].chars_per_row, 
-                    new_context.fonts[console.font_index].n_rows,
-                    new_context.fonts[console.font_index].font_height_pixels
-                );
-                let mesh_handle = meshes.add(mesh);
-                console.mesh_handle=Some(mesh_handle.clone());
-
-                // Test code
-                commands.spawn_bundle(MaterialMesh2dBundle {
-                    mesh: mesh_handle.into(),
-                    transform: Transform::default(),
-                    material: new_context.fonts[*font_index].material_handle.clone(),
-                    ..default()
-                })
-                .insert(SimpleConsoleMarker(idx));
-
-                new_context.terminals.push(console);
+                console.initialize(&new_context.fonts, &mut meshes);
+                console.spawn(&mut commands, new_context.fonts[*font_index].material_handle.clone(), idx);
+                new_context.terminals.lock().push(Box::new(console));
             }
         }
     }
