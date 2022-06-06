@@ -7,3 +7,5 @@ description = "ASCII/CP437 Psuedo-terminal for Bevy, based on bracket-lib."
 [dependencies]
 # Using my version until my PR for colored vertex support is (hopefully) merged.
 bevy = { git = "https://github.com/thebracket/bevy.git" }
+parking_lot = "0.11"
+lazy_static = "1.4"

@@ -10,7 +10,7 @@ use crate::BracketContext;
 pub(crate) trait ConsoleFrontEnd: Sync+Send {
     fn cls(&mut self);
     fn print(&mut self, x: usize, y: usize, text: &str);
-    fn print_color(&mut self, x: usize, y: usize, text: &str, foreground: Color);
+    fn print_color(&mut self, x: usize, y: usize, text: &str, foreground: Color, background: Color);
 
     fn update_mesh(
         &self,

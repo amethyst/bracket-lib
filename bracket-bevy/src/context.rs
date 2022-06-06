@@ -25,7 +25,7 @@ impl BracketContext {
         self.terminals.lock()[self.current_layer].print(x, y, &text.to_string());
     }
 
-    pub fn print_color<S: ToString>(&self, x: usize, y: usize, text: S, foreground: Color) {
-        self.terminals.lock()[self.current_layer].print_color(x, y, &text.to_string(), foreground)
+    pub fn print_color<S: ToString>(&self, x: usize, y: usize, text: S, foreground: Color, background: Color) {
+        self.terminals.lock()[self.current_layer].print_color(x, y, &text.to_string(), foreground, background)
     }
 }

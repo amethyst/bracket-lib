@@ -27,7 +27,7 @@ pub(crate) fn load_terminals(
         match terminal {
             TerminalLayer::Simple { font_index, width, height } => {
                 let mut console = SimpleConsole::new(*font_index, *width, *height);
-                console.initialize(&new_context.fonts, &mut meshes);
+                console.initialize(&new_context.fonts, &mut meshes, idx as f32);
                 console.spawn(&mut commands, new_context.fonts[*font_index].material_handle.clone(), idx);
                 new_context.terminals.lock().push(Box::new(console));
             }
