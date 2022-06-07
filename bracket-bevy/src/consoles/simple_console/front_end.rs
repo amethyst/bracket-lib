@@ -1,12 +1,15 @@
 use super::{
-    back_end::{SimpleBackendWithBackground, SimpleConsoleBackend},
+    back_end::{SimpleBackendNoBackground, SimpleBackendWithBackground, SimpleConsoleBackend},
     TerminalGlyph,
 };
-use crate::{consoles::ConsoleFrontEnd, fonts::FontStore, prelude::string_to_cp437};
+use crate::{
+    consoles::ConsoleFrontEnd, fonts::FontStore, prelude::string_to_cp437, SimpleConsoleFeatures,
+};
 use bevy::{
     prelude::{Assets, Color, Commands, Handle, Mesh},
     sprite::ColorMaterial,
 };
+use std::collections::HashSet;
 
 pub(crate) struct SimpleConsole {
     pub(crate) font_index: usize,
@@ -32,18 +35,35 @@ impl SimpleConsole {
         fonts: &[FontStore],
         meshes: &mut Assets<Mesh>,
         base_z: f32,
+        features: &HashSet<SimpleConsoleFeatures>,
     ) {
-        let back_end = SimpleBackendWithBackground::new(
-            &self,
-            meshes,
-            fonts[self.font_index].chars_per_row,
-            fonts[self.font_index].n_rows,
-            fonts[self.font_index].font_height_pixels,
-            self.width,
-            self.height,
-            base_z,
-        );
-        self.back_end = Some(Box::new(back_end));
+        if !features.contains(&SimpleConsoleFeatures::WithoutBackground) {
+            let back_end = SimpleBackendWithBackground::new(
+                &self,
+                meshes,
+                fonts[self.font_index].chars_per_row,
+                fonts[self.font_index].n_rows,
+                fonts[self.font_index].font_height_pixels,
+                self.width,
+                self.height,
+                base_z,
+                features.contains(&SimpleConsoleFeatures::NoDirtyOptimization),
+            );
+            self.back_end = Some(Box::new(back_end));
+        } else {
+            let back_end = SimpleBackendNoBackground::new(
+                &self,
+                meshes,
+                fonts[self.font_index].chars_per_row,
+                fonts[self.font_index].n_rows,
+                fonts[self.font_index].font_height_pixels,
+                self.width,
+                self.height,
+                base_z,
+                features.contains(&SimpleConsoleFeatures::NoDirtyOptimization),
+            );
+            self.back_end = Some(Box::new(back_end));
+        }
     }
 
     pub(crate) fn spawn(
