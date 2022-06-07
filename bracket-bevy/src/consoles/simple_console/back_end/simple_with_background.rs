@@ -17,7 +17,9 @@ pub(crate) struct SimpleBackendWithBackground {
     pub(crate) height: usize,
     pub(crate) base_z: f32,
     last_background: Option<Vec<[f32; 4]>>,
+    last_foreground: Option<Vec<[f32; 4]>>,
     pub(crate) background_changed: bool,
+    pub(crate) foreground_changed: bool,
 }
 
 impl SimpleBackendWithBackground {
@@ -42,6 +44,8 @@ impl SimpleBackendWithBackground {
             base_z,
             last_background: None,
             background_changed: true,
+            last_foreground: None,
+            foreground_changed: true,
         };
         let mesh = back_end.build_mesh(parent);
         let mesh_handle = meshes.add(mesh);
@@ -258,6 +262,23 @@ impl SimpleBackendWithBackground {
             self.background_changed = true;
         }
     }
+
+    fn check_for_foreground_changes(&mut self, terminals: &[crate::consoles::TerminalGlyph]) {
+        let foreground: Vec<[f32; 4]> = terminals.iter().map(|c| c.foreground).collect();
+        if let Some(fg) = &mut self.last_foreground {
+            let changed = fg.iter().zip(foreground.iter()).any(|(b1, b2)| b1 != b2);
+
+            if !changed {
+                self.foreground_changed = false;
+            } else {
+                self.last_foreground = Some(foreground);
+                self.foreground_changed = true;
+            }
+        } else {
+            self.last_foreground = Some(foreground);
+            self.foreground_changed = true;
+        }
+    }
 }
 
 impl SimpleConsoleBackend for SimpleBackendWithBackground {
@@ -265,7 +286,9 @@ impl SimpleConsoleBackend for SimpleBackendWithBackground {
         if let Some(mesh_handle) = &self.mesh_handle {
             if let Some(mesh) = meshes.get_mut(mesh_handle.clone()) {
                 mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, self.build_uvs(front_end));
-                mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, self.build_colors(front_end));
+                if self.foreground_changed {
+                    mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, self.build_colors(front_end));
+                }
             }
         }
         if self.background_changed {
@@ -302,9 +325,11 @@ impl SimpleConsoleBackend for SimpleBackendWithBackground {
 
     fn clear_dirty(&mut self) {
         self.background_changed = false;
+        self.foreground_changed = false;
     }
 
     fn update_dirty(&mut self, terminals: &[crate::consoles::TerminalGlyph]) {
         self.check_for_background_changes(terminals);
+        self.check_for_foreground_changes(terminals);
     }
 }
