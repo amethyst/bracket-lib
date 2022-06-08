@@ -1,11 +1,11 @@
 use bevy::prelude::{Assets, Color, Mesh};
-
 mod simple_console;
 pub(crate) use simple_console::*;
 mod update_system;
-pub(crate) use update_system::*;
-
 use crate::BracketContext;
+pub(crate) use update_system::*;
+mod sparse_console;
+pub(crate) use sparse_console::*;
 
 pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn cls(&mut self);

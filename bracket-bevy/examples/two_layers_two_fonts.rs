@@ -10,7 +10,7 @@ fn main() {
         .with_font("vga8x16.png", 16, 16, (8.0, 16.0))
         .with_simple_console(0, 80, 50)
         .with_background(true)
-        .with_simple_console(1, 80, 25)
+        .with_sparse_console(1, 80, 25)
         .with_background(false);
 
     App::new()

@@ -1,4 +1,7 @@
-use crate::{fonts::FontStore, BTermBuilder, BracketContext, SimpleConsole, TerminalLayer};
+use crate::{
+    consoles::SparseConsole, fonts::FontStore, BTermBuilder, BracketContext, SimpleConsole,
+    TerminalLayer,
+};
 use bevy::{
     prelude::{AssetServer, Assets, Commands, Mesh, OrthographicCameraBundle, Res, ResMut},
     sprite::ColorMaterial,
@@ -49,7 +52,20 @@ pub(crate) fn load_terminals(
                 );
                 new_context.terminals.lock().push(Box::new(console));
             }
-            _ => {}
+            TerminalLayer::Sparse {
+                font_index,
+                width,
+                height,
+            } => {
+                let mut console = SparseConsole::new(*font_index, *width, *height);
+                console.initialize(&new_context.fonts, &mut meshes, idx as f32);
+                console.spawn(
+                    &mut commands,
+                    new_context.fonts[*font_index].material_handle.clone(),
+                    idx,
+                );
+                new_context.terminals.lock().push(Box::new(console));
+            }
         }
     }
 

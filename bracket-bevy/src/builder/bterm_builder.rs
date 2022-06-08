@@ -100,6 +100,15 @@ impl BTermBuilder {
         });
         self
     }
+
+    pub fn with_sparse_console(mut self, font_index: usize, width: usize, height: usize) -> Self {
+        self.layers.push(TerminalLayer::Sparse {
+            font_index,
+            width,
+            height,
+        });
+        self
+    }
 }
 
 impl Plugin for BTermBuilder {
