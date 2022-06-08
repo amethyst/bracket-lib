@@ -25,8 +25,16 @@ impl BracketContext {
         self.terminals.lock()[self.current_layer].cls();
     }
 
+    pub fn set(&mut self, x: usize, y: usize, fg: Color, bg: Color, glyph: u16) {
+        self.terminals.lock()[self.current_layer].set(x, y, fg, bg, glyph);
+    }
+
     pub fn print<S: ToString>(&self, x: usize, y: usize, text: S) {
         self.terminals.lock()[self.current_layer].print(x, y, &text.to_string());
+    }
+
+    pub fn print_centered(&mut self, y: usize, text: &str) {
+        self.terminals.lock()[self.current_layer].print_centered(y, text);
     }
 
     pub fn print_color<S: ToString>(
@@ -44,5 +52,17 @@ impl BracketContext {
             foreground,
             background,
         )
+    }
+
+    pub fn draw_box(
+        &mut self,
+        x: usize,
+        y: usize,
+        width: usize,
+        height: usize,
+        fg: Color,
+        bg: Color,
+    ) {
+        self.terminals.lock()[self.current_layer].draw_box(x, y, width, height, fg, bg);
     }
 }

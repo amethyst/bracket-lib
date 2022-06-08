@@ -1,4 +1,4 @@
-use crate::{load_terminals, update_consoles, TerminalBuilderFont, TerminalLayer};
+use crate::{load_terminals, update_consoles, RandomNumbers, TerminalBuilderFont, TerminalLayer};
 use bevy::prelude::{CoreStage, Plugin, SystemStage};
 use std::collections::HashSet;
 
@@ -7,6 +7,7 @@ pub struct BTermBuilder {
     pub(crate) fonts: Vec<TerminalBuilderFont>,
     pub(crate) layers: Vec<TerminalLayer>,
     pub(crate) with_ortho_camera: bool,
+    pub(crate) with_random_number_generator: bool,
 }
 
 impl BTermBuilder {
@@ -15,6 +16,7 @@ impl BTermBuilder {
             fonts: Vec::new(),
             layers: Vec::new(),
             with_ortho_camera: true,
+            with_random_number_generator: false,
         }
     }
 
@@ -33,11 +35,17 @@ impl BTermBuilder {
                 features: HashSet::new(),
             }],
             with_ortho_camera: true,
+            with_random_number_generator: false,
         }
     }
 
     pub fn with_ortho_camera(mut self, with_ortho_camera: bool) -> Self {
         self.with_ortho_camera = with_ortho_camera;
+        self
+    }
+
+    pub fn with_random_number_generator(mut self, with_random_number_generator: bool) -> Self {
+        self.with_random_number_generator = with_random_number_generator;
         self
     }
 
@@ -128,5 +136,8 @@ impl Plugin for BTermBuilder {
             SystemStage::single_threaded(),
         );
         app.add_system(update_consoles);
+        if self.with_random_number_generator {
+            app.insert_resource(RandomNumbers::new());
+        }
     }
 }

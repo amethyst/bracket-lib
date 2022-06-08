@@ -20,3 +20,7 @@ pub mod prelude {
 
     pub use crate::iterators::*;
 }
+
+pub mod rand {
+    pub use rand::*;
+}

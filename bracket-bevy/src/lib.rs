@@ -7,7 +7,9 @@ mod context;
 pub use context::*;
 mod consoles;
 use consoles::*;
+mod random_resource;
+pub use random_resource::*;
 
 pub mod prelude {
-    pub use crate::{cp437::*, BTermBuilder, BracketContext};
+    pub use crate::{cp437::*, BTermBuilder, BracketContext, RandomNumbers};
 }

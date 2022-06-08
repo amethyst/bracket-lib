@@ -11,6 +11,9 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn cls(&mut self);
     fn print(&mut self, x: usize, y: usize, text: &str);
     fn print_color(&mut self, x: usize, y: usize, text: &str, foreground: Color, background: Color);
+    fn print_centered(&mut self, y: usize, text: &str);
+    fn set(&mut self, x: usize, y: usize, fg: Color, bg: Color, glyph: u16);
+    fn draw_box(&mut self, x: usize, y: usize, width: usize, height: usize, fg: Color, bg: Color);
 
     fn update_mesh(&mut self, ctx: &BracketContext, meshes: &mut Assets<Mesh>);
 }

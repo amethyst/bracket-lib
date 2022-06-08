@@ -3,7 +3,10 @@ use super::{
     TerminalGlyph,
 };
 use crate::{
-    consoles::ConsoleFrontEnd, fonts::FontStore, prelude::string_to_cp437, SimpleConsoleFeatures,
+    consoles::ConsoleFrontEnd,
+    fonts::FontStore,
+    prelude::{string_to_cp437, to_cp437},
+    SimpleConsoleFeatures,
 };
 use bevy::{
     prelude::{Assets, Color, Commands, Handle, Mesh},
@@ -87,6 +90,15 @@ impl ConsoleFrontEnd for SimpleConsole {
         self.terminal.iter_mut().for_each(|c| c.glyph = 32);
     }
 
+    fn set(&mut self, x: usize, y: usize, fg: Color, bg: Color, glyph: u16) {
+        let idx = self.at(x, y);
+        self.terminal[idx] = TerminalGlyph {
+            glyph,
+            foreground: fg.as_rgba_f32(),
+            background: bg.as_rgba_f32(),
+        };
+    }
+
     fn print(&mut self, mut x: usize, y: usize, text: &str) {
         let bytes = string_to_cp437(text);
         for glyph in bytes {
@@ -117,6 +129,39 @@ impl ConsoleFrontEnd for SimpleConsole {
                 background: background.as_rgba_f32(),
             };
             x += 1;
+        }
+    }
+
+    fn print_centered(&mut self, y: usize, text: &str) {
+        self.print((self.width / 2) - (text.to_string().len() / 2), y, text);
+    }
+
+    fn draw_box(
+        &mut self,
+        sx: usize,
+        sy: usize,
+        width: usize,
+        height: usize,
+        fg: Color,
+        bg: Color,
+    ) {
+        for y in sy..sy + height {
+            for x in sx..sx + width {
+                self.set(x, y, Color::WHITE, Color::BLACK, 32);
+            }
+        }
+
+        self.set(sx, sy, fg, bg, to_cp437('┌'));
+        self.set(sx + width, sy, fg, bg, to_cp437('┐'));
+        self.set(sx, sy + height, fg, bg, to_cp437('└'));
+        self.set(sx + width, sy + height, fg, bg, to_cp437('┘'));
+        for x in sx + 1..sx + width {
+            self.set(x, sy, fg, bg, to_cp437('─'));
+            self.set(x, sy + height, fg, bg, to_cp437('─'));
+        }
+        for y in sy + 1..sy + height {
+            self.set(sx, y, fg, bg, to_cp437('│'));
+            self.set(sx + width, y, fg, bg, to_cp437('│'));
         }
     }
 
