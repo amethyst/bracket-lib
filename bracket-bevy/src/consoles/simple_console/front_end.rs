@@ -3,7 +3,7 @@ use super::{
     TerminalGlyph,
 };
 use crate::{
-    consoles::{common_draw, ConsoleFrontEnd},
+    consoles::{common_draw, ConsoleFrontEnd, Rect},
     fonts::FontStore,
     SimpleConsoleFeatures,
 };
@@ -19,6 +19,7 @@ pub(crate) struct SimpleConsole {
     pub(crate) height: usize,
     pub(crate) terminal: Vec<TerminalGlyph>,
     back_end: Option<Box<dyn SimpleConsoleBackend>>,
+    clipping: Option<Rect>,
 }
 
 impl SimpleConsole {
@@ -29,6 +30,7 @@ impl SimpleConsole {
             height,
             terminal: vec![TerminalGlyph::default(); width * height],
             back_end: None,
+            clipping: None,
         }
     }
 
@@ -85,6 +87,22 @@ impl SimpleConsole {
 }
 
 impl ConsoleFrontEnd for SimpleConsole {
+    fn get_char_size(&self) -> (usize, usize) {
+        (self.width, self.height)
+    }
+
+    fn at(&self, x: usize, y: usize) -> usize {
+        self.at(x, y)
+    }
+
+    fn get_clipping(&self) -> Option<crate::consoles::Rect> {
+        self.clipping
+    }
+
+    fn set_clipping(&mut self, clipping: Option<crate::consoles::Rect>) {
+        self.clipping = clipping;
+    }
+
     fn cls(&mut self) {
         self.terminal.iter_mut().for_each(|c| c.glyph = 32);
     }
@@ -96,12 +114,13 @@ impl ConsoleFrontEnd for SimpleConsole {
     }
 
     fn set(&mut self, x: usize, y: usize, fg: Color, bg: Color, glyph: u16) {
-        let idx = self.at(x, y);
-        self.terminal[idx] = TerminalGlyph {
-            glyph,
-            foreground: fg.as_rgba_f32(),
-            background: bg.as_rgba_f32(),
-        };
+        if let Some(idx) = self.try_at(x, y) {
+            self.terminal[idx] = TerminalGlyph {
+                glyph,
+                foreground: fg.as_rgba_f32(),
+                background: bg.as_rgba_f32(),
+            };
+        }
     }
 
     fn print(&mut self, x: usize, y: usize, text: &str) {
@@ -169,6 +188,12 @@ impl ConsoleFrontEnd for SimpleConsole {
         bg: Color,
     ) {
         common_draw::draw_hollow_box_double(self, x, y, width, height, fg, bg);
+    }
+
+    fn fill_region(&mut self, target: Rect, glyph: u16, fg: Color, bg: Color) {
+        target.for_each(|point| {
+            self.set(point.x as usize, point.y as usize, fg, bg, glyph);
+        });
     }
 
     fn update_mesh(

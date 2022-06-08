@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use super::{SparseBackendNoBackground, SparseBackendWithBackground, SparseConsoleBackend};
 use crate::{
-    consoles::{common_draw, ConsoleFrontEnd, TerminalGlyph},
+    consoles::{common_draw, ConsoleFrontEnd, Rect, TerminalGlyph},
     fonts::FontStore,
     SparseConsoleFeatures,
 };
@@ -17,6 +17,7 @@ pub(crate) struct SparseConsole {
     pub(crate) height: usize,
     pub(crate) terminal: Vec<(usize, usize, TerminalGlyph)>,
     back_end: Option<Box<dyn SparseConsoleBackend>>,
+    clipping: Option<Rect>,
 }
 
 impl SparseConsole {
@@ -27,6 +28,7 @@ impl SparseConsole {
             height,
             terminal: Vec::new(),
             back_end: None,
+            clipping: None,
         }
     }
 
@@ -77,6 +79,22 @@ impl SparseConsole {
 }
 
 impl ConsoleFrontEnd for SparseConsole {
+    fn get_char_size(&self) -> (usize, usize) {
+        (self.width, self.height)
+    }
+
+    fn at(&self, x: usize, y: usize) -> usize {
+        ((self.height - 1 - y) * self.width) + x
+    }
+
+    fn get_clipping(&self) -> Option<Rect> {
+        self.clipping
+    }
+
+    fn set_clipping(&mut self, clipping: Option<Rect>) {
+        self.clipping = clipping;
+    }
+
     fn cls(&mut self) {
         self.terminal.clear();
     }
@@ -88,15 +106,17 @@ impl ConsoleFrontEnd for SparseConsole {
     }
 
     fn set(&mut self, x: usize, y: usize, fg: Color, bg: Color, glyph: u16) {
-        self.terminal.push((
-            x,
-            y,
-            TerminalGlyph {
-                glyph,
-                foreground: fg.as_rgba_f32(),
-                background: bg.as_rgba_f32(),
-            },
-        ));
+        if self.try_at(x, y).is_some() {
+            self.terminal.push((
+                x,
+                y,
+                TerminalGlyph {
+                    glyph,
+                    foreground: fg.as_rgba_f32(),
+                    background: bg.as_rgba_f32(),
+                },
+            ));
+        }
     }
 
     fn print(&mut self, x: usize, y: usize, text: &str) {
@@ -164,6 +184,12 @@ impl ConsoleFrontEnd for SparseConsole {
         bg: Color,
     ) {
         common_draw::draw_hollow_box_double(self, x, y, width, height, fg, bg);
+    }
+
+    fn fill_region(&mut self, target: Rect, glyph: u16, fg: Color, bg: Color) {
+        target.for_each(|point| {
+            self.set(point.x as usize, point.y as usize, fg, bg, glyph);
+        });
     }
 
     fn update_mesh(

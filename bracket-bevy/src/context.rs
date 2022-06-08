@@ -1,4 +1,7 @@
-use crate::{consoles::ConsoleFrontEnd, fonts::FontStore};
+use crate::{
+    consoles::{ConsoleFrontEnd, Rect},
+    fonts::FontStore,
+};
 use bevy::prelude::Color;
 use parking_lot::Mutex;
 
@@ -15,6 +18,26 @@ impl BracketContext {
             terminals: Mutex::new(Vec::new()),
             current_layer: 0,
         }
+    }
+
+    pub fn get_char_size(&self) -> (usize, usize) {
+        self.terminals.lock()[self.current_layer].get_char_size()
+    }
+
+    pub fn at(&self, x: usize, y: usize) -> usize {
+        self.terminals.lock()[self.current_layer].at(x, y)
+    }
+
+    pub fn try_at(&self, x: usize, y: usize) -> Option<usize> {
+        self.terminals.lock()[self.current_layer].try_at(x, y)
+    }
+
+    pub fn get_clipping(&self) -> Option<Rect> {
+        self.terminals.lock()[self.current_layer].get_clipping()
+    }
+
+    pub fn set_clipping(&self, clipping: Option<Rect>) {
+        self.terminals.lock()[self.current_layer].set_clipping(clipping);
     }
 
     pub fn set_layer(&mut self, layer: usize) {
@@ -97,5 +120,9 @@ impl BracketContext {
     ) {
         self.terminals.lock()[self.current_layer]
             .draw_hollow_box_double(x, y, width, height, fg, bg);
+    }
+
+    pub fn fill_region(&mut self, target: Rect, glyph: u16, fg: Color, bg: Color) {
+        self.terminals.lock()[self.current_layer].fill_region(target, glyph, fg, bg);
     }
 }
