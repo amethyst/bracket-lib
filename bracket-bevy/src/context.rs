@@ -25,6 +25,10 @@ impl BracketContext {
         self.terminals.lock()[self.current_layer].cls();
     }
 
+    pub fn cls_bg(&self, color: Color) {
+        self.terminals.lock()[self.current_layer].cls_bg(color);
+    }
+
     pub fn set(&mut self, x: usize, y: usize, fg: Color, bg: Color, glyph: u16) {
         self.terminals.lock()[self.current_layer].set(x, y, fg, bg, glyph);
     }
@@ -54,7 +58,23 @@ impl BracketContext {
         )
     }
 
-    pub fn draw_box(
+    pub fn draw_box(&self, x: usize, y: usize, width: usize, height: usize, fg: Color, bg: Color) {
+        self.terminals.lock()[self.current_layer].draw_box(x, y, width, height, fg, bg);
+    }
+
+    pub fn draw_hollow_box(
+        &self,
+        x: usize,
+        y: usize,
+        width: usize,
+        height: usize,
+        fg: Color,
+        bg: Color,
+    ) {
+        self.terminals.lock()[self.current_layer].draw_hollow_box(x, y, width, height, fg, bg);
+    }
+
+    pub fn draw_box_double(
         &mut self,
         x: usize,
         y: usize,
@@ -63,6 +83,19 @@ impl BracketContext {
         fg: Color,
         bg: Color,
     ) {
-        self.terminals.lock()[self.current_layer].draw_box(x, y, width, height, fg, bg);
+        self.terminals.lock()[self.current_layer].draw_box_double(x, y, width, height, fg, bg);
+    }
+
+    pub fn draw_hollow_box_double(
+        &mut self,
+        x: usize,
+        y: usize,
+        width: usize,
+        height: usize,
+        fg: Color,
+        bg: Color,
+    ) {
+        self.terminals.lock()[self.current_layer]
+            .draw_hollow_box_double(x, y, width, height, fg, bg);
     }
 }

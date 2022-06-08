@@ -3,9 +3,8 @@ use super::{
     TerminalGlyph,
 };
 use crate::{
-    consoles::ConsoleFrontEnd,
+    consoles::{common_draw, ConsoleFrontEnd},
     fonts::FontStore,
-    prelude::{string_to_cp437, to_cp437},
     SimpleConsoleFeatures,
 };
 use bevy::{
@@ -90,6 +89,12 @@ impl ConsoleFrontEnd for SimpleConsole {
         self.terminal.iter_mut().for_each(|c| c.glyph = 32);
     }
 
+    fn cls_bg(&mut self, color: Color) {
+        self.terminal
+            .iter_mut()
+            .for_each(|c| c.background = color.as_rgba_f32());
+    }
+
     fn set(&mut self, x: usize, y: usize, fg: Color, bg: Color, glyph: u16) {
         let idx = self.at(x, y);
         self.terminal[idx] = TerminalGlyph {
@@ -99,37 +104,19 @@ impl ConsoleFrontEnd for SimpleConsole {
         };
     }
 
-    fn print(&mut self, mut x: usize, y: usize, text: &str) {
-        let bytes = string_to_cp437(text);
-        for glyph in bytes {
-            let idx = self.at(x, y);
-            self.terminal[idx] = TerminalGlyph {
-                glyph,
-                foreground: Color::WHITE.as_rgba_f32(),
-                background: Color::BLACK.as_rgba_f32(),
-            };
-            x += 1;
-        }
+    fn print(&mut self, x: usize, y: usize, text: &str) {
+        common_draw::print(self, x, y, text);
     }
 
     fn print_color(
         &mut self,
-        mut x: usize,
+        x: usize,
         y: usize,
         text: &str,
         foreground: Color,
         background: Color,
     ) {
-        let bytes = string_to_cp437(text);
-        for glyph in bytes {
-            let idx = self.at(x, y);
-            self.terminal[idx] = TerminalGlyph {
-                glyph,
-                foreground: foreground.as_rgba_f32(),
-                background: background.as_rgba_f32(),
-            };
-            x += 1;
-        }
+        common_draw::print_color(self, x, y, text, foreground, background);
     }
 
     fn print_centered(&mut self, y: usize, text: &str) {
@@ -145,24 +132,43 @@ impl ConsoleFrontEnd for SimpleConsole {
         fg: Color,
         bg: Color,
     ) {
-        for y in sy..sy + height {
-            for x in sx..sx + width {
-                self.set(x, y, Color::WHITE, Color::BLACK, 32);
-            }
-        }
+        common_draw::draw_box(self, sx, sy, width, height, fg, bg);
+    }
 
-        self.set(sx, sy, fg, bg, to_cp437('┌'));
-        self.set(sx + width, sy, fg, bg, to_cp437('┐'));
-        self.set(sx, sy + height, fg, bg, to_cp437('└'));
-        self.set(sx + width, sy + height, fg, bg, to_cp437('┘'));
-        for x in sx + 1..sx + width {
-            self.set(x, sy, fg, bg, to_cp437('─'));
-            self.set(x, sy + height, fg, bg, to_cp437('─'));
-        }
-        for y in sy + 1..sy + height {
-            self.set(sx, y, fg, bg, to_cp437('│'));
-            self.set(sx + width, y, fg, bg, to_cp437('│'));
-        }
+    fn draw_hollow_box(
+        &mut self,
+        x: usize,
+        y: usize,
+        width: usize,
+        height: usize,
+        fg: Color,
+        bg: Color,
+    ) {
+        common_draw::draw_hollow_box(self, x, y, width, height, fg, bg);
+    }
+
+    fn draw_box_double(
+        &mut self,
+        x: usize,
+        y: usize,
+        width: usize,
+        height: usize,
+        fg: Color,
+        bg: Color,
+    ) {
+        common_draw::draw_box_double(self, x, y, width, height, fg, bg);
+    }
+
+    fn draw_hollow_box_double(
+        &mut self,
+        x: usize,
+        y: usize,
+        width: usize,
+        height: usize,
+        fg: Color,
+        bg: Color,
+    ) {
+        common_draw::draw_hollow_box_double(self, x, y, width, height, fg, bg);
     }
 
     fn update_mesh(
