@@ -6,7 +6,7 @@ use bevy::{
     sprite::MaterialMesh2dBundle,
 };
 
-pub(crate) struct SparseBackendNoBackground {
+pub(crate) struct SparseBackendWithBackground {
     pub(crate) mesh_handle: Option<Handle<Mesh>>,
     pub(crate) chars_per_row: u16,
     pub(crate) n_rows: u16,
@@ -16,7 +16,7 @@ pub(crate) struct SparseBackendNoBackground {
     pub(crate) base_z: f32,
 }
 
-impl SparseBackendNoBackground {
+impl SparseBackendWithBackground {
     pub(crate) fn new(
         parent: &SparseConsole,
         meshes: &mut Assets<Mesh>,
@@ -57,20 +57,55 @@ impl SparseBackendNoBackground {
 
     pub fn build_mesh(&self, parent: &SparseConsole) -> Mesh {
         let n_elements = parent.terminal.len();
-        let mut vertices: Vec<[f32; 3]> = Vec::with_capacity(n_elements * 4);
-        let mut normals: Vec<[f32; 3]> = Vec::with_capacity(n_elements * 4);
-        let mut uv: Vec<[f32; 2]> = Vec::with_capacity(n_elements * 4);
-        let mut colors: Vec<[f32; 4]> = Vec::with_capacity(n_elements * 4);
-        let mut indices: Vec<u32> = Vec::with_capacity(n_elements * 6);
+        let mut vertices: Vec<[f32; 3]> = Vec::with_capacity(n_elements * 8);
+        let mut normals: Vec<[f32; 3]> = Vec::with_capacity(n_elements * 8);
+        let mut uv: Vec<[f32; 2]> = Vec::with_capacity(n_elements * 8);
+        let mut colors: Vec<[f32; 4]> = Vec::with_capacity(n_elements * 8);
+        let mut indices: Vec<u32> = Vec::with_capacity(n_elements * 12);
         let mut index_count = 0;
         let half_height = self.height as f32 / 2.0;
         let half_width = self.width as f32 / 2.0;
 
         for (x, y, chr) in parent.terminal.iter() {
-            let actual_y = self.height - 1 - y;
             let screen_x = (*x as f32 - half_width) * self.font_height_pixels.0;
+            let actual_y = self.height - 1 - y;
             let screen_y = (actual_y as f32 - half_height) * self.font_height_pixels.1;
 
+            // Background
+            vertices.push([screen_x, screen_y, self.base_z]);
+            vertices.push([screen_x + self.font_height_pixels.0, screen_y, self.base_z]);
+            vertices.push([screen_x, screen_y + self.font_height_pixels.1, self.base_z]);
+            vertices.push([
+                screen_x + self.font_height_pixels.0,
+                screen_y + self.font_height_pixels.1,
+                self.base_z,
+            ]);
+            for _ in 0..4 {
+                normals.push([0.0, 1.0, 0.0]);
+            }
+
+            let tex = self.texture_coords(219);
+            uv.push([tex[0], tex[3]]);
+            uv.push([tex[2], tex[3]]);
+            uv.push([tex[0], tex[1]]);
+            uv.push([tex[2], tex[1]]);
+
+            colors.push(chr.background);
+            colors.push(chr.background);
+            colors.push(chr.background);
+            colors.push(chr.background);
+
+            indices.push(index_count);
+            indices.push(index_count + 1);
+            indices.push(index_count + 2);
+
+            indices.push(index_count + 3);
+            indices.push(index_count + 2);
+            indices.push(index_count + 1);
+
+            index_count += 4;
+
+            // Foreground
             vertices.push([screen_x, screen_y, self.base_z + 0.5]);
             vertices.push([
                 screen_x + self.font_height_pixels.0,
@@ -123,7 +158,7 @@ impl SparseBackendNoBackground {
     }
 }
 
-impl SparseConsoleBackend for SparseBackendNoBackground {
+impl SparseConsoleBackend for SparseBackendWithBackground {
     fn update_mesh(&self, front_end: &SparseConsole, meshes: &mut Assets<Mesh>) {
         if let Some(mesh_handle) = &self.mesh_handle {
             if let Some(mesh) = meshes.get_mut(mesh_handle.clone()) {

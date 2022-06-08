@@ -52,7 +52,13 @@ impl BTermBuilder {
                         features.insert(crate::SimpleConsoleFeatures::WithoutBackground);
                     }
                 }
-                _ => {}
+                TerminalLayer::Sparse { features, .. } => {
+                    if with_background {
+                        features.remove(&crate::SparseConsoleFeatures::WithoutBackground);
+                    } else {
+                        features.insert(crate::SparseConsoleFeatures::WithoutBackground);
+                    }
+                }
             }
         }
         self
@@ -106,6 +112,7 @@ impl BTermBuilder {
             font_index,
             width,
             height,
+            features: HashSet::new(),
         });
         self
     }

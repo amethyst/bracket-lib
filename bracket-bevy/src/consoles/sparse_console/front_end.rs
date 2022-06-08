@@ -1,8 +1,11 @@
-use super::{SparseBackendNoBackground, SparseConsoleBackend};
+use std::collections::HashSet;
+
+use super::{SparseBackendNoBackground, SparseBackendWithBackground, SparseConsoleBackend};
 use crate::{
     consoles::{ConsoleFrontEnd, TerminalGlyph},
     fonts::FontStore,
     prelude::string_to_cp437,
+    SparseConsoleFeatures,
 };
 use bevy::{
     prelude::{Assets, Color, Commands, Handle, Mesh},
@@ -33,18 +36,33 @@ impl SparseConsole {
         fonts: &[FontStore],
         meshes: &mut Assets<Mesh>,
         base_z: f32,
+        features: &HashSet<SparseConsoleFeatures>,
     ) {
-        let back_end = SparseBackendNoBackground::new(
-            &self,
-            meshes,
-            fonts[self.font_index].chars_per_row,
-            fonts[self.font_index].n_rows,
-            fonts[self.font_index].font_height_pixels,
-            self.width,
-            self.height,
-            base_z,
-        );
-        self.back_end = Some(Box::new(back_end));
+        if !features.contains(&SparseConsoleFeatures::WithoutBackground) {
+            let back_end = SparseBackendWithBackground::new(
+                &self,
+                meshes,
+                fonts[self.font_index].chars_per_row,
+                fonts[self.font_index].n_rows,
+                fonts[self.font_index].font_height_pixels,
+                self.width,
+                self.height,
+                base_z,
+            );
+            self.back_end = Some(Box::new(back_end));
+        } else {
+            let back_end = SparseBackendNoBackground::new(
+                &self,
+                meshes,
+                fonts[self.font_index].chars_per_row,
+                fonts[self.font_index].n_rows,
+                fonts[self.font_index].font_height_pixels,
+                self.width,
+                self.height,
+                base_z,
+            );
+            self.back_end = Some(Box::new(back_end));
+        }
     }
 
     pub(crate) fn spawn(

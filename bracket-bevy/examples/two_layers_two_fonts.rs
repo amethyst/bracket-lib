@@ -11,7 +11,7 @@ fn main() {
         .with_simple_console(0, 80, 50)
         .with_background(true)
         .with_sparse_console(1, 80, 25)
-        .with_background(false);
+        .with_background(true);
 
     App::new()
         .add_plugins(DefaultPlugins)
@@ -46,8 +46,8 @@ fn tick(
         1,
         bouncer.0,
         format!("Frames per Second: {fps}"),
-        Color::YELLOW,
-        Color::BLACK,
+        Color::RED,
+        Color::WHITE,
     );
     bouncer.0 += 1;
     bouncer.0 %= 25;

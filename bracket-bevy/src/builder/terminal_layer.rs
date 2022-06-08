@@ -12,6 +12,7 @@ pub enum TerminalLayer {
         font_index: usize,
         width: usize,
         height: usize,
+        features: HashSet<SparseConsoleFeatures>,
     },
 }
 
@@ -19,4 +20,9 @@ pub enum TerminalLayer {
 pub enum SimpleConsoleFeatures {
     WithoutBackground,
     NoDirtyOptimization,
+}
+
+#[derive(Hash, PartialEq, Eq, Debug, Clone, Copy)]
+pub enum SparseConsoleFeatures {
+    WithoutBackground,
 }

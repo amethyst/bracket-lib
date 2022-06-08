@@ -56,9 +56,10 @@ pub(crate) fn load_terminals(
                 font_index,
                 width,
                 height,
+                features,
             } => {
                 let mut console = SparseConsole::new(*font_index, *width, *height);
-                console.initialize(&new_context.fonts, &mut meshes, idx as f32);
+                console.initialize(&new_context.fonts, &mut meshes, idx as f32, features);
                 console.spawn(
                     &mut commands,
                     new_context.fonts[*font_index].material_handle.clone(),
