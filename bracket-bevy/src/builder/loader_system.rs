@@ -20,6 +20,7 @@ pub(crate) fn load_terminals(
 
     // Setup the new context
     let mut new_context = BracketContext::new(context.palette.clone());
+    new_context.scaling_mode = context.scaling_mode;
 
     // Load the fonts
     for font in context.fonts.iter() {

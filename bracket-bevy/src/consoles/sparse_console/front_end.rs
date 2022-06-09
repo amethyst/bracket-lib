@@ -81,6 +81,19 @@ impl ConsoleFrontEnd for SparseConsole {
         (self.width, self.height)
     }
 
+    fn get_pixel_size(&self) -> (f32, f32) {
+        let n_chars = self.get_char_size();
+        if let Some(back_end) = &self.back_end {
+            let char_size = back_end.get_pixel_size();
+            (
+                n_chars.0 as f32 * char_size.0,
+                n_chars.1 as f32 * char_size.1,
+            )
+        } else {
+            (0.0, 0.0)
+        }
+    }
+
     fn at(&self, x: usize, y: usize) -> usize {
         ((self.height - 1 - y) * self.width) + x
     }

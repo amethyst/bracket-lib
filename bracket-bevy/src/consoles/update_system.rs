@@ -1,8 +1,10 @@
-use crate::BracketContext;
+use crate::{BracketContext, TerminalScalingMode};
 use bevy::{
     diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin},
+    ecs::event::Events,
     prelude::*,
     sprite::Mesh2dHandle,
+    window::WindowResized,
 };
 
 use super::BracketMesh;
@@ -67,6 +69,27 @@ pub(crate) fn update_timing(mut ctx: ResMut<BracketContext>, diagnostics: Res<Di
     if let Some(frame_time) = diagnostics.get(FrameTimeDiagnosticsPlugin::FRAME_TIME) {
         if let Some(frame_time_avg) = frame_time.measurement() {
             ctx.frame_time_ms = (frame_time_avg.value * 1000.0).round();
+        }
+    }
+}
+
+pub(crate) fn window_resize(
+    context: Res<BracketContext>,
+    resize_event: Res<Events<WindowResized>>,
+    mut query: Query<&mut Transform, With<BracketMesh>>,
+) {
+    let mut reader = resize_event.get_reader();
+    for e in reader.iter(&resize_event) {
+        match context.scaling_mode {
+            TerminalScalingMode::Stretch => {
+                let terminal_size_native = context.get_pixel_size();
+                let x = e.width / terminal_size_native.0;
+                let y = e.height / terminal_size_native.1;
+                query.for_each_mut(|mut trans| {
+                    trans.scale.x = x;
+                    trans.scale.y = y;
+                });
+            }
         }
     }
 }

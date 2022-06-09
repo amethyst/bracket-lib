@@ -17,6 +17,7 @@ pub(crate) use text_spans::*;
 
 pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn get_char_size(&self) -> (usize, usize);
+    fn get_pixel_size(&self) -> (f32, f32);
     fn at(&self, x: usize, y: usize) -> usize;
     fn get_clipping(&self) -> Option<Rect>;
     fn set_clipping(&mut self, clipping: Option<Rect>);

@@ -1,6 +1,7 @@
 use crate::{
     consoles::{ConsoleFrontEnd, Rect},
     fonts::FontStore,
+    TerminalScalingMode,
 };
 use bevy::{sprite::Mesh2dHandle, utils::HashMap};
 use bracket_color::prelude::RGBA;
@@ -14,6 +15,7 @@ pub struct BracketContext {
     pub fps: f64,
     pub frame_time_ms: f64,
     pub(crate) mesh_replacement: Vec<(Mesh2dHandle, Mesh2dHandle, bool)>,
+    pub(crate) scaling_mode: TerminalScalingMode,
 }
 
 impl BracketContext {
@@ -26,6 +28,7 @@ impl BracketContext {
             fps: 0.0,
             frame_time_ms: 0.0,
             mesh_replacement: Vec::new(),
+            scaling_mode: TerminalScalingMode::Stretch,
         }
     }
 
@@ -35,6 +38,16 @@ impl BracketContext {
 
     pub fn get_char_size(&self) -> (usize, usize) {
         self.terminals.lock()[self.current_layer()].get_char_size()
+    }
+
+    pub fn get_pixel_size(&self) -> (f32, f32) {
+        let mut pixel_size = (0.0, 0.0);
+        self.terminals.lock().iter().for_each(|t| {
+            let ts = t.get_pixel_size();
+            pixel_size.0 = f32::max(pixel_size.0, ts.0);
+            pixel_size.1 = f32::max(pixel_size.1, ts.1);
+        });
+        pixel_size
     }
 
     pub fn at(&self, x: usize, y: usize) -> usize {

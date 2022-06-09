@@ -1,5 +1,5 @@
 use crate::{
-    consoles::{replace_meshes, update_timing},
+    consoles::{replace_meshes, update_timing, window_resize},
     load_terminals, update_consoles, RandomNumbers, TerminalBuilderFont, TerminalLayer,
 };
 use bevy::{
@@ -10,6 +10,11 @@ use bevy::{
 use bracket_color::prelude::RGBA;
 use std::collections::HashSet;
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum TerminalScalingMode {
+    Stretch,
+}
+
 #[derive(Clone)]
 pub struct BTermBuilder {
     pub(crate) fonts: Vec<TerminalBuilderFont>,
@@ -19,6 +24,7 @@ pub struct BTermBuilder {
     pub(crate) with_random_number_generator: bool,
     pub(crate) with_diagnostics: bool,
     pub(crate) log_diagnostics: bool,
+    pub(crate) scaling_mode: TerminalScalingMode,
 }
 
 impl BTermBuilder {
@@ -31,6 +37,7 @@ impl BTermBuilder {
             with_random_number_generator: false,
             with_diagnostics: true,
             log_diagnostics: false,
+            scaling_mode: TerminalScalingMode::Stretch,
         }
     }
 
@@ -53,7 +60,13 @@ impl BTermBuilder {
             with_random_number_generator: false,
             with_diagnostics: true,
             log_diagnostics: false,
+            scaling_mode: TerminalScalingMode::Stretch,
         }
+    }
+
+    pub fn with_scaling_mode(mut self, scaling_mode: TerminalScalingMode) -> Self {
+        self.scaling_mode = scaling_mode;
+        self
     }
 
     pub fn with_ortho_camera(mut self, with_ortho_camera: bool) -> Self {
@@ -166,6 +179,7 @@ impl Plugin for BTermBuilder {
         );
         app.add_system(update_consoles);
         app.add_system(replace_meshes);
+        app.add_system(window_resize);
         if self.with_random_number_generator {
             app.insert_resource(RandomNumbers::new());
         }
