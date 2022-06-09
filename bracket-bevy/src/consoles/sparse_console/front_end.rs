@@ -130,7 +130,7 @@ impl ConsoleFrontEnd for SparseConsole {
         }
     }
 
-    fn set_bg(&mut self, x: usize, y: usize, bg: RGBA) {
+    fn set_bg(&mut self, _x: usize, _y: usize, _bg: RGBA) {
         // Does nothing
     }
 
