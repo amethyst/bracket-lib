@@ -1,4 +1,4 @@
-use bevy::prelude::{Assets, Mesh};
+use bevy::prelude::{Assets, Handle, Mesh};
 mod simple_console;
 pub(crate) use simple_console::*;
 mod update_system;
@@ -86,7 +86,8 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
         }
     }
 
-    fn update_mesh(&mut self, ctx: &BracketContext, meshes: &mut Assets<Mesh>);
+    fn new_mesh(&mut self, ctx: &BracketContext, meshes: &mut Assets<Mesh>)
+        -> Option<Handle<Mesh>>;
 }
 
 #[derive(PartialEq, Copy, Clone, Debug)]

@@ -37,7 +37,6 @@ impl SparseConsole {
         &mut self,
         fonts: &[FontStore],
         meshes: &mut Assets<Mesh>,
-        base_z: f32,
         features: &HashSet<SparseConsoleFeatures>,
     ) {
         if !features.contains(&SparseConsoleFeatures::WithoutBackground) {
@@ -49,7 +48,6 @@ impl SparseConsole {
                 fonts[self.font_index].font_height_pixels,
                 self.width,
                 self.height,
-                base_z,
             );
             self.back_end = Some(Box::new(back_end));
         } else {
@@ -61,7 +59,6 @@ impl SparseConsole {
                 fonts[self.font_index].font_height_pixels,
                 self.width,
                 self.height,
-                base_z,
             );
             self.back_end = Some(Box::new(back_end));
         }
@@ -190,13 +187,15 @@ impl ConsoleFrontEnd for SparseConsole {
         });
     }
 
-    fn update_mesh(
+    fn new_mesh(
         &mut self,
-        _ctx: &crate::BracketContext,
-        meshes: &mut bevy::prelude::Assets<Mesh>,
-    ) {
-        if let Some(back_end) = &self.back_end {
-            back_end.update_mesh(&self, meshes);
+        _ctx: &BracketContext,
+        meshes: &mut Assets<Mesh>,
+    ) -> Option<Handle<Mesh>> {
+        if let Some(be) = &self.back_end {
+            Some(be.new_mesh(self, meshes))
+        } else {
+            None
         }
     }
 }

@@ -9,6 +9,6 @@ pub(crate) use sparse_no_background::*;
 pub(crate) use sparse_with_background::*;
 
 pub(crate) trait SparseConsoleBackend: Sync + Send {
-    fn update_mesh(&self, front_end: &SparseConsole, meshes: &mut Assets<Mesh>);
+    fn new_mesh(&self, front_end: &SparseConsole, meshes: &mut Assets<Mesh>) -> Handle<Mesh>;
     fn spawn(&self, commands: &mut Commands, material: Handle<ColorMaterial>, idx: usize);
 }

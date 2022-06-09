@@ -1,5 +1,5 @@
 use super::SimpleConsoleBackend;
-use crate::consoles::{SimpleConsole, SimpleConsoleMarker};
+use crate::consoles::{BracketMesh, SimpleConsole};
 use bevy::{
     prelude::*,
     render::mesh::{Indices, PrimitiveTopology},
@@ -13,14 +13,6 @@ pub(crate) struct SimpleBackendNoBackground {
     pub(crate) font_height_pixels: (f32, f32),
     pub(crate) width: usize,
     pub(crate) height: usize,
-    pub(crate) base_z: f32,
-
-    // Dirty detection
-    enable_dirty_optimization: bool,
-    last_foreground: Option<Vec<[f32; 4]>>,
-    last_glyphs: Option<Vec<u16>>,
-    pub(crate) foreground_changed: bool,
-    pub(crate) glyphs_changed: bool,
 }
 
 impl SimpleBackendNoBackground {
@@ -32,8 +24,6 @@ impl SimpleBackendNoBackground {
         font_height_pixels: (f32, f32),
         width: usize,
         height: usize,
-        base_z: f32,
-        disable_dirty_optimization: bool,
     ) -> Self {
         let mut back_end = Self {
             mesh_handle: None,
@@ -42,12 +32,6 @@ impl SimpleBackendNoBackground {
             font_height_pixels,
             width,
             height,
-            base_z,
-            last_foreground: None,
-            foreground_changed: true,
-            last_glyphs: None,
-            glyphs_changed: false,
-            enable_dirty_optimization: !disable_dirty_optimization,
         };
         let mesh = back_end.build_mesh(parent);
         let mesh_handle = meshes.add(mesh);
@@ -84,21 +68,13 @@ impl SimpleBackendNoBackground {
             let mut idx = (self.height - 1 - y) * self.width;
             for x in 0..self.width {
                 let screen_x = (x as f32 - half_width) * self.font_height_pixels.0;
-                vertices.push([screen_x, screen_y, self.base_z + 0.5]);
-                vertices.push([
-                    screen_x + self.font_height_pixels.0,
-                    screen_y,
-                    self.base_z + 0.5,
-                ]);
-                vertices.push([
-                    screen_x,
-                    screen_y + self.font_height_pixels.1,
-                    self.base_z + 0.5,
-                ]);
+                vertices.push([screen_x, screen_y, 0.5]);
+                vertices.push([screen_x + self.font_height_pixels.0, screen_y, 0.5]);
+                vertices.push([screen_x, screen_y + self.font_height_pixels.1, 0.5]);
                 vertices.push([
                     screen_x + self.font_height_pixels.0,
                     screen_y + self.font_height_pixels.1,
-                    self.base_z + 0.5,
+                    0.5,
                 ]);
                 for _ in 0..4 {
                     normals.push([0.0, 1.0, 0.0]);
@@ -134,88 +110,11 @@ impl SimpleBackendNoBackground {
         mesh.set_indices(Some(Indices::U32(indices)));
         mesh
     }
-
-    pub fn build_uvs(&self, parent: &SimpleConsole) -> Vec<[f32; 2]> {
-        let mut uv: Vec<[f32; 2]> = Vec::with_capacity(self.width * self.height * 4);
-
-        // Foreground
-        for y in 0..self.height {
-            let mut idx = y * self.width;
-            for _ in 0..self.width {
-                let tex = self.texture_coords(parent.terminal[idx].glyph);
-                uv.push([tex[0], tex[3]]);
-                uv.push([tex[2], tex[3]]);
-                uv.push([tex[0], tex[1]]);
-                uv.push([tex[2], tex[1]]);
-                idx += 1;
-            }
-        }
-        uv
-    }
-
-    pub fn build_colors(&self, parent: &SimpleConsole) -> Vec<[f32; 4]> {
-        let mut colors: Vec<[f32; 4]> = Vec::with_capacity(self.width * self.height * 4);
-        // Foreground
-        for y in 0..self.height {
-            let mut idx = y * self.width;
-            for _ in 0..self.width {
-                colors.push(parent.terminal[idx].foreground);
-                colors.push(parent.terminal[idx].foreground);
-                colors.push(parent.terminal[idx].foreground);
-                colors.push(parent.terminal[idx].foreground);
-                idx += 1;
-            }
-        }
-        colors
-    }
-
-    fn check_for_foreground_changes(&mut self, terminals: &[crate::consoles::TerminalGlyph]) {
-        let foreground: Vec<[f32; 4]> = terminals.iter().map(|c| c.foreground).collect();
-        if let Some(fg) = &mut self.last_foreground {
-            let changed = fg.iter().zip(foreground.iter()).any(|(b1, b2)| b1 != b2);
-
-            if !changed {
-                self.foreground_changed = false;
-            } else {
-                self.last_foreground = Some(foreground);
-                self.foreground_changed = true;
-            }
-        } else {
-            self.last_foreground = Some(foreground);
-            self.foreground_changed = true;
-        }
-    }
-
-    fn check_for_glyph_changes(&mut self, terminals: &[crate::consoles::TerminalGlyph]) {
-        let glyphs: Vec<u16> = terminals.iter().map(|c| c.glyph).collect();
-        if let Some(g) = &mut self.last_glyphs {
-            let changed = g.iter().zip(glyphs.iter()).any(|(b1, b2)| b1 != b2);
-
-            if !changed {
-                self.glyphs_changed = false;
-            } else {
-                self.last_glyphs = Some(glyphs);
-                self.glyphs_changed = true;
-            }
-        } else {
-            self.last_glyphs = Some(glyphs);
-            self.glyphs_changed = true;
-        }
-    }
 }
 
 impl SimpleConsoleBackend for SimpleBackendNoBackground {
-    fn update_mesh(&self, front_end: &SimpleConsole, meshes: &mut Assets<Mesh>) {
-        if let Some(mesh_handle) = &self.mesh_handle {
-            if let Some(mesh) = meshes.get_mut(mesh_handle.clone()) {
-                if !self.enable_dirty_optimization || self.glyphs_changed {
-                    mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, self.build_uvs(front_end));
-                }
-                if !self.enable_dirty_optimization || self.foreground_changed {
-                    mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, self.build_colors(front_end));
-                }
-            }
-        }
+    fn new_mesh(&self, front_end: &SimpleConsole, meshes: &mut Assets<Mesh>) -> Handle<Mesh> {
+        meshes.add(self.build_mesh(front_end))
     }
 
     fn spawn(&self, commands: &mut Commands, material: Handle<ColorMaterial>, idx: usize) {
@@ -227,21 +126,7 @@ impl SimpleConsoleBackend for SimpleBackendNoBackground {
                     material: material.clone(),
                     ..default()
                 })
-                .insert(SimpleConsoleMarker(idx));
-        }
-    }
-
-    fn clear_dirty(&mut self) {
-        if self.enable_dirty_optimization {
-            self.foreground_changed = false;
-            self.glyphs_changed = false;
-        }
-    }
-
-    fn update_dirty(&mut self, terminals: &[crate::consoles::TerminalGlyph]) {
-        if self.enable_dirty_optimization {
-            self.check_for_foreground_changes(terminals);
-            self.check_for_glyph_changes(terminals);
+                .insert(BracketMesh(idx));
         }
     }
 }

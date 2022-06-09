@@ -1,5 +1,5 @@
 use super::SparseConsoleBackend;
-use crate::consoles::{SparseConsole, SparseConsoleMarker};
+use crate::consoles::{BracketMesh, SparseConsole};
 use bevy::{
     prelude::*,
     render::mesh::{Indices, PrimitiveTopology},
@@ -13,7 +13,6 @@ pub(crate) struct SparseBackendWithBackground {
     pub(crate) font_height_pixels: (f32, f32),
     pub(crate) width: usize,
     pub(crate) height: usize,
-    pub(crate) base_z: f32,
 }
 
 impl SparseBackendWithBackground {
@@ -25,7 +24,6 @@ impl SparseBackendWithBackground {
         font_height_pixels: (f32, f32),
         width: usize,
         height: usize,
-        base_z: f32,
     ) -> Self {
         let mut back_end = Self {
             mesh_handle: None,
@@ -34,7 +32,6 @@ impl SparseBackendWithBackground {
             font_height_pixels,
             width,
             height,
-            base_z,
         };
         let mesh = back_end.build_mesh(parent);
         let mesh_handle = meshes.add(mesh);
@@ -72,13 +69,13 @@ impl SparseBackendWithBackground {
             let screen_y = (actual_y as f32 - half_height) * self.font_height_pixels.1;
 
             // Background
-            vertices.push([screen_x, screen_y, self.base_z]);
-            vertices.push([screen_x + self.font_height_pixels.0, screen_y, self.base_z]);
-            vertices.push([screen_x, screen_y + self.font_height_pixels.1, self.base_z]);
+            vertices.push([screen_x, screen_y, 0.0]);
+            vertices.push([screen_x + self.font_height_pixels.0, screen_y, 0.0]);
+            vertices.push([screen_x, screen_y + self.font_height_pixels.1, 0.0]);
             vertices.push([
                 screen_x + self.font_height_pixels.0,
                 screen_y + self.font_height_pixels.1,
-                self.base_z,
+                0.0,
             ]);
             for _ in 0..4 {
                 normals.push([0.0, 1.0, 0.0]);
@@ -106,21 +103,13 @@ impl SparseBackendWithBackground {
             index_count += 4;
 
             // Foreground
-            vertices.push([screen_x, screen_y, self.base_z + 0.5]);
-            vertices.push([
-                screen_x + self.font_height_pixels.0,
-                screen_y,
-                self.base_z + 0.5,
-            ]);
-            vertices.push([
-                screen_x,
-                screen_y + self.font_height_pixels.1,
-                self.base_z + 0.5,
-            ]);
+            vertices.push([screen_x, screen_y, 0.5]);
+            vertices.push([screen_x + self.font_height_pixels.0, screen_y, 0.5]);
+            vertices.push([screen_x, screen_y + self.font_height_pixels.1, 0.5]);
             vertices.push([
                 screen_x + self.font_height_pixels.0,
                 screen_y + self.font_height_pixels.1,
-                self.base_z + 0.5,
+                0.5,
             ]);
             for _ in 0..4 {
                 normals.push([0.0, 1.0, 0.0]);
@@ -159,12 +148,8 @@ impl SparseBackendWithBackground {
 }
 
 impl SparseConsoleBackend for SparseBackendWithBackground {
-    fn update_mesh(&self, front_end: &SparseConsole, meshes: &mut Assets<Mesh>) {
-        if let Some(mesh_handle) = &self.mesh_handle {
-            if let Some(mesh) = meshes.get_mut(mesh_handle.clone()) {
-                *mesh = self.build_mesh(front_end);
-            }
-        }
+    fn new_mesh(&self, front_end: &SparseConsole, meshes: &mut Assets<Mesh>) -> Handle<Mesh> {
+        meshes.add(self.build_mesh(front_end))
     }
 
     fn spawn(&self, commands: &mut Commands, material: Handle<ColorMaterial>, idx: usize) {
@@ -176,7 +161,7 @@ impl SparseConsoleBackend for SparseBackendWithBackground {
                     material: material.clone(),
                     ..default()
                 })
-                .insert(SparseConsoleMarker(idx));
+                .insert(BracketMesh(idx));
         }
     }
 }

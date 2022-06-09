@@ -39,7 +39,6 @@ impl SimpleConsole {
         &mut self,
         fonts: &[FontStore],
         meshes: &mut Assets<Mesh>,
-        base_z: f32,
         features: &HashSet<SimpleConsoleFeatures>,
     ) {
         if !features.contains(&SimpleConsoleFeatures::WithoutBackground) {
@@ -51,8 +50,6 @@ impl SimpleConsole {
                 fonts[self.font_index].font_height_pixels,
                 self.width,
                 self.height,
-                base_z,
-                features.contains(&SimpleConsoleFeatures::NoDirtyOptimization),
             );
             self.back_end = Some(Box::new(back_end));
         } else {
@@ -64,8 +61,6 @@ impl SimpleConsole {
                 fonts[self.font_index].font_height_pixels,
                 self.width,
                 self.height,
-                base_z,
-                features.contains(&SimpleConsoleFeatures::NoDirtyOptimization),
             );
             self.back_end = Some(Box::new(back_end));
         }
@@ -194,19 +189,15 @@ impl ConsoleFrontEnd for SimpleConsole {
         });
     }
 
-    fn update_mesh(
+    fn new_mesh(
         &mut self,
-        _ctx: &crate::BracketContext,
-        meshes: &mut bevy::prelude::Assets<Mesh>,
-    ) {
-        if let Some(back_end) = &mut self.back_end {
-            back_end.update_dirty(&self.terminal);
-        }
+        _ctx: &BracketContext,
+        meshes: &mut Assets<Mesh>,
+    ) -> Option<Handle<Mesh>> {
         if let Some(back_end) = &self.back_end {
-            back_end.update_mesh(&self, meshes);
-        }
-        if let Some(back_end) = &mut self.back_end {
-            back_end.clear_dirty();
+            Some(back_end.new_mesh(&self, meshes))
+        } else {
+            None
         }
     }
 }

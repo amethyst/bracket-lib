@@ -19,7 +19,6 @@ pub enum TerminalLayer {
 #[derive(Hash, PartialEq, Eq, Debug, Clone, Copy)]
 pub enum SimpleConsoleFeatures {
     WithoutBackground,
-    NoDirtyOptimization,
 }
 
 #[derive(Hash, PartialEq, Eq, Debug, Clone, Copy)]

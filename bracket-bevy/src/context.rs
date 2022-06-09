@@ -2,7 +2,7 @@ use crate::{
     consoles::{ConsoleFrontEnd, Rect},
     fonts::FontStore,
 };
-use bevy::utils::HashMap;
+use bevy::{sprite::Mesh2dHandle, utils::HashMap};
 use bracket_color::prelude::RGBA;
 use parking_lot::Mutex;
 
@@ -13,6 +13,7 @@ pub struct BracketContext {
     pub(crate) color_palette: HashMap<String, RGBA>,
     pub fps: f64,
     pub frame_time_ms: f64,
+    pub(crate) mesh_replacement: Vec<(Mesh2dHandle, Mesh2dHandle, bool)>,
 }
 
 impl BracketContext {
@@ -24,6 +25,7 @@ impl BracketContext {
             color_palette,
             fps: 0.0,
             frame_time_ms: 0.0,
+            mesh_replacement: Vec::new(),
         }
     }
 

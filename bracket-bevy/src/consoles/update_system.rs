@@ -1,13 +1,63 @@
 use crate::BracketContext;
 use bevy::{
     diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin},
-    prelude::{Assets, Mesh, Res, ResMut},
+    prelude::*,
+    sprite::Mesh2dHandle,
 };
 
-pub(crate) fn update_consoles(ctx: Res<BracketContext>, mut meshes: ResMut<Assets<Mesh>>) {
-    for terminal in ctx.terminals.lock().iter_mut() {
-        terminal.update_mesh(&ctx, &mut meshes);
+use super::BracketMesh;
+
+pub(crate) fn update_consoles(
+    mut ctx: ResMut<BracketContext>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    find_mesh: Query<(&BracketMesh, &Mesh2dHandle)>,
+) {
+    let mut new_meshes: Vec<(Mesh2dHandle, Mesh2dHandle, bool)> = Vec::new();
+    {
+        let mut terms = ctx.terminals.lock();
+        for (id, handle) in find_mesh.iter() {
+            let terminal_id = id.0;
+            let new_mesh = terms[terminal_id].new_mesh(&ctx, &mut meshes);
+            if let Some(new_mesh) = new_mesh {
+                let old_mesh = handle.clone();
+                new_meshes.push((old_mesh, new_mesh.into(), false));
+            }
+        }
     }
+
+    new_meshes
+        .drain(0..)
+        .for_each(|m| ctx.mesh_replacement.push(m));
+}
+
+pub(crate) fn replace_meshes(
+    mut ctx: ResMut<BracketContext>,
+    mut ev_asset: EventReader<AssetEvent<Mesh>>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut update_mesh: Query<&mut Mesh2dHandle, With<BracketMesh>>,
+) {
+    for ev in ev_asset.iter() {
+        match ev {
+            AssetEvent::Created { handle } => {
+                for (old, new, done) in ctx.mesh_replacement.iter_mut() {
+                    if handle.id == new.0.id {
+                        update_mesh.for_each_mut(|mut m| {
+                            if old.0.id == m.0.id {
+                                *m = new.clone();
+                            }
+                        });
+                        *done = true;
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
+    for (old, _, _) in ctx.mesh_replacement.iter().filter(|(_, _, done)| *done) {
+        meshes.remove(old.0.clone());
+    }
+    ctx.mesh_replacement.retain(|(_, _, done)| !done);
 }
 
 pub(crate) fn update_timing(mut ctx: ResMut<BracketContext>, diagnostics: Res<Diagnostics>) {

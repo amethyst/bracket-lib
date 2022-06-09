@@ -1,6 +1,6 @@
 use crate::{
-    consoles::update_timing, load_terminals, update_consoles, RandomNumbers, TerminalBuilderFont,
-    TerminalLayer,
+    consoles::{replace_meshes, update_timing},
+    load_terminals, update_consoles, RandomNumbers, TerminalBuilderFont, TerminalLayer,
 };
 use bevy::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
@@ -89,23 +89,6 @@ impl BTermBuilder {
         self
     }
 
-    pub fn with_dirty_optimization(mut self, with_dirty_optimization: bool) -> Self {
-        if !self.layers.is_empty() {
-            let last_index = self.layers.len() - 1;
-            match &mut self.layers[last_index] {
-                TerminalLayer::Simple { features, .. } => {
-                    if !with_dirty_optimization {
-                        features.remove(&crate::SimpleConsoleFeatures::NoDirtyOptimization);
-                    } else {
-                        features.insert(crate::SimpleConsoleFeatures::NoDirtyOptimization);
-                    }
-                }
-                _ => {}
-            }
-        }
-        self
-    }
-
     pub fn with_font(
         mut self,
         filename: &str,
@@ -182,6 +165,7 @@ impl Plugin for BTermBuilder {
             SystemStage::single_threaded(),
         );
         app.add_system(update_consoles);
+        app.add_system(replace_meshes);
         if self.with_random_number_generator {
             app.insert_resource(RandomNumbers::new());
         }
