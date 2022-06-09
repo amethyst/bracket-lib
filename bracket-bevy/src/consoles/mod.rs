@@ -31,8 +31,8 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn print_color_centered_at(&mut self, x: usize, y: usize, fg: RGBA, bg: RGBA, text: &str);
     fn print_right(&mut self, x: usize, y: usize, text: &str);
     fn print_color_right(&mut self, x: usize, y: usize, fg: RGBA, bg: RGBA, text: &str);
-
     fn set(&mut self, x: usize, y: usize, fg: RGBA, bg: RGBA, glyph: u16);
+    fn set_bg(&mut self, x: usize, y: usize, bg: RGBA);
     fn draw_box(&mut self, x: usize, y: usize, width: usize, height: usize, fg: RGBA, bg: RGBA);
     fn draw_hollow_box(
         &mut self,

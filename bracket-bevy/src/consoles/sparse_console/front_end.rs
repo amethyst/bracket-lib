@@ -130,6 +130,10 @@ impl ConsoleFrontEnd for SparseConsole {
         }
     }
 
+    fn set_bg(&mut self, x: usize, y: usize, bg: RGBA) {
+        // Does nothing
+    }
+
     fn print(&mut self, x: usize, y: usize, text: &str) {
         common_draw::print(self, x, y, text);
     }

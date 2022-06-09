@@ -132,6 +132,12 @@ impl ConsoleFrontEnd for SimpleConsole {
         }
     }
 
+    fn set_bg(&mut self, x: usize, y: usize, bg: RGBA) {
+        if let Some(idx) = self.try_at(x, y) {
+            self.terminal[idx].background = bg.as_rgba_f32();
+        }
+    }
+
     fn print(&mut self, x: usize, y: usize, text: &str) {
         common_draw::print(self, x, y, text);
     }

@@ -82,6 +82,10 @@ impl BracketContext {
         self.terminals.lock()[self.current_layer()].set(x, y, fg.into(), bg.into(), glyph);
     }
 
+    pub fn set_bg<C: Into<RGBA>>(&self, x: usize, y: usize, bg: C) {
+        self.terminals.lock()[self.current_layer()].set_bg(x, y, bg.into());
+    }
+
     pub fn print<S: ToString>(&self, x: usize, y: usize, text: S) {
         self.terminals.lock()[self.current_layer()].print(x, y, &text.to_string());
     }
