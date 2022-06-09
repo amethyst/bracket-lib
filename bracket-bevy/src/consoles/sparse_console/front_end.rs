@@ -41,7 +41,7 @@ impl SparseConsole {
     ) {
         if !features.contains(&SparseConsoleFeatures::WithoutBackground) {
             let back_end = SparseBackendWithBackground::new(
-                &self,
+                self,
                 meshes,
                 fonts[self.font_index].chars_per_row,
                 fonts[self.font_index].n_rows,
@@ -52,7 +52,7 @@ impl SparseConsole {
             self.back_end = Some(Box::new(back_end));
         } else {
             let back_end = SparseBackendNoBackground::new(
-                &self,
+                self,
                 meshes,
                 fonts[self.font_index].chars_per_row,
                 fonts[self.font_index].n_rows,
@@ -192,10 +192,6 @@ impl ConsoleFrontEnd for SparseConsole {
         _ctx: &BracketContext,
         meshes: &mut Assets<Mesh>,
     ) -> Option<Handle<Mesh>> {
-        if let Some(be) = &self.back_end {
-            Some(be.new_mesh(self, meshes))
-        } else {
-            None
-        }
+        self.back_end.as_ref().map(|be| be.new_mesh(self, meshes))
     }
 }

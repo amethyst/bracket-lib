@@ -69,3 +69,9 @@ impl RandomNumbers {
         self.rng.lock().random_slice_entry(slice)
     }
 }
+
+impl Default for RandomNumbers {
+    fn default() -> Self {
+        Self::new()
+    }
+}

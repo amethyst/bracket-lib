@@ -37,20 +37,17 @@ pub(crate) fn replace_meshes(
     mut update_mesh: Query<&mut Mesh2dHandle, With<BracketMesh>>,
 ) {
     for ev in ev_asset.iter() {
-        match ev {
-            AssetEvent::Created { handle } => {
-                for (old, new, done) in ctx.mesh_replacement.iter_mut() {
-                    if handle.id == new.0.id {
-                        update_mesh.for_each_mut(|mut m| {
-                            if old.0.id == m.0.id {
-                                *m = new.clone();
-                            }
-                        });
-                        *done = true;
-                    }
+        if let AssetEvent::Created { handle } = ev {
+            for (old, new, done) in ctx.mesh_replacement.iter_mut() {
+                if handle.id == new.0.id {
+                    update_mesh.for_each_mut(|mut m| {
+                        if old.0.id == m.0.id {
+                            *m = new.clone();
+                        }
+                    });
+                    *done = true;
                 }
             }
-            _ => {}
         }
     }
 

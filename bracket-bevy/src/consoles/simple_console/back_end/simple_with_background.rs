@@ -45,12 +45,12 @@ impl SimpleBackendWithBackground {
         let base_y = glyph / self.n_rows;
         let scale_x = 1.0 / self.chars_per_row as f32;
         let scale_y = 1.0 / self.n_rows as f32;
-        return [
+        [
             base_x as f32 * scale_x,
             base_y as f32 * scale_y,
             (base_x + 1) as f32 * scale_x,
             (base_y + 1) as f32 * scale_y,
-        ];
+        ]
     }
 
     pub fn build_mesh(&self, parent: &SimpleConsole) -> Mesh {
@@ -165,7 +165,7 @@ impl SimpleConsoleBackend for SimpleBackendWithBackground {
                 .spawn_bundle(MaterialMesh2dBundle {
                     mesh: mesh_handle.clone().into(),
                     transform: Transform::default(),
-                    material: material.clone(),
+                    material,
                     ..default()
                 })
                 .insert(BracketMesh(idx));

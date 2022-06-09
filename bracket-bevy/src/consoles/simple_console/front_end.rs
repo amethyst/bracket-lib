@@ -43,7 +43,7 @@ impl SimpleConsole {
     ) {
         if !features.contains(&SimpleConsoleFeatures::WithoutBackground) {
             let back_end = SimpleBackendWithBackground::new(
-                &self,
+                self,
                 meshes,
                 fonts[self.font_index].chars_per_row,
                 fonts[self.font_index].n_rows,
@@ -54,7 +54,7 @@ impl SimpleConsole {
             self.back_end = Some(Box::new(back_end));
         } else {
             let back_end = SimpleBackendNoBackground::new(
-                &self,
+                self,
                 meshes,
                 fonts[self.font_index].chars_per_row,
                 fonts[self.font_index].n_rows,
@@ -194,10 +194,8 @@ impl ConsoleFrontEnd for SimpleConsole {
         _ctx: &BracketContext,
         meshes: &mut Assets<Mesh>,
     ) -> Option<Handle<Mesh>> {
-        if let Some(back_end) = &self.back_end {
-            Some(back_end.new_mesh(&self, meshes))
-        } else {
-            None
-        }
+        self.back_end
+            .as_ref()
+            .map(|back_end| back_end.new_mesh(self, meshes))
     }
 }
