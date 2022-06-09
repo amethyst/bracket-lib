@@ -1,4 +1,4 @@
-use bevy::prelude::{Assets, Color, Mesh};
+use bevy::prelude::{Assets, Mesh};
 mod simple_console;
 pub(crate) use simple_console::*;
 mod update_system;
@@ -9,8 +9,11 @@ pub(crate) use sparse_console::*;
 pub(crate) mod common_draw;
 mod point;
 mod rect;
+use bracket_color::prelude::RGBA;
 pub use point::Point;
 pub use rect::Rect;
+mod text_spans;
+pub(crate) use text_spans::*;
 
 pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn get_char_size(&self) -> (usize, usize);
@@ -18,20 +21,20 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn get_clipping(&self) -> Option<Rect>;
     fn set_clipping(&mut self, clipping: Option<Rect>);
     fn cls(&mut self);
-    fn cls_bg(&mut self, color: Color);
+    fn cls_bg(&mut self, color: RGBA);
     fn print(&mut self, x: usize, y: usize, text: &str);
-    fn print_color(&mut self, x: usize, y: usize, text: &str, foreground: Color, background: Color);
+    fn print_color(&mut self, x: usize, y: usize, text: &str, foreground: RGBA, background: RGBA);
     fn print_centered(&mut self, y: usize, text: &str);
-    fn set(&mut self, x: usize, y: usize, fg: Color, bg: Color, glyph: u16);
-    fn draw_box(&mut self, x: usize, y: usize, width: usize, height: usize, fg: Color, bg: Color);
+    fn set(&mut self, x: usize, y: usize, fg: RGBA, bg: RGBA, glyph: u16);
+    fn draw_box(&mut self, x: usize, y: usize, width: usize, height: usize, fg: RGBA, bg: RGBA);
     fn draw_hollow_box(
         &mut self,
         x: usize,
         y: usize,
         width: usize,
         height: usize,
-        fg: Color,
-        bg: Color,
+        fg: RGBA,
+        bg: RGBA,
     );
 
     fn draw_box_double(
@@ -40,8 +43,8 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
         y: usize,
         width: usize,
         height: usize,
-        fg: Color,
-        bg: Color,
+        fg: RGBA,
+        bg: RGBA,
     );
 
     fn draw_hollow_box_double(
@@ -50,11 +53,21 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
         y: usize,
         width: usize,
         height: usize,
-        fg: Color,
-        bg: Color,
+        fg: RGBA,
+        bg: RGBA,
     );
 
-    fn fill_region(&mut self, target: Rect, glyph: u16, fg: Color, bg: Color);
+    fn fill_region(&mut self, target: Rect, glyph: u16, fg: RGBA, bg: RGBA);
+
+    fn printer(
+        &mut self,
+        context: &BracketContext,
+        x: usize,
+        y: usize,
+        output: &str,
+        align: TextAlign,
+        background: Option<RGBA>,
+    );
 
     fn in_bounds(&self, x: usize, y: usize) -> bool {
         let bounds = self.get_char_size();
@@ -74,4 +87,11 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
     }
 
     fn update_mesh(&mut self, ctx: &BracketContext, meshes: &mut Assets<Mesh>);
+}
+
+#[derive(PartialEq, Copy, Clone, Debug)]
+pub enum TextAlign {
+    Left,
+    Center,
+    Right,
 }

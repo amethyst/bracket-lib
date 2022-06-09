@@ -1,13 +1,24 @@
-use crate::{load_terminals, update_consoles, RandomNumbers, TerminalBuilderFont, TerminalLayer};
-use bevy::prelude::{CoreStage, Plugin, SystemStage};
+use crate::{
+    consoles::update_timing, load_terminals, update_consoles, RandomNumbers, TerminalBuilderFont,
+    TerminalLayer,
+};
+use bevy::{
+    diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
+    prelude::{CoreStage, Plugin, SystemStage},
+    utils::HashMap,
+};
+use bracket_color::prelude::RGBA;
 use std::collections::HashSet;
 
 #[derive(Clone)]
 pub struct BTermBuilder {
     pub(crate) fonts: Vec<TerminalBuilderFont>,
     pub(crate) layers: Vec<TerminalLayer>,
+    pub(crate) palette: HashMap<String, RGBA>,
     pub(crate) with_ortho_camera: bool,
     pub(crate) with_random_number_generator: bool,
+    pub(crate) with_diagnostics: bool,
+    pub(crate) log_diagnostics: bool,
 }
 
 impl BTermBuilder {
@@ -15,8 +26,11 @@ impl BTermBuilder {
         Self {
             fonts: Vec::new(),
             layers: Vec::new(),
+            palette: HashMap::new(),
             with_ortho_camera: true,
             with_random_number_generator: false,
+            with_diagnostics: true,
+            log_diagnostics: false,
         }
     }
 
@@ -34,8 +48,11 @@ impl BTermBuilder {
                 height: 50,
                 features: HashSet::new(),
             }],
+            palette: HashMap::new(),
             with_ortho_camera: true,
             with_random_number_generator: false,
+            with_diagnostics: true,
+            log_diagnostics: false,
         }
     }
 
@@ -105,6 +122,21 @@ impl BTermBuilder {
         self
     }
 
+    pub fn with_named_color<S: ToString, C: Into<RGBA>>(mut self, name: S, color: C) -> Self {
+        self.palette.insert(name.to_string(), color.into());
+        self
+    }
+
+    pub fn with_timing_diagnostics(mut self, with_diagnostics: bool) -> Self {
+        self.with_diagnostics = with_diagnostics;
+        self
+    }
+
+    pub fn with_timing_log(mut self, with_diagnostics: bool) -> Self {
+        self.log_diagnostics = with_diagnostics;
+        self
+    }
+
     pub fn with_simple_console(mut self, font_index: usize, width: usize, height: usize) -> Self {
         self.layers.push(TerminalLayer::Simple {
             font_index,
@@ -128,8 +160,22 @@ impl BTermBuilder {
 
 impl Plugin for BTermBuilder {
     fn build(&self, app: &mut bevy::prelude::App) {
+        if self.with_diagnostics {
+            app.add_plugin(FrameTimeDiagnosticsPlugin);
+        }
+        if self.log_diagnostics {
+            app.add_plugin(LogDiagnosticsPlugin::default());
+        }
         app.insert_resource(self.clone());
         app.add_startup_system(load_terminals);
+        if self.with_diagnostics {
+            app.add_stage_before(
+                CoreStage::Update,
+                "bracket_term_diagnostics",
+                SystemStage::single_threaded(),
+            );
+            app.add_system(update_timing);
+        }
         app.add_stage_after(
             CoreStage::Update,
             "bracket_term_update",

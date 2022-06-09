@@ -1,6 +1,9 @@
-use super::ConsoleFrontEnd;
-use crate::prelude::{string_to_cp437, to_cp437};
-use bevy::prelude::Color;
+use super::{ColoredTextSpans, ConsoleFrontEnd, TextAlign};
+use crate::{
+    prelude::{string_to_cp437, to_cp437},
+    BracketContext,
+};
+use bracket_color::prelude::*;
 
 pub(crate) fn draw_box(
     terminal: &mut dyn ConsoleFrontEnd,
@@ -8,12 +11,12 @@ pub(crate) fn draw_box(
     sy: usize,
     width: usize,
     height: usize,
-    fg: Color,
-    bg: Color,
+    fg: RGBA,
+    bg: RGBA,
 ) {
     for y in sy..sy + height {
         for x in sx..sx + width {
-            terminal.set(x, y, Color::WHITE, Color::BLACK, 32);
+            terminal.set(x, y, WHITE.into(), BLACK.into(), 32);
         }
     }
 
@@ -34,7 +37,7 @@ pub(crate) fn draw_box(
 pub(crate) fn print(terminal: &mut dyn ConsoleFrontEnd, mut x: usize, y: usize, text: &str) {
     let bytes = string_to_cp437(text);
     for glyph in bytes {
-        terminal.set(x, y, Color::WHITE, Color::BLACK, glyph);
+        terminal.set(x, y, WHITE.into(), BLACK.into(), glyph);
         x += 1;
     }
 }
@@ -44,8 +47,8 @@ pub(crate) fn print_color(
     mut x: usize,
     y: usize,
     text: &str,
-    foreground: Color,
-    background: Color,
+    foreground: RGBA,
+    background: RGBA,
 ) {
     let bytes = string_to_cp437(text);
     for glyph in bytes {
@@ -60,8 +63,8 @@ pub(crate) fn draw_hollow_box(
     sy: usize,
     width: usize,
     height: usize,
-    fg: Color,
-    bg: Color,
+    fg: RGBA,
+    bg: RGBA,
 ) {
     terminal.set(sx, sy, fg, bg, to_cp437('┌'));
     terminal.set(sx + width, sy, fg, bg, to_cp437('┐'));
@@ -83,12 +86,12 @@ pub(crate) fn draw_box_double(
     sy: usize,
     width: usize,
     height: usize,
-    fg: Color,
-    bg: Color,
+    fg: RGBA,
+    bg: RGBA,
 ) {
     for y in sy..sy + height {
         for x in sx..sx + width {
-            terminal.set(x, y, Color::WHITE, Color::BLACK, 32);
+            terminal.set(x, y, WHITE.into(), BLACK.into(), 32);
         }
     }
 
@@ -113,8 +116,8 @@ pub(crate) fn draw_hollow_box_double(
     sy: usize,
     width: usize,
     height: usize,
-    fg: Color,
-    bg: Color,
+    fg: RGBA,
+    bg: RGBA,
 ) {
     terminal.set(sx, sy, fg, bg, to_cp437('╔'));
     terminal.set(sx + width, sy, fg, bg, to_cp437('╗'));
@@ -127,5 +130,36 @@ pub(crate) fn draw_hollow_box_double(
     for y in sy + 1..sy + height {
         terminal.set(sx, y, fg, bg, to_cp437('║'));
         terminal.set(sx + width, y, fg, bg, to_cp437('║'));
+    }
+}
+
+pub(crate) fn printer(
+    terminal: &mut dyn ConsoleFrontEnd,
+    context: &BracketContext,
+    x: usize,
+    y: usize,
+    output: &str,
+    align: TextAlign,
+    background: Option<RGBA>,
+) {
+    let bg = if let Some(bg) = background {
+        bg
+    } else {
+        RGBA::from_u8(0, 0, 0, 255)
+    };
+
+    let split_text = ColoredTextSpans::new(context, output);
+
+    let mut tx = match align {
+        TextAlign::Left => x,
+        TextAlign::Center => x - (split_text.length as usize / 2),
+        TextAlign::Right => x - split_text.length as usize,
+    };
+    for span in split_text.spans.iter() {
+        let fg = span.0;
+        for ch in span.1.chars() {
+            terminal.set(tx, y, fg, bg, to_cp437(ch));
+            tx += 1;
+        }
     }
 }

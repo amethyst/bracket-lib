@@ -1,7 +1,4 @@
-use bevy::{
-    diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin},
-    prelude::*,
-};
+use bevy::prelude::*;
 use bracket_bevy::prelude::*;
 
 fn main() {
@@ -16,7 +13,6 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugin(bterm)
-        .add_plugin(FrameTimeDiagnosticsPlugin)
         .insert_resource(Bouncer(0))
         .add_system(tick)
         .run();
@@ -24,30 +20,23 @@ fn main() {
 
 struct Bouncer(usize);
 
-fn tick(
-    mut ctx: ResMut<BracketContext>,
-    diagnostics: Res<Diagnostics>,
-    mut bouncer: ResMut<Bouncer>,
-) {
+fn tick(ctx: Res<BracketContext>, mut bouncer: ResMut<Bouncer>) {
     ctx.set_layer(0);
     ctx.cls();
     ctx.print(1, 1, "Hello Bracket-Bevy World ☻");
-    ctx.print_color(1, 2, "Now in color!", Color::GREEN, Color::NAVY);
+    ctx.print_color(1, 2, "Now in color!", GREEN, NAVY);
 
-    let mut fps = 0.0;
-    if let Some(fps_diagnostic) = diagnostics.get(FrameTimeDiagnosticsPlugin::FPS) {
-        if let Some(fps_avg) = fps_diagnostic.average() {
-            fps = fps_avg.round();
-        }
-    }
     ctx.set_layer(1);
     ctx.cls();
     ctx.print_color(
         1,
         bouncer.0,
-        format!("Frames per Second: {fps}"),
-        Color::RED,
-        Color::WHITE,
+        format!(
+            "Frames per Second: {}, {} ms per frame",
+            ctx.fps, ctx.frame_time_ms
+        ),
+        RED,
+        WHITE,
     );
     bouncer.0 += 1;
     bouncer.0 %= 25;

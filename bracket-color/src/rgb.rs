@@ -114,6 +114,14 @@ impl From<RGBA> for RGB {
     }
 }
 
+// Support conversion from Bevy
+#[cfg(feature = "bevy")]
+impl From<bevy::prelude::Color> for RGB {
+    fn from(item: bevy::prelude::Color) -> Self {
+        Self::from_f32(item.r(), item.g(), item.b())
+    }
+}
+
 impl RGB {
     /// Constructs a new, zeroed (black) RGB triplet.
     #[must_use]

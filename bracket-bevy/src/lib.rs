@@ -11,5 +11,6 @@ mod random_resource;
 pub use random_resource::*;
 
 pub mod prelude {
-    pub use crate::{cp437::*, BTermBuilder, BracketContext, RandomNumbers};
+    pub use crate::{consoles::TextAlign, cp437::*, BTermBuilder, BracketContext, RandomNumbers};
+    pub use bracket_color::prelude::*;
 }

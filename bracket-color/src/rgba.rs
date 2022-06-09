@@ -233,6 +233,11 @@ impl RGBA {
         RGB::from_f32(self.r, self.g, self.b)
     }
 
+    #[cfg(feature = "bevy")]
+    pub fn as_rgba_f32(&self) -> [f32; 4] {
+        [self.r, self.g, self.b, self.a]
+    }
+
     /// Applies a quick grayscale conversion to the color
     #[inline]
     #[must_use]
@@ -307,6 +312,14 @@ impl From<(u8, u8, u8, u8)> for RGBA {
 impl From<(u8, u8, u8)> for RGBA {
     fn from(vals: (u8, u8, u8)) -> Self {
         Self::from_u8(vals.0, vals.1, vals.2, 255)
+    }
+}
+
+// Support conversion from Bevy
+#[cfg(feature = "bevy")]
+impl From<bevy::prelude::Color> for RGBA {
+    fn from(item: bevy::prelude::Color) -> Self {
+        Self::from_f32(item.r(), item.g(), item.b(), item.a())
     }
 }
 

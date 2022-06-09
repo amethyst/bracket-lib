@@ -4,12 +4,13 @@ use super::{SparseBackendNoBackground, SparseBackendWithBackground, SparseConsol
 use crate::{
     consoles::{common_draw, ConsoleFrontEnd, Rect, TerminalGlyph},
     fonts::FontStore,
-    SparseConsoleFeatures,
+    BracketContext, SparseConsoleFeatures,
 };
 use bevy::{
-    prelude::{Assets, Color, Commands, Handle, Mesh},
+    prelude::{Assets, Commands, Handle, Mesh},
     sprite::ColorMaterial,
 };
+use bracket_color::prelude::RGBA;
 
 pub(crate) struct SparseConsole {
     pub(crate) font_index: usize,
@@ -99,13 +100,13 @@ impl ConsoleFrontEnd for SparseConsole {
         self.terminal.clear();
     }
 
-    fn cls_bg(&mut self, color: Color) {
+    fn cls_bg(&mut self, color: RGBA) {
         self.terminal
             .iter_mut()
             .for_each(|c| c.2.background = color.as_rgba_f32());
     }
 
-    fn set(&mut self, x: usize, y: usize, fg: Color, bg: Color, glyph: u16) {
+    fn set(&mut self, x: usize, y: usize, fg: RGBA, bg: RGBA, glyph: u16) {
         if self.try_at(x, y).is_some() {
             self.terminal.push((
                 x,
@@ -123,30 +124,27 @@ impl ConsoleFrontEnd for SparseConsole {
         common_draw::print(self, x, y, text);
     }
 
-    fn print_color(
+    fn print_color(&mut self, x: usize, y: usize, text: &str, foreground: RGBA, background: RGBA) {
+        common_draw::print_color(self, x, y, text, foreground, background);
+    }
+
+    fn printer(
         &mut self,
+        context: &BracketContext,
         x: usize,
         y: usize,
-        text: &str,
-        foreground: Color,
-        background: Color,
+        output: &str,
+        align: crate::consoles::TextAlign,
+        background: Option<RGBA>,
     ) {
-        common_draw::print_color(self, x, y, text, foreground, background);
+        common_draw::printer(self, context, x, y, output, align, background);
     }
 
     fn print_centered(&mut self, y: usize, text: &str) {
         self.print((self.width / 2) - (text.to_string().len() / 2), y, text);
     }
 
-    fn draw_box(
-        &mut self,
-        sx: usize,
-        sy: usize,
-        width: usize,
-        height: usize,
-        fg: Color,
-        bg: Color,
-    ) {
+    fn draw_box(&mut self, sx: usize, sy: usize, width: usize, height: usize, fg: RGBA, bg: RGBA) {
         common_draw::draw_box(self, sx, sy, width, height, fg, bg);
     }
 
@@ -156,8 +154,8 @@ impl ConsoleFrontEnd for SparseConsole {
         y: usize,
         width: usize,
         height: usize,
-        fg: Color,
-        bg: Color,
+        fg: RGBA,
+        bg: RGBA,
     ) {
         common_draw::draw_hollow_box(self, x, y, width, height, fg, bg);
     }
@@ -168,8 +166,8 @@ impl ConsoleFrontEnd for SparseConsole {
         y: usize,
         width: usize,
         height: usize,
-        fg: Color,
-        bg: Color,
+        fg: RGBA,
+        bg: RGBA,
     ) {
         common_draw::draw_box_double(self, x, y, width, height, fg, bg);
     }
@@ -180,13 +178,13 @@ impl ConsoleFrontEnd for SparseConsole {
         y: usize,
         width: usize,
         height: usize,
-        fg: Color,
-        bg: Color,
+        fg: RGBA,
+        bg: RGBA,
     ) {
         common_draw::draw_hollow_box_double(self, x, y, width, height, fg, bg);
     }
 
-    fn fill_region(&mut self, target: Rect, glyph: u16, fg: Color, bg: Color) {
+    fn fill_region(&mut self, target: Rect, glyph: u16, fg: RGBA, bg: RGBA) {
         target.for_each(|point| {
             self.set(point.x as usize, point.y as usize, fg, bg, glyph);
         });
