@@ -323,6 +323,13 @@ impl From<bevy::prelude::Color> for RGBA {
     }
 }
 
+#[cfg(feature = "bevy")]
+impl From<RGBA> for bevy::prelude::Color {
+    fn from(item: RGBA) -> Self {
+        Self::from([item.r, item.g, item.b, item.a])
+    }
+}
+
 #[cfg(feature = "crossterm")]
 mod crossterm_features {
     use super::RGBA;

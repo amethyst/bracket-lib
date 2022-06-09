@@ -122,6 +122,13 @@ impl From<bevy::prelude::Color> for RGB {
     }
 }
 
+#[cfg(feature = "bevy")]
+impl From<RGB> for bevy::prelude::Color {
+    fn from(item: RGB) -> Self {
+        Self::from([item.r, item.g, item.b])
+    }
+}
+
 impl RGB {
     /// Constructs a new, zeroed (black) RGB triplet.
     #[must_use]
