@@ -14,6 +14,7 @@ pub use point::Point;
 pub use rect::Rect;
 mod text_spans;
 pub(crate) use text_spans::*;
+mod scaler;
 
 pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn get_char_size(&self) -> (usize, usize);

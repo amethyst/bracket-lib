@@ -1,4 +1,4 @@
-use crate::consoles::{BracketMesh, SimpleConsole};
+use crate::consoles::{BracketMesh, SimpleConsole, scaler::FontScaler};
 use bevy::{
     prelude::*,
     render::mesh::{Indices, PrimitiveTopology},
@@ -9,11 +9,10 @@ use super::SimpleConsoleBackend;
 
 pub(crate) struct SimpleBackendWithBackground {
     pub(crate) mesh_handle: Option<Handle<Mesh>>,
-    pub(crate) chars_per_row: u16,
-    pub(crate) n_rows: u16,
     pub(crate) font_height_pixels: (f32, f32),
     pub(crate) width: usize,
     pub(crate) height: usize,
+    pub(crate) scaler: FontScaler,
 }
 
 impl SimpleBackendWithBackground {
@@ -28,31 +27,15 @@ impl SimpleBackendWithBackground {
     ) -> Self {
         let mut back_end = Self {
             mesh_handle: None,
-            chars_per_row,
-            n_rows,
             font_height_pixels,
             width,
             height,
+            scaler: FontScaler::new(chars_per_row, n_rows, font_height_pixels),
         };
         let mesh = back_end.build_mesh(parent);
         let mesh_handle = meshes.add(mesh);
         back_end.mesh_handle = Some(mesh_handle);
         back_end
-    }
-
-    fn texture_coords(&self, glyph: u16) -> [f32; 4] {
-        let half_x_pixel = (1.0 / (self.chars_per_row as f32 * self.font_height_pixels.0)) / 2.0;
-        let half_y_pixel = (1.0 / (self.n_rows as f32 * self.font_height_pixels.1)) / 2.0;
-        let base_x = glyph % self.chars_per_row;
-        let base_y = glyph / self.n_rows;
-        let scale_x = 1.0 / self.chars_per_row as f32;
-        let scale_y = 1.0 / self.n_rows as f32;
-        [
-            (base_x as f32 * scale_x) + half_x_pixel,
-            (base_y as f32 * scale_y) + half_y_pixel,
-            ((base_x + 1) as f32 * scale_x) - half_x_pixel,
-            ((base_y + 1) as f32 * scale_y) - half_y_pixel,
-        ]
     }
 
     pub fn build_mesh(&self, parent: &SimpleConsole) -> Mesh {
@@ -82,7 +65,7 @@ impl SimpleBackendWithBackground {
                 for _ in 0..4 {
                     normals.push([0.0, 1.0, 0.0]);
                 }
-                let tex = self.texture_coords(219);
+                let tex = self.scaler.texture_coords(219);
                 uv.push([tex[0], tex[3]]);
                 uv.push([tex[2], tex[3]]);
                 uv.push([tex[0], tex[1]]);
@@ -123,7 +106,7 @@ impl SimpleBackendWithBackground {
                 for _ in 0..4 {
                     normals.push([0.0, 1.0, 0.0]);
                 }
-                let tex = self.texture_coords(parent.terminal[idx].glyph);
+                let tex = self.scaler.texture_coords(parent.terminal[idx].glyph);
                 uv.push([tex[0], tex[3]]);
                 uv.push([tex[2], tex[3]]);
                 uv.push([tex[0], tex[1]]);
