@@ -156,6 +156,36 @@ impl ConsoleFrontEnd for SimpleConsole {
         self.print((self.width / 2) - (text.to_string().len() / 2), y, text);
     }
 
+    fn print_centered_at(&mut self, x: usize, y: usize, text: &str) {
+        self.print(x - (text.to_string().len() / 2), y, text);
+    }
+
+    fn print_color_centered(&mut self, y: usize, fg: RGBA, bg: RGBA, text: &str) {
+        self.print_color(
+            (self.width / 2) - (text.to_string().len() / 2),
+            y,
+            text,
+            fg,
+            bg,
+        );
+    }
+
+    fn print_color_centered_at(&mut self, x: usize, y: usize, fg: RGBA, bg: RGBA, text: &str) {
+        self.print_color(x - (text.to_string().len() / 2), y, text, fg, bg);
+    }
+
+    fn print_right(&mut self, x: usize, y: usize, text: &str) {
+        let len = text.len();
+        let actual_x = x - len;
+        self.print(actual_x, y, text);
+    }
+
+    fn print_color_right(&mut self, x: usize, y: usize, fg: RGBA, bg: RGBA, text: &str) {
+        let len = text.len();
+        let actual_x = x - len;
+        self.print_color(actual_x, y, text, fg, bg);
+    }
+
     fn draw_box(&mut self, sx: usize, sy: usize, width: usize, height: usize, fg: RGBA, bg: RGBA) {
         common_draw::draw_box(self, sx, sy, width, height, fg, bg);
     }

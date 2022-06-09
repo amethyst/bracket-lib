@@ -86,8 +86,65 @@ impl BracketContext {
         self.terminals.lock()[self.current_layer()].print(x, y, &text.to_string());
     }
 
-    pub fn print_centered(&self, y: usize, text: &str) {
-        self.terminals.lock()[self.current_layer()].print_centered(y, text);
+    pub fn print_centered<S: ToString>(&self, y: usize, text: S) {
+        self.terminals.lock()[self.current_layer()].print_centered(y, &text.to_string());
+    }
+
+    pub fn print_color_centered<S: ToString, C: Into<RGBA>>(
+        &mut self,
+        y: usize,
+        fg: C,
+        bg: C,
+        text: S,
+    ) {
+        self.terminals.lock()[self.current_layer()].print_color_centered(
+            y,
+            fg.into(),
+            bg.into(),
+            &text.to_string(),
+        );
+    }
+
+    pub fn print_centered_at<S: ToString>(&mut self, x: usize, y: usize, text: S) {
+        self.terminals.lock()[self.current_layer()].print_centered_at(x, y, &text.to_string());
+    }
+
+    pub fn print_color_centered_at<S: ToString, C: Into<RGBA>>(
+        &mut self,
+        x: usize,
+        y: usize,
+        fg: C,
+        bg: C,
+        text: S,
+    ) {
+        self.terminals.lock()[self.current_layer()].print_color_centered_at(
+            x,
+            y,
+            fg.into(),
+            bg.into(),
+            &text.to_string(),
+        )
+    }
+
+    pub fn print_right<S: ToString>(&mut self, x: usize, y: usize, text: S) {
+        self.terminals.lock()[self.current_layer()].print_right(x, y, &text.to_string());
+    }
+
+    pub fn print_color_right<S: ToString, C: Into<RGBA>>(
+        &mut self,
+        x: usize,
+        y: usize,
+        fg: C,
+        bg: C,
+        text: S,
+    ) {
+        self.terminals.lock()[self.current_layer()].print_color_right(
+            x,
+            y,
+            fg.into(),
+            bg.into(),
+            &text.to_string(),
+        );
     }
 
     pub fn print_color<S: ToString, C: Into<RGBA>>(
