@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use super::{SparseBackendNoBackground, SparseBackendWithBackground, SparseConsoleBackend};
 use crate::{
-    consoles::{common_draw, ConsoleFrontEnd, Rect, TerminalGlyph},
+    consoles::{common_draw, ConsoleFrontEnd, Rect, ScreenScaler, TerminalGlyph},
     fonts::FontStore,
     BracketContext, SparseConsoleFeatures,
 };
@@ -238,7 +238,10 @@ impl ConsoleFrontEnd for SparseConsole {
         &mut self,
         _ctx: &BracketContext,
         meshes: &mut Assets<Mesh>,
+        scaler: &ScreenScaler,
     ) -> Option<Handle<Mesh>> {
-        self.back_end.as_ref().map(|be| be.new_mesh(self, meshes))
+        self.back_end
+            .as_ref()
+            .map(|be| be.new_mesh(self, meshes, scaler))
     }
 }

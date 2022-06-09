@@ -1,4 +1,4 @@
-use crate::{BracketContext, TerminalScalingMode};
+use crate::BracketContext;
 use bevy::{
     diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin},
     ecs::event::Events,
@@ -7,19 +7,20 @@ use bevy::{
     window::WindowResized,
 };
 
-use super::BracketMesh;
+use super::{BracketMesh, ScreenScaler};
 
 pub(crate) fn update_consoles(
     mut ctx: ResMut<BracketContext>,
     mut meshes: ResMut<Assets<Mesh>>,
     find_mesh: Query<(&BracketMesh, &Mesh2dHandle)>,
+    scaler: Res<ScreenScaler>,
 ) {
     let mut new_meshes: Vec<(Mesh2dHandle, Mesh2dHandle, bool)> = Vec::new();
     {
         let mut terms = ctx.terminals.lock();
         for (id, handle) in find_mesh.iter() {
             let terminal_id = id.0;
-            let new_mesh = terms[terminal_id].new_mesh(&ctx, &mut meshes);
+            let new_mesh = terms[terminal_id].new_mesh(&ctx, &mut meshes, &scaler);
             if let Some(new_mesh) = new_mesh {
                 let old_mesh = handle.clone();
                 new_meshes.push((old_mesh, new_mesh.into(), false));
@@ -76,20 +77,11 @@ pub(crate) fn update_timing(mut ctx: ResMut<BracketContext>, diagnostics: Res<Di
 pub(crate) fn window_resize(
     context: Res<BracketContext>,
     resize_event: Res<Events<WindowResized>>,
-    mut query: Query<&mut Transform, With<BracketMesh>>,
+    mut scaler: ResMut<ScreenScaler>,
 ) {
     let mut reader = resize_event.get_reader();
     for e in reader.iter(&resize_event) {
-        match context.scaling_mode {
-            TerminalScalingMode::Stretch => {
-                let terminal_size_native = context.get_pixel_size();
-                let x = e.width / terminal_size_native.0;
-                let y = e.height / terminal_size_native.1;
-                query.for_each_mut(|mut trans| {
-                    trans.scale.x = x;
-                    trans.scale.y = y;
-                });
-            }
-        }
+        scaler.set_screen_size(e.width, e.height);
+        scaler.recalculate(context.get_pixel_size(), context.largest_font());
     }
 }

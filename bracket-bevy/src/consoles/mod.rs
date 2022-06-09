@@ -15,6 +15,7 @@ pub use rect::Rect;
 mod text_spans;
 pub(crate) use text_spans::*;
 mod scaler;
+pub(crate) use scaler::*;
 
 pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn get_char_size(&self) -> (usize, usize);
@@ -94,8 +95,12 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
         }
     }
 
-    fn new_mesh(&mut self, ctx: &BracketContext, meshes: &mut Assets<Mesh>)
-        -> Option<Handle<Mesh>>;
+    fn new_mesh(
+        &mut self,
+        ctx: &BracketContext,
+        meshes: &mut Assets<Mesh>,
+        scaler: &ScreenScaler,
+    ) -> Option<Handle<Mesh>>;
 }
 
 #[derive(PartialEq, Copy, Clone, Debug)]

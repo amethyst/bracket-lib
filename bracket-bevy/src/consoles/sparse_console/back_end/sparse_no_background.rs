@@ -1,5 +1,5 @@
 use super::SparseConsoleBackend;
-use crate::consoles::{BracketMesh, SparseConsole, scaler::FontScaler};
+use crate::consoles::{scaler::FontScaler, BracketMesh, ScreenScaler, SparseConsole};
 use bevy::{
     prelude::*,
     render::mesh::{Indices, PrimitiveTopology},
@@ -31,13 +31,13 @@ impl SparseBackendNoBackground {
             height,
             scaler: FontScaler::new(chars_per_row, n_rows, font_height_pixels),
         };
-        let mesh = back_end.build_mesh(parent);
+        let mesh = back_end.build_mesh(parent, &ScreenScaler::default());
         let mesh_handle = meshes.add(mesh);
         back_end.mesh_handle = Some(mesh_handle);
         back_end
     }
 
-    pub fn build_mesh(&self, parent: &SparseConsole) -> Mesh {
+    pub fn build_mesh(&self, parent: &SparseConsole, screen_scaler: &ScreenScaler) -> Mesh {
         let n_elements = parent.terminal.len();
         let mut vertices: Vec<[f32; 3]> = Vec::with_capacity(n_elements * 4);
         let mut normals: Vec<[f32; 3]> = Vec::with_capacity(n_elements * 4);
@@ -45,22 +45,18 @@ impl SparseBackendNoBackground {
         let mut colors: Vec<[f32; 4]> = Vec::with_capacity(n_elements * 4);
         let mut indices: Vec<u32> = Vec::with_capacity(n_elements * 6);
         let mut index_count = 0;
-        let half_height = self.height as f32 / 2.0;
-        let half_width = self.width as f32 / 2.0;
+        let scale = screen_scaler.calc_step(self.width, self.height);
+        let top_left = screen_scaler.top_left();
 
         for (x, y, chr) in parent.terminal.iter() {
             let actual_y = self.height - 1 - y;
-            let screen_x = (*x as f32 - half_width) * self.font_height_pixels.0;
-            let screen_y = (actual_y as f32 - half_height) * self.font_height_pixels.1;
+            let screen_x = top_left.0 + (*x as f32 * scale.0);
+            let screen_y = top_left.1 + (actual_y as f32 * scale.1);
 
             vertices.push([screen_x, screen_y, 0.5]);
-            vertices.push([screen_x + self.font_height_pixels.0, screen_y, 0.5]);
-            vertices.push([screen_x, screen_y + self.font_height_pixels.1, 0.5]);
-            vertices.push([
-                screen_x + self.font_height_pixels.0,
-                screen_y + self.font_height_pixels.1,
-                0.5,
-            ]);
+            vertices.push([screen_x + scale.0, screen_y, 0.5]);
+            vertices.push([screen_x, screen_y + scale.1, 0.5]);
+            vertices.push([screen_x + scale.0, screen_y + scale.1, 0.5]);
             for _ in 0..4 {
                 normals.push([0.0, 1.0, 0.0]);
             }
@@ -98,8 +94,13 @@ impl SparseBackendNoBackground {
 }
 
 impl SparseConsoleBackend for SparseBackendNoBackground {
-    fn new_mesh(&self, front_end: &SparseConsole, meshes: &mut Assets<Mesh>) -> Handle<Mesh> {
-        meshes.add(self.build_mesh(front_end))
+    fn new_mesh(
+        &self,
+        front_end: &SparseConsole,
+        meshes: &mut Assets<Mesh>,
+        scaler: &ScreenScaler,
+    ) -> Handle<Mesh> {
+        meshes.add(self.build_mesh(front_end, scaler))
     }
 
     fn spawn(&self, commands: &mut Commands, material: Handle<ColorMaterial>, idx: usize) {

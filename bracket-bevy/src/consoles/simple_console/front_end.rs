@@ -3,7 +3,7 @@ use super::{
     TerminalGlyph,
 };
 use crate::{
-    consoles::{common_draw, ConsoleFrontEnd, Rect},
+    consoles::{common_draw, ConsoleFrontEnd, Rect, ScreenScaler},
     fonts::FontStore,
     BracketContext, SimpleConsoleFeatures,
 };
@@ -242,9 +242,10 @@ impl ConsoleFrontEnd for SimpleConsole {
         &mut self,
         _ctx: &BracketContext,
         meshes: &mut Assets<Mesh>,
+        scaler: &ScreenScaler,
     ) -> Option<Handle<Mesh>> {
         self.back_end
             .as_ref()
-            .map(|back_end| back_end.new_mesh(self, meshes))
+            .map(|back_end| back_end.new_mesh(self, meshes, scaler))
     }
 }

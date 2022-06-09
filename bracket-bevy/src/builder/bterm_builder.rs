@@ -1,5 +1,5 @@
 use crate::{
-    consoles::{replace_meshes, update_timing, window_resize},
+    consoles::{default_gutter_size, replace_meshes, update_timing, window_resize, ScreenScaler},
     load_terminals, update_consoles, RandomNumbers, TerminalBuilderFont, TerminalLayer,
 };
 use bevy::{
@@ -25,6 +25,7 @@ pub struct BTermBuilder {
     pub(crate) with_diagnostics: bool,
     pub(crate) log_diagnostics: bool,
     pub(crate) scaling_mode: TerminalScalingMode,
+    pub(crate) gutter: f32,
 }
 
 impl BTermBuilder {
@@ -38,6 +39,7 @@ impl BTermBuilder {
             with_diagnostics: true,
             log_diagnostics: false,
             scaling_mode: TerminalScalingMode::Stretch,
+            gutter: default_gutter_size(),
         }
     }
 
@@ -61,6 +63,7 @@ impl BTermBuilder {
             with_diagnostics: true,
             log_diagnostics: false,
             scaling_mode: TerminalScalingMode::Stretch,
+            gutter: default_gutter_size(),
         }
     }
 
@@ -133,6 +136,11 @@ impl BTermBuilder {
         self
     }
 
+    pub fn with_gutter(mut self, gutter: f32) -> Self {
+        self.gutter = gutter;
+        self
+    }
+
     pub fn with_simple_console(mut self, font_index: usize, width: usize, height: usize) -> Self {
         self.layers.push(TerminalLayer::Simple {
             font_index,
@@ -163,6 +171,7 @@ impl Plugin for BTermBuilder {
             app.add_plugin(LogDiagnosticsPlugin::default());
         }
         app.insert_resource(self.clone());
+        app.insert_resource(ScreenScaler::new(self.gutter));
         app.add_startup_system(load_terminals);
         if self.with_diagnostics {
             app.add_stage_before(

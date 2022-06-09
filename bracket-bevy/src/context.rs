@@ -50,6 +50,15 @@ impl BracketContext {
         pixel_size
     }
 
+    pub fn largest_font(&self) -> (f32, f32) {
+        let mut result = (1.0, 1.0);
+        self.fonts.iter().for_each(|fs| {
+            result.0 = f32::max(result.0, fs.font_height_pixels.0);
+            result.1 = f32::max(result.1, fs.font_height_pixels.1);
+        });
+        result
+    }
+
     pub fn at(&self, x: usize, y: usize) -> usize {
         self.terminals.lock()[self.current_layer()].at(x, y)
     }
