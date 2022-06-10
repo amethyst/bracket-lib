@@ -10,7 +10,7 @@ pub(crate) struct TerminalGlyph {
 impl Default for TerminalGlyph {
     fn default() -> Self {
         Self {
-            glyph: 65,
+            glyph: 32,
             foreground: Color::WHITE.as_rgba_f32(),
             background: Color::BLACK.as_rgba_f32(),
         }

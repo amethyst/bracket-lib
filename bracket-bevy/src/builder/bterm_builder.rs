@@ -13,6 +13,7 @@ use std::collections::HashSet;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TerminalScalingMode {
     Stretch,
+    ResizeTerminals,
 }
 
 #[derive(Clone)]

@@ -101,6 +101,8 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
         meshes: &mut Assets<Mesh>,
         scaler: &ScreenScaler,
     ) -> Option<Handle<Mesh>>;
+
+    fn resize(&mut self, available_size: &(f32, f32));
 }
 
 #[derive(PartialEq, Copy, Clone, Debug)]

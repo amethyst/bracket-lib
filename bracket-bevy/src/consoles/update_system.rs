@@ -1,4 +1,4 @@
-use crate::BracketContext;
+use crate::{BracketContext, TerminalScalingMode};
 use bevy::{
     diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin},
     ecs::event::Events,
@@ -75,13 +75,16 @@ pub(crate) fn update_timing(mut ctx: ResMut<BracketContext>, diagnostics: Res<Di
 }
 
 pub(crate) fn window_resize(
-    context: Res<BracketContext>,
+    mut context: ResMut<BracketContext>,
     resize_event: Res<Events<WindowResized>>,
     mut scaler: ResMut<ScreenScaler>,
 ) {
     let mut reader = resize_event.get_reader();
     for e in reader.iter(&resize_event) {
         scaler.set_screen_size(e.width, e.height);
+        if let TerminalScalingMode::ResizeTerminals = context.scaling_mode {
+            context.resize_terminals(&scaler);
+        }
         scaler.recalculate(context.get_pixel_size(), context.largest_font());
     }
 }

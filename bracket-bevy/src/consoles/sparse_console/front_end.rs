@@ -244,4 +244,12 @@ impl ConsoleFrontEnd for SparseConsole {
             .as_ref()
             .map(|be| be.new_mesh(self, meshes, scaler))
     }
+
+    fn resize(&mut self, available_size: &(f32, f32)) {
+        if let Some(back_end) = &mut self.back_end {
+            let (w, h) = back_end.resize(available_size);
+            self.width = w;
+            self.height = h;
+        }
+    }
 }

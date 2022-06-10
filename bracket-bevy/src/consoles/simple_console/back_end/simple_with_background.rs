@@ -157,4 +157,11 @@ impl SimpleConsoleBackend for SimpleBackendWithBackground {
     fn get_pixel_size(&self) -> (f32, f32) {
         self.font_height_pixels
     }
+
+    fn resize(&mut self, available_size: &(f32, f32)) -> (usize, usize) {
+        self.width = (available_size.0 / self.font_height_pixels.0).floor() as usize;
+        self.height = (available_size.1 / self.font_height_pixels.1).floor() as usize;
+
+        (self.width, self.height)
+    }
 }

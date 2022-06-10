@@ -31,6 +31,7 @@ impl FontScaler {
 
 pub(crate) struct ScreenScaler {
     screen: (f32, f32),
+    desired_gutter: f32,
     x_gutter: f32,
     y_gutter: f32,
 }
@@ -40,6 +41,7 @@ impl Default for ScreenScaler {
         let desired_gutter = default_gutter_size();
         Self {
             screen: (0.0, 0.0),
+            desired_gutter,
             x_gutter: desired_gutter / 2.0,
             y_gutter: desired_gutter / 2.0,
         }
@@ -50,6 +52,7 @@ impl ScreenScaler {
     pub(crate) fn new(desired_gutter: f32) -> Self {
         Self {
             screen: (0.0, 0.0),
+            desired_gutter,
             x_gutter: desired_gutter / 2.0,
             y_gutter: desired_gutter / 2.0,
         }
@@ -57,6 +60,8 @@ impl ScreenScaler {
 
     pub(crate) fn set_screen_size(&mut self, width: f32, height: f32) {
         self.screen = (width, height);
+        self.x_gutter = self.desired_gutter / 2.0;
+        self.y_gutter = self.desired_gutter / 2.0;
     }
 
     pub(crate) fn recalculate(
@@ -88,6 +93,10 @@ impl ScreenScaler {
             (self.screen.0 - self.x_gutter as f32) / width as f32,
             (self.screen.1 - self.y_gutter as f32) / height as f32,
         )
+    }
+
+    pub(crate) fn available_size(&self) -> (f32, f32) {
+        (self.screen.0 - self.x_gutter, self.screen.1 - self.y_gutter)
     }
 }
 

@@ -1,5 +1,5 @@
 use crate::{
-    consoles::{ConsoleFrontEnd, Rect},
+    consoles::{ConsoleFrontEnd, Rect, ScreenScaler},
     fonts::FontStore,
     TerminalScalingMode,
 };
@@ -104,7 +104,7 @@ impl BracketContext {
     }
 
     pub fn print_color_centered<S: ToString, C: Into<RGBA>>(
-        &mut self,
+        &self,
         y: usize,
         fg: C,
         bg: C,
@@ -118,12 +118,12 @@ impl BracketContext {
         );
     }
 
-    pub fn print_centered_at<S: ToString>(&mut self, x: usize, y: usize, text: S) {
+    pub fn print_centered_at<S: ToString>(&self, x: usize, y: usize, text: S) {
         self.terminals.lock()[self.current_layer()].print_centered_at(x, y, &text.to_string());
     }
 
     pub fn print_color_centered_at<S: ToString, C: Into<RGBA>>(
-        &mut self,
+        &self,
         x: usize,
         y: usize,
         fg: C,
@@ -139,12 +139,12 @@ impl BracketContext {
         )
     }
 
-    pub fn print_right<S: ToString>(&mut self, x: usize, y: usize, text: S) {
+    pub fn print_right<S: ToString>(&self, x: usize, y: usize, text: S) {
         self.terminals.lock()[self.current_layer()].print_right(x, y, &text.to_string());
     }
 
     pub fn print_color_right<S: ToString, C: Into<RGBA>>(
-        &mut self,
+        &self,
         x: usize,
         y: usize,
         fg: C,
@@ -227,7 +227,7 @@ impl BracketContext {
     }
 
     pub fn draw_box_double<C: Into<RGBA>>(
-        &mut self,
+        &self,
         x: usize,
         y: usize,
         width: usize,
@@ -246,7 +246,7 @@ impl BracketContext {
     }
 
     pub fn draw_hollow_box_double<C: Into<RGBA>>(
-        &mut self,
+        &self,
         x: usize,
         y: usize,
         width: usize,
@@ -264,7 +264,7 @@ impl BracketContext {
         );
     }
 
-    pub fn fill_region<C: Into<RGBA>>(&mut self, target: Rect, glyph: u16, fg: C, bg: C) {
+    pub fn fill_region<C: Into<RGBA>>(&self, target: Rect, glyph: u16, fg: C, bg: C) {
         self.terminals.lock()[self.current_layer()].fill_region(
             target,
             glyph,
@@ -275,5 +275,11 @@ impl BracketContext {
 
     pub fn get_named_color(&self, color: &str) -> Option<&RGBA> {
         self.color_palette.get(color)
+    }
+
+    pub(crate) fn resize_terminals(&mut self, scaler: &ScreenScaler) {
+        let available_size = scaler.available_size();
+        let mut lock = self.terminals.lock();
+        lock.iter_mut().for_each(|t| t.resize(&available_size));
     }
 }

@@ -248,4 +248,13 @@ impl ConsoleFrontEnd for SimpleConsole {
             .as_ref()
             .map(|back_end| back_end.new_mesh(self, meshes, scaler))
     }
+
+    fn resize(&mut self, available_size: &(f32, f32)) {
+        if let Some(back_end) = &mut self.back_end {
+            let (w, h) = back_end.resize(available_size);
+            self.width = w;
+            self.height = h;
+            self.terminal = vec![TerminalGlyph::default(); w * h];
+        }
+    }
 }
