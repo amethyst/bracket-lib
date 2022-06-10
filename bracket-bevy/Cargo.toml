@@ -2,7 +2,15 @@
 name = "bracket-bevy"
 version = "0.1.0"
 edition = "2021"
-description = "ASCII/CP437 Psuedo-terminal for Bevy, based on bracket-lib."
+authors = ["Herbert Wolverson <herberticus@gmail.com>"]
+publish = false
+description = "ASCII/CP437 Psuedo-terminal for Bevy, based on bracket-lib. Aims to provide everything you need to produce a retro console experience using Bevy for the ECS and rendering."
+homepage = "https://github.com/thebracket/bracket-lib"
+repository = "https://github.com/thebracket/bracket-lib"
+readme = "README.md"
+keywords = ["roguelike", "gamedev", "RGB", "HSV", "color"]
+categories = ["game-engines", "graphics"]
+license = "MIT"
 
 [dependencies]
 # Using my version until my PR for colored vertex support is (hopefully) merged.

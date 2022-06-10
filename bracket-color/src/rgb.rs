@@ -255,15 +255,14 @@ impl RGB {
         let min = f32::min(f32::min(r, g), b);
 
         let mut h: f32 = max;
-        let s: f32;
         let v: f32 = max;
 
         let d = max - min;
-        if max == 0.0 {
-            s = 0.0;
+        let s = if max == 0.0 {
+            0.0
         } else {
-            s = d / max;
-        }
+            d / max
+        };
 
         if (max - min).abs() < std::f32::EPSILON {
             h = 0.0; // Achromatic
