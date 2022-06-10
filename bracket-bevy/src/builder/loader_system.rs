@@ -4,7 +4,7 @@ use crate::{
 };
 use bevy::{
     prelude::{
-        AssetServer, Assets, Commands, Component, Mesh, OrthographicCameraBundle, Res, ResMut,
+        AssetServer, Assets, Commands, Component, Mesh, Camera2dBundle, Res, ResMut,
     },
     sprite::ColorMaterial,
 };
@@ -21,7 +21,7 @@ pub(crate) fn load_terminals(
 ) {
     if context.with_ortho_camera {
         commands
-            .spawn_bundle(OrthographicCameraBundle::new_2d())
+            .spawn_bundle(Camera2dBundle::default())
             .insert(BracketCamera);
     }
 

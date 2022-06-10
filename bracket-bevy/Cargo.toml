@@ -14,7 +14,7 @@ license = "MIT"
 
 [dependencies]
 # Using my version until my PR for colored vertex support is (hopefully) merged.
-bevy = { git = "https://github.com/thebracket/bevy.git" }
+bevy = { git = "https://github.com/bevyengine/bevy.git" }
 parking_lot = "0.11"
 lazy_static = "1.4"
 bracket-random = { path = "../bracket-random" }
