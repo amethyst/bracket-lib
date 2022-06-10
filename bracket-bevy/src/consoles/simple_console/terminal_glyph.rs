@@ -1,7 +1,7 @@
 use bevy::prelude::Color;
 
 #[derive(Clone, Copy)]
-pub(crate) struct TerminalGlyph {
+pub struct TerminalGlyph {
     pub(crate) glyph: u16,
     pub(crate) foreground: [f32; 4],
     pub(crate) background: [f32; 4],

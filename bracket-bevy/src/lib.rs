@@ -8,12 +8,13 @@ pub use context::*;
 mod consoles;
 use consoles::*;
 mod random_resource;
+pub use consoles::{Point, Rect, VirtualConsole};
 pub use random_resource::*;
 
 pub mod prelude {
     pub use crate::{
-        consoles::TextAlign, cp437::*, BTermBuilder, BracketContext, RandomNumbers,
-        TerminalScalingMode,
+        consoles::TextAlign, cp437::*, BTermBuilder, BracketContext, Point, RandomNumbers, Rect,
+        TerminalScalingMode, VirtualConsole,
     };
     pub use bracket_color::prelude::*;
 }

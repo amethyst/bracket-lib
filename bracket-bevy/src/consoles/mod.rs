@@ -16,6 +16,8 @@ mod text_spans;
 pub(crate) use text_spans::*;
 mod scaler;
 pub(crate) use scaler::*;
+mod virtual_console;
+pub use virtual_console::*;
 
 pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn get_char_size(&self) -> (usize, usize);

@@ -316,6 +316,12 @@ impl From<(u8, u8, u8)> for RGBA {
     }
 }
 
+impl From<[f32; 4]> for RGBA {
+    fn from(item: [f32; 4]) -> Self {
+        Self::from_f32(item[0], item[1], item[2], item[3])
+    }
+}
+
 // Support conversion from Bevy
 #[cfg(feature = "bevy")]
 impl From<bevy::prelude::Color> for RGBA {
