@@ -47,7 +47,7 @@ impl VirtualConsole {
 
         let num_tiles: usize = width * lines.len();
         let mut console = VirtualConsole {
-            width: width,
+            width,
             height: lines.len(),
             terminal: Vec::with_capacity(num_tiles),
             clipping: None,
