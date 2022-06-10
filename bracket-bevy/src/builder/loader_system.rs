@@ -3,9 +3,7 @@ use crate::{
     TerminalLayer,
 };
 use bevy::{
-    prelude::{
-        AssetServer, Assets, Commands, Component, Mesh, Camera2dBundle, Res, ResMut,
-    },
+    prelude::{AssetServer, Assets, Camera2dBundle, Commands, Component, Mesh, Res, ResMut},
     sprite::ColorMaterial,
 };
 
