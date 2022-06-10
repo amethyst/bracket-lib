@@ -3,9 +3,14 @@ use crate::{
     TerminalLayer,
 };
 use bevy::{
-    prelude::{AssetServer, Assets, Commands, Mesh, OrthographicCameraBundle, Res, ResMut},
+    prelude::{
+        AssetServer, Assets, Commands, Component, Mesh, OrthographicCameraBundle, Res, ResMut,
+    },
     sprite::ColorMaterial,
 };
+
+#[derive(Component)]
+pub struct BracketCamera;
 
 pub(crate) fn load_terminals(
     context: Res<BTermBuilder>,
@@ -15,7 +20,9 @@ pub(crate) fn load_terminals(
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
     if context.with_ortho_camera {
-        commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+        commands
+            .spawn_bundle(OrthographicCameraBundle::new_2d())
+            .insert(BracketCamera);
     }
 
     // Setup the new context

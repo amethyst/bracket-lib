@@ -30,7 +30,7 @@ impl FontScaler {
 }
 
 pub(crate) struct ScreenScaler {
-    screen: (f32, f32),
+    pub(crate) screen: (f32, f32),
     desired_gutter: f32,
     x_gutter: f32,
     y_gutter: f32,
@@ -97,6 +97,23 @@ impl ScreenScaler {
 
     pub(crate) fn available_size(&self) -> (f32, f32) {
         (self.screen.0 - self.x_gutter, self.screen.1 - self.y_gutter)
+    }
+
+    pub(crate) fn calc_mouse_position(
+        &self,
+        pos: (f32, f32),
+        width: usize,
+        height: usize,
+    ) -> (usize, usize) {
+        let step = self.calc_step(width, height);
+        let step_pos = (
+            (pos.0 / step.0) + (width as f32 / 2.0),
+            (pos.1 / step.1) + (height as f32 / 2.0),
+        );
+        (
+            usize::clamp(step_pos.0 as usize, 0, width - 1),
+            usize::clamp(height - step_pos.1 as usize, 0, height - 1),
+        )
     }
 }
 

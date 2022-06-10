@@ -12,6 +12,7 @@ use bevy::{
     sprite::ColorMaterial,
 };
 use bracket_color::prelude::RGBA;
+use bracket_geometry::prelude::Point;
 use std::collections::HashSet;
 
 pub(crate) struct SimpleConsole {
@@ -21,6 +22,7 @@ pub(crate) struct SimpleConsole {
     pub(crate) terminal: Vec<TerminalGlyph>,
     back_end: Option<Box<dyn SimpleConsoleBackend>>,
     clipping: Option<Rect>,
+    mouse_chars: (usize, usize),
 }
 
 impl SimpleConsole {
@@ -32,6 +34,7 @@ impl SimpleConsole {
             terminal: vec![TerminalGlyph::default(); width * height],
             back_end: None,
             clipping: None,
+            mouse_chars: (0, 0),
         }
     }
 
@@ -238,6 +241,51 @@ impl ConsoleFrontEnd for SimpleConsole {
         });
     }
 
+    fn draw_bar_horizontal(
+        &mut self,
+        x: usize,
+        y: usize,
+        width: usize,
+        n: usize,
+        max: usize,
+        fg: RGBA,
+        bg: RGBA,
+    ) {
+        common_draw::draw_bar_horizontal(self, x, y, width, n, max, fg, bg);
+    }
+
+    fn draw_bar_vertical(
+        &mut self,
+        x: usize,
+        y: usize,
+        height: usize,
+        n: usize,
+        max: usize,
+        fg: RGBA,
+        bg: RGBA,
+    ) {
+        common_draw::draw_bar_vertical(self, x, y, height, n, max, fg, bg);
+    }
+
+    fn set_all_alpha(&mut self, fg: f32, bg: f32) {
+        self.terminal.iter_mut().for_each(|t| {
+            t.foreground[3] = fg;
+            t.background[3] = bg;
+        });
+    }
+
+    fn set_all_bg_alpha(&mut self, alpha: f32) {
+        self.terminal.iter_mut().for_each(|t| {
+            t.background[3] = alpha;
+        });
+    }
+
+    fn set_all_fg_alpha(&mut self, alpha: f32) {
+        self.terminal.iter_mut().for_each(|t| {
+            t.foreground[3] = alpha;
+        });
+    }
+
     fn new_mesh(
         &mut self,
         _ctx: &BracketContext,
@@ -256,5 +304,17 @@ impl ConsoleFrontEnd for SimpleConsole {
             self.height = h;
             self.terminal = vec![TerminalGlyph::default(); w * h];
         }
+    }
+
+    fn get_mouse_position_for_current_layer(&self) -> Point {
+        Point::new(self.mouse_chars.0 as usize, self.mouse_chars.1 as usize)
+    }
+
+    fn set_mouse_position(&mut self, pos: (f32, f32), scaler: &ScreenScaler) {
+        self.mouse_chars = scaler.calc_mouse_position(pos, self.width, self.height);
+    }
+
+    fn get_font_index(&self) -> usize {
+        self.font_index
     }
 }

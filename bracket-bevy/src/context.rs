@@ -1,10 +1,11 @@
 use crate::{
-    consoles::{ConsoleFrontEnd, Rect, ScreenScaler},
+    consoles::{ConsoleFrontEnd, DrawBatch, DrawCommand, ScreenScaler},
     fonts::FontStore,
     TerminalScalingMode,
 };
 use bevy::{sprite::Mesh2dHandle, utils::HashMap};
 use bracket_color::prelude::RGBA;
+use bracket_geometry::prelude::{Point, Rect};
 use parking_lot::Mutex;
 
 pub struct BracketContext {
@@ -16,6 +17,8 @@ pub struct BracketContext {
     pub frame_time_ms: f64,
     pub(crate) mesh_replacement: Vec<(Mesh2dHandle, Mesh2dHandle, bool)>,
     pub(crate) scaling_mode: TerminalScalingMode,
+    command_buffers: Mutex<Vec<(usize, DrawBatch)>>,
+    mouse_pixels: (f32, f32),
 }
 
 impl BracketContext {
@@ -29,6 +32,8 @@ impl BracketContext {
             frame_time_ms: 0.0,
             mesh_replacement: Vec::new(),
             scaling_mode: TerminalScalingMode::Stretch,
+            command_buffers: Mutex::new(Vec::new()),
+            mouse_pixels: (0.0, 0.0),
         }
     }
 
@@ -273,6 +278,62 @@ impl BracketContext {
         );
     }
 
+    #[allow(clippy::too_many_arguments)]
+    pub fn draw_bar_horizontal<C: Into<RGBA>>(
+        &self,
+        x: usize,
+        y: usize,
+        width: usize,
+        n: usize,
+        max: usize,
+        fg: C,
+        bg: C,
+    ) {
+        self.terminals.lock()[self.current_layer()].draw_bar_horizontal(
+            x,
+            y,
+            width,
+            n,
+            max,
+            fg.into(),
+            bg.into(),
+        );
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn draw_bar_vertical<C: Into<RGBA>>(
+        &self,
+        x: usize,
+        y: usize,
+        height: usize,
+        n: usize,
+        max: usize,
+        fg: C,
+        bg: C,
+    ) {
+        self.terminals.lock()[self.current_layer()].draw_bar_vertical(
+            x,
+            y,
+            height,
+            n,
+            max,
+            fg.into(),
+            bg.into(),
+        );
+    }
+
+    pub fn set_all_fg_alpha(&self, alpha: f32) {
+        self.terminals.lock()[self.current_layer()].set_all_bg_alpha(alpha);
+    }
+
+    pub fn set_all_bg_alpha(&self, alpha: f32) {
+        self.terminals.lock()[self.current_layer()].set_all_bg_alpha(alpha);
+    }
+
+    pub fn set_all_alpha(&self, fg: f32, bg: f32) {
+        self.terminals.lock()[self.current_layer()].set_all_alpha(fg, bg);
+    }
+
     pub fn get_named_color(&self, color: &str) -> Option<&RGBA> {
         self.color_palette.get(color)
     }
@@ -281,5 +342,155 @@ impl BracketContext {
         let available_size = scaler.available_size();
         let mut lock = self.terminals.lock();
         lock.iter_mut().for_each(|t| t.resize(&available_size));
+    }
+
+    pub fn new_draw_batch(&self) -> DrawBatch {
+        DrawBatch::new()
+    }
+
+    pub fn submit_batch(&self, z_order: usize, mut batch: DrawBatch) {
+        if batch.needs_sort {
+            batch.batch.sort_by(|a, b| a.0.cmp(&b.0));
+        }
+        self.command_buffers.lock().push((z_order, batch));
+    }
+
+    pub fn render_all_batches(&mut self) {
+        let mut batches = self.command_buffers.lock();
+        batches.sort_unstable_by(|a, b| a.0.cmp(&b.0));
+
+        batches.iter().for_each(|(_, batch)| {
+            batch.batch.iter().for_each(|(_, cmd)| match cmd {
+                DrawCommand::ClearScreen => self.cls(),
+                DrawCommand::ClearToColor { color } => self.cls_bg(*color),
+                DrawCommand::SetTarget { console } => self.set_layer(*console),
+                DrawCommand::Set { pos, color, glyph } => {
+                    self.set(pos.x as usize, pos.y as usize, color.fg, color.bg, *glyph)
+                }
+                DrawCommand::SetBackground { pos, bg } => {
+                    self.set_bg(pos.x as usize, pos.y as usize, *bg)
+                }
+                DrawCommand::Print { pos, text } => {
+                    self.print(pos.x as usize, pos.y as usize, &text)
+                }
+                DrawCommand::PrintColor { pos, text, color } => {
+                    self.print_color(pos.x as usize, pos.y as usize, &text, color.fg, color.bg)
+                }
+                DrawCommand::PrintCentered { y, text } => self.print_centered(*y as usize, &text),
+                DrawCommand::PrintColorCentered { y, text, color } => {
+                    self.print_color_centered(*y as usize, color.fg, color.bg, &text)
+                }
+                DrawCommand::PrintCenteredAt { pos, text } => {
+                    self.print_centered_at(pos.x as usize, pos.y as usize, &text)
+                }
+                DrawCommand::PrintColorCenteredAt { pos, text, color } => self
+                    .print_color_centered_at(
+                        pos.x as usize,
+                        pos.y as usize,
+                        color.fg,
+                        color.bg,
+                        &text,
+                    ),
+                DrawCommand::PrintRight { pos, text } => {
+                    self.print_right(pos.x as usize, pos.y as usize, text)
+                }
+                DrawCommand::PrintColorRight { pos, text, color } => {
+                    self.print_color_right(pos.x as usize, pos.y as usize, color.fg, color.bg, text)
+                }
+                DrawCommand::Printer {
+                    pos,
+                    text,
+                    align,
+                    background,
+                } => self.printer(pos.x as usize, pos.y as usize, text, *align, *background),
+                DrawCommand::Box { pos, color } => self.draw_box(
+                    pos.x1 as usize,
+                    pos.y1 as usize,
+                    pos.width() as usize,
+                    pos.height() as usize,
+                    color.fg,
+                    color.bg,
+                ),
+                DrawCommand::HollowBox { pos, color } => self.draw_hollow_box(
+                    pos.x1 as usize,
+                    pos.y1 as usize,
+                    pos.width() as usize,
+                    pos.height() as usize,
+                    color.fg,
+                    color.bg,
+                ),
+                DrawCommand::DoubleBox { pos, color } => self.draw_box_double(
+                    pos.x1 as usize,
+                    pos.y1 as usize,
+                    pos.width() as usize,
+                    pos.height() as usize,
+                    color.fg,
+                    color.bg,
+                ),
+                DrawCommand::HollowDoubleBox { pos, color } => self.draw_hollow_box_double(
+                    pos.x1 as usize,
+                    pos.y1 as usize,
+                    pos.width() as usize,
+                    pos.height() as usize,
+                    color.fg,
+                    color.bg,
+                ),
+                DrawCommand::FillRegion { pos, color, glyph } => {
+                    self.fill_region::<RGBA>(*pos, *glyph, color.fg, color.bg)
+                }
+                DrawCommand::BarHorizontal {
+                    pos,
+                    width,
+                    n,
+                    max,
+                    color,
+                } => self.draw_bar_horizontal(
+                    pos.x as usize,
+                    pos.y as usize,
+                    *width as usize,
+                    *n as usize,
+                    *max as usize,
+                    color.fg,
+                    color.bg,
+                ),
+                DrawCommand::BarVertical {
+                    pos,
+                    height,
+                    n,
+                    max,
+                    color,
+                } => self.draw_bar_vertical(
+                    pos.x as usize,
+                    pos.y as usize,
+                    *height as usize,
+                    *n as usize,
+                    *max as usize,
+                    color.fg,
+                    color.bg,
+                ),
+                DrawCommand::SetClipping { clip } => self.set_clipping(*clip),
+                DrawCommand::SetFgAlpha { alpha } => self.set_all_fg_alpha(*alpha),
+                DrawCommand::SetBgAlpha { alpha } => self.set_all_fg_alpha(*alpha),
+                DrawCommand::SetAllAlpha { fg, bg } => self.set_all_alpha(*fg, *bg),
+            })
+        });
+
+        batches.clear();
+    }
+
+    pub(crate) fn set_mouse_pixel_position(&mut self, pos: (f32, f32), scaler: &ScreenScaler) {
+        self.mouse_pixels = pos;
+        self.terminals
+            .lock()
+            .iter_mut()
+            .for_each(|t| t.set_mouse_position(pos, scaler));
+    }
+
+    pub fn get_mouse_position_in_pixels(&self) -> (f32, f32) {
+        self.mouse_pixels
+    }
+
+    pub fn get_mouse_position_for_current_layer(&self) -> Point {
+        self.terminals.lock()[self.current_layer()].get_mouse_position_for_current_layer()
     }
 }

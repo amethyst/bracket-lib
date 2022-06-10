@@ -1,5 +1,8 @@
 use crate::{
-    consoles::{default_gutter_size, replace_meshes, update_timing, window_resize, ScreenScaler},
+    consoles::{
+        apply_all_batches, default_gutter_size, replace_meshes, update_mouse_position,
+        update_timing, window_resize, ScreenScaler,
+    },
     load_terminals, update_consoles, RandomNumbers, TerminalBuilderFont, TerminalLayer,
 };
 use bevy::{
@@ -27,6 +30,7 @@ pub struct BTermBuilder {
     pub(crate) log_diagnostics: bool,
     pub(crate) scaling_mode: TerminalScalingMode,
     pub(crate) gutter: f32,
+    pub(crate) auto_apply_batches: bool,
 }
 
 impl BTermBuilder {
@@ -41,6 +45,7 @@ impl BTermBuilder {
             log_diagnostics: false,
             scaling_mode: TerminalScalingMode::Stretch,
             gutter: default_gutter_size(),
+            auto_apply_batches: true,
         }
     }
 
@@ -65,6 +70,7 @@ impl BTermBuilder {
             log_diagnostics: false,
             scaling_mode: TerminalScalingMode::Stretch,
             gutter: default_gutter_size(),
+            auto_apply_batches: true,
         }
     }
 
@@ -137,6 +143,11 @@ impl BTermBuilder {
         self
     }
 
+    pub fn with_auto_apply_batches(mut self, with_auto_batches: bool) -> Self {
+        self.auto_apply_batches = with_auto_batches;
+        self
+    }
+
     pub fn with_gutter(mut self, gutter: f32) -> Self {
         self.gutter = gutter;
         self
@@ -181,12 +192,16 @@ impl Plugin for BTermBuilder {
                 SystemStage::single_threaded(),
             );
             app.add_system(update_timing);
+            app.add_system(update_mouse_position);
         }
         app.add_stage_after(
             CoreStage::Update,
             "bracket_term_update",
             SystemStage::single_threaded(),
         );
+        if self.auto_apply_batches {
+            app.add_system(apply_all_batches);
+        }
         app.add_system(update_consoles);
         app.add_system(replace_meshes);
         app.add_system(window_resize);

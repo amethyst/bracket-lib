@@ -163,3 +163,49 @@ pub(crate) fn printer(
         }
     }
 }
+
+/// Draws a horizontal progress bar
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn draw_bar_horizontal(
+    console: &mut dyn ConsoleFrontEnd,
+    sx: usize,
+    sy: usize,
+    width: usize,
+    n: usize,
+    max: usize,
+    fg: RGBA,
+    bg: RGBA,
+) {
+    let percent = n as f32 / max as f32;
+    let fill_width = (percent * width as f32) as usize;
+    for x in 0..width {
+        if x <= fill_width {
+            console.set(sx + x, sy, fg, bg, to_cp437('▓'));
+        } else {
+            console.set(sx + x, sy, fg, bg, to_cp437('░'));
+        }
+    }
+}
+
+/// Draws a vertical progress bar
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn draw_bar_vertical(
+    console: &mut dyn ConsoleFrontEnd,
+    sx: usize,
+    sy: usize,
+    height: usize,
+    n: usize,
+    max: usize,
+    fg: RGBA,
+    bg: RGBA,
+) {
+    let percent = n as f32 / max as f32;
+    let fill_height = height - ((percent * height as f32) as usize);
+    for y in 0..height {
+        if y >= fill_height {
+            console.set(sx, sy + y, fg, bg, to_cp437('▓'));
+        } else {
+            console.set(sx, sy + y, fg, bg, to_cp437('░'));
+        }
+    }
+}

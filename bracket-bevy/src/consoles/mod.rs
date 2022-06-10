@@ -1,5 +1,6 @@
 use bevy::prelude::{Assets, Handle, Mesh};
 mod simple_console;
+use bracket_geometry::prelude::{Point, Rect};
 pub(crate) use simple_console::*;
 mod update_system;
 use crate::BracketContext;
@@ -7,17 +8,15 @@ pub(crate) use update_system::*;
 mod sparse_console;
 pub(crate) use sparse_console::*;
 pub(crate) mod common_draw;
-mod point;
-mod rect;
 use bracket_color::prelude::RGBA;
-pub use point::Point;
-pub use rect::Rect;
 mod text_spans;
 pub(crate) use text_spans::*;
 mod scaler;
 pub(crate) use scaler::*;
 mod virtual_console;
 pub use virtual_console::*;
+mod draw_batch;
+pub use draw_batch::*;
 
 pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn get_char_size(&self) -> (usize, usize);
@@ -97,6 +96,41 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
         }
     }
 
+    /// Draws a horizontal progress bar.
+    #[allow(clippy::too_many_arguments)]
+    fn draw_bar_horizontal(
+        &mut self,
+        x: usize,
+        y: usize,
+        width: usize,
+        n: usize,
+        max: usize,
+        fg: RGBA,
+        bg: RGBA,
+    );
+
+    /// Draws a vertical progress bar.
+    #[allow(clippy::too_many_arguments)]
+    fn draw_bar_vertical(
+        &mut self,
+        x: usize,
+        y: usize,
+        height: usize,
+        n: usize,
+        max: usize,
+        fg: RGBA,
+        bg: RGBA,
+    );
+
+    /// Sets ALL tiles foreground alpha (only tiles that exist, in sparse consoles).
+    fn set_all_fg_alpha(&mut self, alpha: f32);
+
+    /// Sets ALL tiles background alpha (only tiles that exist, in sparse consoles).
+    fn set_all_bg_alpha(&mut self, alpha: f32);
+
+    /// Sets ALL tiles foreground alpha (only tiles that exist, in sparse consoles).
+    fn set_all_alpha(&mut self, fg: f32, bg: f32);
+
     fn new_mesh(
         &mut self,
         ctx: &BracketContext,
@@ -105,6 +139,10 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
     ) -> Option<Handle<Mesh>>;
 
     fn resize(&mut self, available_size: &(f32, f32));
+
+    fn get_mouse_position_for_current_layer(&self) -> Point;
+    fn set_mouse_position(&mut self, position: (f32, f32), scaler: &ScreenScaler);
+    fn get_font_index(&self) -> usize;
 }
 
 #[derive(PartialEq, Copy, Clone, Debug)]

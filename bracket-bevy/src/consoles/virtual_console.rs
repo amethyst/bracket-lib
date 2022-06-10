@@ -1,7 +1,8 @@
 use bracket_color::prelude::RGBA;
+use bracket_geometry::prelude::{Point, Rect};
 
 use super::{common_draw, ConsoleFrontEnd, TerminalGlyph};
-use crate::{BracketContext, Point, Rect};
+use crate::BracketContext;
 
 pub struct VirtualConsole {
     pub width: usize,
@@ -249,6 +250,51 @@ impl ConsoleFrontEnd for VirtualConsole {
         });
     }
 
+    fn draw_bar_horizontal(
+        &mut self,
+        x: usize,
+        y: usize,
+        width: usize,
+        n: usize,
+        max: usize,
+        fg: RGBA,
+        bg: RGBA,
+    ) {
+        common_draw::draw_bar_horizontal(self, x, y, width, n, max, fg, bg);
+    }
+
+    fn draw_bar_vertical(
+        &mut self,
+        x: usize,
+        y: usize,
+        height: usize,
+        n: usize,
+        max: usize,
+        fg: RGBA,
+        bg: RGBA,
+    ) {
+        common_draw::draw_bar_vertical(self, x, y, height, n, max, fg, bg);
+    }
+
+    fn set_all_alpha(&mut self, fg: f32, bg: f32) {
+        self.terminal.iter_mut().for_each(|t| {
+            t.foreground[3] = fg;
+            t.background[3] = bg;
+        });
+    }
+
+    fn set_all_bg_alpha(&mut self, alpha: f32) {
+        self.terminal.iter_mut().for_each(|t| {
+            t.background[3] = alpha;
+        });
+    }
+
+    fn set_all_fg_alpha(&mut self, alpha: f32) {
+        self.terminal.iter_mut().for_each(|t| {
+            t.foreground[3] = alpha;
+        });
+    }
+
     fn new_mesh(
         &mut self,
         _ctx: &BracketContext,
@@ -260,5 +306,18 @@ impl ConsoleFrontEnd for VirtualConsole {
 
     fn resize(&mut self, _available_size: &(f32, f32)) {
         // Does nothing yet
+    }
+
+    fn get_mouse_position_for_current_layer(&self) -> Point {
+        Point::new(0, 0)
+    }
+
+    fn set_mouse_position(&mut self, _position: (f32, f32), _scaler: &super::ScreenScaler) {
+        // Do nothing
+    }
+
+    fn get_font_index(&self) -> usize {
+        // Doesn't make sense here
+        0
     }
 }
