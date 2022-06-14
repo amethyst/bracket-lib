@@ -1,7 +1,7 @@
 use crate::{
     consoles::{ConsoleFrontEnd, DrawBatch, DrawCommand, ScreenScaler},
     fonts::FontStore,
-    TerminalScalingMode,
+    TerminalScalingMode, FontCharType,
 };
 use bevy::{sprite::Mesh2dHandle, utils::HashMap};
 use bracket_color::prelude::RGBA;
@@ -110,7 +110,7 @@ impl BracketContext {
     }
 
     /// Set a character at (x,y) to a specified foreground, background and glyph.
-    pub fn set<POS: Into<i32>, C: Into<RGBA>>(&self, x: POS, y: POS, fg: C, bg: C, glyph: u16) {
+    pub fn set<POS: Into<i32>, C: Into<RGBA>>(&self, x: POS, y: POS, fg: C, bg: C, glyph: FontCharType) {
         self.terminals.lock()[self.current_layer()].set(x.into(), y.into(), fg.into(), bg.into(), glyph);
     }
 
@@ -302,7 +302,7 @@ impl BracketContext {
     }
 
     /// Fill a region specified by a rectangle with a specified glyph, and colors.
-    pub fn fill_region<C: Into<RGBA>>(&self, target: Rect, glyph: u16, fg: C, bg: C) {
+    pub fn fill_region<C: Into<RGBA>>(&self, target: Rect, glyph: FontCharType, fg: C, bg: C) {
         self.terminals.lock()[self.current_layer()].fill_region(
             target,
             glyph,

@@ -3,7 +3,7 @@ mod simple_console;
 use bracket_geometry::prelude::{Point, Rect};
 pub(crate) use simple_console::*;
 mod update_system;
-use crate::BracketContext;
+use crate::{BracketContext, FontCharType};
 pub(crate) use update_system::*;
 mod sparse_console;
 pub(crate) use sparse_console::*;
@@ -34,7 +34,7 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn print_color_centered_at(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, text: &str);
     fn print_right(&mut self, x: i32, y: i32, text: &str);
     fn print_color_right(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, text: &str);
-    fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: u16);
+    fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: FontCharType);
     fn set_bg(&mut self, x: i32, y: i32, bg: RGBA);
     fn draw_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGBA, bg: RGBA);
     fn draw_hollow_box(
@@ -67,7 +67,7 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
         bg: RGBA,
     );
 
-    fn fill_region(&mut self, target: Rect, glyph: u16, fg: RGBA, bg: RGBA);
+    fn fill_region(&mut self, target: Rect, glyph: FontCharType, fg: RGBA, bg: RGBA);
 
     fn printer(
         &mut self,

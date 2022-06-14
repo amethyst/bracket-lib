@@ -11,6 +11,8 @@ mod random_resource;
 pub use consoles::{DrawBatch, VirtualConsole};
 pub use random_resource::*;
 
+pub type FontCharType = u16;
+
 pub mod prelude {
     pub use crate::{
         consoles::TextAlign, cp437::*, BTermBuilder, BracketContext, DrawBatch, RandomNumbers,

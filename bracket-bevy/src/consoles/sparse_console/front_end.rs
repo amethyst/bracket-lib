@@ -4,7 +4,7 @@ use super::{SparseBackendNoBackground, SparseBackendWithBackground, SparseConsol
 use crate::{
     consoles::{common_draw, ConsoleFrontEnd, Rect, ScreenScaler, TerminalGlyph},
     fonts::FontStore,
-    BracketContext, SparseConsoleFeatures,
+    BracketContext, SparseConsoleFeatures, FontCharType,
 };
 use bevy::{
     prelude::{Assets, Commands, Handle, Mesh},
@@ -123,7 +123,7 @@ impl ConsoleFrontEnd for SparseConsole {
             .for_each(|c| c.2.background = color.as_rgba_f32());
     }
 
-    fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: u16) {
+    fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: FontCharType) {
         if self.try_at(x, y).is_some() {
             self.terminal.push((
                 x,
@@ -235,7 +235,7 @@ impl ConsoleFrontEnd for SparseConsole {
         common_draw::draw_hollow_box_double(self, x, y, width, height, fg, bg);
     }
 
-    fn fill_region(&mut self, target: Rect, glyph: u16, fg: RGBA, bg: RGBA) {
+    fn fill_region(&mut self, target: Rect, glyph: FontCharType, fg: RGBA, bg: RGBA) {
         target.for_each(|point| {
             self.set(point.x, point.y, fg, bg, glyph);
         });

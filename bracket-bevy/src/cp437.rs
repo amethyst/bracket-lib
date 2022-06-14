@@ -1,4 +1,6 @@
-pub fn to_cp437(c: char) -> u16 {
+use crate::FontCharType;
+
+pub fn to_cp437(c: char) -> FontCharType {
     match c {
         '☺' => 1,
         '☻' => 2,
@@ -551,6 +553,6 @@ pub fn to_char(c: u8) -> char {
 }
 
 /// Converts a string into a vector of u8, CP437 representations of the string
-pub fn string_to_cp437<S: AsRef<str>>(input: S) -> Vec<u16> {
+pub fn string_to_cp437<S: AsRef<str>>(input: S) -> Vec<FontCharType> {
     input.as_ref().chars().map(to_cp437).collect()
 }

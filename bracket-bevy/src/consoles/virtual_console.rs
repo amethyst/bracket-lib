@@ -2,7 +2,7 @@ use bracket_color::prelude::RGBA;
 use bracket_geometry::prelude::{Point, Rect};
 
 use super::{common_draw, ConsoleFrontEnd, TerminalGlyph};
-use crate::BracketContext;
+use crate::{BracketContext, FontCharType};
 
 pub struct VirtualConsole {
     pub width: usize,
@@ -138,7 +138,7 @@ impl ConsoleFrontEnd for VirtualConsole {
             .for_each(|c| c.background = color.as_rgba_f32());
     }
 
-    fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: u16) {
+    fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: FontCharType) {
         if let Some(idx) = self.try_at(x, y) {
             self.terminal[idx] = TerminalGlyph {
                 glyph,
@@ -248,7 +248,7 @@ impl ConsoleFrontEnd for VirtualConsole {
         common_draw::draw_hollow_box_double(self, x, y, width, height, fg, bg);
     }
 
-    fn fill_region(&mut self, target: Rect, glyph: u16, fg: RGBA, bg: RGBA) {
+    fn fill_region(&mut self, target: Rect, glyph: FontCharType, fg: RGBA, bg: RGBA) {
         target.for_each(|point| {
             self.set(point.x, point.y, fg, bg, glyph);
         });
