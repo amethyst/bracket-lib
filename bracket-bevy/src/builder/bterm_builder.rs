@@ -153,7 +153,7 @@ impl BTermBuilder {
         self
     }
 
-    pub fn with_simple_console(mut self, font_index: usize, width: usize, height: usize) -> Self {
+    pub fn with_simple_console(mut self, font_index: usize, width: i32, height: i32) -> Self {
         self.layers.push(TerminalLayer::Simple {
             font_index,
             width,
@@ -163,7 +163,7 @@ impl BTermBuilder {
         self
     }
 
-    pub fn with_sparse_console(mut self, font_index: usize, width: usize, height: usize) -> Self {
+    pub fn with_sparse_console(mut self, font_index: usize, width: i32, height: i32) -> Self {
         self.layers.push(TerminalLayer::Sparse {
             font_index,
             width,

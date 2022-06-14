@@ -19,7 +19,7 @@ mod draw_batch;
 pub use draw_batch::*;
 
 pub(crate) trait ConsoleFrontEnd: Sync + Send {
-    fn get_char_size(&self) -> (usize, usize);
+    fn get_char_size(&self) -> (i32, i32);
     fn get_pixel_size(&self) -> (f32, f32);
     fn at(&self, x: i32, y: i32) -> usize;
     fn get_clipping(&self) -> Option<Rect>;

@@ -15,16 +15,16 @@ use bracket_geometry::prelude::Point;
 
 pub(crate) struct SparseConsole {
     pub(crate) font_index: usize,
-    pub(crate) width: usize,
-    pub(crate) height: usize,
+    pub(crate) width: i32,
+    pub(crate) height: i32,
     pub(crate) terminal: Vec<(i32, i32, TerminalGlyph)>,
     back_end: Option<Box<dyn SparseConsoleBackend>>,
     clipping: Option<Rect>,
-    mouse_chars: (usize, usize),
+    mouse_chars: (i32, i32),
 }
 
 impl SparseConsole {
-    pub fn new(font_index: usize, width: usize, height: usize) -> Self {
+    pub fn new(font_index: usize, width: i32, height: i32) -> Self {
         Self {
             font_index,
             width,
@@ -80,7 +80,7 @@ impl SparseConsole {
 }
 
 impl ConsoleFrontEnd for SparseConsole {
-    fn get_char_size(&self) -> (usize, usize) {
+    fn get_char_size(&self) -> (i32, i32) {
         (self.width, self.height)
     }
 

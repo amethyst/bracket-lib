@@ -5,8 +5,8 @@ use super::{common_draw, ConsoleFrontEnd, TerminalGlyph};
 use crate::{BracketContext, FontCharType};
 
 pub struct VirtualConsole {
-    pub width: usize,
-    pub height: usize,
+    pub width: i32,
+    pub height: i32,
     pub terminal: Vec<TerminalGlyph>,
     pub clipping: Option<Rect>,
 }
@@ -16,8 +16,8 @@ impl VirtualConsole {
     pub fn new(dimensions: Point) -> Self {
         let num_tiles: usize = (dimensions.x * dimensions.y) as usize;
         let mut console = VirtualConsole {
-            width: dimensions.x as usize,
-            height: dimensions.y as usize,
+            width: dimensions.x,
+            height: dimensions.y,
             terminal: Vec::with_capacity(num_tiles),
             clipping: None,
         };
@@ -47,8 +47,8 @@ impl VirtualConsole {
 
         let num_tiles: usize = width * lines.len();
         let mut console = VirtualConsole {
-            width,
-            height: lines.len(),
+            width: width as i32,
+            height: lines.len() as i32,
             terminal: Vec::with_capacity(num_tiles),
             clipping: None,
         };
@@ -102,7 +102,7 @@ impl VirtualConsole {
 }
 
 impl ConsoleFrontEnd for VirtualConsole {
-    fn get_char_size(&self) -> (usize, usize) {
+    fn get_char_size(&self) -> (i32, i32) {
         (self.width, self.height)
     }
 

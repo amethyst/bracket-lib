@@ -88,7 +88,7 @@ impl ScreenScaler {
         )
     }
 
-    pub(crate) fn calc_step(&self, width: usize, height: usize) -> (f32, f32) {
+    pub(crate) fn calc_step(&self, width: i32, height: i32) -> (f32, f32) {
         (
             (self.screen.0 - self.x_gutter as f32) / width as f32,
             (self.screen.1 - self.y_gutter as f32) / height as f32,
@@ -102,18 +102,18 @@ impl ScreenScaler {
     pub(crate) fn calc_mouse_position(
         &self,
         pos: (f32, f32),
-        width: usize,
-        height: usize,
-    ) -> (usize, usize) {
+        width: i32,
+        height: i32,
+    ) -> (i32, i32) {
         let step = self.calc_step(width, height);
         let step_pos = (
             (pos.0 / step.0) + (width as f32 / 2.0),
             (pos.1 / step.1) + (height as f32 / 2.0),
         );
         (
-            usize::clamp(step_pos.0 as usize, 0, width - 1),
-            usize::clamp(
-                (height as i32 - step_pos.1 as i32 - 1) as usize,
+            i32::clamp(step_pos.0 as i32, 0, width - 1),
+            i32::clamp(
+                height as i32 - step_pos.1 as i32 - 1,
                 0,
                 height - 1,
             ),

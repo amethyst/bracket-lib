@@ -44,7 +44,7 @@ impl BracketContext {
 
     /// Retrieve the current console size, in characters.
     /// Applies to the currently active layer.
-    pub fn get_char_size(&self) -> (usize, usize) {
+    pub fn get_char_size(&self) -> (i32, i32) {
         self.terminals.lock()[self.current_layer()].get_char_size()
     }
 
@@ -95,7 +95,7 @@ impl BracketContext {
 
     /// Set the current layer index.
     pub fn set_active_console(&self, layer: usize) {
-        *self.current_layer.lock() = layer.into();
+        *self.current_layer.lock() = layer;
     }
 
     /// Remove all entries from the current layer.

@@ -4,14 +4,14 @@ use std::collections::HashSet;
 pub enum TerminalLayer {
     Simple {
         font_index: usize,
-        width: usize,
-        height: usize,
+        width: i32,
+        height: i32,
         features: HashSet<SimpleConsoleFeatures>,
     },
     Sparse {
         font_index: usize,
-        width: usize,
-        height: usize,
+        width: i32,
+        height: i32,
         features: HashSet<SparseConsoleFeatures>,
     },
 }

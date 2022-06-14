@@ -17,21 +17,21 @@ use std::collections::HashSet;
 
 pub(crate) struct SimpleConsole {
     pub(crate) font_index: usize,
-    pub(crate) width: usize,
-    pub(crate) height: usize,
+    pub(crate) width: i32,
+    pub(crate) height: i32,
     pub(crate) terminal: Vec<TerminalGlyph>,
     back_end: Option<Box<dyn SimpleConsoleBackend>>,
     clipping: Option<Rect>,
-    mouse_chars: (usize, usize),
+    mouse_chars: (i32, i32),
 }
 
 impl SimpleConsole {
-    pub fn new(font_index: usize, width: usize, height: usize) -> Self {
+    pub fn new(font_index: usize, width: i32, height: i32) -> Self {
         Self {
             font_index,
             width,
             height,
-            terminal: vec![TerminalGlyph::default(); width * height],
+            terminal: vec![TerminalGlyph::default(); (width * height) as usize],
             back_end: None,
             clipping: None,
             mouse_chars: (0, 0),
@@ -90,7 +90,7 @@ impl SimpleConsole {
 }
 
 impl ConsoleFrontEnd for SimpleConsole {
-    fn get_char_size(&self) -> (usize, usize) {
+    fn get_char_size(&self) -> (i32, i32) {
         (self.width, self.height)
     }
 
@@ -294,7 +294,7 @@ impl ConsoleFrontEnd for SimpleConsole {
             let (w, h) = back_end.resize(available_size);
             self.width = w;
             self.height = h;
-            self.terminal = vec![TerminalGlyph::default(); w * h];
+            self.terminal = vec![TerminalGlyph::default(); (w * h) as usize];
         }
     }
 
