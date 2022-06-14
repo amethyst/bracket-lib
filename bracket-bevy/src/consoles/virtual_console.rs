@@ -84,13 +84,7 @@ impl VirtualConsole {
                 if let Some(idx) = self.try_at(source_x, source_y) {
                     let t = self.terminal[idx];
                     if t.glyph > 0 {
-                        target.set(
-                            x,
-                            y,
-                            t.foreground.into(),
-                            t.background.into(),
-                            t.glyph,
-                        );
+                        target.set(x, y, t.foreground.into(), t.background.into(), t.glyph);
                     }
                 }
             }
@@ -175,7 +169,11 @@ impl ConsoleFrontEnd for VirtualConsole {
     }
 
     fn print_centered(&mut self, y: i32, text: &str) {
-        self.print((self.width as i32 / 2) - (text.to_string().len() / 2) as i32, y, text);
+        self.print(
+            (self.width as i32 / 2) - (text.to_string().len() / 2) as i32,
+            y,
+            text,
+        );
     }
 
     fn print_centered_at(&mut self, x: i32, y: i32, text: &str) {
@@ -212,27 +210,11 @@ impl ConsoleFrontEnd for VirtualConsole {
         common_draw::draw_box(self, sx, sy, width, height, fg, bg);
     }
 
-    fn draw_hollow_box(
-        &mut self,
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
-        fg: RGBA,
-        bg: RGBA,
-    ) {
+    fn draw_hollow_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGBA, bg: RGBA) {
         common_draw::draw_hollow_box(self, x, y, width, height, fg, bg);
     }
 
-    fn draw_box_double(
-        &mut self,
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
-        fg: RGBA,
-        bg: RGBA,
-    ) {
+    fn draw_box_double(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGBA, bg: RGBA) {
         common_draw::draw_box_double(self, x, y, width, height, fg, bg);
     }
 

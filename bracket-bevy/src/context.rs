@@ -1,7 +1,7 @@
 use crate::{
     consoles::{ConsoleFrontEnd, DrawBatch, DrawCommand, ScreenScaler},
     fonts::FontStore,
-    TerminalScalingMode, FontCharType,
+    FontCharType, TerminalScalingMode,
 };
 use bevy::{sprite::Mesh2dHandle, utils::HashMap};
 use bracket_color::prelude::RGBA;
@@ -110,8 +110,21 @@ impl BracketContext {
     }
 
     /// Set a character at (x,y) to a specified foreground, background and glyph.
-    pub fn set<POS: Into<i32>, C: Into<RGBA>>(&self, x: POS, y: POS, fg: C, bg: C, glyph: FontCharType) {
-        self.terminals.lock()[self.current_layer()].set(x.into(), y.into(), fg.into(), bg.into(), glyph);
+    pub fn set<POS: Into<i32>, C: Into<RGBA>>(
+        &self,
+        x: POS,
+        y: POS,
+        fg: C,
+        bg: C,
+        glyph: FontCharType,
+    ) {
+        self.terminals.lock()[self.current_layer()].set(
+            x.into(),
+            y.into(),
+            fg.into(),
+            bg.into(),
+            glyph,
+        );
     }
 
     /// Set just the background color of a terminal cell.
@@ -147,7 +160,11 @@ impl BracketContext {
 
     /// Print some text, centered around (x, y) to the current terminal.
     pub fn print_centered_at<POS: Into<i32>, S: ToString>(&self, x: POS, y: POS, text: S) {
-        self.terminals.lock()[self.current_layer()].print_centered_at(x.into(), y.into(), &text.to_string());
+        self.terminals.lock()[self.current_layer()].print_centered_at(
+            x.into(),
+            y.into(),
+            &text.to_string(),
+        );
     }
 
     /// Print some text, cenetered around (x,y) to the current terminal in the specified colors.
@@ -170,7 +187,11 @@ impl BracketContext {
 
     /// Print some text, right justified around (x,y), to the current terminal layer.
     pub fn print_right<POS: Into<i32>, S: ToString>(&self, x: POS, y: POS, text: S) {
-        self.terminals.lock()[self.current_layer()].print_right(x.into(), y.into(), &text.to_string());
+        self.terminals.lock()[self.current_layer()].print_right(
+            x.into(),
+            y.into(),
+            &text.to_string(),
+        );
     }
 
     /// Print some text, right justified at (x,y), to the current terminal layer in the specified colors.
@@ -218,7 +239,14 @@ impl BracketContext {
         align: crate::consoles::TextAlign,
         background: Option<RGBA>,
     ) {
-        self.terminals.lock()[self.current_layer()].printer(self, x.into(), y.into(), &output.to_string(), align, background);
+        self.terminals.lock()[self.current_layer()].printer(
+            self,
+            x.into(),
+            y.into(),
+            &output.to_string(),
+            align,
+            background,
+        );
     }
 
     /// Draws a filled box, with single line characters.
@@ -413,12 +441,8 @@ impl BracketContext {
                 DrawCommand::Set { pos, color, glyph } => {
                     self.set(pos.x, pos.y, color.fg, color.bg, *glyph)
                 }
-                DrawCommand::SetBackground { pos, bg } => {
-                    self.set_bg(pos.x, pos.y, *bg)
-                }
-                DrawCommand::Print { pos, text } => {
-                    self.print(pos.x, pos.y, &text)
-                }
+                DrawCommand::SetBackground { pos, bg } => self.set_bg(pos.x, pos.y, *bg),
+                DrawCommand::Print { pos, text } => self.print(pos.x, pos.y, &text),
                 DrawCommand::PrintColor { pos, text, color } => {
                     self.print_color(pos.x, pos.y, &text, color.fg, color.bg)
                 }
@@ -429,17 +453,10 @@ impl BracketContext {
                 DrawCommand::PrintCenteredAt { pos, text } => {
                     self.print_centered_at(pos.x, pos.y, &text)
                 }
-                DrawCommand::PrintColorCenteredAt { pos, text, color } => self
-                    .print_color_centered_at(
-                        pos.x,
-                        pos.y,
-                        color.fg,
-                        color.bg,
-                        &text,
-                    ),
-                DrawCommand::PrintRight { pos, text } => {
-                    self.print_right(pos.x, pos.y, text)
+                DrawCommand::PrintColorCenteredAt { pos, text, color } => {
+                    self.print_color_centered_at(pos.x, pos.y, color.fg, color.bg, &text)
                 }
+                DrawCommand::PrintRight { pos, text } => self.print_right(pos.x, pos.y, text),
                 DrawCommand::PrintColorRight { pos, text, color } => {
                     self.print_color_right(pos.x, pos.y, color.fg, color.bg, text)
                 }
@@ -490,30 +507,14 @@ impl BracketContext {
                     n,
                     max,
                     color,
-                } => self.draw_bar_horizontal(
-                    pos.x,
-                    pos.y,
-                    *width,
-                    *n,
-                    *max,
-                    color.fg,
-                    color.bg,
-                ),
+                } => self.draw_bar_horizontal(pos.x, pos.y, *width, *n, *max, color.fg, color.bg),
                 DrawCommand::BarVertical {
                     pos,
                     height,
                     n,
                     max,
                     color,
-                } => self.draw_bar_vertical(
-                    pos.x,
-                    pos.y,
-                    *height,
-                    *n,
-                    *max,
-                    color.fg,
-                    color.bg,
-                ),
+                } => self.draw_bar_vertical(pos.x, pos.y, *height, *n, *max, color.fg, color.bg),
                 DrawCommand::SetClipping { clip } => self.set_clipping(*clip),
                 DrawCommand::SetFgAlpha { alpha } => self.set_all_fg_alpha(*alpha),
                 DrawCommand::SetBgAlpha { alpha } => self.set_all_fg_alpha(*alpha),

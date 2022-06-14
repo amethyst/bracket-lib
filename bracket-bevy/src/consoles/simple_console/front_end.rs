@@ -5,7 +5,7 @@ use super::{
 use crate::{
     consoles::{common_draw, ConsoleFrontEnd, Rect, ScreenScaler},
     fonts::FontStore,
-    BracketContext, SimpleConsoleFeatures, FontCharType,
+    BracketContext, FontCharType, SimpleConsoleFeatures,
 };
 use bevy::{
     prelude::{Assets, Commands, Handle, Mesh},
@@ -166,7 +166,11 @@ impl ConsoleFrontEnd for SimpleConsole {
     }
 
     fn print_centered(&mut self, y: i32, text: &str) {
-        self.print((self.width as i32 / 2) - (text.to_string().len() as i32 / 2), y, text);
+        self.print(
+            (self.width as i32 / 2) - (text.to_string().len() as i32 / 2),
+            y,
+            text,
+        );
     }
 
     fn print_centered_at(&mut self, x: i32, y: i32, text: &str) {
@@ -203,27 +207,11 @@ impl ConsoleFrontEnd for SimpleConsole {
         common_draw::draw_box(self, sx, sy, width, height, fg, bg);
     }
 
-    fn draw_hollow_box(
-        &mut self,
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
-        fg: RGBA,
-        bg: RGBA,
-    ) {
+    fn draw_hollow_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGBA, bg: RGBA) {
         common_draw::draw_hollow_box(self, x, y, width, height, fg, bg);
     }
 
-    fn draw_box_double(
-        &mut self,
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
-        fg: RGBA,
-        bg: RGBA,
-    ) {
+    fn draw_box_double(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGBA, bg: RGBA) {
         common_draw::draw_box_double(self, x, y, width, height, fg, bg);
     }
 

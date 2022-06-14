@@ -62,12 +62,6 @@ fn tick(
 
     draw_map(&map, &ctx);
     for (pos, render) in queries.p1().iter() {
-        ctx.set(
-            pos.x,
-            pos.y,
-            render.fg,
-            render.bg,
-            render.glyph,
-        );
+        ctx.set(pos.x, pos.y, render.fg, render.bg, render.glyph);
     }
 }
