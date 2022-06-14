@@ -15,16 +15,16 @@ use bracket_geometry::prelude::Point;
 
 pub(crate) struct SparseConsole {
     pub(crate) font_index: usize,
-    pub(crate) width: usize,
-    pub(crate) height: usize,
+    pub(crate) width: i32,
+    pub(crate) height: i32,
     pub(crate) terminal: Vec<(i32, i32, TerminalGlyph)>,
     back_end: Option<Box<dyn SparseConsoleBackend>>,
     clipping: Option<Rect>,
-    mouse_chars: (usize, usize),
+    mouse_chars: (i32, i32),
 }
 
 impl SparseConsole {
-    pub fn new(font_index: usize, width: usize, height: usize) -> Self {
+    pub fn new(font_index: usize, width: i32, height: i32) -> Self {
         Self {
             font_index,
             width,
@@ -80,7 +80,7 @@ impl SparseConsole {
 }
 
 impl ConsoleFrontEnd for SparseConsole {
-    fn get_char_size(&self) -> (usize, usize) {
+    fn get_char_size(&self) -> (i32, i32) {
         (self.width, self.height)
     }
 
@@ -162,7 +162,11 @@ impl ConsoleFrontEnd for SparseConsole {
     }
 
     fn print_centered(&mut self, y: i32, text: &str) {
-        self.print((self.width as i32 / 2) - (text.to_string().len() as i32 / 2), y, text);
+        self.print(
+            (self.width as i32 / 2) - (text.to_string().len() as i32 / 2),
+            y,
+            text,
+        );
     }
 
     fn print_centered_at(&mut self, x: i32, y: i32, text: &str) {
@@ -199,27 +203,11 @@ impl ConsoleFrontEnd for SparseConsole {
         common_draw::draw_box(self, sx, sy, width, height, fg, bg);
     }
 
-    fn draw_hollow_box(
-        &mut self,
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
-        fg: RGBA,
-        bg: RGBA,
-    ) {
+    fn draw_hollow_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGBA, bg: RGBA) {
         common_draw::draw_hollow_box(self, x, y, width, height, fg, bg);
     }
 
-    fn draw_box_double(
-        &mut self,
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
-        fg: RGBA,
-        bg: RGBA,
-    ) {
+    fn draw_box_double(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGBA, bg: RGBA) {
         common_draw::draw_box_double(self, x, y, width, height, fg, bg);
     }
 

@@ -9,8 +9,8 @@ use bevy::{
 pub(crate) struct SparseBackendWithBackground {
     pub(crate) mesh_handle: Option<Handle<Mesh>>,
     pub(crate) font_height_pixels: (f32, f32),
-    pub(crate) width: usize,
-    pub(crate) height: usize,
+    pub(crate) width: i32,
+    pub(crate) height: i32,
     pub(crate) scaler: FontScaler,
 }
 
@@ -21,8 +21,8 @@ impl SparseBackendWithBackground {
         chars_per_row: u16,
         n_rows: u16,
         font_height_pixels: (f32, f32),
-        width: usize,
-        height: usize,
+        width: i32,
+        height: i32,
     ) -> Self {
         let mut back_end = Self {
             mesh_handle: None,
@@ -151,9 +151,9 @@ impl SparseConsoleBackend for SparseBackendWithBackground {
         self.font_height_pixels
     }
 
-    fn resize(&mut self, available_size: &(f32, f32)) -> (usize, usize) {
-        self.width = (available_size.0 / self.font_height_pixels.0).floor() as usize;
-        self.height = (available_size.1 / self.font_height_pixels.1).floor() as usize;
+    fn resize(&mut self, available_size: &(f32, f32)) -> (i32, i32) {
+        self.width = (available_size.0 / self.font_height_pixels.0).floor() as i32;
+        self.height = (available_size.1 / self.font_height_pixels.1).floor() as i32;
 
         (self.width, self.height)
     }

@@ -10,8 +10,8 @@ use super::SimpleConsoleBackend;
 pub(crate) struct SimpleBackendWithBackground {
     pub(crate) mesh_handle: Option<Handle<Mesh>>,
     pub(crate) font_height_pixels: (f32, f32),
-    pub(crate) width: usize,
-    pub(crate) height: usize,
+    pub(crate) width: i32,
+    pub(crate) height: i32,
     pub(crate) scaler: FontScaler,
 }
 
@@ -22,8 +22,8 @@ impl SimpleBackendWithBackground {
         chars_per_row: u16,
         n_rows: u16,
         font_height_pixels: (f32, f32),
-        width: usize,
-        height: usize,
+        width: i32,
+        height: i32,
     ) -> Self {
         let mut back_end = Self {
             mesh_handle: None,
@@ -39,11 +39,13 @@ impl SimpleBackendWithBackground {
     }
 
     pub fn build_mesh(&self, parent: &SimpleConsole, screen_scaler: &ScreenScaler) -> Mesh {
-        let mut vertices: Vec<[f32; 3]> = Vec::with_capacity(self.width * self.height * 8);
-        let mut normals: Vec<[f32; 3]> = Vec::with_capacity(self.width * self.height * 8);
-        let mut uv: Vec<[f32; 2]> = Vec::with_capacity(self.width * self.height * 8);
-        let mut colors: Vec<[f32; 4]> = Vec::with_capacity(self.width * self.height * 8);
-        let mut indices: Vec<u32> = Vec::with_capacity(self.width * self.height * 12);
+        let mut vertices: Vec<[f32; 3]> =
+            Vec::with_capacity((self.width * self.height * 8) as usize);
+        let mut normals: Vec<[f32; 3]> =
+            Vec::with_capacity((self.width * self.height * 8) as usize);
+        let mut uv: Vec<[f32; 2]> = Vec::with_capacity((self.width * self.height * 8) as usize);
+        let mut colors: Vec<[f32; 4]> = Vec::with_capacity((self.width * self.height * 8) as usize);
+        let mut indices: Vec<u32> = Vec::with_capacity((self.width * self.height * 12) as usize);
         let mut index_count = 0;
         let scale = screen_scaler.calc_step(self.width, self.height);
         let top_left = screen_scaler.top_left();
@@ -51,7 +53,7 @@ impl SimpleBackendWithBackground {
         // Build the background
         for y in 0..self.height {
             let screen_y = top_left.1 + (y as f32 * scale.1);
-            let mut idx = y * self.width;
+            let mut idx = (y * self.width) as usize;
             for x in 0..self.width {
                 let screen_x = top_left.0 + (x as f32 * scale.0);
                 vertices.push([screen_x, screen_y, 0.0]);
@@ -88,7 +90,7 @@ impl SimpleBackendWithBackground {
         // Build the foreground
         for y in 0..self.height {
             let screen_y = top_left.1 + (y as f32 * scale.1);
-            let mut idx = y * self.width;
+            let mut idx = (y * self.width) as usize;
             for x in 0..self.width {
                 let screen_x = top_left.0 + (x as f32 * scale.0);
                 vertices.push([screen_x, screen_y, 0.5]);
@@ -158,9 +160,9 @@ impl SimpleConsoleBackend for SimpleBackendWithBackground {
         self.font_height_pixels
     }
 
-    fn resize(&mut self, available_size: &(f32, f32)) -> (usize, usize) {
-        self.width = (available_size.0 / self.font_height_pixels.0).floor() as usize;
-        self.height = (available_size.1 / self.font_height_pixels.1).floor() as usize;
+    fn resize(&mut self, available_size: &(f32, f32)) -> (i32, i32) {
+        self.width = (available_size.0 / self.font_height_pixels.0).floor() as i32;
+        self.height = (available_size.1 / self.font_height_pixels.1).floor() as i32;
 
         (self.width, self.height)
     }

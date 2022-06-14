@@ -2,8 +2,8 @@ use bevy::prelude::*;
 use bracket_bevy::prelude::*;
 use bracket_pathfinding::prelude::*;
 
-const WIDTH: usize = 40;
-const HEIGHT: usize = 25;
+const WIDTH: i32 = 40;
+const HEIGHT: i32 = 25;
 
 #[derive(PartialEq, Copy, Clone)]
 enum TileType {

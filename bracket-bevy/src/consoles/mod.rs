@@ -19,7 +19,7 @@ mod draw_batch;
 pub use draw_batch::*;
 
 pub(crate) trait ConsoleFrontEnd: Sync + Send {
-    fn get_char_size(&self) -> (usize, usize);
+    fn get_char_size(&self) -> (i32, i32);
     fn get_pixel_size(&self) -> (f32, f32);
     fn at(&self, x: i32, y: i32) -> usize;
     fn get_clipping(&self) -> Option<Rect>;
@@ -37,25 +37,9 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: u16);
     fn set_bg(&mut self, x: i32, y: i32, bg: RGBA);
     fn draw_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGBA, bg: RGBA);
-    fn draw_hollow_box(
-        &mut self,
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
-        fg: RGBA,
-        bg: RGBA,
-    );
+    fn draw_hollow_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGBA, bg: RGBA);
 
-    fn draw_box_double(
-        &mut self,
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
-        fg: RGBA,
-        bg: RGBA,
-    );
+    fn draw_box_double(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGBA, bg: RGBA);
 
     fn draw_hollow_box_double(
         &mut self,
@@ -146,7 +130,7 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn get_font_index(&self) -> usize;
 }
 
-#[derive(PartialEq, Copy, Clone, Debug)]
+#[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum TextAlign {
     Left,
     Center,

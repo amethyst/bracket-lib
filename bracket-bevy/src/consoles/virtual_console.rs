@@ -5,8 +5,8 @@ use super::{common_draw, ConsoleFrontEnd, TerminalGlyph};
 use crate::BracketContext;
 
 pub struct VirtualConsole {
-    pub width: usize,
-    pub height: usize,
+    pub width: i32,
+    pub height: i32,
     pub terminal: Vec<TerminalGlyph>,
     pub clipping: Option<Rect>,
 }
@@ -16,8 +16,8 @@ impl VirtualConsole {
     pub fn new(dimensions: Point) -> Self {
         let num_tiles: usize = (dimensions.x * dimensions.y) as usize;
         let mut console = VirtualConsole {
-            width: dimensions.x as usize,
-            height: dimensions.y as usize,
+            width: dimensions.x,
+            height: dimensions.y,
             terminal: Vec::with_capacity(num_tiles),
             clipping: None,
         };
@@ -29,7 +29,7 @@ impl VirtualConsole {
 
     /// Creates a new virtual console from a blob of text.
     /// Useful if you want to scroll through manuals!
-    pub fn from_text(text: &str, width: usize) -> Self {
+    pub fn from_text(text: &str, width: i32) -> Self {
         let raw_lines = text.split('\n');
         let mut lines: Vec<String> = Vec::new();
         for line in raw_lines {
@@ -37,7 +37,7 @@ impl VirtualConsole {
 
             line.chars().for_each(|c| {
                 newline.push(c);
-                if newline.len() > width {
+                if newline.len() > width as usize {
                     lines.push(newline.clone());
                     newline.clear();
                 }
@@ -45,10 +45,10 @@ impl VirtualConsole {
             lines.push(newline.clone());
         }
 
-        let num_tiles: usize = width * lines.len();
+        let num_tiles: usize = width as usize * lines.len();
         let mut console = VirtualConsole {
             width,
-            height: lines.len(),
+            height: lines.len() as i32,
             terminal: Vec::with_capacity(num_tiles),
             clipping: None,
         };
@@ -84,13 +84,7 @@ impl VirtualConsole {
                 if let Some(idx) = self.try_at(source_x, source_y) {
                     let t = self.terminal[idx];
                     if t.glyph > 0 {
-                        target.set(
-                            x,
-                            y,
-                            t.foreground.into(),
-                            t.background.into(),
-                            t.glyph,
-                        );
+                        target.set(x, y, t.foreground.into(), t.background.into(), t.glyph);
                     }
                 }
             }
@@ -108,7 +102,7 @@ impl VirtualConsole {
 }
 
 impl ConsoleFrontEnd for VirtualConsole {
-    fn get_char_size(&self) -> (usize, usize) {
+    fn get_char_size(&self) -> (i32, i32) {
         (self.width, self.height)
     }
 
@@ -175,7 +169,11 @@ impl ConsoleFrontEnd for VirtualConsole {
     }
 
     fn print_centered(&mut self, y: i32, text: &str) {
-        self.print((self.width as i32 / 2) - (text.to_string().len() / 2) as i32, y, text);
+        self.print(
+            (self.width as i32 / 2) - (text.to_string().len() / 2) as i32,
+            y,
+            text,
+        );
     }
 
     fn print_centered_at(&mut self, x: i32, y: i32, text: &str) {
@@ -212,27 +210,11 @@ impl ConsoleFrontEnd for VirtualConsole {
         common_draw::draw_box(self, sx, sy, width, height, fg, bg);
     }
 
-    fn draw_hollow_box(
-        &mut self,
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
-        fg: RGBA,
-        bg: RGBA,
-    ) {
+    fn draw_hollow_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGBA, bg: RGBA) {
         common_draw::draw_hollow_box(self, x, y, width, height, fg, bg);
     }
 
-    fn draw_box_double(
-        &mut self,
-        x: i32,
-        y: i32,
-        width: i32,
-        height: i32,
-        fg: RGBA,
-        bg: RGBA,
-    ) {
+    fn draw_box_double(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGBA, bg: RGBA) {
         common_draw::draw_box_double(self, x, y, width, height, fg, bg);
     }
 
