@@ -29,7 +29,7 @@ fn tick(ctx: Res<BracketContext>, rng: Res<RandomNumbers>) {
                 ((val >> 32) & 0xFF) as u8,
             );
             let ascii = ((val >> 40) & 0xFF) as u16;
-            ctx.set(x, y, fore, back, ascii);
+            ctx.set(x as i32, y as i32, fore, back, ascii);
         }
     }
     ctx.draw_box(30, 20, 20, 5, WHITE, BLACK);

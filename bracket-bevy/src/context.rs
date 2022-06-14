@@ -37,14 +37,19 @@ impl BracketContext {
         }
     }
 
+    #[inline(always)]
     fn current_layer(&self) -> usize {
         *self.current_layer.lock()
     }
 
+    /// Retrieve the current console size, in characters.
+    /// Applies to the currently active layer.
     pub fn get_char_size(&self) -> (usize, usize) {
         self.terminals.lock()[self.current_layer()].get_char_size()
     }
 
+    /// Retrieve the largest natural pixel size from all layers.
+    /// This is useful when scaling.
     pub fn get_pixel_size(&self) -> (f32, f32) {
         let mut pixel_size = (0.0, 0.0);
         self.terminals.lock().iter().for_each(|t| {
@@ -55,6 +60,7 @@ impl BracketContext {
         pixel_size
     }
 
+    /// Retrieve the pixel size of the largest active font, across all layers.
     pub fn largest_font(&self) -> (f32, f32) {
         let mut result = (1.0, 1.0);
         self.fonts.iter().for_each(|fs| {
@@ -64,211 +70,238 @@ impl BracketContext {
         result
     }
 
-    pub fn at(&self, x: usize, y: usize) -> usize {
-        self.terminals.lock()[self.current_layer()].at(x, y)
+    /// Retrieve the index of a character in the backing array at x/y.
+    /// WARNING: this may return an invalid/non-existent index.
+    pub fn at<POS: Into<i32>>(&self, x: POS, y: POS) -> usize {
+        self.terminals.lock()[self.current_layer()].at(x.into(), y.into())
     }
 
-    pub fn try_at(&self, x: usize, y: usize) -> Option<usize> {
-        self.terminals.lock()[self.current_layer()].try_at(x, y)
+    /// Try to obtain the index of a character in the terminal backing array at x/y.
+    /// If the character is out-of-bounds or clipped out of usefulness, returns None.
+    /// Otherwise, it returns Some(index)
+    pub fn try_at<POS: Into<i32>>(&self, x: POS, y: POS) -> Option<usize> {
+        self.terminals.lock()[self.current_layer()].try_at(x.into(), y.into())
     }
 
+    /// Get the current clipping rectangle, or None if there isn't one.
     pub fn get_clipping(&self) -> Option<Rect> {
         self.terminals.lock()[self.current_layer()].get_clipping()
     }
 
+    /// Set the current clipping rectange. Set to None if you don't want one.
     pub fn set_clipping(&self, clipping: Option<Rect>) {
         self.terminals.lock()[self.current_layer()].set_clipping(clipping);
     }
 
-    pub fn set_layer(&self, layer: usize) {
-        *self.current_layer.lock() = layer;
+    /// Set the current layer index.
+    pub fn set_active_console(&self, layer: usize) {
+        *self.current_layer.lock() = layer.into();
     }
 
+    /// Remove all entries from the current layer.
     pub fn cls(&self) {
         self.terminals.lock()[self.current_layer()].cls();
     }
 
+    /// Set the background on the current layer to a uniform color.
+    /// Only useful for Simple consoles.
     pub fn cls_bg<C: Into<RGBA>>(&self, color: C) {
         self.terminals.lock()[self.current_layer()].cls_bg(color.into());
     }
 
-    pub fn set<C: Into<RGBA>>(&self, x: usize, y: usize, fg: C, bg: C, glyph: u16) {
-        self.terminals.lock()[self.current_layer()].set(x, y, fg.into(), bg.into(), glyph);
+    /// Set a character at (x,y) to a specified foreground, background and glyph.
+    pub fn set<POS: Into<i32>, C: Into<RGBA>>(&self, x: POS, y: POS, fg: C, bg: C, glyph: u16) {
+        self.terminals.lock()[self.current_layer()].set(x.into(), y.into(), fg.into(), bg.into(), glyph);
     }
 
-    pub fn set_bg<C: Into<RGBA>>(&self, x: usize, y: usize, bg: C) {
-        self.terminals.lock()[self.current_layer()].set_bg(x, y, bg.into());
+    /// Set just the background color of a terminal cell.
+    pub fn set_bg<POS: Into<i32>, C: Into<RGBA>>(&self, x: POS, y: POS, bg: C) {
+        self.terminals.lock()[self.current_layer()].set_bg(x.into(), y.into(), bg.into());
     }
 
-    pub fn print<S: ToString>(&self, x: usize, y: usize, text: S) {
-        self.terminals.lock()[self.current_layer()].print(x, y, &text.to_string());
+    /// Print some text to the currently active terminal.
+    pub fn print<POS: Into<i32>, S: ToString>(&self, x: POS, y: POS, text: S) {
+        self.terminals.lock()[self.current_layer()].print(x.into(), y.into(), &text.to_string());
     }
 
-    pub fn print_centered<S: ToString>(&self, y: usize, text: S) {
-        self.terminals.lock()[self.current_layer()].print_centered(y, &text.to_string());
+    /// Print some text, centered along the `y` line, to the current terminal.
+    pub fn print_centered<POS: Into<i32>, S: ToString>(&self, y: POS, text: S) {
+        self.terminals.lock()[self.current_layer()].print_centered(y.into(), &text.to_string());
     }
 
-    pub fn print_color_centered<S: ToString, C: Into<RGBA>>(
+    /// Print some text, centered along the `y` line, to the current terminal in the specified color.
+    pub fn print_color_centered<POS: Into<i32>, S: ToString, C: Into<RGBA>>(
         &self,
-        y: usize,
+        y: POS,
         fg: C,
         bg: C,
         text: S,
     ) {
         self.terminals.lock()[self.current_layer()].print_color_centered(
-            y,
+            y.into(),
             fg.into(),
             bg.into(),
             &text.to_string(),
         );
     }
 
-    pub fn print_centered_at<S: ToString>(&self, x: usize, y: usize, text: S) {
-        self.terminals.lock()[self.current_layer()].print_centered_at(x, y, &text.to_string());
+    /// Print some text, centered around (x, y) to the current terminal.
+    pub fn print_centered_at<POS: Into<i32>, S: ToString>(&self, x: POS, y: POS, text: S) {
+        self.terminals.lock()[self.current_layer()].print_centered_at(x.into(), y.into(), &text.to_string());
     }
 
-    pub fn print_color_centered_at<S: ToString, C: Into<RGBA>>(
+    /// Print some text, cenetered around (x,y) to the current terminal in the specified colors.
+    pub fn print_color_centered_at<POS: Into<i32>, S: ToString, C: Into<RGBA>>(
         &self,
-        x: usize,
-        y: usize,
+        x: POS,
+        y: POS,
         fg: C,
         bg: C,
         text: S,
     ) {
         self.terminals.lock()[self.current_layer()].print_color_centered_at(
-            x,
-            y,
+            x.into(),
+            y.into(),
             fg.into(),
             bg.into(),
             &text.to_string(),
         )
     }
 
-    pub fn print_right<S: ToString>(&self, x: usize, y: usize, text: S) {
-        self.terminals.lock()[self.current_layer()].print_right(x, y, &text.to_string());
+    /// Print some text, right justified around (x,y), to the current terminal layer.
+    pub fn print_right<POS: Into<i32>, S: ToString>(&self, x: POS, y: POS, text: S) {
+        self.terminals.lock()[self.current_layer()].print_right(x.into(), y.into(), &text.to_string());
     }
 
-    pub fn print_color_right<S: ToString, C: Into<RGBA>>(
+    /// Print some text, right justified at (x,y), to the current terminal layer in the specified colors.
+    pub fn print_color_right<POS: Into<i32>, S: ToString, C: Into<RGBA>>(
         &self,
-        x: usize,
-        y: usize,
+        x: POS,
+        y: POS,
         fg: C,
         bg: C,
         text: S,
     ) {
         self.terminals.lock()[self.current_layer()].print_color_right(
-            x,
-            y,
+            x.into(),
+            y.into(),
             fg.into(),
             bg.into(),
             &text.to_string(),
         );
     }
 
-    pub fn print_color<S: ToString, C: Into<RGBA>>(
+    /// Print some text in color at the specified (x,y) coordinates.
+    pub fn print_color<POS: Into<i32>, S: ToString, C: Into<RGBA>>(
         &self,
-        x: usize,
-        y: usize,
+        x: POS,
+        y: POS,
         text: S,
         foreground: C,
         background: C,
     ) {
         self.terminals.lock()[self.current_layer()].print_color(
-            x,
-            y,
+            x.into(),
+            y.into(),
             &text.to_string(),
             foreground.into(),
             background.into(),
         )
     }
 
-    pub fn printer(
+    /// Use the pretty-printer to format text for the screen.
+    pub fn printer<POS: Into<i32>, S: ToString>(
         &self,
-        x: usize,
-        y: usize,
-        output: &str,
+        x: POS,
+        y: POS,
+        output: S,
         align: crate::consoles::TextAlign,
         background: Option<RGBA>,
     ) {
-        self.terminals.lock()[self.current_layer()].printer(self, x, y, output, align, background);
+        self.terminals.lock()[self.current_layer()].printer(self, x.into(), y.into(), &output.to_string(), align, background);
     }
 
-    pub fn draw_box<C: Into<RGBA>>(
+    /// Draws a filled box, with single line characters.
+    pub fn draw_box<POS: Into<i32>, C: Into<RGBA>>(
         &self,
-        x: usize,
-        y: usize,
-        width: usize,
-        height: usize,
+        x: POS,
+        y: POS,
+        width: POS,
+        height: POS,
         fg: C,
         bg: C,
     ) {
         self.terminals.lock()[self.current_layer()].draw_box(
-            x,
-            y,
-            width,
-            height,
+            x.into(),
+            y.into(),
+            width.into(),
+            height.into(),
             fg.into(),
             bg.into(),
         );
     }
 
-    pub fn draw_hollow_box<C: Into<RGBA>>(
+    /// Draw a hollow box with single line characters.
+    pub fn draw_hollow_box<POS: Into<i32>, C: Into<RGBA>>(
         &self,
-        x: usize,
-        y: usize,
-        width: usize,
-        height: usize,
+        x: POS,
+        y: POS,
+        width: POS,
+        height: POS,
         fg: C,
         bg: C,
     ) {
         self.terminals.lock()[self.current_layer()].draw_hollow_box(
-            x,
-            y,
-            width,
-            height,
+            x.into(),
+            y.into(),
+            width.into(),
+            height.into(),
             fg.into(),
             bg.into(),
         );
     }
 
-    pub fn draw_box_double<C: Into<RGBA>>(
+    /// Draw a filled box with double-line characters.
+    pub fn draw_box_double<POS: Into<i32>, C: Into<RGBA>>(
         &self,
-        x: usize,
-        y: usize,
-        width: usize,
-        height: usize,
+        x: POS,
+        y: POS,
+        width: POS,
+        height: POS,
         fg: C,
         bg: C,
     ) {
         self.terminals.lock()[self.current_layer()].draw_box_double(
-            x,
-            y,
-            width,
-            height,
+            x.into(),
+            y.into(),
+            width.into(),
+            height.into(),
             fg.into(),
             bg.into(),
         );
     }
 
-    pub fn draw_hollow_box_double<C: Into<RGBA>>(
+    /// Draw an empty box with double-line characters.
+    pub fn draw_hollow_box_double<POS: Into<i32>, C: Into<RGBA>>(
         &self,
-        x: usize,
-        y: usize,
-        width: usize,
-        height: usize,
+        x: POS,
+        y: POS,
+        width: POS,
+        height: POS,
         fg: C,
         bg: C,
     ) {
         self.terminals.lock()[self.current_layer()].draw_hollow_box_double(
-            x,
-            y,
-            width,
-            height,
+            x.into(),
+            y.into(),
+            width.into(),
+            height.into(),
             fg.into(),
             bg.into(),
         );
     }
 
+    /// Fill a region specified by a rectangle with a specified glyph, and colors.
     pub fn fill_region<C: Into<RGBA>>(&self, target: Rect, glyph: u16, fg: C, bg: C) {
         self.terminals.lock()[self.current_layer()].fill_region(
             target,
@@ -278,62 +311,70 @@ impl BracketContext {
         );
     }
 
+    /// Draw a horizontal progress bar.
     #[allow(clippy::too_many_arguments)]
-    pub fn draw_bar_horizontal<C: Into<RGBA>>(
+    pub fn draw_bar_horizontal<POS: Into<i32>, C: Into<RGBA>>(
         &self,
-        x: usize,
-        y: usize,
-        width: usize,
-        n: usize,
-        max: usize,
+        x: POS,
+        y: POS,
+        width: POS,
+        n: POS,
+        max: POS,
         fg: C,
         bg: C,
     ) {
         self.terminals.lock()[self.current_layer()].draw_bar_horizontal(
-            x,
-            y,
-            width,
-            n,
-            max,
+            x.into(),
+            y.into(),
+            width.into(),
+            n.into(),
+            max.into(),
             fg.into(),
             bg.into(),
         );
     }
 
+    /// Draw a vertical progress bar.
     #[allow(clippy::too_many_arguments)]
-    pub fn draw_bar_vertical<C: Into<RGBA>>(
+    pub fn draw_bar_vertical<POS: Into<i32>, C: Into<RGBA>>(
         &self,
-        x: usize,
-        y: usize,
-        height: usize,
-        n: usize,
-        max: usize,
+        x: POS,
+        y: POS,
+        height: POS,
+        n: POS,
+        max: POS,
         fg: C,
         bg: C,
     ) {
         self.terminals.lock()[self.current_layer()].draw_bar_vertical(
-            x,
-            y,
-            height,
-            n,
-            max,
+            x.into(),
+            y.into(),
+            height.into(),
+            n.into(),
+            max.into(),
             fg.into(),
             bg.into(),
         );
     }
 
+    /// Sets the alpha level on all foreground characters on the current layer.
     pub fn set_all_fg_alpha(&self, alpha: f32) {
         self.terminals.lock()[self.current_layer()].set_all_bg_alpha(alpha);
     }
 
+    /// Sets the alpha level on all background characters on the current layer.
     pub fn set_all_bg_alpha(&self, alpha: f32) {
         self.terminals.lock()[self.current_layer()].set_all_bg_alpha(alpha);
     }
 
+    /// Sets foreground and background alpha on the current player.
     pub fn set_all_alpha(&self, fg: f32, bg: f32) {
         self.terminals.lock()[self.current_layer()].set_all_alpha(fg, bg);
     }
 
+    /// Retrieve a named color from the palette.
+    /// Note that this replaces the `bracket_color` palette; there were performance problems
+    /// using it on Bevy.
     pub fn get_named_color(&self, color: &str) -> Option<&RGBA> {
         self.color_palette.get(color)
     }
@@ -344,10 +385,14 @@ impl BracketContext {
         lock.iter_mut().for_each(|t| t.resize(&available_size));
     }
 
+    /// Create a new draw batch. Note that this is now a context variable,
+    /// since contexts are `Res` not `ResMut` - and consequently don't
+    /// affect scheduling.
     pub fn new_draw_batch(&self) -> DrawBatch {
         DrawBatch::new()
     }
 
+    /// Submit a batch for rendering.
     pub fn submit_batch(&self, z_order: usize, mut batch: DrawBatch) {
         if batch.needs_sort {
             batch.batch.sort_by(|a, b| a.0.cmp(&b.0));
@@ -355,6 +400,7 @@ impl BracketContext {
         self.command_buffers.lock().push((z_order, batch));
     }
 
+    /// Submit all draw batches for rendering.
     pub fn render_all_batches(&mut self) {
         let mut batches = self.command_buffers.lock();
         batches.sort_unstable_by(|a, b| a.0.cmp(&b.0));
@@ -363,75 +409,75 @@ impl BracketContext {
             batch.batch.iter().for_each(|(_, cmd)| match cmd {
                 DrawCommand::ClearScreen => self.cls(),
                 DrawCommand::ClearToColor { color } => self.cls_bg(*color),
-                DrawCommand::SetTarget { console } => self.set_layer(*console),
+                DrawCommand::SetTarget { console } => self.set_active_console(*console),
                 DrawCommand::Set { pos, color, glyph } => {
-                    self.set(pos.x as usize, pos.y as usize, color.fg, color.bg, *glyph)
+                    self.set(pos.x, pos.y, color.fg, color.bg, *glyph)
                 }
                 DrawCommand::SetBackground { pos, bg } => {
-                    self.set_bg(pos.x as usize, pos.y as usize, *bg)
+                    self.set_bg(pos.x, pos.y, *bg)
                 }
                 DrawCommand::Print { pos, text } => {
-                    self.print(pos.x as usize, pos.y as usize, &text)
+                    self.print(pos.x, pos.y, &text)
                 }
                 DrawCommand::PrintColor { pos, text, color } => {
-                    self.print_color(pos.x as usize, pos.y as usize, &text, color.fg, color.bg)
+                    self.print_color(pos.x, pos.y, &text, color.fg, color.bg)
                 }
-                DrawCommand::PrintCentered { y, text } => self.print_centered(*y as usize, &text),
+                DrawCommand::PrintCentered { y, text } => self.print_centered(*y, &text),
                 DrawCommand::PrintColorCentered { y, text, color } => {
-                    self.print_color_centered(*y as usize, color.fg, color.bg, &text)
+                    self.print_color_centered(*y, color.fg, color.bg, &text)
                 }
                 DrawCommand::PrintCenteredAt { pos, text } => {
-                    self.print_centered_at(pos.x as usize, pos.y as usize, &text)
+                    self.print_centered_at(pos.x, pos.y, &text)
                 }
                 DrawCommand::PrintColorCenteredAt { pos, text, color } => self
                     .print_color_centered_at(
-                        pos.x as usize,
-                        pos.y as usize,
+                        pos.x,
+                        pos.y,
                         color.fg,
                         color.bg,
                         &text,
                     ),
                 DrawCommand::PrintRight { pos, text } => {
-                    self.print_right(pos.x as usize, pos.y as usize, text)
+                    self.print_right(pos.x, pos.y, text)
                 }
                 DrawCommand::PrintColorRight { pos, text, color } => {
-                    self.print_color_right(pos.x as usize, pos.y as usize, color.fg, color.bg, text)
+                    self.print_color_right(pos.x, pos.y, color.fg, color.bg, text)
                 }
                 DrawCommand::Printer {
                     pos,
                     text,
                     align,
                     background,
-                } => self.printer(pos.x as usize, pos.y as usize, text, *align, *background),
+                } => self.printer(pos.x, pos.y, text, *align, *background),
                 DrawCommand::Box { pos, color } => self.draw_box(
-                    pos.x1 as usize,
-                    pos.y1 as usize,
-                    pos.width() as usize,
-                    pos.height() as usize,
+                    pos.x1,
+                    pos.y1,
+                    pos.width(),
+                    pos.height(),
                     color.fg,
                     color.bg,
                 ),
                 DrawCommand::HollowBox { pos, color } => self.draw_hollow_box(
-                    pos.x1 as usize,
-                    pos.y1 as usize,
-                    pos.width() as usize,
-                    pos.height() as usize,
+                    pos.x1,
+                    pos.y1,
+                    pos.width(),
+                    pos.height(),
                     color.fg,
                     color.bg,
                 ),
                 DrawCommand::DoubleBox { pos, color } => self.draw_box_double(
-                    pos.x1 as usize,
-                    pos.y1 as usize,
-                    pos.width() as usize,
-                    pos.height() as usize,
+                    pos.x1,
+                    pos.y1,
+                    pos.width(),
+                    pos.height(),
                     color.fg,
                     color.bg,
                 ),
                 DrawCommand::HollowDoubleBox { pos, color } => self.draw_hollow_box_double(
-                    pos.x1 as usize,
-                    pos.y1 as usize,
-                    pos.width() as usize,
-                    pos.height() as usize,
+                    pos.x1,
+                    pos.y1,
+                    pos.width(),
+                    pos.height(),
                     color.fg,
                     color.bg,
                 ),
@@ -445,11 +491,11 @@ impl BracketContext {
                     max,
                     color,
                 } => self.draw_bar_horizontal(
-                    pos.x as usize,
-                    pos.y as usize,
-                    *width as usize,
-                    *n as usize,
-                    *max as usize,
+                    pos.x,
+                    pos.y,
+                    *width,
+                    *n,
+                    *max,
                     color.fg,
                     color.bg,
                 ),
@@ -460,11 +506,11 @@ impl BracketContext {
                     max,
                     color,
                 } => self.draw_bar_vertical(
-                    pos.x as usize,
-                    pos.y as usize,
-                    *height as usize,
-                    *n as usize,
-                    *max as usize,
+                    pos.x,
+                    pos.y,
+                    *height,
+                    *n,
+                    *max,
                     color.fg,
                     color.bg,
                 ),

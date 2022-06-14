@@ -7,10 +7,10 @@ use bracket_color::prelude::*;
 
 pub(crate) fn draw_box(
     terminal: &mut dyn ConsoleFrontEnd,
-    sx: usize,
-    sy: usize,
-    width: usize,
-    height: usize,
+    sx: i32,
+    sy: i32,
+    width: i32,
+    height: i32,
     fg: RGBA,
     bg: RGBA,
 ) {
@@ -34,7 +34,7 @@ pub(crate) fn draw_box(
     }
 }
 
-pub(crate) fn print(terminal: &mut dyn ConsoleFrontEnd, mut x: usize, y: usize, text: &str) {
+pub(crate) fn print(terminal: &mut dyn ConsoleFrontEnd, mut x: i32, y: i32, text: &str) {
     let bytes = string_to_cp437(text);
     for glyph in bytes {
         terminal.set(x, y, WHITE.into(), BLACK.into(), glyph);
@@ -44,8 +44,8 @@ pub(crate) fn print(terminal: &mut dyn ConsoleFrontEnd, mut x: usize, y: usize, 
 
 pub(crate) fn print_color(
     terminal: &mut dyn ConsoleFrontEnd,
-    mut x: usize,
-    y: usize,
+    mut x: i32,
+    y: i32,
     text: &str,
     foreground: RGBA,
     background: RGBA,
@@ -59,10 +59,10 @@ pub(crate) fn print_color(
 
 pub(crate) fn draw_hollow_box(
     terminal: &mut dyn ConsoleFrontEnd,
-    sx: usize,
-    sy: usize,
-    width: usize,
-    height: usize,
+    sx: i32,
+    sy: i32,
+    width: i32,
+    height: i32,
     fg: RGBA,
     bg: RGBA,
 ) {
@@ -82,10 +82,10 @@ pub(crate) fn draw_hollow_box(
 
 pub(crate) fn draw_box_double(
     terminal: &mut dyn ConsoleFrontEnd,
-    sx: usize,
-    sy: usize,
-    width: usize,
-    height: usize,
+    sx: i32,
+    sy: i32,
+    width: i32,
+    height: i32,
     fg: RGBA,
     bg: RGBA,
 ) {
@@ -112,10 +112,10 @@ pub(crate) fn draw_box_double(
 /// Draws a box, starting at x/y with the extents width/height using CP437 line characters
 pub(crate) fn draw_hollow_box_double(
     terminal: &mut dyn ConsoleFrontEnd,
-    sx: usize,
-    sy: usize,
-    width: usize,
-    height: usize,
+    sx: i32,
+    sy: i32,
+    width: i32,
+    height: i32,
     fg: RGBA,
     bg: RGBA,
 ) {
@@ -136,8 +136,8 @@ pub(crate) fn draw_hollow_box_double(
 pub(crate) fn printer(
     terminal: &mut dyn ConsoleFrontEnd,
     context: &BracketContext,
-    x: usize,
-    y: usize,
+    x: i32,
+    y: i32,
     output: &str,
     align: TextAlign,
     background: Option<RGBA>,
@@ -152,8 +152,8 @@ pub(crate) fn printer(
 
     let mut tx = match align {
         TextAlign::Left => x,
-        TextAlign::Center => x - (split_text.length as usize / 2),
-        TextAlign::Right => x - split_text.length as usize,
+        TextAlign::Center => x - (split_text.length as i32 / 2),
+        TextAlign::Right => x - split_text.length as i32,
     };
     for span in split_text.spans.iter() {
         let fg = span.0;
@@ -168,16 +168,16 @@ pub(crate) fn printer(
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn draw_bar_horizontal(
     console: &mut dyn ConsoleFrontEnd,
-    sx: usize,
-    sy: usize,
-    width: usize,
-    n: usize,
-    max: usize,
+    sx: i32,
+    sy: i32,
+    width: i32,
+    n: i32,
+    max: i32,
     fg: RGBA,
     bg: RGBA,
 ) {
     let percent = n as f32 / max as f32;
-    let fill_width = (percent * width as f32) as usize;
+    let fill_width = (percent * width as f32) as i32;
     for x in 0..width {
         if x <= fill_width {
             console.set(sx + x, sy, fg, bg, to_cp437('▓'));
@@ -191,16 +191,16 @@ pub(crate) fn draw_bar_horizontal(
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn draw_bar_vertical(
     console: &mut dyn ConsoleFrontEnd,
-    sx: usize,
-    sy: usize,
-    height: usize,
-    n: usize,
-    max: usize,
+    sx: i32,
+    sy: i32,
+    height: i32,
+    n: i32,
+    max: i32,
     fg: RGBA,
     bg: RGBA,
 ) {
     let percent = n as f32 / max as f32;
-    let fill_height = height - ((percent * height as f32) as usize);
+    let fill_height = height - ((percent * height as f32) as i32);
     for y in 0..height {
         if y >= fill_height {
             console.set(sx, sy + y, fg, bg, to_cp437('▓'));

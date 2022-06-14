@@ -10,7 +10,7 @@ fn main() {
 }
 
 fn tick(ctx: Res<BracketContext>) {
-    ctx.set_layer(0);
+    ctx.set_active_console(0);
     ctx.cls();
     ctx.print(1, 1, "Hello Bracket-Bevy World ☻");
 }

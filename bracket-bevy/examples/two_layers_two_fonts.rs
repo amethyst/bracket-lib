@@ -18,15 +18,15 @@ fn main() {
         .run();
 }
 
-struct Bouncer(usize);
+struct Bouncer(i32);
 
 fn tick(ctx: Res<BracketContext>, mut bouncer: ResMut<Bouncer>) {
-    ctx.set_layer(0);
+    ctx.set_active_console(0);
     ctx.cls();
     ctx.print(1, 1, "Hello Bracket-Bevy World ☻");
     ctx.print_color(1, 2, "Now in color!", GREEN, NAVY);
 
-    ctx.set_layer(1);
+    ctx.set_active_console(1);
     ctx.cls();
     ctx.print_color(
         1,

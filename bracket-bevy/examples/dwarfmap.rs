@@ -269,7 +269,7 @@ fn tick(ctx: Res<BracketContext>, mut state: Local<State>, mouse: Res<Input<Mous
                     }
                 }
             }
-            ctx.set(x as usize, y as usize, fg, RGB::from_f32(0., 0., 0.), glyph);
+            ctx.set(x, y, fg, RGB::from_f32(0., 0., 0.), glyph);
         }
     }
 
@@ -296,8 +296,8 @@ fn tick(ctx: Res<BracketContext>, mut state: Local<State>, mouse: Res<Input<Mous
                 for loc in path.steps.iter().skip(1) {
                     let (x, y, _z) = idx_xyz(*loc as usize);
                     ctx.print_color(
-                        x as usize,
-                        y as usize,
+                        x,
+                        y,
                         "*",
                         RGB::from_f32(1., 0., 0.),
                         RGB::from_f32(0., 0., 0.),
@@ -320,8 +320,8 @@ fn tick(ctx: Res<BracketContext>, mut state: Local<State>, mouse: Res<Input<Mous
 
     // Render the player @ symbol
     ctx.print_color(
-        ppos.0 as usize,
-        ppos.1 as usize,
+        ppos.0,
+        ppos.1,
         "☺",
         RGB::from_f32(1.0, 1.0, 0.0),
         RGB::from_f32(0., 0., 0.),

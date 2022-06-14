@@ -59,7 +59,7 @@ impl VirtualConsole {
         }
 
         for (i, line) in lines.iter().enumerate() {
-            console.print(0, i, line);
+            console.print(0, i as i32, line);
         }
 
         console
@@ -81,12 +81,12 @@ impl VirtualConsole {
             let source_y = y + source.y1 - dest.y1;
             for x in dest.x1..dest.x2 {
                 let source_x = x + source.x1 - dest.x1;
-                if let Some(idx) = self.try_at(source_x as usize, source_y as usize) {
+                if let Some(idx) = self.try_at(source_x, source_y) {
                     let t = self.terminal[idx];
                     if t.glyph > 0 {
                         target.set(
-                            x as usize,
-                            y as usize,
+                            x,
+                            y,
                             t.foreground.into(),
                             t.background.into(),
                             t.glyph,
@@ -98,8 +98,12 @@ impl VirtualConsole {
         target.set_clipping(None);
     }
 
-    fn at(&self, x: usize, y: usize) -> usize {
-        ((self.height - 1 - y) * self.width) + x
+    fn at(&self, x: i32, y: i32) -> usize {
+        if let Ok(pos) = (((self.height as i32 - 1 - y) * self.width as i32) + x).try_into() {
+            pos
+        } else {
+            0
+        }
     }
 }
 
@@ -112,7 +116,7 @@ impl ConsoleFrontEnd for VirtualConsole {
         (0.0, 0.0)
     }
 
-    fn at(&self, x: usize, y: usize) -> usize {
+    fn at(&self, x: i32, y: i32) -> usize {
         self.at(x, y)
     }
 
@@ -134,7 +138,7 @@ impl ConsoleFrontEnd for VirtualConsole {
             .for_each(|c| c.background = color.as_rgba_f32());
     }
 
-    fn set(&mut self, x: usize, y: usize, fg: RGBA, bg: RGBA, glyph: u16) {
+    fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: u16) {
         if let Some(idx) = self.try_at(x, y) {
             self.terminal[idx] = TerminalGlyph {
                 glyph,
@@ -144,25 +148,25 @@ impl ConsoleFrontEnd for VirtualConsole {
         }
     }
 
-    fn set_bg(&mut self, x: usize, y: usize, bg: RGBA) {
+    fn set_bg(&mut self, x: i32, y: i32, bg: RGBA) {
         if let Some(idx) = self.try_at(x, y) {
             self.terminal[idx].background = bg.as_rgba_f32();
         }
     }
 
-    fn print(&mut self, x: usize, y: usize, text: &str) {
+    fn print(&mut self, x: i32, y: i32, text: &str) {
         common_draw::print(self, x, y, text);
     }
 
-    fn print_color(&mut self, x: usize, y: usize, text: &str, foreground: RGBA, background: RGBA) {
+    fn print_color(&mut self, x: i32, y: i32, text: &str, foreground: RGBA, background: RGBA) {
         common_draw::print_color(self, x, y, text, foreground, background);
     }
 
     fn printer(
         &mut self,
         context: &BracketContext,
-        x: usize,
-        y: usize,
+        x: i32,
+        y: i32,
         output: &str,
         align: crate::consoles::TextAlign,
         background: Option<RGBA>,
@@ -170,17 +174,17 @@ impl ConsoleFrontEnd for VirtualConsole {
         common_draw::printer(self, context, x, y, output, align, background);
     }
 
-    fn print_centered(&mut self, y: usize, text: &str) {
-        self.print((self.width / 2) - (text.to_string().len() / 2), y, text);
+    fn print_centered(&mut self, y: i32, text: &str) {
+        self.print((self.width as i32 / 2) - (text.to_string().len() / 2) as i32, y, text);
     }
 
-    fn print_centered_at(&mut self, x: usize, y: usize, text: &str) {
-        self.print(x - (text.to_string().len() / 2), y, text);
+    fn print_centered_at(&mut self, x: i32, y: i32, text: &str) {
+        self.print(x - (text.to_string().len() / 2) as i32, y, text);
     }
 
-    fn print_color_centered(&mut self, y: usize, fg: RGBA, bg: RGBA, text: &str) {
+    fn print_color_centered(&mut self, y: i32, fg: RGBA, bg: RGBA, text: &str) {
         self.print_color(
-            (self.width / 2) - (text.to_string().len() / 2),
+            (self.width as i32 / 2) - (text.to_string().len() / 2) as i32,
             y,
             text,
             fg,
@@ -188,32 +192,32 @@ impl ConsoleFrontEnd for VirtualConsole {
         );
     }
 
-    fn print_color_centered_at(&mut self, x: usize, y: usize, fg: RGBA, bg: RGBA, text: &str) {
-        self.print_color(x - (text.to_string().len() / 2), y, text, fg, bg);
+    fn print_color_centered_at(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, text: &str) {
+        self.print_color(x - (text.to_string().len() / 2) as i32, y, text, fg, bg);
     }
 
-    fn print_right(&mut self, x: usize, y: usize, text: &str) {
-        let len = text.len();
+    fn print_right(&mut self, x: i32, y: i32, text: &str) {
+        let len = text.len() as i32;
         let actual_x = x - len;
         self.print(actual_x, y, text);
     }
 
-    fn print_color_right(&mut self, x: usize, y: usize, fg: RGBA, bg: RGBA, text: &str) {
-        let len = text.len();
+    fn print_color_right(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, text: &str) {
+        let len = text.len() as i32;
         let actual_x = x - len;
         self.print_color(actual_x, y, text, fg, bg);
     }
 
-    fn draw_box(&mut self, sx: usize, sy: usize, width: usize, height: usize, fg: RGBA, bg: RGBA) {
+    fn draw_box(&mut self, sx: i32, sy: i32, width: i32, height: i32, fg: RGBA, bg: RGBA) {
         common_draw::draw_box(self, sx, sy, width, height, fg, bg);
     }
 
     fn draw_hollow_box(
         &mut self,
-        x: usize,
-        y: usize,
-        width: usize,
-        height: usize,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
         fg: RGBA,
         bg: RGBA,
     ) {
@@ -222,10 +226,10 @@ impl ConsoleFrontEnd for VirtualConsole {
 
     fn draw_box_double(
         &mut self,
-        x: usize,
-        y: usize,
-        width: usize,
-        height: usize,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
         fg: RGBA,
         bg: RGBA,
     ) {
@@ -234,10 +238,10 @@ impl ConsoleFrontEnd for VirtualConsole {
 
     fn draw_hollow_box_double(
         &mut self,
-        x: usize,
-        y: usize,
-        width: usize,
-        height: usize,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
         fg: RGBA,
         bg: RGBA,
     ) {
@@ -246,17 +250,17 @@ impl ConsoleFrontEnd for VirtualConsole {
 
     fn fill_region(&mut self, target: Rect, glyph: u16, fg: RGBA, bg: RGBA) {
         target.for_each(|point| {
-            self.set(point.x as usize, point.y as usize, fg, bg, glyph);
+            self.set(point.x, point.y, fg, bg, glyph);
         });
     }
 
     fn draw_bar_horizontal(
         &mut self,
-        x: usize,
-        y: usize,
-        width: usize,
-        n: usize,
-        max: usize,
+        x: i32,
+        y: i32,
+        width: i32,
+        n: i32,
+        max: i32,
         fg: RGBA,
         bg: RGBA,
     ) {
@@ -265,11 +269,11 @@ impl ConsoleFrontEnd for VirtualConsole {
 
     fn draw_bar_vertical(
         &mut self,
-        x: usize,
-        y: usize,
-        height: usize,
-        n: usize,
-        max: usize,
+        x: i32,
+        y: i32,
+        height: i32,
+        n: i32,
+        max: i32,
         fg: RGBA,
         bg: RGBA,
     ) {

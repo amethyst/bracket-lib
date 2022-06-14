@@ -152,7 +152,7 @@ fn tick(ctx: Res<BracketContext>, mut state: ResMut<State>, keyboard: Res<Input<
             }
         }
         if state.visited[idx] {
-            ctx.set_bg(idx % 80, idx / 80, RGB::named(NAVY));
+            ctx.set_bg((idx % 80) as i32, (idx / 80) as i32, RGB::named(NAVY));
         }
 
         // Move the coordinates
@@ -166,8 +166,8 @@ fn tick(ctx: Res<BracketContext>, mut state: ResMut<State>, keyboard: Res<Input<
     // Render the player @ symbol
     let ppos = idx_xy(state.player_position);
     ctx.print_color(
-        ppos.0 as usize,
-        ppos.1 as usize,
+        ppos.0,
+        ppos.1,
         "@",
         RGB::from_f32(1.0, 1.0, 0.0),
         RGB::from_f32(0., 0., 0.),

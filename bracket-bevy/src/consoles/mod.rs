@@ -21,48 +21,48 @@ pub use draw_batch::*;
 pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn get_char_size(&self) -> (usize, usize);
     fn get_pixel_size(&self) -> (f32, f32);
-    fn at(&self, x: usize, y: usize) -> usize;
+    fn at(&self, x: i32, y: i32) -> usize;
     fn get_clipping(&self) -> Option<Rect>;
     fn set_clipping(&mut self, clipping: Option<Rect>);
     fn cls(&mut self);
     fn cls_bg(&mut self, color: RGBA);
-    fn print(&mut self, x: usize, y: usize, text: &str);
-    fn print_color(&mut self, x: usize, y: usize, text: &str, foreground: RGBA, background: RGBA);
-    fn print_centered(&mut self, y: usize, text: &str);
-    fn print_color_centered(&mut self, y: usize, fg: RGBA, bg: RGBA, text: &str);
-    fn print_centered_at(&mut self, x: usize, y: usize, text: &str);
-    fn print_color_centered_at(&mut self, x: usize, y: usize, fg: RGBA, bg: RGBA, text: &str);
-    fn print_right(&mut self, x: usize, y: usize, text: &str);
-    fn print_color_right(&mut self, x: usize, y: usize, fg: RGBA, bg: RGBA, text: &str);
-    fn set(&mut self, x: usize, y: usize, fg: RGBA, bg: RGBA, glyph: u16);
-    fn set_bg(&mut self, x: usize, y: usize, bg: RGBA);
-    fn draw_box(&mut self, x: usize, y: usize, width: usize, height: usize, fg: RGBA, bg: RGBA);
+    fn print(&mut self, x: i32, y: i32, text: &str);
+    fn print_color(&mut self, x: i32, y: i32, text: &str, foreground: RGBA, background: RGBA);
+    fn print_centered(&mut self, y: i32, text: &str);
+    fn print_color_centered(&mut self, y: i32, fg: RGBA, bg: RGBA, text: &str);
+    fn print_centered_at(&mut self, x: i32, y: i32, text: &str);
+    fn print_color_centered_at(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, text: &str);
+    fn print_right(&mut self, x: i32, y: i32, text: &str);
+    fn print_color_right(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, text: &str);
+    fn set(&mut self, x: i32, y: i32, fg: RGBA, bg: RGBA, glyph: u16);
+    fn set_bg(&mut self, x: i32, y: i32, bg: RGBA);
+    fn draw_box(&mut self, x: i32, y: i32, width: i32, height: i32, fg: RGBA, bg: RGBA);
     fn draw_hollow_box(
         &mut self,
-        x: usize,
-        y: usize,
-        width: usize,
-        height: usize,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
         fg: RGBA,
         bg: RGBA,
     );
 
     fn draw_box_double(
         &mut self,
-        x: usize,
-        y: usize,
-        width: usize,
-        height: usize,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
         fg: RGBA,
         bg: RGBA,
     );
 
     fn draw_hollow_box_double(
         &mut self,
-        x: usize,
-        y: usize,
-        width: usize,
-        height: usize,
+        x: i32,
+        y: i32,
+        width: i32,
+        height: i32,
         fg: RGBA,
         bg: RGBA,
     );
@@ -72,23 +72,24 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn printer(
         &mut self,
         context: &BracketContext,
-        x: usize,
-        y: usize,
+        x: i32,
+        y: i32,
         output: &str,
         align: TextAlign,
         background: Option<RGBA>,
     );
 
-    fn in_bounds(&self, x: usize, y: usize) -> bool {
+    fn in_bounds(&self, x: i32, y: i32) -> bool {
         let bounds = self.get_char_size();
+        let bounds = (bounds.0 as i32, bounds.1 as i32);
         if let Some(clip) = self.get_clipping() {
-            clip.point_in_rect(Point::new(x, y)) && x < bounds.0 as usize && y < bounds.1 as usize
+            clip.point_in_rect(Point::new(x, y)) && x < bounds.0 && y < bounds.1
         } else {
-            x < bounds.0 as usize && y < bounds.1 as usize
+            x < bounds.0 && y < bounds.1 && x > 0 && y > 0
         }
     }
 
-    fn try_at(&self, x: usize, y: usize) -> Option<usize> {
+    fn try_at(&self, x: i32, y: i32) -> Option<usize> {
         if self.in_bounds(x, y) {
             Some(self.at(x, y))
         } else {
@@ -100,11 +101,11 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
     #[allow(clippy::too_many_arguments)]
     fn draw_bar_horizontal(
         &mut self,
-        x: usize,
-        y: usize,
-        width: usize,
-        n: usize,
-        max: usize,
+        x: i32,
+        y: i32,
+        width: i32,
+        n: i32,
+        max: i32,
         fg: RGBA,
         bg: RGBA,
     );
@@ -113,11 +114,11 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
     #[allow(clippy::too_many_arguments)]
     fn draw_bar_vertical(
         &mut self,
-        x: usize,
-        y: usize,
-        height: usize,
-        n: usize,
-        max: usize,
+        x: i32,
+        y: i32,
+        height: i32,
+        n: i32,
+        max: i32,
         fg: RGBA,
         bg: RGBA,
     );

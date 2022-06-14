@@ -31,7 +31,7 @@ impl Default for State {
 }
 
 fn tick(ctx: Res<BracketContext>, mut state: Local<State>) {
-    ctx.set_layer(0);
+    ctx.set_active_console(0);
     ctx.cls();
     state.totc.print_sub_rect(
         Rect::with_size(0, 0, 79, 49),
@@ -40,7 +40,7 @@ fn tick(ctx: Res<BracketContext>, mut state: Local<State>) {
         &ctx,
     );
 
-    ctx.set_layer(1);
+    ctx.set_active_console(1);
     ctx.cls();
     let alpha = (f32::sin(state.counter as f32) + 1.0) / 2.0;
     ctx.print_color(

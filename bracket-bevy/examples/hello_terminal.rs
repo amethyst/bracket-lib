@@ -18,7 +18,7 @@ fn main() {
 }
 
 struct State {
-    y: usize,
+    y: i32,
     going_down: bool,
 }
 

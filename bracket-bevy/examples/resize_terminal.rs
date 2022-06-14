@@ -12,7 +12,7 @@ fn main() {
 }
 
 fn tick(ctx: Res<BracketContext>) {
-    ctx.set_layer(0);
+    ctx.set_active_console(0);
     ctx.cls();
     let (width, height) = ctx.get_char_size();
     ctx.print(1, 1, "Hello Bracket-Bevy World ☻");
@@ -21,5 +21,5 @@ fn tick(ctx: Res<BracketContext>) {
         3,
         format!("Console is currently {width}x{height} characters."),
     );
-    ctx.draw_hollow_box_double(0, 0, width - 1, height - 1, WHITE, NAVY);
+    ctx.draw_hollow_box_double(0, 0, width as i32 - 1, height as i32 - 1, WHITE, NAVY);
 }

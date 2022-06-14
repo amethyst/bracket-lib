@@ -49,7 +49,7 @@ impl SparseBackendNoBackground {
         let top_left = screen_scaler.top_left();
 
         for (x, y, chr) in parent.terminal.iter() {
-            let actual_y = self.height - 1 - y;
+            let actual_y = self.height as i32 - 1 - y;
             let screen_x = top_left.0 + (*x as f32 * scale.0);
             let screen_y = top_left.1 + (actual_y as f32 * scale.1);
 
