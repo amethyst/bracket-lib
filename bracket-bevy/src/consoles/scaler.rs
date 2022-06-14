@@ -112,7 +112,7 @@ impl ScreenScaler {
         );
         (
             usize::clamp(step_pos.0 as usize, 0, width - 1),
-            usize::clamp(height - step_pos.1 as usize, 0, height - 1),
+            usize::clamp((height as i32 - step_pos.1 as i32 - 1) as usize, 0, height - 1),
         )
     }
 }
