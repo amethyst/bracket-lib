@@ -104,9 +104,15 @@ pub(crate) fn update_mouse_position(
     // Bevy really needs a nicer way to do this
     let (camera, camera_transform) = q_camera.single();
     let wnd = if let RenderTarget::Window(id) = camera.target {
-        wnds.get(id).unwrap()
+        wnds.get(id)
     } else {
-        wnds.get_primary().unwrap()
+        wnds.get_primary()
+    };
+
+    let wnd = if let Some(wnd) = wnd {
+        wnd
+    } else {
+        return;
     };
 
     if let Some(screen_pos) = wnd.cursor_position() {
