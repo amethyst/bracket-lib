@@ -2,7 +2,9 @@ use bracket_color::prelude::{ColorPair, RGB, RGBA};
 use bracket_geometry::prelude::{Point, Rect};
 use std::cmp;
 
-use crate::{consoles::TerminalGlyph, DrawBatch, cp437::string_to_cp437, FontCharType, BracketContext};
+use crate::{
+    consoles::TerminalGlyph, cp437::string_to_cp437, BracketContext, DrawBatch, FontCharType,
+};
 
 pub struct TextBlock {
     x: i32,
@@ -100,7 +102,10 @@ impl TextBlock {
             for x in 0..self.width {
                 draw_batch.set(
                     Point::new(x + self.x, y + self.y),
-                    ColorPair::new(self.buffer[self.at(x, y)].foreground, self.buffer[self.at(x, y)].background),
+                    ColorPair::new(
+                        self.buffer[self.at(x, y)].foreground,
+                        self.buffer[self.at(x, y)].background,
+                    ),
                     self.buffer[self.at(x, y)].glyph,
                 );
             }
@@ -112,7 +117,10 @@ impl TextBlock {
             for x in cmp::max(0, clip.x1)..cmp::min(self.width, clip.x2) {
                 draw_batch.set(
                     Point::new(x + self.x, y + self.y),
-                    ColorPair::new(self.buffer[self.at(x, y)].foreground, self.buffer[self.at(x, y)].background),
+                    ColorPair::new(
+                        self.buffer[self.at(x, y)].foreground,
+                        self.buffer[self.at(x, y)].background,
+                    ),
                     self.buffer[self.at(x, y)].glyph,
                 );
             }

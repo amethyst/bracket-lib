@@ -11,11 +11,11 @@ fn main() {
 
 fn tick(ctx: Res<BracketContext>) {
     let mut draw_batch = ctx.new_draw_batch();
-        draw_batch.cls();
-        let mut block = TextBlock::new(0, 0, 80, 25);
+    draw_batch.cls();
+    let mut block = TextBlock::new(0, 0, 80, 25);
 
-        let mut buf = TextBuilder::empty();
-        buf.ln()
+    let mut buf = TextBuilder::empty();
+    buf.ln()
             .fg(RGB::named(YELLOW))
             .bg(RGB::named(BLUE))
             .centered("Hello World")
@@ -34,8 +34,8 @@ fn tick(ctx: Res<BracketContext>) {
             .append(&format!("{}", ctx.fps))
             .reset();
 
-        block.print(&buf).expect("Text was too long");
+    block.print(&buf).expect("Text was too long");
 
-        block.render_to_draw_batch(&mut draw_batch);
-        ctx.submit_batch(0, draw_batch);
+    block.render_to_draw_batch(&mut draw_batch);
+    ctx.submit_batch(0, draw_batch);
 }
