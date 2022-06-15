@@ -69,7 +69,7 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
         if let Some(clip) = self.get_clipping() {
             clip.point_in_rect(Point::new(x, y)) && x < bounds.0 && y < bounds.1
         } else {
-            x < bounds.0 && y < bounds.1 && x > 0 && y > 0
+            x < bounds.0 && y < bounds.1 && x >= 0 && y >= 0
         }
     }
 
