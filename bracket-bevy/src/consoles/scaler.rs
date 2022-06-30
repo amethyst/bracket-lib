@@ -14,8 +14,8 @@ impl FontScaler {
     }
 
     pub(crate) fn texture_coords(&self, glyph: u16) -> [f32; 4] {
-        let half_x_pixel = (1.0 / (self.chars_per_row as f32 * self.font_height_pixels.0)) / 4.0;
-        let half_y_pixel = (1.0 / (self.n_rows as f32 * self.font_height_pixels.1)) / 4.0;
+        let half_x_pixel = (1.0 / (self.chars_per_row as f32 * self.font_height_pixels.0)) / 1.25;
+        let half_y_pixel = (1.0 / (self.n_rows as f32 * self.font_height_pixels.1)) / 1.25;
         let base_x = glyph % self.chars_per_row;
         let base_y = glyph / self.n_rows;
         let scale_x = 1.0 / self.chars_per_row as f32;

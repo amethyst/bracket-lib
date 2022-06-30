@@ -3,9 +3,11 @@ use crate::{
     TerminalLayer,
 };
 use bevy::{
-    prelude::{AssetServer, Assets, Camera2dBundle, Commands, Component, Mesh, Res, ResMut},
+    prelude::{AssetServer, Assets, Camera2dBundle, Commands, Component, Mesh, Res, ResMut, HandleUntyped},
     sprite::ColorMaterial,
 };
+
+use super::image_fixer::ImagesToLoad;
 
 #[derive(Component)]
 pub struct BracketCamera;
@@ -28,9 +30,11 @@ pub(crate) fn load_terminals(
     new_context.scaling_mode = context.scaling_mode;
 
     // Load the fonts
+    let mut texture_handles = Vec::<HandleUntyped>::new();
     for font in context.fonts.iter() {
         let texture_handle = asset_server.load(&font.filename);
         let material_handle = materials.add(ColorMaterial::from(texture_handle.clone()));
+        texture_handles.push(texture_handle.clone_untyped());
         new_context.fonts.push(FontStore::new(
             texture_handle,
             material_handle,
@@ -39,6 +43,7 @@ pub(crate) fn load_terminals(
             font.font_height_pixels,
         ));
     }
+    commands.insert_resource(ImagesToLoad(texture_handles));
 
     // Setup the consoles
     for (idx, terminal) in context.layers.iter().enumerate() {

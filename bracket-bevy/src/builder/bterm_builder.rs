@@ -3,7 +3,7 @@ use crate::{
         apply_all_batches, default_gutter_size, replace_meshes, update_mouse_position,
         update_timing, window_resize, ScreenScaler,
     },
-    load_terminals, update_consoles, RandomNumbers, TerminalBuilderFont, TerminalLayer,
+    load_terminals, update_consoles, RandomNumbers, TerminalBuilderFont, TerminalLayer, fix_images,
 };
 use bevy::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
@@ -205,6 +205,7 @@ impl Plugin for BTermBuilder {
         app.add_system(update_consoles);
         app.add_system(replace_meshes);
         app.add_system(window_resize);
+        app.add_system(fix_images);
         if self.with_random_number_generator {
             app.insert_resource(RandomNumbers::new());
         }
