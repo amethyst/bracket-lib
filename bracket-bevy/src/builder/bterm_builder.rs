@@ -176,6 +176,7 @@ impl BTermBuilder {
 
 impl Plugin for BTermBuilder {
     fn build(&self, app: &mut bevy::prelude::App) {
+        app.insert_resource(bevy::prelude::Msaa { samples: 1 });
         if self.with_diagnostics {
             app.add_plugin(FrameTimeDiagnosticsPlugin);
         }

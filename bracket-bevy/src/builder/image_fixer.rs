@@ -1,26 +1,30 @@
-use bevy::{prelude::*, render::texture::ImageSampler};
+use bevy::{prelude::*, render::{texture::ImageSampler, render_resource::SamplerDescriptor}};
 
 pub(crate) struct ImagesToLoad (pub(crate) Vec<HandleUntyped>);
 
 pub(crate) fn fix_images(
-    fonts: ResMut<ImagesToLoad>,
-    mut events: EventReader<AssetEvent<Image>>,
+    mut fonts: ResMut<ImagesToLoad>,
     mut images: ResMut<Assets<Image>>,    
 ) {
-    for event in events.iter() {
-        //println!("{:?}", fonts.0);
-        //println!("{:?}", event);
-        match event {
-            AssetEvent::Created { handle } => {
-                if let Some(_font_handle) = fonts.0.iter().find(|h| **h == handle.clone_untyped()) {
-                    // Try to fix the image scaling
-                    if let Some(img) = images.get_mut(&handle) {
-                        //println!("Acquired");
-                        img.sampler_descriptor = ImageSampler::Descriptor(ImageSampler::linear_descriptor());
-                    }
-                }
-            }
-            _ => {}
+    if fonts.0.is_empty() {
+        return;
+    }
+
+    for (handle, img) in images.iter_mut() {
+        let mut to_remove = Vec::new();
+        if let Some(i) = fonts.0.iter().enumerate().find(|(_i, h)| h.id == handle) {
+            img.sampler_descriptor = ImageSampler::Descriptor(SamplerDescriptor{
+                label: Some("LeaveItAlone"),
+                address_mode_u: bevy::render::render_resource::AddressMode::ClampToEdge,
+                address_mode_v: bevy::render::render_resource::AddressMode::ClampToEdge,
+                address_mode_w: bevy::render::render_resource::AddressMode::ClampToEdge,
+                mag_filter: bevy::render::render_resource::FilterMode::Nearest,
+                min_filter: bevy::render::render_resource::FilterMode::Nearest,
+                mipmap_filter: bevy::render::render_resource::FilterMode::Nearest,
+                ..Default::default()
+            });
+            to_remove.push(i.0);
         }
+        to_remove.iter().for_each(|i| { fonts.0.remove(*i); });
     }
 }
