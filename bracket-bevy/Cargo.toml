@@ -1,6 +1,6 @@
 [package]
 name = "bracket-bevy"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 publish = false
@@ -18,7 +18,7 @@ bevy = { git = "https://github.com/bevyengine/bevy.git" }
 parking_lot = "0.12.1"
 lazy_static = "1.4"
 bracket-random = { path = "../bracket-random" }
-bracket-color = { path = "../bracket-color", features = [ "bevy" ] }
+bracket-color = { path = "../bracket-color", features = ["bevy"] }
 bracket-geometry = { path = "../bracket-geometry", version = "~0.8.3" }
 
 [dev-dependencies]
