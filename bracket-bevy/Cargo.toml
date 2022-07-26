@@ -15,12 +15,12 @@ license = "MIT"
 [dependencies]
 # Using my version until my PR for colored vertex support is (hopefully) merged.
 bevy = { git = "https://github.com/bevyengine/bevy.git" }
-parking_lot = "0.11"
+parking_lot = "0.12.1"
 lazy_static = "1.4"
 bracket-random = { path = "../bracket-random" }
 bracket-color = { path = "../bracket-color", features = [ "bevy" ] }
 bracket-geometry = { path = "../bracket-geometry", version = "~0.8.3" }
 
 [dev-dependencies]
-bracket-pathfinding = { path = "../bracket-pathfinding", version = "~0.8.4" }
+bracket-pathfinding = { path = "../bracket-pathfinding", version = "~0.8.5" }
 bracket-noise = { path = "../bracket-noise", version = "~0.8.2" }
