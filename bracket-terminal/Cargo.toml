@@ -1,6 +1,6 @@
 [package]
 name = "bracket-terminal"
-version = "0.8.5"
+version = "0.8.6"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = true
@@ -11,41 +11,44 @@ readme = "README.md"
 keywords = ["roguelike", "gamedev", "terminal", "ascii", "cp437"]
 categories = ["game-engines"]
 license = "MIT"
-exclude = [
-    "wasm_help"
-]
+exclude = ["wasm_help"]
 
 [dependencies]
-bracket-color = { path = "../bracket-color", version = "~0.8.2", features = [ "palette" ] }
+bracket-color = { path = "../bracket-color", version = "~0.8.2", features = [
+    "palette",
+] }
 bracket-geometry = { path = "../bracket-geometry", version = "~0.8.3" }
 bracket-rex = { path = "../bracket-rex", version = "~0.8.0" }
 bracket-embedding = { path = "../bracket-embedding", version = "~0.8.0" }
 lazy_static = "1.4.0"
 object-pool = "0.5.3"
 glow = { version = "0.10.0", optional = true }
-image = { version = "0.23.12", default-features = false, features = ["jpeg", "png"], optional = true }
+image = { version = "0.23.12", default-features = false, features = [
+    "jpeg",
+    "png",
+], optional = true }
 png = { version = "0.16", optional = true }
 crossterm = { version = "~0.19", optional = true }
 pancurses = { version = "0.16.1", optional = true }
 ultraviolet = "~0.8.1"
 parking_lot = { version = "~0.11.1" }
-ctrlc = { version = "~3.1", optional=true }
+ctrlc = { version = "~3.1", optional = true }
 anyhow = "~1.0"
-wgpu = { version = "0.11", optional=true }
-pollster = { version = "0.2", optional=true }
-bytemuck = {version = "1.4.0", optional=true }
+wgpu = { version = "0.13.1", optional = true }
+pollster = { version = "0.2", optional = true }
+bytemuck = { version = "1.4.0", optional = true }
 
 [target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
-glutin = {version = "0.27.0", optional = true }
-winit = { version = "0.25.0" }
+glutin = { version = "0.27.0", optional = true }
+winit = { version = "0.25.0", features = ["x11"] }
 spin_sleep = "1.0.0"
 
 [features]
-default = [ "opengl" ]
-opengl = [ "glow", "image", "glutin" ]
-curses = [ "pancurses", "ctrlc" ]
-cross_term = [ "crossterm", "ctrlc" ]
-webgpu = [ "wgpu", "pollster", "image", "bytemuck", "png" ]
+default = ["opengl"]
+opengl = ["glow", "image", "glutin"]
+curses = ["pancurses", "ctrlc"]
+cross_term = ["crossterm", "ctrlc"]
+webgpu = ["wgpu", "pollster", "image", "bytemuck", "png"]
 
 [dev-dependencies]
 bracket-random = { path = "../bracket-random", version = "~0.8.2" }
@@ -54,14 +57,28 @@ bracket-noise = { path = "../bracket-noise", version = "~0.8.2" }
 criterion = "0.3.4"
 
 [target.wasm32-unknown-unknown.dependencies]
-web-sys = { version = "0.3", features=["console", "Attr", "CanvasRenderingContext2d", "Document", "Element", "Event",
-    "EventTarget", "HtmlCanvasElement", "HtmlElement", "HtmlInputElement", "Node", "Text", "Window", "KeyboardEvent",
-    "MouseEvent"] }
+web-sys = { version = "0.3.58", features = [
+    "console",
+    "Attr",
+    "CanvasRenderingContext2d",
+    "Document",
+    "Element",
+    "Event",
+    "EventTarget",
+    "HtmlCanvasElement",
+    "HtmlElement",
+    "HtmlInputElement",
+    "Node",
+    "Text",
+    "Window",
+    "KeyboardEvent",
+    "MouseEvent",
+] }
 wasm-bindgen = "0.2"
 wasm-timer = "0.1.0"
 rand = { version = "0.8.3", default-features = false }
 console_error_panic_hook = "0.1.6"
-winit = { version = "0.24.0", features = [ "web-sys" ] }
+winit = { version = "0.25", features = ["web-sys"] }
 
 [[bench]]
 name = "batching_benchmark"
@@ -70,7 +87,7 @@ harness = false
 [[example]]
 name = "native_gl"
 path = "examples/native_gl.rs"
-required-features = [ "opengl" ]
+required-features = ["opengl"]
 
 [[example]]
 name = "bench_scalable"
