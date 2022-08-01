@@ -8,15 +8,40 @@ lazy_static! {
 }
 
 /// Register a palette color by name with the global registry.
+/// 
+/// # Arguments
+/// 
+/// * `name` - the name of the color to register.
+/// * `color` - a bracket-lib compatible color to associate with the name.
+/// 
+/// # Example
+/// 
+/// ```rust
+/// use bracket_color::prelude::*;
+/// register_palette_color("red", RED);
+/// ```
 #[allow(clippy::needless_pass_by_value)]
 pub fn register_palette_color<S: ToString, COLOR: Into<RGBA>>(name: S, color: COLOR) {
     PALETTE.lock().insert(name.to_string(), color.into());
 }
 
 /// Retrieve a palette color by name from the global registry.
+/// Returns `Some(RGBA)` if the color is registered, `None` if it is not.
+/// 
+/// # Arguments
+/// 
+/// * `name` - the requested name.
+/// 
+/// # Example
+/// 
+/// ```rust
+/// use bracket_color::prelude::*;
+/// register_palette_color("red", RED);
+/// let color = palette_color("red").expect("Cannot find red");
+/// ```
 #[allow(clippy::module_name_repetitions)]
 #[allow(clippy::needless_pass_by_value)]
-pub fn palette_color<S: ToString>(name: &S) -> Option<RGBA> {
+pub fn palette_color<S: ToString>(name: S) -> Option<RGBA> {
     let plock = PALETTE.lock();
     plock.get(&name.to_string()).copied()
 }

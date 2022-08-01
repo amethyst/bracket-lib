@@ -1,4 +1,6 @@
 #![allow(clippy::missing_docs_in_private_items)]
+#![allow(clippy::missing_docs)]
+
 // Named Colors (derived from X11 rgb.txt, which is also the source of HTML/W3C/SVG names)
 pub const SNOW: (u8, u8, u8) = (255, 250, 250);
 pub const GHOST_WHITE: (u8, u8, u8) = (248, 248, 255);

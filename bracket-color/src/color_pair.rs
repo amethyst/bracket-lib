@@ -3,6 +3,8 @@ use crate::prelude::RGBA;
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(PartialEq, Copy, Clone, Default, Debug)]
 /// Represents two colors together, a foreground and a background.
+/// Frequently used to represent a glyph rendered on a console with
+/// a solid background color.
 pub struct ColorPair {
     /// The foreground color
     pub fg: RGBA,
@@ -14,6 +16,11 @@ impl ColorPair {
     #[inline]
     #[must_use]
     /// Creates a new `ColorPair`, from two given colors.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `fg` - The foreground color to use.
+    /// * `bg` - The background color to use.
     pub fn new<COLOR, COLOR2>(fg: COLOR, bg: COLOR2) -> Self
     where
         COLOR: Into<RGBA>,

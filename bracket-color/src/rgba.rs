@@ -6,9 +6,13 @@ use std::ops;
 #[derive(PartialEq, Copy, Clone, Default, Debug)]
 /// Represents an R/G/B triplet, in the range 0..1 (32-bit float)
 pub struct RGBA {
+    /// The red component (0..1)
     pub r: f32,
+    /// The green component (0..1)
     pub g: f32,
+    /// The blue component (0..1)
     pub b: f32,
+    /// The alpha component (0..1), 0 is transparent, 1 is solid
     pub a: f32,
 }
 
@@ -105,6 +109,22 @@ impl RGBA {
     }
 
     /// Constructs a new RGB color, from 3 32-bit floats in the range 0..1
+    /// 
+    /// # Arguments
+    /// 
+    /// * `r` - the red component (0..1)
+    /// * `g` - the green component (0..1)
+    /// * `b` - the blue component (0..1)
+    /// * `a` - the alpha component (0..1). 0 is transparent, 1 is solid.
+    /// 
+    /// # Example
+    /// 
+    /// ```rust
+    /// use bracket_color::prelude::*;
+    /// let red = RGBA::from_f32(1.0, 0.0, 0.0, 1.0);
+    /// let green = RGBA::from_f32(0.0, 1.0, 0.0, 1.0);
+    /// let invisible = RGBA::from_f32(0.0, 0.0, 0.0, 0.0);
+    /// ```
     #[inline]
     #[must_use]
     pub fn from_f32(r: f32, g: f32, b: f32, a: f32) -> Self {
@@ -121,6 +141,21 @@ impl RGBA {
     }
 
     /// Constructs a new RGB color, from 3 bytes in the range 0..255
+    /// 
+    /// # Arguments
+    /// 
+    /// * `r` - the red component, ranged from 0 to 255
+    /// * `g` - the green component, ranged from 0 to 255
+    /// * `b` - the blue component, ranged from 0 to 255
+    /// 
+    /// # Example
+    /// 
+    /// ```rust
+    /// use bracket_color::prelude::*;
+    /// let red = RGBA::from_u8(255, 0, 0, 255);
+    /// let green = RGBA::from_u8(0, 255, 0, 255);
+    /// let invisible = RGBA::from_u8(0, 0, 0, 0);
+    /// ```
     #[inline]
     #[must_use]
     pub fn from_u8(r: u8, g: u8, b: u8, a: u8) -> Self {
@@ -133,6 +168,18 @@ impl RGBA {
     }
 
     /// Construct an RGB color from a tuple of u8, or a named constant
+    /// 
+    /// # Arguments
+    /// 
+    /// * `col` a tuple of three `u8` values. See `from_u8`. These are usually provided from the `named` colors list.
+    /// 
+    /// # Example
+    /// 
+    /// ```rust
+    /// use bracket_color::prelude::*;
+    /// let red = RGBA::named(RED);
+    /// let green = RGBA::named((0, 255, 0));
+    /// ```
     #[inline]
     #[must_use]
     pub fn named(col: (u8, u8, u8)) -> Self {
@@ -141,7 +188,21 @@ impl RGBA {
 
     /// Constructs from an HTML color code (e.g. "#eeffeeff")
     ///
+    /// # Arguments
+    /// 
+    /// * `code` - an HTML color notation (e.g. "#ffeeffff")
+    /// 
+    /// # Example
+    /// 
+    /// ```rust
+    /// use bracket_color::prelude::*;
+    /// let red = RGBA::from_hex("#FF0000FF");
+    /// let green = RGBA::from_hex("#00FF00FF");
+    /// ```
+    ///
     /// # Errors
+    /// 
+    /// See `HtmlColorConversionError`
     #[allow(clippy::cast_precision_loss)]
     pub fn from_hex<S: AsRef<str>>(code: S) -> Result<Self, HtmlColorConversionError> {
         let mut full_code = code.as_ref().chars();
@@ -233,6 +294,7 @@ impl RGBA {
         RGB::from_f32(self.r, self.g, self.b)
     }
 
+    /// Converts an RGBA to an array of `f32`, useful in Bevy.
     #[cfg(feature = "bevy")]
     #[must_use]
     pub fn as_rgba_f32(&self) -> [f32; 4] {

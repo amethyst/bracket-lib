@@ -4,9 +4,14 @@ use std::convert::From;
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(PartialEq, Copy, Clone, Default, Debug)]
 /// Represents an H/S/V triplet, in the range 0..1 (32-bit float)
+/// This can provide for a more natural color progression, and provides
+/// compatibility with HSV-based color systems.
 pub struct HSV {
+    /// Hue (range 0..1)
     pub h: f32,
+    /// Saturation (range 0..1)
     pub s: f32,
+    /// Value (range 0..1)
     pub v: f32,
 }
 
@@ -36,6 +41,12 @@ impl HSV {
     }
 
     /// Constructs a new HSV color, from 3 32-bit floats
+    /// 
+    /// # Arguments
+    /// 
+    /// * `h` - The hue (0..1) to use.
+    /// * `s` - The saturation (0..1) to use.
+    /// * `v` - The value (0..1) to use.
     #[inline]
     #[must_use]
     pub const fn from_f32(h: f32, s: f32, v: f32) -> Self {
@@ -101,12 +112,28 @@ impl HSV {
                 g = p;
                 b = q;
             }
+            // Catch-all; this shouldn't happen
             _ => {}
         }
 
         RGB::from_f32(r, g, b)
     }
 
+    /// Progress smoothly between two colors, in the HSV color space.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `color` - the target color.
+    /// * `percent` - the percentage (0..1) of the starting (self) and target color to use.
+    /// 
+    /// # Example
+    /// 
+    /// ```rust
+    /// use bracket_color::prelude::*;
+    /// let red = RGB::named(RED);
+    /// let blue = RGB::named(YELLOW);
+    /// let color = red.lerp(blue, 0.5);
+    /// ```
     #[inline]
     #[must_use]
     pub fn lerp(&self, color: Self, percent: f32) -> Self {

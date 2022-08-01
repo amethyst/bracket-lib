@@ -6,16 +6,22 @@ use std::ops;
 #[derive(PartialEq, Copy, Clone, Default, Debug)]
 /// Represents an R/G/B triplet, in the range 0..1 (32-bit float)
 pub struct RGB {
+    /// The red component (0..1)
     pub r: f32,
+    /// The green components (0..1)
     pub g: f32,
+    /// The blue component (0..1)
     pub b: f32,
 }
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 /// Error message type when failing to convert a hex code to RGB.
 pub enum HtmlColorConversionError {
+    /// The HTML string was not a valid length. (Expects #AABBCC)
     InvalidStringLength,
+    /// No # was included in the string.
     MissingHash,
+    /// An unexpected character (not #, A-F) was detected in the color string.
     InvalidCharacter,
 }
 
@@ -141,6 +147,20 @@ impl RGB {
     }
 
     /// Constructs a new RGB color, from 3 32-bit floats in the range 0..1
+    /// 
+    /// # Arguments
+    /// 
+    /// * `r` - the red component (0..1)
+    /// * `g` - the green component (0..1)
+    /// * `b` - the blue component (0..1)
+    /// 
+    /// # Example
+    /// 
+    /// ```rust
+    /// use bracket_color::prelude::*;
+    /// let red = RGB::from_f32(1.0, 0.0, 0.0);
+    /// let green = RGB::from_f32(0.0, 1.0, 0.0);
+    /// ```
     #[inline]
     #[must_use]
     pub fn from_f32(r: f32, g: f32, b: f32) -> Self {
@@ -155,6 +175,20 @@ impl RGB {
     }
 
     /// Constructs a new RGB color, from 3 bytes in the range 0..255
+    /// 
+    /// # Arguments
+    /// 
+    /// * `r` - the red component, ranged from 0 to 255
+    /// * `g` - the green component, ranged from 0 to 255
+    /// * `b` - the blue component, ranged from 0 to 255
+    /// 
+    /// # Example
+    /// 
+    /// ```rust
+    /// use bracket_color::prelude::*;
+    /// let red = RGB::from_u8(255, 0, 0);
+    /// let green = RGB::from_u8(0, 255, 0);
+    /// ```
     #[inline]
     #[must_use]
     pub fn from_u8(r: u8, g: u8, b: u8) -> Self {
@@ -166,6 +200,18 @@ impl RGB {
     }
 
     /// Construct an RGB color from a tuple of u8, or a named constant
+    /// 
+    /// # Arguments
+    /// 
+    /// * `col` a tuple of three `u8` values. See `from_u8`. These are usually provided from the `named` colors list.
+    /// 
+    /// # Example
+    /// 
+    /// ```rust
+    /// use bracket_color::prelude::*;
+    /// let red = RGB::named(RED);
+    /// let green = RGB::named((0, 255, 0));
+    /// ```
     #[inline]
     #[must_use]
     pub fn named(col: (u8, u8, u8)) -> Self {
@@ -173,8 +219,22 @@ impl RGB {
     }
 
     /// Constructs from an HTML color code (e.g. "#eeffee")
+    /// 
+    /// # Arguments
+    /// 
+    /// * `code` - an HTML color notation (e.g. "#ffeeff")
+    /// 
+    /// # Example
+    /// 
+    /// ```rust
+    /// use bracket_color::prelude::*;
+    /// let red = RGB::from_hex("#FF0000");
+    /// let green = RGB::from_hex("#00FF00");
+    /// ```
     ///
     /// # Errors
+    /// 
+    /// See `HtmlColorConversionError`
     #[allow(clippy::cast_precision_loss)]
     pub fn from_hex<S: AsRef<str>>(code: S) -> Result<Self, HtmlColorConversionError> {
         let mut full_code = code.as_ref().chars();
