@@ -5,7 +5,7 @@
 
 use bracket_random::prelude::RandomNumberGenerator;
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 /// Type of noise to generate
 pub enum NoiseType {
     Value,
@@ -20,7 +20,7 @@ pub enum NoiseType {
     CubicFractal,
 }
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 /// Interpolation function to use
 pub enum Interp {
     Linear,
@@ -28,7 +28,7 @@ pub enum Interp {
     Quintic,
 }
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 /// Fractal function to use
 pub enum FractalType {
     FBM,
@@ -36,7 +36,7 @@ pub enum FractalType {
     RigidMulti,
 }
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 /// Cellular noise distance function to use
 pub enum CellularDistanceFunction {
     Euclidean,
@@ -44,7 +44,7 @@ pub enum CellularDistanceFunction {
     Natural,
 }
 
-#[derive(PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 /// What type of cellular noise result do you want
 pub enum CellularReturnType {
     CellValue,
