@@ -105,17 +105,17 @@ impl AStar {
 
     /// Adds a successor; if we're at the end, marks success.
     fn add_successor(&mut self, q: Node, idx: usize, cost: f32, map: &dyn BaseMap) {
-        let distance = self.distance_to_end(idx, map);
+        let distance_to_end = self.distance_to_end(idx, map);
         let s = Node {
             idx,
-            f: distance + cost,
-            g: cost,
+            f: q.g + cost + distance_to_end,
+            g: q.g + cost,
         };
 
         // If a node with the same position as successor is in the open list with a lower f, skip add
         let mut should_add = true;
         if let Some(e) = self.parents.get(&idx) {
-            if e.1 < s.f {
+            if e.1 < s.g {
                 should_add = false;
             }
         }
@@ -127,7 +127,7 @@ impl AStar {
 
         if should_add {
             self.open_list.push(s);
-            self.parents.insert(idx, (q.idx, q.f));
+            self.parents.insert(idx, (q.idx, s.g));
         }
     }
 
@@ -164,7 +164,7 @@ impl AStar {
             // Generate successors
             map.get_available_exits(q.idx)
                 .iter()
-                .for_each(|s| self.add_successor(q, s.0, s.1 + q.f, map));
+                .for_each(|s| self.add_successor(q, s.0, s.1, map));
 
             if self.closed_list.contains_key(&q.idx) {
                 self.closed_list.remove(&q.idx);
@@ -172,5 +172,90 @@ impl AStar {
             self.closed_list.insert(q.idx, q.f);
         }
         result
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use bracket_algorithm_traits::prelude::BaseMap;
+    use smallvec::smallvec;
+
+    use super::a_star_search;
+
+    /// A triangular graph with unidirectional edges.
+    ///       1
+    ///       /\
+    ///  1.0 /  \ 1.0
+    ///     /    \
+    ///  0 /______\ 2
+    ///      3.0
+    struct TriangleMap;
+
+    impl BaseMap for TriangleMap {
+        fn get_available_exits(&self, idx: usize) -> smallvec::SmallVec<[(usize, f32); 10]> {
+            match idx {
+                0 => smallvec![(1, 1.0), (2, 3.0)],
+                1 => smallvec![(2, 1.0)],
+                _ => smallvec![],
+            }
+        }
+
+        fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
+            match (idx1, idx2) {
+                (0, 1) | (1, 2) => 1.0,
+                (0, 2) => 3.0,
+                (2, 2) => 0.0,
+                x => panic!("This distance should never be requested: {:?}", x),
+            }
+        }
+    }
+
+    #[test]
+    fn avoid_expensive_shortcut_on_triangle() {
+        let map = TriangleMap;
+        let path = a_star_search(0, 2, &map);
+        println!("{:?}", path.steps);
+        assert_eq!(path.steps, [0, 1, 2]);
+    }
+
+    /// A simple graph with `len` nodes. Same concept as the `TriangleMap`, but with more nodes in
+    /// the indirect path.
+    /// Each node is connected to it's successor but the first node also connects to the last this
+    /// "shortcut" has slightly higher cost than walking all the other nodes
+    struct ExpensiveShortcutMap {
+        len: usize,
+    }
+
+    impl BaseMap for ExpensiveShortcutMap {
+        fn get_available_exits(&self, idx: usize) -> smallvec::SmallVec<[(usize, f32); 10]> {
+            let mut exits = smallvec::SmallVec::new();
+
+            // shortcut to the end with slightly higher cost
+            if idx == 0 {
+                exits.push((self.len - 1, self.len as f32))
+            }
+            // step to next node
+            if idx <= self.len - 1 {
+                exits.push((idx + 1, 1.0));
+            }
+
+            exits
+        }
+
+        fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
+            if idx1 == 0 && idx2 == self.len {
+                return self.len as f32;
+            }
+            (idx1.abs_diff(idx2)) as f32
+        }
+    }
+
+    #[test]
+    fn avoid_expensive_shortcut() {
+        let len = 15;
+        let map = ExpensiveShortcutMap { len };
+        let path = a_star_search(0, len - 1, &map);
+        println!("{:?}", path.steps);
+        assert_eq!(path.steps, (0..len).collect::<Vec<_>>());
     }
 }
