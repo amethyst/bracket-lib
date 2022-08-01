@@ -137,6 +137,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
     )?; // Additional resize to handle some X11 cases
 
     let mut queued_resize_event: Option<ResizeEvent> = None;
+    #[cfg(feature = "low_cpu")]
     let spin_sleeper = spin_sleep::SpinSleeper::default();
     let my_window_id = wc.window().id();
 
@@ -188,9 +189,13 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                 // Wait for an appropriate amount of time
                 let time_since_last_frame = frame_timer.elapsed().as_millis() as u64;
                 if time_since_last_frame < wait_time {
+                    // We're wrapping the spin sleeper in a feature now. If you want to use it,
+                    // enable "low_cpu". Otherwise, it was causing input lag.
+                    #[cfg(feature = "low_cpu")]
                     let delay = u64::min(33, wait_time - time_since_last_frame);
                     //println!("Frame time: {}ms, Delay: {}ms", time_since_last_frame, delay);
                     //*control_flow = ControlFlow::WaitUntil(Instant::now() + std::time::Duration::from_millis(delay));
+                    #[cfg(feature = "low_cpu")]
                     spin_sleeper.sleep(std::time::Duration::from_millis(delay));
                 } else {
                     //*control_flow = ControlFlow::WaitUntil(Instant::now() + std::time::Duration::from_millis(1));

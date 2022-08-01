@@ -38,10 +38,11 @@ bytemuck = {version = "1.4.0", optional=true }
 [target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
 glutin = {version = "0.28.0", optional = true }
 winit = { version = "0.26" }
-spin_sleep = "1.0.0"
+spin_sleep = { version = "1.0.0", optional = true }
 
 [features]
 default = [ "opengl" ]
+low_cpu = [ "spin_sleep" ]
 opengl = [ "glow", "image", "glutin" ]
 curses = [ "pancurses", "ctrlc" ]
 cross_term = [ "crossterm", "ctrlc" ]
