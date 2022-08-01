@@ -1,27 +1,28 @@
 // Uniform
-[[block]]
+//@block
 struct BackingUnform {
-    enable_scan_lines: f32;
-    enable_screen_burn: f32;
-    padding: vec2<f32>;
-    screen_burn_color: vec4<f32>;
+    enable_scan_lines: f32,
+    enable_screen_burn: f32,
+    padding: vec2<f32>,
+    screen_burn_color: vec4<f32>,
 };
-[[group(1), binding(0)]]
+@group(1)
+@binding(0)
 var<uniform> post_process: BackingUnform;
 
 // Vertex shader
 struct VertexInput {
-    [[location(0)]] position: vec3<f32>;
-    [[location(1)]] tex_coords: vec2<f32>;
+    @location(0) position: vec3<f32>,
+    @location(1) tex_coords: vec2<f32>,
 };
 
 struct VertexOutput{
-    [[builtin(position)]] clip_position: vec4<f32>;
-    [[location(0)]] tex_coords: vec2<f32>;
+    @builtin(position) clip_position: vec4<f32>,
+    @location(0) tex_coords: vec2<f32>,
 };
 
-[[stage(vertex)]]
-fn main(
+@vertex
+fn vs_main(
     model: VertexInput,
 ) -> VertexOutput {
     var out: VertexOutput;
@@ -32,13 +33,15 @@ fn main(
 
 // Fragment shader
 
-[[group(0), binding(0)]]
+@group(0)
+@binding(0)
 var t_font: texture_2d<f32>;
-[[group(0), binding(1)]]
+@group(0)@
+binding(1)
 var s_font: sampler;
 
-[[stage(fragment)]]
-fn main(in: VertexOutput) -> [[location(0)]] vec4<f32> {
+@fragment
+fn fs_main(in: VertexOutput) -> @location(0) vec4<f32> {
     let base = textureSample(t_font, s_font, in.tex_coords);
 
     if (post_process.enable_scan_lines > 0.0) {

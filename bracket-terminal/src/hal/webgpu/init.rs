@@ -56,7 +56,7 @@ pub fn init_raw<S: ToString>(
     scaler.change_logical_size(width_pixels, height_pixels, initial_dpi_factor as f32);
     let backing_buffer = Framebuffer::new(
         &device,
-        surface.get_preferred_format(&adapter).unwrap(),
+        surface.get_supported_formats(&adapter)[0],
         scaler.logical_size.0,
         scaler.logical_size.1,
     );
@@ -144,7 +144,7 @@ async fn init_adapter(
 
     let config = wgpu::SurfaceConfiguration {
         usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
-        format: surface.get_preferred_format(&adapter).unwrap(),
+        format: surface.get_supported_formats(&adapter)[0],
         width: size.width,
         height: size.height,
         present_mode: wgpu::PresentMode::Fifo,

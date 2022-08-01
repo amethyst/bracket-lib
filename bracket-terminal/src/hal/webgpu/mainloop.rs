@@ -282,7 +282,7 @@ fn on_resize(
         let mut wgpu = be.wgpu.as_mut().unwrap();
         wgpu.backing_buffer = Framebuffer::new(
             &wgpu.device,
-            wgpu.surface.get_preferred_format(&wgpu.adapter).unwrap(),
+            wgpu.surface.get_supported_formats(&wgpu.adapter)[0],
             w,
             h,
         );
@@ -571,7 +571,7 @@ fn clear_screen_pass() -> Result<(), wgpu::SurfaceError> {
         {
             let _render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                 label: Some("Render Pass"),
-                color_attachments: &[wgpu::RenderPassColorAttachment {
+                color_attachments: &[Some(wgpu::RenderPassColorAttachment {
                     view: wgpu.backing_buffer.view(),
                     resolve_target: None,
                     ops: wgpu::Operations {
@@ -583,7 +583,7 @@ fn clear_screen_pass() -> Result<(), wgpu::SurfaceError> {
                         }),
                         store: true,
                     },
-                }],
+                })],
                 depth_stencil_attachment: None,
             });
         }
@@ -642,37 +642,38 @@ fn take_screenshot(filename: &str, wgpu: &WgpuLink, bterm: &BTerm, texture: &wgp
     wgpu.queue.submit(std::iter::once(encoder.finish()));
     //println!("Saving PNG");
 
-    let buffer_slice = output_buffer.slice(..);
-    let buffer_future = buffer_slice.map_async(wgpu::MapMode::Read);
-    wgpu.device.poll(wgpu::Maintain::Wait);
-    if let Ok(()) = pollster::block_on(buffer_future) {
-        let padded_buffer = buffer_slice.get_mapped_range();
-        let mut png_encoder = png::Encoder::new(
-            File::create(filename).unwrap(),
-            buffer_dimensions.width as u32,
-            buffer_dimensions.height as u32,
-        );
-        png_encoder.set_depth(png::BitDepth::Eight);
-        png_encoder.set_color(png::ColorType::RGBA);
-        let mut png_writer = png_encoder
-            .write_header()
-            .unwrap()
-            .into_stream_writer_with_size(buffer_dimensions.unpadded_bytes_per_row);
+    // This has apparently changed a lot - rewrite
+    /*let buffer_slice = output_buffer.slice(..);
+    let buffer_future = buffer_slice.map_async(wgpu::MapMode::Read, move |buffer_slice| {
+        if let Ok(buffer_slice) = buffer_slice {
+            let padded_buffer = buffer_slice.get_mapped_range();
+            let mut png_encoder = png::Encoder::new(
+                File::create(filename).unwrap(),
+                buffer_dimensions.width as u32,
+                buffer_dimensions.height as u32,
+            );
+            png_encoder.set_depth(png::BitDepth::Eight);
+            png_encoder.set_color(png::ColorType::RGBA);
+            let mut png_writer = png_encoder
+                .write_header()
+                .unwrap()
+                .into_stream_writer_with_size(buffer_dimensions.unpadded_bytes_per_row);
 
-        // from the padded_buffer we write just the unpadded bytes into the image
-        for chunk in padded_buffer.chunks(buffer_dimensions.padded_bytes_per_row) {
-            png_writer
-                .write_all(&chunk[..buffer_dimensions.unpadded_bytes_per_row])
-                .unwrap();
+            // from the padded_buffer we write just the unpadded bytes into the image
+            for chunk in padded_buffer.chunks(buffer_dimensions.padded_bytes_per_row) {
+                png_writer
+                    .write_all(&chunk[..buffer_dimensions.unpadded_bytes_per_row])
+                    .unwrap();
+            }
+            png_writer.finish().unwrap();
+
+            // With the current interface, we have to make sure all mapped views are
+            // dropped before we unmap the buffer.
+            //println!("Unmapping");
+            std::mem::drop(padded_buffer);
+            output_buffer.unmap();
         }
-        png_writer.finish().unwrap();
-
-        // With the current interface, we have to make sure all mapped views are
-        // dropped before we unmap the buffer.
-        //println!("Unmapping");
-        std::mem::drop(padded_buffer);
-        output_buffer.unmap();
-    }
+    });*/
 }
 
 struct BufferDimensions {

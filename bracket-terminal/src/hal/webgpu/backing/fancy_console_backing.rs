@@ -42,20 +42,21 @@ impl FancyConsoleBackend {
             .device
             .create_render_pipeline(&wgpu::RenderPipelineDescriptor {
                 label: None,
+                multiview: None,
                 layout: Some(&render_pipeline_layout),
                 vertex: wgpu::VertexState {
                     module: &shader.0,
-                    entry_point: "main",
+                    entry_point: "vs_main",
                     buffers: &[vao.descriptor()],
                 },
                 fragment: Some(wgpu::FragmentState {
                     module: &shader.0,
-                    entry_point: "main",
-                    targets: &[wgpu::ColorTargetState {
+                    entry_point: "fs_main",
+                    targets: &[Some(wgpu::ColorTargetState {
                         format: wgpu.config.format,
                         blend: Some(wgpu::BlendState::ALPHA_BLENDING),
                         write_mask: wgpu::ColorWrites::ALL,
-                    }],
+                    })],
                 }),
                 primitive: wgpu::PrimitiveState {
                     topology: wgpu::PrimitiveTopology::TriangleList,
@@ -64,8 +65,8 @@ impl FancyConsoleBackend {
                     //cull_mode: Some(wgpu::Face::Back),
                     cull_mode: None,
                     polygon_mode: wgpu::PolygonMode::Fill,
-                    clamp_depth: false,
                     conservative: false,
+                    unclipped_depth: false,
                 },
                 depth_stencil: None,
                 multisample: wgpu::MultisampleState {
@@ -246,14 +247,14 @@ impl FancyConsoleBackend {
             {
                 let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                     label: Some("Render Pass"),
-                    color_attachments: &[wgpu::RenderPassColorAttachment {
+                    color_attachments: &[Some(wgpu::RenderPassColorAttachment {
                         view: wgpu.backing_buffer.view(),
                         resolve_target: None,
                         ops: wgpu::Operations {
                             load: wgpu::LoadOp::Load,
                             store: true,
                         },
-                    }],
+                    })],
                     depth_stencil_attachment: None,
                 });
                 render_pass.set_pipeline(&self.render_pipeline);
