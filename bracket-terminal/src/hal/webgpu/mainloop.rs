@@ -67,6 +67,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
     )?; // Additional resize to handle some X11 cases
 
     let mut queued_resize_event: Option<ResizeEvent> = None;
+    #[cfg(feature = "low_cpu")]
     let spin_sleeper = spin_sleep::SpinSleeper::default();
     let my_window_id = window.id();
 
@@ -119,6 +120,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                 let time_since_last_frame = frame_timer.elapsed().as_millis() as u64;
                 if time_since_last_frame < wait_time {
                     let delay = u64::min(33, wait_time - time_since_last_frame);
+                    #[cfg(feature = "low_cpu")]
                     spin_sleeper.sleep(std::time::Duration::from_millis(delay));
                 }
             }
