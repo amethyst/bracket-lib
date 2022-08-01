@@ -50,7 +50,13 @@ pub fn setup_quad(gl: &glow::Context) -> VertexArrayId {
 
 /// Sets up a simple VAO/VBO to render a single quad
 /// Used for presenting the backing buffer and in post-process chains.
-pub fn setup_quad_gutter(gl: &glow::Context, left: f32, right: f32, top: f32, bottom: f32) -> VertexArrayId {
+pub fn setup_quad_gutter(
+    gl: &glow::Context,
+    left: f32,
+    right: f32,
+    top: f32,
+    bottom: f32,
+) -> VertexArrayId {
     #[rustfmt::skip]
     let quad_vertices: [f32; 24] = [
         // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.

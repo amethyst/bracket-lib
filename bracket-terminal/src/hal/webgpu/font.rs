@@ -1,7 +1,7 @@
 //! WGPU Definition of a font
-use bracket_embedding::prelude::EMBED;
 use crate::BResult;
 use bracket_color::prelude::RGB;
+use bracket_embedding::prelude::EMBED;
 use image::GenericImageView;
 use wgpu::{BindGroup, BindGroupLayout, Sampler, TextureView};
 
@@ -38,7 +38,10 @@ impl Font {
             tile_size,
             explicit_background: None,
             font_dimensions_glyphs: (tile_size.0 / width, tile_size.1 / height),
-            font_dimensions_texture: ( tile_size.0 as f32 / width as f32, tile_size.1 as f32 / height as f32 ),
+            font_dimensions_texture: (
+                tile_size.0 as f32 / width as f32,
+                tile_size.1 as f32 / height as f32,
+            ),
             view: None,
             sampler: None,
             bind_group: None,
@@ -70,7 +73,10 @@ impl Font {
             tile_size,
             explicit_background,
             font_dimensions_glyphs: (img.width() / tile_size.0, img.height() / tile_size.1),
-            font_dimensions_texture: ( tile_size.0 as f32 / img.width() as f32, tile_size.1 as f32 / img.height() as f32),
+            font_dimensions_texture: (
+                tile_size.0 as f32 / img.width() as f32,
+                tile_size.1 as f32 / img.height() as f32,
+            ),
             view: None,
             sampler: None,
             bind_group: None,
@@ -167,10 +173,10 @@ impl Font {
                         wgpu::BindGroupLayoutEntry {
                             binding: 1,
                             visibility: wgpu::ShaderStages::FRAGMENT,
-                            ty:  wgpu::BindingType::Sampler(wgpu::SamplerBindingType::Filtering),
+                            ty: wgpu::BindingType::Sampler(wgpu::SamplerBindingType::Filtering),
                             //wgpu::BindingType::Sampler {
-                                //comparison: false,
-                                //filtering: true,
+                            //comparison: false,
+                            //filtering: true,
                             //},
                             count: None,
                         },

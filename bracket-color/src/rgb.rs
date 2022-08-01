@@ -258,11 +258,7 @@ impl RGB {
         let v: f32 = max;
 
         let d = max - min;
-        let s = if max == 0.0 {
-            0.0
-        } else {
-            d / max
-        };
+        let s = if max == 0.0 { 0.0 } else { d / max };
 
         if (max - min).abs() < std::f32::EPSILON {
             h = 0.0; // Achromatic

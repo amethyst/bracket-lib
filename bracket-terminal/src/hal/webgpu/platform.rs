@@ -1,9 +1,9 @@
 //! WGPU Platform definition
 
+use super::Framebuffer;
+use crate::hal::scaler::{default_gutter_size, ScreenScaler};
 use wgpu::{Adapter, Device, Instance, Queue, Surface, SurfaceConfiguration};
 use winit::{event_loop::EventLoop, window::Window};
-use super::Framebuffer;
-use crate::hal::scaler::{ ScreenScaler, default_gutter_size };
 
 /// Defines the WGPU platform
 pub struct PlatformGL {

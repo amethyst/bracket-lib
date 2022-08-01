@@ -5,11 +5,11 @@ pub use init::*;
 mod events;
 pub use events::*;
 mod mainloop;
+use crate::hal::scaler::{default_gutter_size, ScreenScaler};
 use crate::hal::ConsoleBacking;
 pub use mainloop::*;
 use parking_lot::Mutex;
 use std::any::Any;
-use crate::hal::scaler::{ScreenScaler, default_gutter_size};
 
 pub type GlCallback = fn(&mut dyn Any, &glow::Context);
 

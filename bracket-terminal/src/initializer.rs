@@ -491,7 +491,7 @@ impl BTermBuilder {
     pub fn with_gutter(mut self, desired_gutter: u32) -> Self {
         #[cfg(any(feature = "opengl", feature = "webgpu"))]
         {
-        self.platform_hints.desired_gutter = desired_gutter;
+            self.platform_hints.desired_gutter = desired_gutter;
         }
         self
     }

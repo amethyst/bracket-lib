@@ -1,8 +1,8 @@
 mod common;
 use bracket_color::prelude::*;
 use bracket_pathfinding::prelude::*;
-use common::*;
 use bracket_random::prelude::RandomNumberGenerator;
+use common::*;
 
 fn main() {
     let map = Map::new();

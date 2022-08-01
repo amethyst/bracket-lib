@@ -102,7 +102,9 @@ impl XpFile {
 
     /// Helper to read from an BTerm resource
     pub fn from_resource(path: &str) -> io::Result<XpFile> {
-        let res = bracket_embedding::prelude::EMBED.lock().get_resource(path.to_string());
+        let res = bracket_embedding::prelude::EMBED
+            .lock()
+            .get_resource(path.to_string());
         match res {
             None => panic!("Unable to open resource"),
             Some(r) => {

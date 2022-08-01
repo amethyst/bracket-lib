@@ -48,7 +48,10 @@ pub fn init_raw<S: ToString>(
     unsafe {
         let gl_version = gl.get_parameter_string(glow::VERSION);
         let shader_version = gl.get_parameter_string(glow::SHADING_LANGUAGE_VERSION);
-        println!("Initialized OpenGL with: {}, Shader Language Version: {}", gl_version, shader_version);
+        println!(
+            "Initialized OpenGL with: {}, Shader Language Version: {}",
+            gl_version, shader_version
+        );
     }
 
     // Load our basic shaders

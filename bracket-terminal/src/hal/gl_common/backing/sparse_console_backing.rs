@@ -6,13 +6,16 @@ use bracket_color::prelude::RGBA;
 
 pub struct SparseConsoleBackend {
     vao: VertexArray,
-    previous_console : Option<Vec<SparseTile>>,
+    previous_console: Option<Vec<SparseTile>>,
 }
 
 impl SparseConsoleBackend {
     pub fn new(_width: usize, _height: usize, gl: &glow::Context) -> SparseConsoleBackend {
         let vao = SparseConsoleBackend::init_gl_for_console(gl, 1000, 1000);
-        SparseConsoleBackend { vao, previous_console: None }
+        SparseConsoleBackend {
+            vao,
+            previous_console: None,
+        }
     }
 
     fn init_gl_for_console(
@@ -65,7 +68,7 @@ impl SparseConsoleBackend {
         if !needs_resize {
             if let Some(old) = &self.previous_console {
                 if old.len() == tiles.len() {
-                    let no_change = tiles.iter().zip(old.iter()).all(|(a, b)| *a==*b);
+                    let no_change = tiles.iter().zip(old.iter()).all(|(a, b)| *a == *b);
                     if no_change {
                         return;
                     }

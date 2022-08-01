@@ -18,7 +18,9 @@ lazy_static! {
 
 lazy_static! {
     static ref BUFFER_POOL: Arc<Pool<DrawBatch>> = Arc::new(Pool::new(128, || DrawBatch {
-        batch: Vec::with_capacity(5000), z_count: 0, needs_sort: false
+        batch: Vec::with_capacity(5000),
+        z_count: 0,
+        needs_sort: false
     }));
 }
 
@@ -195,9 +197,12 @@ impl DrawBatch {
         COLOR: Into<RGBA>,
     {
         let z = self.next_z();
-        self.batch.push((z, DrawCommand::ClearToColor {
-            color: color.into(),
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::ClearToColor {
+                color: color.into(),
+            },
+        ));
         self
     }
 
@@ -216,11 +221,14 @@ impl DrawBatch {
         glyph: G,
     ) -> &mut Self {
         let z = self.next_z();
-        self.batch.push((z, DrawCommand::Set {
-            pos,
-            color,
-            glyph: glyph.try_into().ok().expect("Must be u16 convertible"),
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::Set {
+                pos,
+                color,
+                glyph: glyph.try_into().ok().expect("Must be u16 convertible"),
+            },
+        ));
         self
     }
 
@@ -232,11 +240,14 @@ impl DrawBatch {
         glyph: G,
         z: u32,
     ) -> &mut Self {
-        self.batch.push((z, DrawCommand::Set {
-            pos,
-            color,
-            glyph: glyph.try_into().ok().expect("Must be u16 convertible"),
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::Set {
+                pos,
+                color,
+                glyph: glyph.try_into().ok().expect("Must be u16 convertible"),
+            },
+        ));
         self.needs_sort = true;
         self
     }
@@ -252,14 +263,17 @@ impl DrawBatch {
         glyph: G,
     ) -> &mut Self {
         let z = self.next_z();
-        self.batch.push((z, DrawCommand::SetFancy {
-            position,
-            z_order: z_order.try_into().ok().expect("Must be i32 convertible"),
-            rotation: rotation.into(),
-            color,
-            glyph: glyph.try_into().ok().expect("Must be u16 convertible"),
-            scale,
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::SetFancy {
+                position,
+                z_order: z_order.try_into().ok().expect("Must be i32 convertible"),
+                rotation: rotation.into(),
+                color,
+                glyph: glyph.try_into().ok().expect("Must be u16 convertible"),
+                scale,
+            },
+        ));
         self
     }
 
@@ -295,12 +309,15 @@ impl DrawBatch {
         background: Option<RGBA>,
     ) -> &mut Self {
         let z = self.next_z();
-        self.batch.push((z, DrawCommand::Printer {
-            pos,
-            text: text.to_string(),
-            align,
-            background,
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::Printer {
+                pos,
+                text: text.to_string(),
+                align,
+                background,
+            },
+        ));
         self
     }
 
@@ -315,12 +332,15 @@ impl DrawBatch {
         background: Option<RGBA>,
         z: u32,
     ) -> &mut Self {
-        self.batch.push((z, DrawCommand::Printer {
-            pos,
-            text: text.to_string(),
-            align,
-            background,
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::Printer {
+                pos,
+                text: text.to_string(),
+                align,
+                background,
+            },
+        ));
         self.needs_sort = true;
         self
     }
@@ -328,19 +348,25 @@ impl DrawBatch {
     /// Prints text in the default colors at a given location
     pub fn print<S: ToString>(&mut self, pos: Point, text: S) -> &mut Self {
         let z = self.next_z();
-        self.batch.push((z, DrawCommand::Print {
-            pos,
-            text: text.to_string(),
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::Print {
+                pos,
+                text: text.to_string(),
+            },
+        ));
         self
     }
 
     /// Prints text in the default colors at a given location & render order
     pub fn print_with_z<S: ToString>(&mut self, pos: Point, text: S, z: u32) -> &mut Self {
-        self.batch.push((z, DrawCommand::Print {
-            pos,
-            text: text.to_string(),
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::Print {
+                pos,
+                text: text.to_string(),
+            },
+        ));
         self.needs_sort = true;
         self
     }
@@ -348,21 +374,33 @@ impl DrawBatch {
     /// Prints text in the default colors at a given location
     pub fn print_color<S: ToString>(&mut self, pos: Point, text: S, color: ColorPair) -> &mut Self {
         let z = self.next_z();
-        self.batch.push((z, DrawCommand::PrintColor {
-            pos,
-            text: text.to_string(),
-            color,
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::PrintColor {
+                pos,
+                text: text.to_string(),
+                color,
+            },
+        ));
         self
     }
 
     /// Prints text in the default colors at a given location & render order
-    pub fn print_color_with_z<S: ToString>(&mut self, pos: Point, text: S, color: ColorPair, z: u32) -> &mut Self {
-        self.batch.push((z, DrawCommand::PrintColor {
-            pos,
-            text: text.to_string(),
-            color,
-        }));
+    pub fn print_color_with_z<S: ToString>(
+        &mut self,
+        pos: Point,
+        text: S,
+        color: ColorPair,
+        z: u32,
+    ) -> &mut Self {
+        self.batch.push((
+            z,
+            DrawCommand::PrintColor {
+                pos,
+                text: text.to_string(),
+                color,
+            },
+        ));
         self.needs_sort = true;
         self
     }
@@ -370,19 +408,30 @@ impl DrawBatch {
     /// Prints text, centered to the whole console width, at vertical location y.
     pub fn print_centered<S: ToString, Y: TryInto<i32>>(&mut self, y: Y, text: S) -> &mut Self {
         let z = self.next_z();
-        self.batch.push((z, DrawCommand::PrintCentered {
-            y: y.try_into().ok().expect("Must be i32 convertible"),
-            text: text.to_string(),
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::PrintCentered {
+                y: y.try_into().ok().expect("Must be i32 convertible"),
+                text: text.to_string(),
+            },
+        ));
         self
     }
 
     /// Prints text, centered to the whole console width, at vertical location y.
-    pub fn print_centered_with_z<S: ToString, Y: TryInto<i32>>(&mut self, y: Y, text: S, z: u32) -> &mut Self {
-        self.batch.push((z, DrawCommand::PrintCentered {
-            y: y.try_into().ok().expect("Must be i32 convertible"),
-            text: text.to_string(),
-        }));
+    pub fn print_centered_with_z<S: ToString, Y: TryInto<i32>>(
+        &mut self,
+        y: Y,
+        text: S,
+        z: u32,
+    ) -> &mut Self {
+        self.batch.push((
+            z,
+            DrawCommand::PrintCentered {
+                y: y.try_into().ok().expect("Must be i32 convertible"),
+                text: text.to_string(),
+            },
+        ));
         self.needs_sort = true;
         self
     }
@@ -395,11 +444,14 @@ impl DrawBatch {
         color: ColorPair,
     ) -> &mut Self {
         let z = self.next_z();
-        self.batch.push((z, DrawCommand::PrintColorCentered {
-            y: y.try_into().ok().expect("Must be i32 convertible"),
-            text: text.to_string(),
-            color,
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::PrintColorCentered {
+                y: y.try_into().ok().expect("Must be i32 convertible"),
+                text: text.to_string(),
+                color,
+            },
+        ));
         self
     }
 
@@ -409,13 +461,16 @@ impl DrawBatch {
         y: Y,
         text: S,
         color: ColorPair,
-        z: u32
+        z: u32,
     ) -> &mut Self {
-        self.batch.push((z, DrawCommand::PrintColorCentered {
-            y: y.try_into().ok().expect("Must be i32 convertible"),
-            text: text.to_string(),
-            color,
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::PrintColorCentered {
+                y: y.try_into().ok().expect("Must be i32 convertible"),
+                text: text.to_string(),
+                color,
+            },
+        ));
         self.needs_sort = true;
         self
     }
@@ -423,19 +478,30 @@ impl DrawBatch {
     /// Prints text, centered to the whole console width, at vertical location y.
     pub fn print_centered_at<S: ToString>(&mut self, pos: Point, text: S) -> &mut Self {
         let z = self.next_z();
-        self.batch.push((z, DrawCommand::PrintCenteredAt {
-            pos,
-            text: text.to_string(),
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::PrintCenteredAt {
+                pos,
+                text: text.to_string(),
+            },
+        ));
         self
     }
 
     /// Prints text, centered to the whole console width, at vertical location y with render order.
-    pub fn print_centered_at_with_z<S: ToString>(&mut self, pos: Point, text: S, z: u32) -> &mut Self {
-        self.batch.push((z, DrawCommand::PrintCenteredAt {
-            pos,
-            text: text.to_string(),
-        }));
+    pub fn print_centered_at_with_z<S: ToString>(
+        &mut self,
+        pos: Point,
+        text: S,
+        z: u32,
+    ) -> &mut Self {
+        self.batch.push((
+            z,
+            DrawCommand::PrintCenteredAt {
+                pos,
+                text: text.to_string(),
+            },
+        ));
         self.needs_sort = true;
         self
     }
@@ -448,11 +514,14 @@ impl DrawBatch {
         color: ColorPair,
     ) -> &mut Self {
         let z = self.next_z();
-        self.batch.push((z, DrawCommand::PrintColorCenteredAt {
-            pos,
-            text: text.to_string(),
-            color,
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::PrintColorCenteredAt {
+                pos,
+                text: text.to_string(),
+                color,
+            },
+        ));
         self
     }
 
@@ -464,11 +533,14 @@ impl DrawBatch {
         color: ColorPair,
         z: u32,
     ) -> &mut Self {
-        self.batch.push((z, DrawCommand::PrintColorCenteredAt {
-            pos,
-            text: text.to_string(),
-            color,
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::PrintColorCenteredAt {
+                pos,
+                text: text.to_string(),
+                color,
+            },
+        ));
         self.needs_sort = true;
         self
     }
@@ -476,19 +548,25 @@ impl DrawBatch {
     /// Prints right aligned text
     pub fn print_right<S: ToString>(&mut self, pos: Point, text: S) -> &mut Self {
         let z = self.next_z();
-        self.batch.push((z, DrawCommand::PrintRight {
-            pos,
-            text: text.to_string(),
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::PrintRight {
+                pos,
+                text: text.to_string(),
+            },
+        ));
         self
     }
 
     /// Prints right aligned text with render order
     pub fn print_right_z<S: ToString>(&mut self, pos: Point, text: S, z: u32) -> &mut Self {
-        self.batch.push((z, DrawCommand::PrintRight {
-            pos,
-            text: text.to_string(),
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::PrintRight {
+                pos,
+                text: text.to_string(),
+            },
+        ));
         self.needs_sort = true;
         self
     }
@@ -501,11 +579,14 @@ impl DrawBatch {
         color: ColorPair,
     ) -> &mut Self {
         let z = self.next_z();
-        self.batch.push((z, DrawCommand::PrintColorRight {
-            pos,
-            text: text.to_string(),
-            color,
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::PrintColorRight {
+                pos,
+                text: text.to_string(),
+                color,
+            },
+        ));
         self
     }
 
@@ -517,11 +598,14 @@ impl DrawBatch {
         color: ColorPair,
         z: u32,
     ) -> &mut Self {
-        self.batch.push((z, DrawCommand::PrintColorRight {
-            pos,
-            text: text.to_string(),
-            color,
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::PrintColorRight {
+                pos,
+                text: text.to_string(),
+                color,
+            },
+        ));
         self.needs_sort = true;
         self
     }
@@ -571,13 +655,20 @@ impl DrawBatch {
     /// Draws a non-filled (hollow) double-lined box, starting at x/y with the extents width/height using CP437 line characters
     pub fn draw_hollow_double_box(&mut self, pos: Rect, color: ColorPair) -> &mut Self {
         let z = self.next_z();
-        self.batch.push((z, DrawCommand::HollowDoubleBox { pos, color }));
+        self.batch
+            .push((z, DrawCommand::HollowDoubleBox { pos, color }));
         self
     }
 
     /// Draws a non-filled (hollow) double-lined box, starting at x/y with the extents width/height using CP437 line characters
-    pub fn draw_hollow_double_box_with_z(&mut self, pos: Rect, color: ColorPair, z: u32) -> &mut Self {
-        self.batch.push((z, DrawCommand::HollowDoubleBox { pos, color }));
+    pub fn draw_hollow_double_box_with_z(
+        &mut self,
+        pos: Rect,
+        color: ColorPair,
+        z: u32,
+    ) -> &mut Self {
+        self.batch
+            .push((z, DrawCommand::HollowDoubleBox { pos, color }));
         self.needs_sort = true;
         self
     }
@@ -590,11 +681,14 @@ impl DrawBatch {
         glyph: G,
     ) -> &mut Self {
         let z = self.next_z();
-        self.batch.push((z, DrawCommand::FillRegion {
-            pos,
-            color,
-            glyph: glyph.try_into().ok().expect("Must be u16 convertible"),
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::FillRegion {
+                pos,
+                color,
+                glyph: glyph.try_into().ok().expect("Must be u16 convertible"),
+            },
+        ));
         self
     }
 
@@ -606,11 +700,14 @@ impl DrawBatch {
         glyph: G,
         z: u32,
     ) -> &mut Self {
-        self.batch.push((z, DrawCommand::FillRegion {
-            pos,
-            color,
-            glyph: glyph.try_into().ok().expect("Must be u16 convertible"),
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::FillRegion {
+                pos,
+                color,
+                glyph: glyph.try_into().ok().expect("Must be u16 convertible"),
+            },
+        ));
         self.needs_sort = true;
         self
     }
@@ -630,13 +727,16 @@ impl DrawBatch {
         MAX: TryInto<i32>,
     {
         let z = self.next_z();
-        self.batch.push((z, DrawCommand::BarHorizontal {
-            pos,
-            width: width.try_into().ok().expect("Must be i32 convertible"),
-            n: n.try_into().ok().expect("Must be i32 convertible"),
-            max: max.try_into().ok().expect("Must be i32 convertible"),
-            color,
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::BarHorizontal {
+                pos,
+                width: width.try_into().ok().expect("Must be i32 convertible"),
+                n: n.try_into().ok().expect("Must be i32 convertible"),
+                max: max.try_into().ok().expect("Must be i32 convertible"),
+                color,
+            },
+        ));
         self
     }
 
@@ -655,13 +755,16 @@ impl DrawBatch {
         N: TryInto<i32>,
         MAX: TryInto<i32>,
     {
-        self.batch.push((z, DrawCommand::BarHorizontal {
-            pos,
-            width: width.try_into().ok().expect("Must be i32 convertible"),
-            n: n.try_into().ok().expect("Must be i32 convertible"),
-            max: max.try_into().ok().expect("Must be i32 convertible"),
-            color,
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::BarHorizontal {
+                pos,
+                width: width.try_into().ok().expect("Must be i32 convertible"),
+                n: n.try_into().ok().expect("Must be i32 convertible"),
+                max: max.try_into().ok().expect("Must be i32 convertible"),
+                color,
+            },
+        ));
         self.needs_sort = true;
         self
     }
@@ -681,13 +784,16 @@ impl DrawBatch {
         MAX: TryInto<i32>,
     {
         let z = self.next_z();
-        self.batch.push((z, DrawCommand::BarVertical {
-            pos,
-            height: height.try_into().ok().expect("Must be i32 convertible"),
-            n: n.try_into().ok().expect("Must be i32 convertible"),
-            max: max.try_into().ok().expect("Must be i32 convertible"),
-            color,
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::BarVertical {
+                pos,
+                height: height.try_into().ok().expect("Must be i32 convertible"),
+                n: n.try_into().ok().expect("Must be i32 convertible"),
+                max: max.try_into().ok().expect("Must be i32 convertible"),
+                color,
+            },
+        ));
         self
     }
 
@@ -699,20 +805,23 @@ impl DrawBatch {
         n: N,
         max: MAX,
         color: ColorPair,
-        z: u32
+        z: u32,
     ) -> &mut Self
     where
         H: TryInto<i32>,
         N: TryInto<i32>,
         MAX: TryInto<i32>,
     {
-        self.batch.push((z, DrawCommand::BarVertical {
-            pos,
-            height: height.try_into().ok().expect("Must be i32 convertible"),
-            n: n.try_into().ok().expect("Must be i32 convertible"),
-            max: max.try_into().ok().expect("Must be i32 convertible"),
-            color,
-        }));
+        self.batch.push((
+            z,
+            DrawCommand::BarVertical {
+                pos,
+                height: height.try_into().ok().expect("Must be i32 convertible"),
+                n: n.try_into().ok().expect("Must be i32 convertible"),
+                max: max.try_into().ok().expect("Must be i32 convertible"),
+                color,
+            },
+        ));
         self.needs_sort = true;
         self
     }

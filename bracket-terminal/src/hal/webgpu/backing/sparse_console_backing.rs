@@ -1,7 +1,10 @@
 //! Provides a wgpu mapping to the sparse consoele
 use super::index_array_helper::IndexBuffer;
 use super::vertex_array_helper::FloatBuffer;
-use crate::hal::{Font, Shader, WgpuLink, scaler::{FontScaler, ScreenScaler}};
+use crate::hal::{
+    scaler::{FontScaler, ScreenScaler},
+    Font, Shader, WgpuLink,
+};
 use crate::prelude::SparseTile;
 use crate::BResult;
 use bracket_color::prelude::RGBA;
@@ -16,7 +19,7 @@ pub struct SparseConsoleBackend {
     /// WGPU Render Pipeline to use
     render_pipeline: RenderPipeline,
     /// No change optimization
-    previous_console : Option<Vec<SparseTile>>,
+    previous_console: Option<Vec<SparseTile>>,
 }
 
 impl SparseConsoleBackend {
@@ -122,7 +125,7 @@ impl SparseConsoleBackend {
         if !must_resize {
             if let Some(old) = &self.previous_console {
                 if old.len() == tiles.len() {
-                    let no_change = tiles.iter().zip(old.iter()).all(|(a, b)| *a==*b);
+                    let no_change = tiles.iter().zip(old.iter()).all(|(a, b)| *a == *b);
                     if no_change {
                         return;
                     }

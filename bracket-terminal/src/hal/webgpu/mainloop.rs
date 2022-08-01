@@ -6,12 +6,12 @@ use super::{
 };
 use crate::{
     gamestate::{BTerm, GameState},
+    hal::scaler::FontScaler,
     input::{clear_input_state, BEvent},
     prelude::{
         FlexiConsole, SimpleConsole, SparseConsole, SpriteConsole, BACKEND, BACKEND_INTERNAL, INPUT,
     },
     BResult,
-    hal::scaler::FontScaler,
 };
 use bracket_geometry::prelude::Point;
 use std::mem::size_of;
@@ -191,7 +191,14 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                         let scale_factor = window.scale_factor();
                         let physical_size = window.inner_size();
                         //wc.resize(physical_size);
-                        on_resize(&mut bterm, physical_size, scale_factor, false, &mut backing_flip,).unwrap();
+                        on_resize(
+                            &mut bterm,
+                            physical_size,
+                            scale_factor,
+                            false,
+                            &mut backing_flip,
+                        )
+                        .unwrap();
                         bterm.on_event(BEvent::ScaleFactorChanged {
                             new_size: Point::new(new_inner_size.width, new_inner_size.height),
                             dpi_scale_factor: scale_factor as f32,
@@ -250,7 +257,12 @@ fn on_resize(
     INPUT.lock().set_scale_factor(dpi_scale_factor);
     let mut be = BACKEND.lock();
     let (l, r, t, b) = be.screen_scaler.get_backing_buffer_output_coordinates();
-    be.screen_scaler.change_physical_size_smooth(physical_size.width, physical_size.height, dpi_scale_factor as f32, font_max_size);
+    be.screen_scaler.change_physical_size_smooth(
+        physical_size.width,
+        physical_size.height,
+        dpi_scale_factor as f32,
+        font_max_size,
+    );
     if send_event {
         bterm.resize_pixels(
             physical_size.width as u32,
@@ -269,7 +281,10 @@ fn on_resize(
 
     // Messaging
     bterm.on_event(BEvent::Resized {
-        new_size: Point::new(be.screen_scaler.available_width, be.screen_scaler.available_height),
+        new_size: Point::new(
+            be.screen_scaler.available_width,
+            be.screen_scaler.available_height,
+        ),
         dpi_scale_factor: dpi_scale_factor as f32,
     });
 

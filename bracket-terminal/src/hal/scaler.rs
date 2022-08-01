@@ -14,7 +14,6 @@ pub(crate) fn default_gutter_size() -> u32 {
     0
 }
 
-
 /// Provides a consistent font to texture coordinates mapping service.
 pub struct FontScaler {
     font_dimensions_glyphs: (u16, u16),
@@ -35,9 +34,9 @@ impl FontScaler {
         font_dimensions_texture: (f32, f32),
     ) -> Self {
         Self {
-            font_dimensions_glyphs : (
+            font_dimensions_glyphs: (
                 font_dimensions_glyphs.0 as u16,
-                font_dimensions_glyphs.1 as u16
+                font_dimensions_glyphs.1 as u16,
             ),
             font_dimensions_texture,
         }
@@ -54,7 +53,10 @@ impl FontScaler {
         let glyph_bottom = f32::from(glyph_y - 1) * self.font_dimensions_texture.1;
 
         GlyphPosition {
-            glyph_left, glyph_right, glyph_top, glyph_bottom
+            glyph_left,
+            glyph_right,
+            glyph_top,
+            glyph_bottom,
         }
     }
 }
@@ -118,7 +120,8 @@ impl ScreenScaler {
     }
 
     pub fn new_window_size(&mut self) -> LogicalSize<u32> {
-        self.aspect_ratio = (self.physical_size.1 + self.desired_gutter) as f32 / (self.physical_size.0 + self.desired_gutter) as f32;
+        self.aspect_ratio = (self.physical_size.1 + self.desired_gutter) as f32
+            / (self.physical_size.0 + self.desired_gutter) as f32;
         self.logical_size = self.physical_size;
         LogicalSize::new(
             self.physical_size.0 + self.desired_gutter,
@@ -140,7 +143,13 @@ impl ScreenScaler {
         self.recalculate_coordinates();
     }
 
-    pub fn change_physical_size_smooth(&mut self, width: u32, height: u32, scale: f32, max_font: (u32, u32)) {
+    pub fn change_physical_size_smooth(
+        &mut self,
+        width: u32,
+        height: u32,
+        scale: f32,
+        max_font: (u32, u32),
+    ) {
         self.scale_factor = scale;
         self.physical_size.0 = width;
         self.physical_size.1 = height;
@@ -164,14 +173,14 @@ impl ScreenScaler {
         let half_gutter = total_gutter / 2;
 
         let (extra_left, extra_right) = if self.smooth_gutter_x % 2 == 0 {
-            (self.smooth_gutter_x/2, self.smooth_gutter_x/2)
+            (self.smooth_gutter_x / 2, self.smooth_gutter_x / 2)
         } else {
-            ((self.smooth_gutter_x/2)+1, self.smooth_gutter_x/2)
+            ((self.smooth_gutter_x / 2) + 1, self.smooth_gutter_x / 2)
         };
         let (extra_top, extra_bottom) = if self.smooth_gutter_y % 2 == 0 {
-            (self.smooth_gutter_y/2, self.smooth_gutter_y/2)
+            (self.smooth_gutter_y / 2, self.smooth_gutter_y / 2)
         } else {
-            ((self.smooth_gutter_y/2)+1, self.smooth_gutter_y/2)
+            ((self.smooth_gutter_y / 2) + 1, self.smooth_gutter_y / 2)
         };
 
         if total_gutter % 2 == 0 {
@@ -181,9 +190,9 @@ impl ScreenScaler {
             self.gutter_bottom = half_gutter + extra_bottom;
         } else {
             self.gutter_left = half_gutter + extra_left;
-            self.gutter_right = half_gutter+1 + extra_right;
+            self.gutter_right = half_gutter + 1 + extra_right;
             self.gutter_top = half_gutter + extra_top;
-            self.gutter_bottom = half_gutter+1 + extra_bottom;
+            self.gutter_bottom = half_gutter + 1 + extra_bottom;
         }
 
         self.available_width = self.physical_size.0 - (total_gutter + extra_left + extra_right);
@@ -203,10 +212,7 @@ impl ScreenScaler {
     }
 
     pub fn bottom_right_pixel(&self) -> (f32, f32) {
-        self.pixel_to_screen(
-            self.logical_size.0,
-            self.logical_size.1
-        )
+        self.pixel_to_screen(self.logical_size.0, self.logical_size.1)
     }
 
     pub fn calc_step(&self, width: u32, height: u32, scale: f32) -> (f32, f32) {
@@ -232,10 +238,7 @@ impl ScreenScaler {
     }
 
     pub fn get_backing_buffer_output_coordinates(&self) -> (f32, f32, f32, f32) {
-        let (left, bottom) = self.pixel_to_screen_physical(
-            self.gutter_left,
-            self.gutter_top,
-        );
+        let (left, bottom) = self.pixel_to_screen_physical(self.gutter_left, self.gutter_top);
         let (right, top) = self.pixel_to_screen_physical(
             self.physical_size.0 - self.gutter_right,
             self.physical_size.1 - self.gutter_bottom,

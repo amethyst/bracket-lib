@@ -1,6 +1,6 @@
 //! Provides a wgpu implementation of a backing buffer.
 
-use wgpu::{Device, Sampler, TextureFormat, TextureView, Texture};
+use wgpu::{Device, Sampler, Texture, TextureFormat, TextureView};
 
 pub struct Framebuffer {
     pub texture: Texture,
@@ -22,7 +22,9 @@ impl Framebuffer {
             sample_count: 1,
             dimension: wgpu::TextureDimension::D2,
             format,
-            usage: wgpu::TextureUsages::TEXTURE_BINDING | wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::COPY_SRC,
+            usage: wgpu::TextureUsages::TEXTURE_BINDING
+                | wgpu::TextureUsages::RENDER_ATTACHMENT
+                | wgpu::TextureUsages::COPY_SRC,
         });
         let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
         let sampler = device.create_sampler(&wgpu::SamplerDescriptor {
@@ -40,7 +42,11 @@ impl Framebuffer {
             ..Default::default()
         });
 
-        Self { view, sampler, texture }
+        Self {
+            view,
+            sampler,
+            texture,
+        }
     }
 
     pub fn view(&self) -> &TextureView {

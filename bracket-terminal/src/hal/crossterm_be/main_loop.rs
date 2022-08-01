@@ -65,20 +65,14 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                         crossterm::event::MouseEventKind::Down(button) => {
                             bterm.left_click = true;
                             bterm.mouse_pos = (event.column as i32, event.row as i32);
-                            bterm.on_mouse_position(
-                                event.column as f64,
-                                event.row as f64,
-                            );
+                            bterm.on_mouse_position(event.column as f64, event.row as f64);
                             bterm.on_mouse_button(button as usize, true);
                         }
                         crossterm::event::MouseEventKind::Up(button) => {
                             bterm.on_mouse_button(button as usize, false);
                         }
                         crossterm::event::MouseEventKind::Drag(..) => {
-                            bterm.on_mouse_position(
-                                event.column as f64,
-                                event.row as f64,
-                            );
+                            bterm.on_mouse_position(event.column as f64, event.row as f64);
                         }
                         _ => {
                             //eprintln!("{:?}", event);

@@ -136,7 +136,11 @@ impl DijkstraMap {
     }
 
     #[cfg(feature = "threaded")]
-    fn build_helper_weighted(dm: &mut DijkstraMap, starts: &[(usize, f32)], map: &dyn BaseMap) -> RunThreaded {
+    fn build_helper_weighted(
+        dm: &mut DijkstraMap,
+        starts: &[(usize, f32)],
+        map: &dyn BaseMap,
+    ) -> RunThreaded {
         if starts.len() >= THREADED_REQUIRED_STARTS {
             DijkstraMap::build_parallel_weighted(dm, starts, map);
             return RunThreaded::True;
@@ -265,7 +269,7 @@ impl DijkstraMap {
         }
     }
 
-        #[cfg(feature = "threaded")]
+    #[cfg(feature = "threaded")]
     fn build_parallel(dm: &mut DijkstraMap, starts: &[usize], map: &dyn BaseMap) {
         let mapsize: usize = (dm.size_x * dm.size_y) as usize;
         let mut layers: Vec<ParallelDm> = Vec::with_capacity(starts.len());

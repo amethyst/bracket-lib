@@ -1,8 +1,9 @@
-use std::collections::HashMap;
-use parking_lot::Mutex;
 use lazy_static::*;
+use parking_lot::Mutex;
+use std::collections::HashMap;
 
-const TERMINAL_8_8_BYTES: &[u8] = include_bytes!("../../bracket-terminal/resources/terminal8x8.png");
+const TERMINAL_8_8_BYTES: &[u8] =
+    include_bytes!("../../bracket-terminal/resources/terminal8x8.png");
 const TERMINAL_8_16_BYTES: &[u8] = include_bytes!("../../bracket-terminal/resources/vga8x16.png");
 
 lazy_static! {

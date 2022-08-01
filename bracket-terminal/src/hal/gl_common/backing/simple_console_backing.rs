@@ -8,7 +8,7 @@ pub struct SimpleConsoleBackend {
     vao: VertexArray,
     vertex_counter: usize,
     index_counter: usize,
-    previous_console : Option<Vec<Tile>>,
+    previous_console: Option<Vec<Tile>>,
 }
 
 impl SimpleConsoleBackend {
@@ -91,7 +91,7 @@ impl SimpleConsoleBackend {
         if !needs_resize {
             if let Some(old) = &self.previous_console {
                 if old.len() == tiles.len() {
-                    let no_change = tiles.iter().zip(old.iter()).all(|(a, b)| *a==*b);
+                    let no_change = tiles.iter().zip(old.iter()).all(|(a, b)| *a == *b);
                     if no_change {
                         return;
                     }

@@ -250,8 +250,8 @@ impl BTerm {
             center_y as f32 * font_size.1 * (scale - 1.0),
         );
 
-        let w : f32;
-        let h : f32;
+        let w: f32;
+        let h: f32;
 
         {
             let be = crate::hal::BACKEND.lock();

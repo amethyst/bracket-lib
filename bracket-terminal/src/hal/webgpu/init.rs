@@ -1,7 +1,10 @@
 //! WGPU Initialization Service
 
 use super::{InitHints, Shader, WgpuLink, WrappedContext, BACKEND};
-use crate::{gamestate::BTerm, hal::Framebuffer, prelude::BACKEND_INTERNAL, BResult, hal::scaler::ScreenScaler};
+use crate::{
+    gamestate::BTerm, hal::scaler::ScreenScaler, hal::Framebuffer, prelude::BACKEND_INTERNAL,
+    BResult,
+};
 use wgpu::{Adapter, Device, Instance, Queue, Surface, SurfaceConfiguration};
 use winit::{
     dpi::LogicalSize,

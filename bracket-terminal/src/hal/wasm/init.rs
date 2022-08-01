@@ -77,7 +77,8 @@ pub fn init_raw<S: ToString>(
     be.gl = Some(gl);
     be.quad_vao = Some(quad_vao);
     be.backing_buffer = Some(backing_fbo);
-    be.screen_scaler = ScreenScaler::new(platform_hints.desired_gutter, width_pixels, height_pixels);
+    be.screen_scaler =
+        ScreenScaler::new(platform_hints.desired_gutter, width_pixels, height_pixels);
 
     BACKEND_INTERNAL.lock().shaders = shaders;
 
@@ -100,6 +101,6 @@ pub fn init_raw<S: ToString>(
         post_scanlines: false,
         post_screenburn: false,
         screen_burn_color: bracket_color::prelude::RGB::from_f32(0.0, 1.0, 1.0),
-        mouse_visible: true
+        mouse_visible: true,
     })
 }

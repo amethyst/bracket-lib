@@ -7,7 +7,7 @@ mod hal;
 mod initializer;
 mod input;
 pub mod rex;
-pub use bracket_embedding::prelude::{EMBED, link_resource, embedded_resource};
+pub use bracket_embedding::prelude::{embedded_resource, link_resource, EMBED};
 
 pub type BResult<T> = anyhow::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 pub(crate) use input::clear_input_state;
@@ -24,7 +24,6 @@ pub mod prelude {
 
     pub use crate::bterm::*;
     pub use crate::consoles::*;
-    pub use bracket_embedding::prelude::{EMBED, link_resource, embedded_resource};
     pub use crate::gamestate::GameState;
     pub use crate::hal::{init_raw, BTermPlatform, Font, InitHints, Shader, BACKEND};
     pub use crate::initializer::*;
@@ -34,6 +33,7 @@ pub mod prelude {
     pub use crate::BResult;
     pub use crate::FontCharType;
     pub use bracket_color::prelude::*;
+    pub use bracket_embedding::prelude::{embedded_resource, link_resource, EMBED};
     pub use bracket_geometry::prelude::*;
     pub type BError = std::result::Result<(), Box<dyn std::error::Error + Send + Sync>>;
 

@@ -3,7 +3,7 @@ use crate::{
         apply_all_batches, default_gutter_size, replace_meshes, update_mouse_position,
         update_timing, window_resize, ScreenScaler,
     },
-    load_terminals, update_consoles, RandomNumbers, TerminalBuilderFont, TerminalLayer, fix_images,
+    fix_images, load_terminals, update_consoles, RandomNumbers, TerminalBuilderFont, TerminalLayer,
 };
 use bevy::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},

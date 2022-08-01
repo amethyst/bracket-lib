@@ -37,7 +37,12 @@ fn on_resize(
     //println!("{:#?}", physical_size);
     INPUT.lock().set_scale_factor(dpi_scale_factor);
     let mut be = BACKEND.lock();
-    be.screen_scaler.change_physical_size_smooth(physical_size.width, physical_size.height, dpi_scale_factor as f32, font_max_size);
+    be.screen_scaler.change_physical_size_smooth(
+        physical_size.width,
+        physical_size.height,
+        dpi_scale_factor as f32,
+        font_max_size,
+    );
     let (l, r, t, b) = be.screen_scaler.get_backing_buffer_output_coordinates();
     be.quad_vao = Some(setup_quad_gutter(be.gl.as_ref().unwrap(), l, r, t, b));
     if send_event {
@@ -60,13 +65,16 @@ fn on_resize(
         );
     }
     /*let new_fb = Framebuffer::build_fbo(
-        gl, 
-        physical_size.width as i32, 
+        gl,
+        physical_size.width as i32,
         physical_size.height as i32
     )?;
     be.backing_buffer = Some(new_fb);*/
     bterm.on_event(BEvent::Resized {
-        new_size: Point::new(be.screen_scaler.available_width, be.screen_scaler.available_height),
+        new_size: Point::new(
+            be.screen_scaler.available_width,
+            be.screen_scaler.available_height,
+        ),
         dpi_scale_factor: dpi_scale_factor as f32,
     });
 
@@ -76,7 +84,7 @@ fn on_resize(
         let new_fb = Framebuffer::build_fbo(
             gl,
             be.screen_scaler.available_width as i32,
-            be.screen_scaler.available_height as i32
+            be.screen_scaler.available_height as i32,
         )?;
         be.backing_buffer = Some(new_fb);
         be.screen_scaler.logical_size.0 = be.screen_scaler.available_width;
@@ -349,7 +357,12 @@ fn tock<GS: GameState>(
             .unwrap()
             .bind(be.gl.as_ref().unwrap());
         unsafe {
-            be.gl.as_ref().unwrap().viewport(0, 0, be.screen_scaler.logical_size.0 as i32, be.screen_scaler.logical_size.1 as i32);
+            be.gl.as_ref().unwrap().viewport(
+                0,
+                0,
+                be.screen_scaler.logical_size.0 as i32,
+                be.screen_scaler.logical_size.1 as i32,
+            );
         }
     }
 
@@ -384,7 +397,12 @@ fn tock<GS: GameState>(
             .default(be.gl.as_ref().unwrap());
         unsafe {
             // And clear it, resetting the viewport
-            be.gl.as_ref().unwrap().viewport(0, 0, be.screen_scaler.physical_size.0 as i32, be.screen_scaler.physical_size.1 as i32);
+            be.gl.as_ref().unwrap().viewport(
+                0,
+                0,
+                be.screen_scaler.physical_size.0 as i32,
+                be.screen_scaler.physical_size.1 as i32,
+            );
             be.gl.as_ref().unwrap().clear_color(0.0, 0.0, 0.0, 1.0);
             be.gl.as_ref().unwrap().clear(glow::COLOR_BUFFER_BIT);
 
