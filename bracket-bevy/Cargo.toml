@@ -1,9 +1,9 @@
 [package]
 name = "bracket-bevy"
-version = "0.1.0"
+version = "0.9.0"
 edition = "2021"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
-publish = false
+publish = true
 description = "ASCII/CP437 Psuedo-terminal for Bevy, based on bracket-lib. Aims to provide everything you need to produce a retro console experience using Bevy for the ECS and rendering."
 homepage = "https://github.com/thebracket/bracket-lib"
 repository = "https://github.com/thebracket/bracket-lib"
@@ -13,9 +13,8 @@ categories = ["game-engines", "graphics"]
 license = "MIT"
 
 [dependencies]
-# Using my version until my PR for colored vertex support is (hopefully) merged.
 bevy = "0.8"
-parking_lot = "0.11"
+parking_lot = "0.12"
 lazy_static = "1.4"
 bracket-random = { path = "../bracket-random" }
 bracket-color = { path = "../bracket-color", features = [ "bevy" ] }

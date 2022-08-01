@@ -25,7 +25,7 @@ rayon = { version = "1.5.0", optional = true }
 smallvec = "~1"
 
 [dev-dependencies]
-crossterm = "~0.19"
+crossterm = "~0.24"
 bracket-random = { path = "../bracket-random", version = "0.8.2" }
 bracket-color = { path = "../bracket-color", version = "~0.8.2", features = [ "palette" ] }
 criterion = "0.3.4"

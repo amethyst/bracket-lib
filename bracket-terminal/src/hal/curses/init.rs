@@ -15,7 +15,7 @@ pub fn init_raw<S: ToString>(
     pancurses::start_color();
     pancurses::mousemask(
         pancurses::ALL_MOUSE_EVENTS | pancurses::REPORT_MOUSE_POSITION,
-        std::ptr::null_mut(),
+        None,
     );
 
     // Setup basic color mapping
