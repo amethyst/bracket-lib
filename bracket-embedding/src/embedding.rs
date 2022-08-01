@@ -2,6 +2,7 @@ use lazy_static::*;
 use parking_lot::Mutex;
 use std::collections::HashMap;
 
+// These are included by default in `bracket-terminal`.
 const TERMINAL_8_8_BYTES: &[u8] =
     include_bytes!("../../bracket-terminal/resources/terminal8x8.png");
 const TERMINAL_8_16_BYTES: &[u8] = include_bytes!("../../bracket-terminal/resources/vga8x16.png");
@@ -10,12 +11,14 @@ lazy_static! {
     pub static ref EMBED: Mutex<Dictionary> = Mutex::new(Dictionary::new());
 }
 
+/// Stores a dictionary of resources, generally added via `embedded_resource!` and `link_resource!` macros.
 #[derive(Default)]
 pub struct Dictionary {
     entries: HashMap<String, &'static [u8]>,
 }
 
 impl Dictionary {
+    /// Create a new, empty dictionary.
     pub fn new() -> Dictionary {
         let mut dict = Dictionary {
             entries: HashMap::new(),
@@ -25,6 +28,7 @@ impl Dictionary {
         dict
     }
 
+    /// Request a resource, returning either a byte array or `None`.
     pub fn get_resource(&self, path: String) -> Option<&'static [u8]> {
         let fixed_path = if std::path::MAIN_SEPARATOR != '/' {
             path.replace(std::path::MAIN_SEPARATOR, "/")
@@ -38,6 +42,7 @@ impl Dictionary {
         None
     }
 
+    /// Insert a resource into the dictionary.
     pub fn add_resource(&mut self, path: String, bytes: &'static [u8]) {
         self.entries.insert(path, bytes);
     }
