@@ -3,7 +3,6 @@ use bracket_embedding::prelude::EMBED;
 use crate::BResult;
 use bracket_color::prelude::RGB;
 use glow::HasContext;
-use image::GenericImageView;
 
 #[derive(PartialEq, Clone)]
 /// BTerm's representation of a font or tileset file.
