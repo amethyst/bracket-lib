@@ -1,4 +1,4 @@
-use lazy_static::*;
+use lazy_static::lazy_static;
 use parking_lot::Mutex;
 use std::collections::HashMap;
 
@@ -19,6 +19,7 @@ pub struct Dictionary {
 
 impl Dictionary {
     /// Create a new, empty dictionary.
+    #[must_use]
     pub fn new() -> Dictionary {
         let mut dict = Dictionary {
             entries: HashMap::new(),
@@ -29,11 +30,12 @@ impl Dictionary {
     }
 
     /// Request a resource, returning either a byte array or `None`.
+    #[must_use]
     pub fn get_resource(&self, path: String) -> Option<&'static [u8]> {
-        let fixed_path = if std::path::MAIN_SEPARATOR != '/' {
-            path.replace(std::path::MAIN_SEPARATOR, "/")
+        let fixed_path = if std::path::MAIN_SEPARATOR == '/' {
+            path 
         } else {
-            path
+            path.replace(std::path::MAIN_SEPARATOR, "/")
         };
 
         if self.entries.contains_key(&fixed_path) {

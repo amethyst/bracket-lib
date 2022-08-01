@@ -18,7 +18,7 @@
 //! This crate isn't very useful on its own, but is heavily used by the other parts of `bracket-lib`.
 
 #![warn(clippy::all, clippy::pedantic, clippy::cargo)]
-#![warn(clippy::missing_docs)]
+#![allow(clippy::needless_doctest_main)]
 mod embedding;
 
 pub mod prelude {

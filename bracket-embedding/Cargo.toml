@@ -2,7 +2,7 @@
 name = "bracket-embedding"
 version = "0.8.0"
 edition = "2018"
-publish = false
+publish = true
 description = "Provides resource embedding services for bracket-lib"
 homepage = "https://github.com/thebracket/bracket-lib"
 repository = "https://github.com/thebracket/bracket-lib"
