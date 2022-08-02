@@ -2,7 +2,9 @@ use crate::prelude::{Bresenham, DistanceAlg, Point};
 
 /// Enumeration of available 2D Distance algorithms
 pub enum LineAlg {
+    /// Use Bresenham's rasterization algorithm for line definition
     Bresenham,
+    /// Use a vector approach to line solving.
     Vector,
 }
 

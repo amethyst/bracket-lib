@@ -2,13 +2,16 @@ use std::convert::{From, TryInto};
 use std::ops;
 use ultraviolet::Vec2;
 
+/// A 2D floating-point position.
 pub type PointF = Vec2;
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Eq, PartialEq, Copy, Clone, Debug, Hash)]
 /// Helper struct defining a 2D point in space.
 pub struct Point {
+    /// The point's X location
     pub x: i32,
+    /// The point's Y location
     pub y: i32,
 }
 
@@ -32,18 +35,19 @@ impl Point {
     }
 
     /// Create a new point from i32, this can be constant
+    #[must_use]
     pub const fn constant(x: i32, y: i32) -> Self {
         Point { x, y }
     }
 
-    // Create a zero point
+    /// Create a zero point
     #[inline]
     pub fn zero() -> Self {
         Point { x: 0, y: 0 }
     }
 
     #[inline]
-    // Create a point from a tuple of two i32s
+    /// Create a point from a tuple of two i32s
     pub fn from_tuple<T>(t: (T, T)) -> Self
     where
         T: TryInto<i32>,
@@ -53,6 +57,7 @@ impl Point {
 
     #[inline]
     /// Helper for map index conversion
+    #[must_use]
     pub fn to_index<T>(self, width: T) -> usize
     where
         T: TryInto<usize>,
@@ -64,11 +69,17 @@ impl Point {
     }
 
     /// Converts the point to an i32 tuple
+    #[must_use]
     pub fn to_tuple(self) -> (i32, i32) {
         (self.x, self.y)
     }
 
     /// Converts the point to a usize tuple
+    /// 
+    /// # Panics
+    /// 
+    /// This can panic if X or Y are not convertible to a `usize`.
+    #[must_use]
     pub fn to_unsigned_tuple(self) -> (usize, usize) {
         (
             self.x.try_into().ok().unwrap(),
@@ -77,6 +88,7 @@ impl Point {
     }
 
     /// Converts the point to an UltraViolet vec2
+    #[must_use]
     pub fn to_vec2(self) -> Vec2 {
         Vec2::new(self.x as f32, self.y as f32)
     }
@@ -89,13 +101,13 @@ impl Point {
     }
     */
 
-    /// Creates a point from an UltraViolet vec2
+    /// Creates a point from an `UltraViolet` vec2
     pub fn from_vec2(v: Vec2) -> Self {
         Self::new(v.x as i32, v.y as i32)
     }
 
     /*
-    /// Creates a point from an UltraViolet vec2i
+    /// Creates a point from an `UltraViolet` vec2i
     pub fn from_vec2i(v: Vec2i) -> Self {
         Self::new(v.x, v.y)
     }

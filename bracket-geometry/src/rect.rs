@@ -3,12 +3,17 @@ use std::collections::HashSet;
 use std::convert::TryInto;
 use std::ops;
 
+/// Defines a two-dimensional rectangle.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
 pub struct Rect {
+    /// The X position of the first point (typically the left)
     pub x1: i32,
+    /// The X position of the second point (typically the right)
     pub x2: i32,
+    /// The Y position of the first point (typically the top)
     pub y1: i32,
+    /// The Y position of the second point (typically the bottom)
     pub y2: i32,
 }
 
@@ -24,7 +29,7 @@ impl Default for Rect {
 }
 
 impl Rect {
-    // Create a new rectangle, specifying X/Y Width/Height
+    /// Create a new rectangle, specifying X/Y Width/Height
     pub fn with_size<T>(x: T, y: T, w: T, h: T) -> Rect
     where
         T: TryInto<i32>,
@@ -39,7 +44,7 @@ impl Rect {
         }
     }
 
-    // Create a new rectangle, specifying exact dimensions
+    /// Create a new rectangle, specifying exact dimensions
     pub fn with_exact<T>(x1: T, y1: T, x2: T, y2: T) -> Rect
     where
         T: TryInto<i32>,
@@ -52,7 +57,7 @@ impl Rect {
         }
     }
 
-    // Creates a zero rectangle
+    /// Creates a zero rectangle
     pub fn zero() -> Rect {
         Rect {
             x1: 0,
@@ -62,22 +67,25 @@ impl Rect {
         }
     }
 
-    // Returns true if this overlaps with other
+    /// Returns true if this overlaps with other
+    #[must_use]
     pub fn intersect(&self, other: &Rect) -> bool {
         self.x1 <= other.x2 && self.x2 >= other.x1 && self.y1 <= other.y2 && self.y2 >= other.y1
     }
 
-    // Returns the center of the rectangle
+    /// Returns the center of the rectangle
+    #[must_use]
     pub fn center(&self) -> Point {
         Point::new((self.x1 + self.x2) / 2, (self.y1 + self.y2) / 2)
     }
 
-    // Returns true if a point is inside the rectangle
+    /// Returns true if a point is inside the rectangle
+    #[must_use]
     pub fn point_in_rect(&self, point: Point) -> bool {
         point.x >= self.x1 && point.x < self.x2 && point.y >= self.y1 && point.y < self.y2
     }
 
-    // Calls a function for each x/y point in the rectangle
+    /// Calls a function for each x/y point in the rectangle
     pub fn for_each<F>(&self, mut f: F)
     where
         F: FnMut(Point),
@@ -89,7 +97,8 @@ impl Rect {
         }
     }
 
-    // Gets a set of all tiles in the rectangle
+    /// Gets a set of all tiles in the rectangle
+    #[must_use]
     pub fn point_set(&self) -> HashSet<Point> {
         let mut result = HashSet::new();
         for y in self.y1..self.y2 {
@@ -100,12 +109,14 @@ impl Rect {
         result
     }
 
-    // Returns the rectangle's width
+    /// Returns the rectangle's width
+    #[must_use]
     pub fn width(&self) -> i32 {
         i32::abs(self.x2 - self.x1)
     }
 
-    // Returns the rectangle's height
+    /// Returns the rectangle's height
+    #[must_use]
     pub fn height(&self) -> i32 {
         i32::abs(self.y2 - self.y1)
     }

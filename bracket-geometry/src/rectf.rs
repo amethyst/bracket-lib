@@ -2,12 +2,17 @@ use crate::prelude::PointF;
 use std::convert::TryInto;
 use std::ops;
 
+/// Defines a rectangle with floating-point coordinates.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(PartialEq, Copy, Clone, Debug)]
 pub struct RectF {
+    /// The X position of the first point (typically the left)
     pub x1: f32,
+    /// The X position of the second point (typically the right)
     pub x2: f32,
+    /// The Y position of the first point (typically the top)
     pub y1: f32,
+    /// The Y position of the second point (typically the bottom)
     pub y2: f32,
 }
 
@@ -23,7 +28,7 @@ impl Default for RectF {
 }
 
 impl RectF {
-    // Create a new rectangle, specifying X/Y Width/Height
+    /// Create a new rectangle, specifying X/Y Width/Height
     pub fn with_size<T>(x: T, y: T, w: T, h: T) -> RectF
     where
         T: TryInto<f32>,
@@ -38,7 +43,7 @@ impl RectF {
         }
     }
 
-    // Create a new rectangle, specifying exact dimensions
+    /// Create a new rectangle, specifying exact dimensions
     pub fn with_exact<T>(x1: T, y1: T, x2: T, y2: T) -> RectF
     where
         T: TryInto<f32>,
@@ -51,7 +56,8 @@ impl RectF {
         }
     }
 
-    // Creates a zero rectangle
+    /// Creates a zero rectangle
+    #[must_use]
     pub fn zero() -> RectF {
         RectF {
             x1: 0.0,
@@ -61,12 +67,14 @@ impl RectF {
         }
     }
 
-    // Returns true if this overlaps with other
+    /// Returns true if this overlaps with other
+    #[must_use]
     pub fn intersect(&self, other: &RectF) -> bool {
         self.x1 <= other.x2 && self.x2 >= other.x1 && self.y1 <= other.y2 && self.y2 >= other.y1
     }
 
-    // Returns the center of the rectangle
+    /// Returns the center of the rectangle
+    #[must_use]
     pub fn center(&self) -> PointF {
         PointF {
             x: (self.x1 + self.x2) / 2.0,
@@ -74,17 +82,20 @@ impl RectF {
         }
     }
 
-    // Returns true if a point is inside the rectangle
+    /// Returns true if a point is inside the rectangle
+    #[must_use]
     pub fn point_in_rect(&self, point: PointF) -> bool {
         point.x >= self.x1 && point.x < self.x2 && point.y >= self.y1 && point.y < self.y2
     }
 
-    // Returns the rectangle's width
+    /// Returns the rectangle's width
+    #[must_use]
     pub fn width(&self) -> f32 {
         f32::abs(self.x2 - self.x1)
     }
 
-    // Returns the rectangle's height
+    /// Returns the rectangle's height
+    #[must_use]
     pub fn height(&self) -> f32 {
         f32::abs(self.y2 - self.y1)
     }

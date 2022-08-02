@@ -1,3 +1,6 @@
+#![warn(clippy::all, clippy::pedantic, clippy::cargo)]
+#![warn(missing_docs)]
+
 //! This crate is part of the `bracket-lib` family.
 //!
 //! It provides point (2D and 3D), rectangle, line and circle plotting functionality.
@@ -71,6 +74,7 @@ mod point3;
 mod rect;
 mod rectf;
 
+/// Export the library into a prelude for convenience. See the main library declaration.
 pub mod prelude {
     pub use crate::angle::*;
     pub use crate::angles::*;

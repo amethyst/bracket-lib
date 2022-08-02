@@ -6,8 +6,11 @@ use ultraviolet::Vec3;
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 /// Helper struct defining a 2D point in space.
 pub struct Point3 {
+    /// The 3D point's X location
     pub x: i32,
+    /// The 3D point's Y location
     pub y: i32,
+    /// The 3D point's Z location
     pub z: i32,
 }
 
@@ -30,6 +33,7 @@ impl Point3 {
     }
 
     /// Create a point from an x/y/z tuple
+    #[must_use]
     pub fn from_tuple(t: (i32, i32, i32)) -> Self {
         Self {
             x: t.0,

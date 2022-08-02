@@ -2,6 +2,8 @@ use crate::prelude::Point;
 use core::iter::Iterator;
 use ultraviolet::Vec2;
 
+/// Define a line using a fast 2D vector. It may not be as pixel-perfect as Bresenham, but with vectorization it is sometimes
+/// faster for a quick line solution.
 pub struct VectorLine {
     end: Point,
     current_pos: Vec2,
@@ -11,6 +13,7 @@ pub struct VectorLine {
 }
 
 impl VectorLine {
+    /// Define a vector line between two points.
     pub fn new(start: Point, end: Point) -> Self {
         let current_pos = Vec2::new(start.x as f32 + 0.5, start.y as f32 + 0.5);
         let destination = Vec2::new(end.x as f32 + 0.5, end.y as f32 + 0.5);

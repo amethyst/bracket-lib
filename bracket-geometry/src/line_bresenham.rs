@@ -1,4 +1,4 @@
-//! Original at: https://github.com/mbr/bresenham-rs/blob/master/src/lib.rs
+//! Original at: <https://github.com/mbr/bresenham-rs/blob/master/src/lib.rs>
 //! Modified to use more BTerm-friendly types
 //!
 use crate::prelude::Point;
@@ -18,7 +18,7 @@ pub struct Bresenham {
 struct Octant(u8);
 
 impl Octant {
-    /// adapted from http://codereview.stackexchange.com/a/95551
+    /// adapted from <http://codereview.stackexchange.com/a/95551>
     #[inline]
     fn from_points(start: Point, end: Point) -> Octant {
         let mut dx = end.x - start.x;
@@ -36,11 +36,11 @@ impl Octant {
             let tmp = dx;
             dx = dy;
             dy = -tmp;
-            octant += 2
+            octant += 2;
         }
 
         if dx < dy {
-            octant += 1
+            octant += 1;
         }
 
         Octant(octant)
