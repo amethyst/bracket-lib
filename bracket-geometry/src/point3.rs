@@ -16,6 +16,11 @@ impl specs::prelude::Component for Point3 {
     type Storage = specs::prelude::VecStorage<Self>;
 }
 
+#[cfg(feature = "bevy")]
+impl bevy::ecs::component::Component for Point3 {
+    type Storage = bevy::ecs::component::TableStorage;
+}
+
 impl Point3 {
     /// Create a new point from an x/y/z coordinate.
     pub fn new<T>(x: T, y: T, z: T) -> Self
