@@ -135,19 +135,6 @@ impl DijkstraMap {
         RunThreaded::False
     }
 
-    #[cfg(feature = "threaded")]
-    fn build_helper_weighted(
-        dm: &mut DijkstraMap,
-        starts: &[(usize, f32)],
-        map: &dyn BaseMap,
-    ) -> RunThreaded {
-        if starts.len() >= THREADED_REQUIRED_STARTS {
-            DijkstraMap::build_parallel_weighted(dm, starts, map);
-            return RunThreaded::True;
-        }
-        RunThreaded::False
-    }
-
     /// Builds the Dijkstra map: iterate from each starting point, to each exit provided by BaseMap's
     /// exits implementation. Each step adds cost to the current depth, and is discarded if the new
     /// depth is further than the current depth.
