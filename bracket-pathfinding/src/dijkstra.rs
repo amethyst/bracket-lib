@@ -269,60 +269,6 @@ impl DijkstraMap {
         }
     }
 
-    #[cfg(feature = "threaded")]
-    fn build_parallel(dm: &mut DijkstraMap, starts: &[usize], map: &dyn BaseMap) {
-        let mapsize: usize = (dm.size_x * dm.size_y) as usize;
-        let mut layers: Vec<ParallelDm> = Vec::with_capacity(starts.len());
-        for start_chunk in starts.chunks(rayon::current_num_threads()) {
-            let mut layer = ParallelDm {
-                map: vec![MAX; mapsize],
-                max_depth: dm.max_depth,
-                starts: Vec::new(),
-            };
-            layer
-                .starts
-                .extend(start_chunk.iter().copied().map(|x| x as usize));
-            layers.push(layer);
-        }
-
-        let exits: Vec<SmallVec<[(usize, f32); 10]>> = (0..mapsize)
-            .map(|idx| map.get_available_exits(idx))
-            .collect();
-
-        // Run each map in parallel
-        layers.par_iter_mut().for_each(|l| {
-            let mut open_list: VecDeque<(usize, f32)> = VecDeque::with_capacity(mapsize);
-
-            for start in l.starts.iter().copied() {
-                open_list.push_back((start, 0.0));
-            }
-
-            while let Some((tile_idx, depth)) = open_list.pop_front() {
-                let exits = &exits[tile_idx];
-                for (new_idx, add_depth) in exits {
-                    let new_idx = *new_idx;
-                    let new_depth = depth + add_depth;
-                    let prev_depth = l.map[new_idx];
-                    if new_depth >= prev_depth {
-                        continue;
-                    }
-                    if new_depth >= l.max_depth {
-                        continue;
-                    }
-                    l.map[new_idx] = new_depth;
-                    open_list.push_back((new_idx, new_depth));
-                }
-            }
-        });
-
-        // Recombine down to a single result
-        for l in layers {
-            for i in 0..mapsize {
-                dm.map[i] = f32::min(dm.map[i], l.map[i]);
-            }
-        }
-    }
-
     /// Helper for traversing maps as path-finding. Provides the index of the lowest available
     /// exit from the specified position index, or None if there isn't one.
     /// You would use this for pathing TOWARDS a starting node.
