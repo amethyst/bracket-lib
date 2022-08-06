@@ -26,6 +26,7 @@ resolver = "2" # Enables the new Cargo resolution engine
 
 [features]
 default = [ "opengl" ]
+bevy = ["bracket-geometry/bevy"]
 specs = [ "bracket-geometry/specs" ]
 serde = [ "bracket-color/serde", "bracket-geometry/serde", "bracket-random/serde" ]
 threaded = [ "bracket-pathfinding/threaded" ]
