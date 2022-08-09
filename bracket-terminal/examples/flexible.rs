@@ -62,7 +62,6 @@ fn main() -> BError {
         .build()?;
 
     context.with_post_scanlines(true);
-    context.with_post_scanlines(true);
 
     let gs = State {
         x: 0.0,
