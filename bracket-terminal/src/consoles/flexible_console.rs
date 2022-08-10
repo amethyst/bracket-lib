@@ -106,13 +106,21 @@ impl Console for FlexiConsole {
     /// Clear the screen.
     fn cls(&mut self) {
         self.is_dirty = true;
-        self.tiles.clear();
+        for tile in &mut self.tiles {
+            tile.glyph = 32;
+            tile.fg = RGBA::from_u8(255, 255, 255, 255);
+            tile.bg = RGBA::from_u8(0, 0, 0, 255);
+        }
     }
 
     /// Clear the screen. Since we don't HAVE a background, it doesn't use it.
     fn cls_bg(&mut self, _background: RGBA) {
         self.is_dirty = true;
-        self.tiles.clear();
+        for tile in &mut self.tiles {
+            tile.glyph = 32;
+            tile.fg = RGBA::from_u8(255, 255, 255, 255);
+            tile.bg = RGBA::from_u8(0, 0, 0, 255);
+        }
     }
 
     /// Prints a string to an x/y position.
