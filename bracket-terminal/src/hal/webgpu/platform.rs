@@ -48,6 +48,7 @@ pub struct InitHints {
     pub frame_sleep_time: Option<f32>,
     pub resize_scaling: bool,
     pub desired_gutter: u32,
+    pub fitscreen: bool,
 }
 
 impl InitHints {
@@ -58,6 +59,7 @@ impl InitHints {
             frame_sleep_time: None,
             resize_scaling: false,
             desired_gutter: default_gutter_size(),
+            fitscreen: false,
         }
     }
 }
