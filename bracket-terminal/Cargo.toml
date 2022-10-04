@@ -2,7 +2,7 @@
 name = "bracket-terminal"
 version = "0.8.7"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
-edition = "2018"
+edition = "2021"
 publish = true
 description = "ASCII/Codepage 437 terminal emulator with a game loop. Defaults to OpenGL, also support WebGPU (for Vulkan/Metal/WGPU), Curses and Crossterm for output. Part of the bracket-lib family."
 homepage = "https://github.com/thebracket/bracket-lib"

@@ -2,7 +2,7 @@
 name = "bracket-pathfinding"
 version = "0.8.7"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
-edition = "2018"
+edition = "2021"
 publish = true
 description = "Pathfinding and field-of view utilities. A Star, Dijkstra. Part of the bracket-lib family."
 homepage = "https://github.com/thebracket/bracket-lib"

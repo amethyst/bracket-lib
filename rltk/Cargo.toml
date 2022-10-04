@@ -2,7 +2,7 @@
 name = "rltk"
 version = "0.8.7"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
-edition = "2018"
+edition = "2021"
 publish = true
 description = "A CP437/ASCII terminal library and helpers to make creating roguelike games in Rust easy. Similar to libtcod, but aiming to be Rust-native."
 homepage = "https://github.com/thebracket/bracket-lib"

@@ -2,7 +2,7 @@
 name = "bracket-geometry"
 version = "0.8.7"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
-edition = "2018"
+edition = "2021"
 publish = true
 description = "Geometry utilities. Rect, lines, circles, distance calculations. Part of the bracket-lib family."
 homepage = "https://github.com/thebracket/bracket-lib"

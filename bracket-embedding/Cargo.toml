@@ -1,7 +1,7 @@
 [package]
 name = "bracket-embedding"
 version = "0.8.7"
-edition = "2018"
+edition = "2021"
 publish = true
 description = "Provides resource embedding services for bracket-lib"
 homepage = "https://github.com/thebracket/bracket-lib"

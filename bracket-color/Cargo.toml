@@ -2,7 +2,7 @@
 name = "bracket-color"
 version = "0.8.7"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
-edition = "2018"
+edition = "2021"
 publish = true
 description = "RGB and HSV color handling and utilities, including lerp and W3C named colors. Part of the bracket-lib family."
 homepage = "https://github.com/thebracket/bracket-lib"

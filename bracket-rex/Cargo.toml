@@ -1,8 +1,8 @@
 [package]
 name = "bracket-rex"
 version = "0.8.7"
-edition = "2018"
-publish = false
+edition = "2021"
+publish = true
 description = "Load/save REX Paint files and utilize them in bracket-terminal projects."
 homepage = "https://github.com/thebracket/bracket-lib"
 repository = "https://github.com/thebracket/bracket-lib"

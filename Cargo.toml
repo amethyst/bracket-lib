@@ -2,7 +2,7 @@
 name = "bracket-lib"
 version = "0.8.7"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
-edition = "2018"
+edition = "2021"
 publish = true
 description = "Meta-crate holding the entirety of bracket-lib (and exposing it). Use this for the full roguelike toolkit experience."
 homepage = "https://github.com/thebracket/bracket-lib"
