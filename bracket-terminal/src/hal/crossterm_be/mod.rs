@@ -18,6 +18,7 @@ pub struct InitHints {
     pub vsync: bool,
     pub fullscreen: bool,
     pub frame_sleep_time: Option<f32>,
+    pub fitscreen: bool,
 }
 
 impl InitHints {
@@ -26,6 +27,7 @@ impl InitHints {
             vsync: true,
             fullscreen: false,
             frame_sleep_time: None,
+            fitscreen: false,
         }
     }
 }
