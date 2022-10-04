@@ -100,6 +100,24 @@ impl Bresenham {
             octant,
         }
     }
+
+        /// Return the next point without checking if we are past `end`.
+        #[inline]
+        pub fn advance(&mut self) -> Point {
+            let p = Point::new(self.x, self.y);
+    
+            if self.diff >= 0 {
+                self.y += 1;
+                self.diff -= self.dx;
+            }
+    
+            self.diff += self.dy;
+    
+            // loop inc
+            self.x += 1;
+    
+            self.octant.from_octant0(p)
+        }
 }
 
 impl Iterator for Bresenham {
@@ -108,80 +126,138 @@ impl Iterator for Bresenham {
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         if self.x >= self.x1 {
-            return None;
+            None
+        } else {
+            Some(self.advance())
         }
+    }
+}
 
-        let p = Point::new(self.x, self.y);
+/// New type over `Bresenham` which include the `end` points when iterated over.
+pub struct BresenhamInclusive(Bresenham);
+impl BresenhamInclusive {
+    /// Creates a new iterator. Yields points `start..=end`.
+    #[inline]
+    pub fn new(start: Point, end: Point) -> Self {
+        Self(Bresenham::new(start, end))
+    }
 
-        if self.diff >= 0 {
-            self.y += 1;
-            self.diff -= self.dx;
+    /// Return the next point without checking if we are past `end`.
+    #[inline]
+    pub fn advance(&mut self) -> Point {
+        self.0.advance()
+    }
+}
+impl Iterator for BresenhamInclusive {
+    type Item = Point;
+
+    #[inline]
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.0.x > self.0.x1 {
+            None
+        } else {
+            Some(self.0.advance())
         }
-
-        self.diff += self.dy;
-
-        // loop inc
-        self.x += 1;
-
-        Some(self.octant.from_octant0(p))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{Bresenham, Point};
+    use super::*;
     use std::vec::Vec;
 
     #[test]
-    fn test_wp_example() {
-        let bi = Bresenham::new(Point::new(0, 1), Point::new(6, 4));
+    fn test_empty() {
+        let bi = Bresenham::new(Point::new(0, 0), Point::new(0, 0));
         let res: Vec<_> = bi.collect();
+        assert_eq!(res, []);
 
-        assert_eq!(
-            res,
-            [
-                Point::new(0, 1),
-                Point::new(1, 1),
-                Point::new(2, 2),
-                Point::new(3, 2),
-                Point::new(4, 3),
-                Point::new(5, 3)
-            ]
-        )
+        let bi = BresenhamInclusive::new(Point::new(0, 0), Point::new(0, 0));
+        let res: Vec<_> = bi.collect();
+        assert_eq!(res, [Point::new(0, 0)]);
+
+        let mut bi = BresenhamInclusive::new(Point::new(0, 0), Point::new(0, 0));
+        bi.advance();
+        let res: Vec<_> = bi.collect();
+        assert_eq!(res, []);
+    }
+
+    #[test]
+    fn test_wp_example() {
+        let start = Point::new(0, 1);
+        let end = Point::new(6, 4);
+
+        let bi = Bresenham::new(start, end);
+        let res: Vec<_> = bi.collect();
+        let mut expected = vec![
+            Point::new(0, 1),
+            Point::new(1, 1),
+            Point::new(2, 2),
+            Point::new(3, 2),
+            Point::new(4, 3),
+            Point::new(5, 3)
+        ];
+        assert_eq!(res, expected);
+
+        let bi = BresenhamInclusive::new(start, end);
+        let res: Vec<_> = bi.collect();
+        expected.push(end);
+        assert_eq!(res, expected);
     }
 
     #[test]
     fn test_inverse_wp() {
-        let bi = Bresenham::new(Point::new(6, 4), Point::new(0, 1));
-        let res: Vec<_> = bi.collect();
+        let start = Point::new(6, 4);
+        let end = Point::new(0, 1);
 
-        assert_eq!(
-            res,
-            [
-                Point::new(6, 4),
-                Point::new(5, 4),
-                Point::new(4, 3),
-                Point::new(3, 3),
-                Point::new(2, 2),
-                Point::new(1, 2)
-            ]
-        )
+        let bi = Bresenham::new(start, end);
+        let res: Vec<_> = bi.collect();
+        let mut expected = vec![
+            Point::new(6, 4),
+            Point::new(5, 4),
+            Point::new(4, 3),
+            Point::new(3, 3),
+            Point::new(2, 2),
+            Point::new(1, 2)
+        ];
+        assert_eq!(res, expected);
+
+        let bi = BresenhamInclusive::new(start, end);
+        let res: Vec<_> = bi.collect();
+        expected.push(end);
+        assert_eq!(res, expected);
     }
 
     #[test]
     fn test_straight_hline() {
-        let bi = Bresenham::new(Point::new(2, 3), Point::new(5, 3));
-        let res: Vec<_> = bi.collect();
+        let start = Point::new(2, 3);
+        let end = Point::new(5, 3);
 
-        assert_eq!(res, [Point::new(2, 3), Point::new(3, 3), Point::new(4, 3)]);
+        let bi = Bresenham::new(start, end);
+        let res: Vec<_> = bi.collect();
+        let mut expected = vec![Point::new(2, 3), Point::new(3, 3), Point::new(4, 3)];
+        assert_eq!(res, expected);
+
+        let bi = BresenhamInclusive::new(start, end);
+        let res: Vec<_> = bi.collect();
+        expected.push(end);
+        assert_eq!(res, expected);
     }
 
     #[test]
     fn test_straight_vline() {
-        let bi = Bresenham::new(Point::new(2, 3), Point::new(2, 6));
-        let res: Vec<_> = bi.collect();
+        let start = Point::new(2, 3);
+        let end = Point::new(2, 6);
 
-        assert_eq!(res, [Point::new(2, 3), Point::new(2, 4), Point::new(2, 5)]);
+        let bi = Bresenham::new(start, end);
+        let res: Vec<_> = bi.collect();
+        let mut expected = vec![Point::new(2, 3), Point::new(2, 4), Point::new(2, 5)];
+        assert_eq!(res, expected);
+
+        let bi = BresenhamInclusive::new(start, end);
+        let res: Vec<_> = bi.collect();
+        expected.push(end);
+        assert_eq!(res, expected);
     }
 
     #[test]
