@@ -12,12 +12,15 @@ keywords = ["roguelike", "gamedev", "RGB", "HSV", "color"]
 categories = ["game-engines", "graphics"]
 license = "MIT"
 
+[features]
+serde = ["bracket-color/serde"]
+
 [dependencies]
 bevy = "0.8"
 parking_lot = "0.12"
 lazy_static = "1.4"
 bracket-random = { path = "../bracket-random" }
-bracket-color = { path = "../bracket-color", features = [ "bevy" ] }
+bracket-color = { path = "../bracket-color", features = ["bevy"] }
 bracket-geometry = { path = "../bracket-geometry", version = "~0.8.3" }
 
 [dev-dependencies]
