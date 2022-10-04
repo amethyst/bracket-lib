@@ -109,7 +109,7 @@ impl AStar {
         let s = Node {
             idx,
             f: q.g + cost + distance_to_end,
-            g: q.g + cost,
+            g: cost,
         };
 
         // If a node with the same position as successor is in the open list with a lower f, skip add
