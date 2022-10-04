@@ -15,11 +15,13 @@ pub fn init_raw<S: ToString>(
 ) -> BResult<BTerm> {
     let mut scaler = ScreenScaler::new(platform_hints.desired_gutter, width_pixels, height_pixels);
     let el = EventLoop::new();
+    let window_size = scaler.new_window_size();
+    let window_size = glutin::dpi::LogicalSize::new(window_size.width, window_size.height);
     let wb = WindowBuilder::new()
         .with_title(window_title.to_string())
         .with_resizable(platform_hints.fitscreen)
-        .with_min_inner_size(scaler.new_window_size())
-        .with_inner_size(scaler.new_window_size());
+        .with_min_inner_size(window_size)
+        .with_inner_size(window_size);
     let windowed_context = ContextBuilder::new()
         .with_gl(platform_hints.gl_version)
         .with_gl_profile(platform_hints.gl_profile)
