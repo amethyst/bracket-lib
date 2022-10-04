@@ -1,25 +1,28 @@
 [package]
-name = "bracket-bevy"
-version = "0.9.0"
-edition = "2021"
-authors = ["Herbert Wolverson <herberticus@gmail.com>"]
-publish = true
+authors     = ["Herbert Wolverson <herberticus@gmail.com>"]
+categories  = ["game-engines", "graphics"]
 description = "ASCII/CP437 Psuedo-terminal for Bevy, based on bracket-lib. Aims to provide everything you need to produce a retro console experience using Bevy for the ECS and rendering."
-homepage = "https://github.com/thebracket/bracket-lib"
-repository = "https://github.com/thebracket/bracket-lib"
-readme = "README.md"
-keywords = ["roguelike", "gamedev", "RGB", "HSV", "color"]
-categories = ["game-engines", "graphics"]
-license = "MIT"
+edition     = "2021"
+homepage    = "https://github.com/thebracket/bracket-lib"
+keywords    = ["roguelike", "gamedev", "RGB", "HSV", "color"]
+license     = "MIT"
+name        = "bracket-bevy"
+publish     = true
+readme      = "README.md"
+repository  = "https://github.com/thebracket/bracket-lib"
+version     = "0.9.0"
+
+[features]
+serde = ["bracket-color/serde"]
 
 [dependencies]
-bevy = "0.8"
-parking_lot = "0.12"
-lazy_static = "1.4"
-bracket-random = { path = "../bracket-random" }
-bracket-color = { path = "../bracket-color", features = [ "bevy" ] }
-bracket-geometry = { path = "../bracket-geometry", version = "~0.8", features = [ "bevy" ] }
+bevy             = "0.8"
+bracket-color    = { path = "../bracket-color", features = ["bevy"] }
+bracket-geometry = { path = "../bracket-geometry", version = "~0.8", features = ["bevy"] }
+bracket-random   = { path = "../bracket-random" }
+lazy_static      = "1.4"
+parking_lot      = "0.12"
 
 [dev-dependencies]
+bracket-noise       = { path = "../bracket-noise", version = "~0.8" }
 bracket-pathfinding = { path = "../bracket-pathfinding", version = "~0.8" }
-bracket-noise = { path = "../bracket-noise", version = "~0.8" }
