@@ -1,6 +1,7 @@
 use bracket_terminal::prelude::*;
 #[cfg(feature = "opengl")]
 use glow::HasContext;
+use glow::{NativeVertexArray, NativeBuffer};
 use std::mem;
 
 bracket_terminal::add_wasm_support!();
@@ -93,8 +94,8 @@ fn gl_render(gs: &mut dyn std::any::Any, gl: &glow::Context) {
 struct State {
     setup_gl: bool,
     my_shader: Option<Shader>,
-    vao: Option<u32>,
-    vbo: Option<u32>,
+    vao: Option<NativeVertexArray>,
+    vbo: Option<NativeBuffer>,
 }
 
 #[cfg(target_arch = "wasm32")]
