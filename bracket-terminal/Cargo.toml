@@ -1,6 +1,6 @@
 [package]
 name = "bracket-terminal"
-version = "0.8.5"
+version = "0.8.7"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = true
@@ -16,10 +16,10 @@ exclude = [
 ]
 
 [dependencies]
-bracket-color = { path = "../bracket-color", version = "~0.8.2", features = [ "palette" ] }
-bracket-geometry = { path = "../bracket-geometry", version = "~0.8.3" }
-bracket-rex = { path = "../bracket-rex", version = "~0.8.0" }
-bracket-embedding = { path = "../bracket-embedding", version = "~0.8.0" }
+bracket-color = { path = "../bracket-color", version = "~0.8", features = [ "palette" ] }
+bracket-geometry = { path = "../bracket-geometry", version = "~0.8" }
+bracket-rex = { path = "../bracket-rex", version = "~0.8" }
+bracket-embedding = { path = "../bracket-embedding", version = "~0.8" }
 lazy_static = "1.4.0"
 object-pool = "0.5.3"
 glow = { version = "~0.11", optional = true }
@@ -49,9 +49,9 @@ cross_term = [ "crossterm", "ctrlc" ]
 webgpu = [ "wgpu", "pollster", "image", "bytemuck", "png" ]
 
 [dev-dependencies]
-bracket-random = { path = "../bracket-random", version = "~0.8.2" }
-bracket-pathfinding = { path = "../bracket-pathfinding", version = "~0.8.4" }
-bracket-noise = { path = "../bracket-noise", version = "~0.8.2" }
+bracket-random = { path = "../bracket-random", version = "~0.8" }
+bracket-pathfinding = { path = "../bracket-pathfinding", version = "~0.8" }
+bracket-noise = { path = "../bracket-noise", version = "~0.8" }
 criterion = "~0.4"
 
 [target.wasm32-unknown-unknown.dependencies]
@@ -60,7 +60,7 @@ web-sys = { version = "0.3", features=["console", "Attr", "CanvasRenderingContex
     "MouseEvent"] }
 wasm-bindgen = "0.2"
 wasm-timer = "0.1.0"
-rand = { version = "0.8.3", default-features = false }
+rand = { version = "0.8", default-features = false }
 console_error_panic_hook = "0.1.6"
 winit = { version = "0.26" }
 

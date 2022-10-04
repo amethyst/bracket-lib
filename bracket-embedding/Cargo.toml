@@ -1,6 +1,6 @@
 [package]
 name = "bracket-embedding"
-version = "0.8.0"
+version = "0.8.7"
 edition = "2018"
 publish = true
 description = "Provides resource embedding services for bracket-lib"

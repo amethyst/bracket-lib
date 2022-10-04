@@ -1,6 +1,6 @@
 [package]
 name = "bracket-noise"
-version = "0.8.2"
+version = "0.8.7"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = true
@@ -15,8 +15,8 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bracket-random = { path = "../bracket-random", version = "~0.8.2" }
+bracket-random = { path = "../bracket-random", version = "~0.8" }
 
 [dev-dependencies]
 crossterm = "~0.25"
-bracket-color = { path = "../bracket-color", version = "~0.8.2", features = [ "palette" ] }
+bracket-color = { path = "../bracket-color", version = "~0.8", features = [ "palette" ] }

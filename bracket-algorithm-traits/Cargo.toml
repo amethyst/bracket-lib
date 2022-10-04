@@ -1,6 +1,6 @@
 [package]
 name = "bracket-algorithm-traits"
-version = "0.8.2"
+version = "0.8.7"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
 publish = true
@@ -15,5 +15,5 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bracket-geometry = { path = "../bracket-geometry", version = "~0.8.2" }
+bracket-geometry = { path = "../bracket-geometry", version = "~0.8" }
 smallvec = "~1"
