@@ -5,6 +5,8 @@ use crate::prelude::{
 use bracket_color::prelude::RGBA;
 use bracket_geometry::prelude::{PointF, Rect};
 use bracket_rex::prelude::XpColor;
+use ultraviolet::Vec2;
+
 use std::any::Any;
 
 /// Internal storage structure for sparse tiles.
@@ -106,11 +108,17 @@ impl Console for FlexiConsole {
     /// Clear the screen.
     fn cls(&mut self) {
         self.is_dirty = true;
-        for tile in &mut self.tiles {
-            tile.glyph = 32;
-            tile.fg = RGBA::from_u8(255, 255, 255, 255);
-            tile.bg = RGBA::from_u8(0, 0, 0, 255);
-        }
+        self.tiles.clear();
+
+        self.tiles.push(FlexiTile {
+            glyph: 32,
+            fg: RGBA::from_u8(255, 255, 255, 255),
+            bg: RGBA::from_u8(0, 0, 0, 255),
+            rotation: 0.,
+            scale: Vec2::new(0., 0.),
+            z_order: 0,
+            position: Vec2::new(0., 0.),
+        });
     }
 
     /// Clear the screen. Since we don't HAVE a background, it doesn't use it.
