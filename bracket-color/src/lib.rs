@@ -31,20 +31,20 @@
 extern crate lazy_static;
 
 /// Import color pair support
-mod color_pair;
+pub mod color_pair;
 /// Import HSV color support
-mod hsv;
+pub mod hsv;
 /// Import Lerp as an iterator
-mod lerpit;
+pub mod lerpit;
 /// Import library of named colors
-mod named;
+pub mod named;
 /// Import Palette support
 #[cfg(feature = "palette")]
-mod palette;
+pub mod palette;
 /// Import RGB color support
-mod rgb;
+pub mod rgb;
 /// Import RGBA color support
-mod rgba;
+pub mod rgba;
 
 /// Exports the color functions/types in the `prelude` namespace.
 pub mod prelude {
