@@ -23,6 +23,7 @@ exclude = [
     "screenshots"
 ]
 resolver = "2" # Enables the new Cargo resolution engine
+incremental = false # Causing issues with Windows builds
 
 [features]
 default = [ "opengl" ]
@@ -56,5 +57,4 @@ members = [
     "rltk",
     "bracket-rex",
     "bracket-embedding",
-    "bracket-bevy"
 ]
