@@ -3,14 +3,17 @@ use std::ops;
 use ultraviolet::Vec3;
 
 #[cfg(feature = "bevy")]
+use bevy::ecs::reflect::ReflectComponent;
+#[cfg(feature = "bevy")]
 use bevy::prelude::Reflect;
 
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(
     feature = "bevy",
     derive(bevy::ecs::component::Component, bevy::prelude::Reflect)
 )]
-#[derive(Eq, PartialEq, Copy, Clone, Debug)]
+#[cfg_attr(feature = "bevy", reflect(Component))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Default, Eq, PartialEq, Copy, Clone, Debug)]
 /// Helper struct defining a 2D point in space.
 pub struct Point3 {
     /// The 3D point's X location

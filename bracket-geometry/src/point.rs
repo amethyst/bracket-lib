@@ -3,17 +3,20 @@ use std::ops;
 use ultraviolet::Vec2;
 
 #[cfg(feature = "bevy")]
+use bevy::ecs::reflect::ReflectComponent;
+#[cfg(feature = "bevy")]
 use bevy::prelude::Reflect;
 
 /// A 2D floating-point position.
 pub type PointF = Vec2;
 
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(
     feature = "bevy",
     derive(bevy::ecs::component::Component, bevy::prelude::Reflect)
 )]
-#[derive(Eq, PartialEq, Copy, Clone, Debug, Hash)]
+#[cfg_attr(feature = "bevy", reflect(Component))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Default, Eq, PartialEq, Copy, Clone, Debug, Hash)]
 /// Helper struct defining a 2D point in space.
 pub struct Point {
     /// The point's X location
