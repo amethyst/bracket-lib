@@ -1,11 +1,13 @@
 #[allow(unused_imports)]
 use crate::BResult;
-use glow::{HasContext, NativeFramebuffer, NativeTexture};
+use glow::HasContext;
+
+use super::{FramebufferId, TextureId};
 
 #[cfg(not(target_arch = "wasm32"))]
 pub struct Framebuffer {
-    fbo: NativeFramebuffer,
-    pub texture: NativeTexture,
+    fbo: FramebufferId,
+    pub texture: TextureId,
 }
 
 #[cfg(target_arch = "wasm32")]
