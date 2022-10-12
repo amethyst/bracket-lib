@@ -15,6 +15,7 @@ resolver = "2"                                                                  
 
 [features]
 default = ["opengl"]
+bevy = ["bracket-lib/bevy"]
 specs = ["bracket-lib/specs"]
 serde = ["bracket-lib/serde"]
 threaded = ["bracket-lib/threaded"]
