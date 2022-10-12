@@ -378,6 +378,10 @@ impl Console for VirtualConsole {
         panic!("Unsupported on virtual consoles.");
     }
 
+    fn get_offset(&self) -> (f32, f32) {
+        (0.0, 0.0)
+    }
+
     fn set_scale(&mut self, _scale: f32, _center_x: i32, _center_y: i32) {
         panic!("Unsupported on virtual consoles.");
     }

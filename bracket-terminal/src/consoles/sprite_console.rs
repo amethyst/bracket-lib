@@ -224,6 +224,10 @@ impl Console for SpriteConsole {
     /// character size; so -0.5 will offset half a character to the left/top.
     fn set_offset(&mut self, _x: f32, _y: f32) {}
 
+    fn get_offset(&self) -> (f32, f32) {
+        (0.0, 0.0)
+    }
+
     fn set_scale(&mut self, _scale: f32, _center_x: i32, _center_y: i32) {}
 
     fn get_scale(&self) -> (f32, i32, i32) {
