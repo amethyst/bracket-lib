@@ -22,6 +22,7 @@ opengl = [ "bracket-lib/opengl" ]
 curses = [ "bracket-lib/curses" ]
 crossterm = [ "bracket-lib/crossterm" ]
 webgpu = [ "bracket-lib/webgpu" ]
+low_cpu = [ "bracket-lib/low_cpu" ]
 
 [dependencies]
 bracket-lib = { path = "../", version = "~0.8.1", default-features = false }

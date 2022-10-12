@@ -33,6 +33,7 @@ opengl = [ "bracket-terminal/opengl" ]
 curses = [ "bracket-terminal/curses" ]
 crossterm = [ "bracket-terminal/cross_term" ]
 webgpu = [ "bracket-terminal/webgpu" ]
+low_cpu = ["bracket-terminal/low_cpu"]
 
 [dependencies]
 bracket-algorithm-traits = { path = "./bracket-algorithm-traits", version = "~0.8.2" }
