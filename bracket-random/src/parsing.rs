@@ -1,6 +1,7 @@
-use regex::Regex;
+use std::convert::From;
 use std::error;
 use std::fmt;
+use std::str::FromStr;
 
 #[cfg(feature = "serde")]
 use serde_crate::{Deserialize, Serialize};
@@ -31,19 +32,51 @@ impl DiceType {
 impl Default for DiceType {
     fn default() -> DiceType {
         DiceType {
-            n_dice: 1,
-            die_type: 4,
+            n_dice: 0,
+            die_type: 0,
             bonus: 0,
         }
     }
 }
 
+#[cfg(feature = "parsing")]
+impl FromStr for DiceType {
+    type Err = DiceParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        parse_dice_string(s)
+    }
+}
+
+#[cfg(feature = "parsing")]
+impl From<&str> for DiceType {
+    fn from(text: &str) -> Self {
+        match parse_dice_string(text) {
+            Ok(d) => d,
+            Err(text) => panic!("Failed to convert dice string: {}", text.0),
+        }
+    }
+}
+
+impl fmt::Display for DiceType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self.n_dice {
+            0 => write!(f, "{}", self.bonus),
+            _x => match self.bonus {
+                0 => write!(f, "{}d{}", self.n_dice, self.die_type),
+                _x if _x > 0 => write!(f, "{}d{}+{}", self.n_dice, self.die_type, self.bonus),
+                _y => write!(f, "{}d{}{}", self.n_dice, self.die_type, self.bonus),
+            },
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
-pub struct DiceParseError;
+pub struct DiceParseError(String);
 
 impl std::fmt::Display for DiceParseError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Invalid dice string")
+        write!(f, "Invalid dice string: {}", self.0)
     }
 }
 
@@ -56,43 +89,54 @@ impl error::Error for DiceParseError {
 
 #[allow(dead_code)]
 // Parses a dice string, of the type "1d6+3", "3d8-4" or "1d20".
+// It also parses ranges like "8-12" or constants like "9".
 #[cfg(feature = "parsing")]
-pub fn parse_dice_string(dice: &str) -> Result<DiceType, DiceParseError> {
-    let dice = &dice.split_whitespace().collect::<Vec<_>>().join("");
-    lazy_static! {
-        static ref DICE_RE: Regex = Regex::new(r"(\d+)d(\d+)([\+\-]\d+)?").unwrap();
-    }
-    let mut result: DiceType = DiceType::default();
-    let mut did_something = false;
-    for cap in DICE_RE.captures_iter(dice) {
-        did_something = true;
-        if let Some(group) = cap.get(1) {
-            match group.as_str().parse::<i32>() {
-                Ok(number) => result.n_dice = number,
-                Err(_) => return Err(DiceParseError {}),
-            }
-        } else {
-            return Err(DiceParseError {});
+pub fn parse_dice_string(text: &str) -> Result<DiceType, DiceParseError> {
+    let mut dice = text.trim();
+    if dice.contains(&['d', 'D']) {
+        let mut plus = 0_i32;
+
+        if dice.contains("-") {
+            let mut split = dice.split("-").map(|p| p.trim());
+            dice = split.next().unwrap();
+            plus = 0 - split.next().unwrap_or("0").parse().unwrap_or(0);
+        } else if dice.contains("+") {
+            let mut split = dice.split("+").map(|p| p.trim());
+            dice = split.next().unwrap();
+            plus = split.next().unwrap_or("0").parse().unwrap_or(0);
         }
-        if let Some(group) = cap.get(2) {
-            match group.as_str().parse::<i32>() {
-                Ok(number) => result.die_type = number,
-                Err(_) => return Err(DiceParseError {}),
-            }
-        } else {
-            return Err(DiceParseError {});
+
+        let parts: Vec<&str> = dice.split(&['d', 'D']).map(|p| p.trim()).collect();
+        if parts.len() == 1 {
+            return Err(DiceParseError(dice.to_string()));
+        } else if parts.len() == 2 {
+            let count = match parts[0].len() {
+                0 => 1_i32,
+                _ => match parts[0].parse() {
+                    Ok(v) => v,
+                    Err(_) => return Err(DiceParseError(dice.to_string())),
+                },
+            };
+            let sides = parts[1].parse().unwrap_or(0_i32);
+            return Ok(DiceType::new(count, sides, plus));
         }
-        if let Some(group) = cap.get(3) {
-            match group.as_str().parse::<i32>() {
-                Ok(number) => result.bonus = number,
-                Err(_) => return Err(DiceParseError {}),
-            }
-        }
+    } else if dice.contains("-") && !dice.starts_with("-") {
+        let mut split = dice.split("-").map(|p| p.trim());
+        let low: i32 = split.next().unwrap().trim().parse().unwrap_or(0);
+        let hi: i32 = split.next().unwrap().trim().parse().unwrap_or(0);
+
+        let count = 1;
+        let sides = hi - low + 1;
+        let plus = low as i32 - 1;
+        return Ok(DiceType::new(count, sides, plus));
+    } else {
+        let plus = match dice.trim().parse() {
+            Ok(v) => v,
+            Err(_) => return Err(DiceParseError(dice.to_string())),
+        };
+        return Ok(DiceType::new(0, 0, plus));
     }
-    if !did_something {
-        return Err(DiceParseError {});
-    }
-    Ok(result)
+    Err(DiceParseError(dice.to_string()))
 }
 
 #[cfg(test)]
@@ -102,6 +146,23 @@ mod tests {
     #[test]
     fn parse_1d6() {
         assert_eq!(parse_dice_string("1d6").unwrap(), DiceType::new(1, 6, 0));
+        assert_eq!(parse_dice_string("1 d6").unwrap(), DiceType::new(1, 6, 0));
+        assert_eq!(parse_dice_string("1D6").unwrap(), DiceType::new(1, 6, 0));
+        assert_eq!(parse_dice_string("1D 6").unwrap(), DiceType::new(1, 6, 0));
+    }
+
+    #[test]
+    fn parse_const() {
+        assert_eq!(parse_dice_string("6").unwrap(), DiceType::new(0, 0, 6));
+        assert_eq!(parse_dice_string("16").unwrap(), DiceType::new(0, 0, 16));
+        assert_eq!(parse_dice_string("-6").unwrap(), DiceType::new(0, 0, -6));
+    }
+
+    #[test]
+    fn parse_range() {
+        assert_eq!(parse_dice_string("6-10").unwrap(), DiceType::new(1, 5, 5));
+        assert_eq!(parse_dice_string("1-16").unwrap(), DiceType::new(1, 16, 0));
+        assert_eq!(parse_dice_string("0-6").unwrap(), DiceType::new(1, 7, -1));
     }
 
     #[test]
@@ -109,6 +170,10 @@ mod tests {
         assert_eq!(
             parse_dice_string("1d20+4").unwrap(),
             DiceType::new(1, 20, 4)
+        );
+        assert_eq!(
+            parse_dice_string("1 D 20 -4").unwrap(),
+            DiceType::new(1, 20, -4)
         );
     }
 
