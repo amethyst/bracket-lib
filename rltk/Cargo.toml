@@ -14,15 +14,15 @@ license = "MIT"
 resolver = "2"                                                                                                                                              # Enables the new Cargo resolution engine
 
 [features]
-default = [ "opengl" ]
-specs = [ "bracket-lib/specs" ]
-serde = [ "bracket-lib/serde" ]
-threaded = [ "bracket-lib/threaded" ]
-opengl = [ "bracket-lib/opengl" ]
-curses = [ "bracket-lib/curses" ]
-crossterm = [ "bracket-lib/crossterm" ]
-webgpu = [ "bracket-lib/webgpu" ]
-low_cpu = [ "bracket-lib/low_cpu" ]
+default = ["opengl"]
+specs = ["bracket-lib/specs"]
+serde = ["bracket-lib/serde"]
+threaded = ["bracket-lib/threaded"]
+opengl = ["bracket-lib/opengl"]
+curses = ["bracket-lib/curses"]
+crossterm = ["bracket-lib/crossterm"]
+webgpu = ["bracket-lib/webgpu"]
+low_cpu = ["bracket-lib/low_cpu"]
 
 [dependencies]
 bracket-lib = { path = "../", version = "~0.8", default-features = false }
