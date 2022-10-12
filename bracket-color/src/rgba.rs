@@ -298,7 +298,7 @@ impl RGBA {
     #[cfg(feature = "bevy")]
     #[must_use]
     pub fn as_rgba_f32(&self) -> [f32; 4] {
-        [self.r, self.g, self.b, self.a]
+        bevy::prelude::Color::as_linear_rgba_f32([self.r, self.g, self.b, self.a].into())
     }
 
     /// Applies a quick grayscale conversion to the color

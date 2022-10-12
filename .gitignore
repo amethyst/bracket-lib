@@ -5,3 +5,4 @@ Cargo.lock
 **/wasm_help/staging
 .vscode/launch.json
 manual/book/*
+dependency_order.md

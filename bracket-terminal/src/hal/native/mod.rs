@@ -1,5 +1,6 @@
 mod init;
 pub mod shader_strings;
+use glow::NativeVertexArray;
 pub use init::*;
 mod mainloop;
 use crate::hal::scaler::{default_gutter_size, ScreenScaler};
@@ -31,7 +32,7 @@ lazy_static! {
 
 pub struct PlatformGL {
     pub gl: Option<glow::Context>,
-    pub quad_vao: Option<u32>,
+    pub quad_vao: Option<NativeVertexArray>,
     pub context_wrapper: Option<WrappedContext>,
     pub backing_buffer: Option<super::Framebuffer>,
     pub frame_sleep_time: Option<u64>,
@@ -60,6 +61,7 @@ pub struct InitHints {
     pub frame_sleep_time: Option<f32>,
     pub resize_scaling: bool,
     pub desired_gutter: u32,
+    pub fitscreen: bool,
 }
 
 impl InitHints {
@@ -74,6 +76,7 @@ impl InitHints {
             frame_sleep_time: None,
             resize_scaling: false,
             desired_gutter: default_gutter_size(),
+            fitscreen: false,
         }
     }
 }
@@ -90,6 +93,7 @@ impl Default for InitHints {
             frame_sleep_time: None,
             resize_scaling: false,
             desired_gutter: default_gutter_size(),
+            fitscreen: false,
         }
     }
 }

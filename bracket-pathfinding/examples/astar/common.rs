@@ -28,8 +28,8 @@ pub fn flush_console() {
 pub const MAP_WIDTH: usize = 80;
 pub const MAP_HEIGHT: usize = 20;
 pub const MAP_TILES: usize = MAP_WIDTH * MAP_HEIGHT;
-pub const START_POINT: Point = Point::constant(2, MAP_HEIGHT as i32 / 2);
-pub const END_POINT: Point = Point::constant(MAP_WIDTH as i32 - 2, MAP_HEIGHT as i32 / 2);
+pub const START_POINT: Point = Point::constant(2, 2);
+pub const END_POINT: Point = Point::constant(MAP_WIDTH as i32 -2, MAP_HEIGHT as i32 - 2);
 
 pub struct Map {
     pub tiles: Vec<char>,
@@ -41,24 +41,11 @@ impl Map {
             tiles: vec!['.'; MAP_TILES],
         };
 
-        // Add random walls
+        // Add walls
         for i in 0..15 {
             tiles.tiles[10 + i * MAP_WIDTH] = '#';
-            tiles.tiles[18 + i * MAP_WIDTH] = '#';
+            tiles.tiles[18 + (i+5) * MAP_WIDTH] = '#';
         }
-        /*
-        let n_walls = 200;
-        let mut rng = RandomNumberGenerator::new();
-        for _ in 0..n_walls {
-            let target = Point::new(
-                rng.roll_dice(1, MAP_WIDTH as i32 - 1),
-                rng.roll_dice(1, MAP_HEIGHT as i32 - 1),
-            );
-            if target != START_POINT && target != END_POINT {
-                let idx = tiles.point2d_to_index(target);
-                tiles.tiles[idx] = '#';
-            }
-        }*/
 
         tiles
     }
@@ -67,7 +54,7 @@ impl Map {
         let destination = loc + delta;
         if self.in_bounds(destination) {
             let idx = self.point2d_to_index(destination);
-            if self.tiles[idx] == '.' {
+            if self.tiles[idx] != '#' {
                 Some(idx)
             } else {
                 None

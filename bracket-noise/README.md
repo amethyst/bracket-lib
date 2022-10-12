@@ -8,7 +8,7 @@ To obtain `bracket-noise`, include the following in your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-bracket-noise = "0.8.2"
+bracket-noise = "~0.8"
 ```
 
 ## Examples

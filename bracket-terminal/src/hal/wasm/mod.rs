@@ -18,6 +18,7 @@ pub struct InitHints {
     pub fullscreen: bool,
     pub frame_sleep_time: Option<f32>,
     pub desired_gutter: u32,
+    pub fitscreen: bool,
 }
 
 impl InitHints {
@@ -27,6 +28,7 @@ impl InitHints {
             fullscreen: false,
             frame_sleep_time: None,
             desired_gutter: 0,
+            fitscreen: false,
         }
     }
 }

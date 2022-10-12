@@ -2,10 +2,12 @@
 use crate::BResult;
 use glow::HasContext;
 
+use super::{FramebufferId, TextureId};
+
 #[cfg(not(target_arch = "wasm32"))]
 pub struct Framebuffer {
-    fbo: u32,
-    pub texture: u32,
+    fbo: FramebufferId,
+    pub texture: TextureId,
 }
 
 #[cfg(target_arch = "wasm32")]

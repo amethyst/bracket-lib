@@ -123,7 +123,9 @@ impl ConsoleFrontEnd for VirtualConsole {
     }
 
     fn cls(&mut self) {
-        self.terminal.iter_mut().for_each(|c| c.glyph = 32);
+        self.terminal
+            .iter_mut()
+            .for_each(|c| *c = TerminalGlyph::default());
     }
 
     fn cls_bg(&mut self, color: RGBA) {

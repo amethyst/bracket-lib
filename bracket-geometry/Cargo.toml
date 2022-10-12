@@ -1,8 +1,8 @@
 [package]
 name = "bracket-geometry"
-version = "0.8.3"
+version = "0.8.7"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
-edition = "2018"
+edition = "2021"
 publish = true
 description = "Geometry utilities. Rect, lines, circles, distance calculations. Part of the bracket-lib family."
 homepage = "https://github.com/thebracket/bracket-lib"
@@ -13,9 +13,10 @@ categories = ["game-engines", "graphics"]
 license = "MIT"
 
 [dependencies]
-ultraviolet = "~0.9"
-serde = { version = "~1.0.110", features = ["derive"], optional = true }
-specs = { version = "~0", optional = true }
+serde = { version = "~1.0.139", features = ["derive"], optional = true }
+specs = { version = "~0.18.0", optional = true }
+bevy = { version = "~0.8", optional = true }
+ultraviolet = "~0.9.0"
 
 [dev-dependencies]
-crossterm = "~0.24"
+crossterm = "~0.25"

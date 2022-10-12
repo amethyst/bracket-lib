@@ -4,8 +4,8 @@ use std::collections::HashMap;
 
 // These are included by default in `bracket-terminal`.
 const TERMINAL_8_8_BYTES: &[u8] =
-    include_bytes!("../../bracket-terminal/resources/terminal8x8.png");
-const TERMINAL_8_16_BYTES: &[u8] = include_bytes!("../../bracket-terminal/resources/vga8x16.png");
+    include_bytes!("../resources/terminal8x8.png");
+const TERMINAL_8_16_BYTES: &[u8] = include_bytes!("../resources/vga8x16.png");
 
 lazy_static! {
     pub static ref EMBED: Mutex<Dictionary> = Mutex::new(Dictionary::new());

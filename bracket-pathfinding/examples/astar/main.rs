@@ -16,6 +16,8 @@ fn main() {
         for loc in &path.steps {
             map.tiles[*loc] = '*';
         }
+    } else {
+        panic!("No path found");
     }
 
     // Draw the result

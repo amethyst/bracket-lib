@@ -30,7 +30,7 @@ In your `Cargo.toml` file, include:
 
 ```toml
 [dependencies]
-bracket-lib = "0.7"
+bracket-lib = "~0.8"
 ```
 
 ## Feature Flags

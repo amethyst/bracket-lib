@@ -18,8 +18,8 @@ parking_lot = "0.12"
 lazy_static = "1.4"
 bracket-random = { path = "../bracket-random" }
 bracket-color = { path = "../bracket-color", features = [ "bevy" ] }
-bracket-geometry = { path = "../bracket-geometry", version = "~0.8.3" }
+bracket-geometry = { path = "../bracket-geometry", version = "~0.8", features = [ "bevy" ] }
 
 [dev-dependencies]
-bracket-pathfinding = { path = "../bracket-pathfinding", version = "~0.8.4" }
-bracket-noise = { path = "../bracket-noise", version = "~0.8.2" }
+bracket-pathfinding = { path = "../bracket-pathfinding", version = "~0.8" }
+bracket-noise = { path = "../bracket-noise", version = "~0.8" }

@@ -1,8 +1,8 @@
 [package]
 name = "bracket-lib"
-version = "0.8.2"
+version = "0.8.7"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
-edition = "2018"
+edition = "2021"
 publish = true
 description = "Meta-crate holding the entirety of bracket-lib (and exposing it). Use this for the full roguelike toolkit experience."
 homepage = "https://github.com/thebracket/bracket-lib"
@@ -23,9 +23,11 @@ exclude = [
     "screenshots"
 ]
 resolver = "2" # Enables the new Cargo resolution engine
+incremental = false # Causing issues with Windows builds
 
 [features]
 default = [ "opengl" ]
+bevy = ["bracket-geometry/bevy"]
 specs = [ "bracket-geometry/specs" ]
 serde = [ "bracket-color/serde", "bracket-geometry/serde", "bracket-random/serde" ]
 threaded = [ "bracket-pathfinding/threaded" ]
@@ -35,13 +37,13 @@ crossterm = [ "bracket-terminal/cross_term" ]
 webgpu = [ "bracket-terminal/webgpu" ]
 
 [dependencies]
-bracket-algorithm-traits = { path = "./bracket-algorithm-traits", version = "~0.8.2" }
-bracket-color = { path = "./bracket-color", version = "~0.8.3", features = [ "palette" ] }
-bracket-geometry = { path = "./bracket-geometry", version = "~0.8.2" }
-bracket-noise = { path = "./bracket-noise", version = "~0.8.2" }
-bracket-pathfinding = { path = "./bracket-pathfinding", version = "~0.8.2" }
-bracket-random = { path = "./bracket-random", version = "~0.8.2", features = [ "parsing" ] }
-bracket-terminal = { path = "./bracket-terminal", version = "~0.8.2", default-features = false }
+bracket-algorithm-traits = { path = "./bracket-algorithm-traits", version = "~0.8" }
+bracket-color = { path = "./bracket-color", version = "~0.8", features = [ "palette" ] }
+bracket-geometry = { path = "./bracket-geometry", version = "~0.8" }
+bracket-noise = { path = "./bracket-noise", version = "~0.8" }
+bracket-pathfinding = { path = "./bracket-pathfinding", version = "~0.8" }
+bracket-random = { path = "./bracket-random", version = "~0.8", features = [ "parsing" ] }
+bracket-terminal = { path = "./bracket-terminal", version = "~0.8", default-features = false }
 
 [workspace]
 members = [
@@ -55,16 +57,4 @@ members = [
     "rltk",
     "bracket-rex",
     "bracket-embedding",
-    "bracket-bevy"
 ]
-
-# Comment this out for releases
-#[patch.crates-io]
-#bracket-algorithm-traits = { path = "bracket-algorithm-traits/" }
-#bracket-color = { path = "bracket-color/" }
-#bracket-geometry = { path = "bracket-geometry/" }
-#bracket-noise = { path = "bracket-noise/" }
-#bracket-pathfinding = { path = "bracket-pathfinding/" }
-#bracket-random = { path = "bracket-random/" }
-#bracket-terminal = { path = "bracket-terminal/" }
-#rltk = { path = "rltk/" }

@@ -450,6 +450,12 @@ impl BTermBuilder {
         self
     }
 
+    /// Enables you to auto adjust the window to fit the screen.
+    pub fn with_fitscreen(mut self, fitscreen: bool) -> Self {
+        self.platform_hints.fitscreen = fitscreen;
+        self
+    }
+
     /// Push platform-specific initialization hints to the builder. THIS REMOVES CROSS-PLATFORM COMPATIBILITY
     pub fn with_platform_specific(mut self, hints: InitHints) -> Self {
         self.platform_hints = hints;
