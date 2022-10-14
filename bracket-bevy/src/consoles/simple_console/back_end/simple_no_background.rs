@@ -51,7 +51,7 @@ impl SimpleBackendNoBackground {
         // Build the foreground
         for y in 0..self.height {
             let screen_y = top_left.1 + (y as f32 * scale.1);
-            let mut idx = ((self.height - 1 - y) * self.width) as usize;
+            let mut idx = (y * self.width) as usize;
             for x in 0..self.width {
                 let screen_x = top_left.0 + (x as f32 * scale.0);
                 vertices.push([screen_x, screen_y, 0.5]);
