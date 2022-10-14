@@ -4,7 +4,9 @@ use bracket_bevy::prelude::*;
 fn main() {
     let bterm = BTermBuilder::simple_80x50()
         .with_named_color("blue", BLUE)
-        .with_named_color("pink", Color::PINK);
+        .with_named_color("pink", Color::PINK)
+        .with_simple_console(0, 80, 50)
+        .with_background(false);
 
     App::new()
         .add_plugins(DefaultPlugins)

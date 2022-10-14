@@ -81,7 +81,7 @@ fn main() {
         .with_random_number_generator(true)
         .with_font("example_tiles.png", 16, 16, (16.0, 16.0))
         .with_simple_console(0, WIDTH, HEIGHT)
-        .with_sparse_console(0, WIDTH, HEIGHT)
+        .with_simple_console(0, WIDTH, HEIGHT)
         .with_background(false);
 
     App::new()
