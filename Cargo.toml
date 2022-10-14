@@ -1,16 +1,8 @@
 [package]
-name = "bracket-lib"
-version = "0.8.7"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
-edition = "2021"
-publish = true
-description = "Meta-crate holding the entirety of bracket-lib (and exposing it). Use this for the full roguelike toolkit experience."
-homepage = "https://github.com/thebracket/bracket-lib"
-repository = "https://github.com/thebracket/bracket-lib"
-readme = "README.md"
-keywords = ["roguelike", "gamedev", "terminal", "ascii", "cp437"]
 categories = ["game-engines"]
-license = "MIT"
+description = "Meta-crate holding the entirety of bracket-lib (and exposing it). Use this for the full roguelike toolkit experience."
+edition = "2021"
 exclude = [
     "bracket-algorithm-traits",
     "bracket-color",
@@ -19,31 +11,40 @@ exclude = [
     "bracket-pathfinding",
     "bracket-random",
     "bracket-terminal",
+    "bracket-bevy",
     "rltk",
-    "screenshots"
+    "screenshots",
 ]
-resolver = "2" # Enables the new Cargo resolution engine
+homepage = "https://github.com/thebracket/bracket-lib"
 incremental = false # Causing issues with Windows builds
+keywords = ["roguelike", "gamedev", "terminal", "ascii", "cp437"]
+license = "MIT"
+name = "bracket-lib"
+publish = true
+readme = "README.md"
+repository = "https://github.com/thebracket/bracket-lib"
+resolver = "2" # Enables the new Cargo resolution engine
+version = "0.8.7"
 
 [features]
-default = [ "opengl" ]
-bevy = ["bracket-geometry/bevy"]
-specs = [ "bracket-geometry/specs" ]
-serde = [ "bracket-color/serde", "bracket-geometry/serde", "bracket-random/serde" ]
-threaded = [ "bracket-pathfinding/threaded" ]
-opengl = [ "bracket-terminal/opengl" ]
-curses = [ "bracket-terminal/curses" ]
-crossterm = [ "bracket-terminal/cross_term" ]
-webgpu = [ "bracket-terminal/webgpu" ]
+bevy      = ["bracket-geometry/bevy"]
+crossterm = ["bracket-terminal/cross_term"]
+curses    = ["bracket-terminal/curses"]
+default   = ["opengl"]
+opengl    = ["bracket-terminal/opengl"]
+serde     = ["bracket-color/serde", "bracket-geometry/serde", "bracket-random/serde"]
+specs     = ["bracket-geometry/specs"]
+threaded  = ["bracket-pathfinding/threaded"]
+webgpu    = ["bracket-terminal/webgpu"]
 
 [dependencies]
 bracket-algorithm-traits = { path = "./bracket-algorithm-traits", version = "~0.8" }
-bracket-color = { path = "./bracket-color", version = "~0.8", features = [ "palette" ] }
-bracket-geometry = { path = "./bracket-geometry", version = "~0.8" }
-bracket-noise = { path = "./bracket-noise", version = "~0.8" }
-bracket-pathfinding = { path = "./bracket-pathfinding", version = "~0.8" }
-bracket-random = { path = "./bracket-random", version = "~0.8", features = [ "parsing" ] }
-bracket-terminal = { path = "./bracket-terminal", version = "~0.8", default-features = false }
+bracket-color            = { path = "./bracket-color", version = "~0.8", features = ["palette"] }
+bracket-geometry         = { path = "./bracket-geometry", version = "~0.8" }
+bracket-noise            = { path = "./bracket-noise", version = "~0.8" }
+bracket-pathfinding      = { path = "./bracket-pathfinding", version = "~0.8" }
+bracket-random           = { path = "./bracket-random", version = "~0.8", features = ["parsing"] }
+bracket-terminal         = { path = "./bracket-terminal", version = "~0.8", default-features = false }
 
 [workspace]
 members = [
@@ -57,4 +58,5 @@ members = [
     "rltk",
     "bracket-rex",
     "bracket-embedding",
+    "bracket-bevy",
 ]
