@@ -222,6 +222,21 @@ impl BTerm {
         }
     }
 
+    /// Tries to set the currently active console number.
+    /// If the console id is invalid, returns an Err.
+    pub fn try_set_active_console(&mut self, id: usize) -> Result<(), String> {
+        let length = BACKEND_INTERNAL.lock().consoles.len();
+        if id < length {
+            self.active_console = id;
+            Ok(())
+        } else {
+            Err(format!(
+                "Invalid console id: {}. Valid consoles are 0..{}",
+                id, length
+            ))
+        }
+    }
+
     /// Applies the current physical mouse position to the active console, and translates the coordinates into that console's coordinate space.
     #[cfg(any(feature = "curses", feature = "cross_term"))]
     pub fn mouse_pos(&self) -> (i32, i32) {
