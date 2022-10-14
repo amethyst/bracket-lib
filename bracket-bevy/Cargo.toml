@@ -13,18 +13,12 @@ repository  = "https://github.com/thebracket/bracket-lib"
 version     = "0.9.0"
 
 [dependencies]
-bevy = { git = "https://github.com/bevyengine/bevy", default-features = false, features = [
-  "bevy_asset",
-  "bevy_winit",
-  "render",
-  "png",
-  "x11",
-] }
-bracket-color = { path = "../bracket-color", features = ["bevy"] }
+bevy             = "0.8"
+bracket-color    = { path = "../bracket-color", features = ["bevy"] }
 bracket-geometry = { path = "../bracket-geometry", version = "~0.8", features = ["bevy"] }
-bracket-random = { path = "../bracket-random" }
-lazy_static = "1.4"
-parking_lot = "0.12"
+bracket-random   = { path = "../bracket-random" }
+lazy_static      = "1.4"
+parking_lot      = "0.12"
 
 [dev-dependencies]
 bracket-noise       = { path = "../bracket-noise", version = "~0.8" }

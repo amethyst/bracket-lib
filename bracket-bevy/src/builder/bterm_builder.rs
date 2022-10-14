@@ -7,7 +7,7 @@ use crate::{
 };
 use bevy::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
-    prelude::{CoreStage, Plugin, Resource, SystemSet, SystemStage},
+    prelude::{CoreStage, Plugin, SystemSet, SystemStage},
     utils::HashMap,
 };
 use bracket_color::prelude::RGBA;
@@ -19,7 +19,7 @@ pub enum TerminalScalingMode {
     ResizeTerminals,
 }
 
-#[derive(Clone, Resource)]
+#[derive(Clone)]
 pub struct BTermBuilder {
     pub(crate) fonts: Vec<TerminalBuilderFont>,
     pub(crate) layers: Vec<TerminalLayer>,

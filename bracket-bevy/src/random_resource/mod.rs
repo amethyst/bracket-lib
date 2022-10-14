@@ -1,8 +1,6 @@
-use bevy::prelude::Resource;
 use bracket_random::prelude::RandomNumberGenerator;
 use parking_lot::Mutex;
 
-#[derive(Resource)]
 pub struct RandomNumbers {
     rng: Mutex<RandomNumberGenerator>,
 }

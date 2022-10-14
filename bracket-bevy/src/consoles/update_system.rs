@@ -43,9 +43,9 @@ pub(crate) fn replace_meshes(
     for ev in ev_asset.iter() {
         if let AssetEvent::Created { handle } = ev {
             for (old, new, done) in ctx.mesh_replacement.iter_mut() {
-                if handle.id() == new.0.id() {
+                if handle.id == new.0.id {
                     update_mesh.for_each_mut(|mut m| {
-                        if old.0.id() == m.0.id() {
+                        if old.0.id == m.0.id {
                             *m = new.clone();
                         }
                     });
