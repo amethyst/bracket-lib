@@ -130,7 +130,7 @@ pub(crate) trait ConsoleFrontEnd: Sync + Send {
     fn get_font_index(&self) -> usize;
 }
 
-#[derive(PartialEq, Copy, Clone, Debug)]
+#[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum TextAlign {
     Left,
     Center,

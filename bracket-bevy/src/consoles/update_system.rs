@@ -102,7 +102,12 @@ pub(crate) fn update_mouse_position(
 ) {
     // Modified from: https://bevy-cheatbook.github.io/cookbook/cursor2world.html
     // Bevy really needs a nicer way to do this
-    let (camera, camera_transform) = q_camera.single();
+    let (camera, camera_transform) = if let Ok(camera_q) = q_camera.get_single() {
+        camera_q
+    } else {
+        return;
+    };
+
     let wnd = if let RenderTarget::Window(id) = camera.target {
         wnds.get(id)
     } else {
