@@ -9,4 +9,5 @@ pub(crate) use loader_system::*;
 mod image_fixer;
 pub(crate) use image_fixer::*;
 
+pub use font_builder::CharacterTranslationMode;
 pub use loader_system::BracketCamera;

@@ -4,7 +4,7 @@ use super::{SparseBackendNoBackground, SparseBackendWithBackground, SparseConsol
 use crate::{
     consoles::{common_draw, ConsoleFrontEnd, Rect, ScreenScaler, TerminalGlyph},
     fonts::FontStore,
-    BracketContext, FontCharType, SparseConsoleFeatures,
+    BracketContext, CharacterTranslationMode, FontCharType, SparseConsoleFeatures,
 };
 use bevy::{
     prelude::{Assets, Commands, Handle, Mesh},
@@ -21,10 +21,16 @@ pub(crate) struct SparseConsole {
     back_end: Option<Box<dyn SparseConsoleBackend>>,
     clipping: Option<Rect>,
     mouse_chars: (i32, i32),
+    translation_mode: CharacterTranslationMode,
 }
 
 impl SparseConsole {
-    pub fn new(font_index: usize, width: i32, height: i32) -> Self {
+    pub fn new(
+        font_index: usize,
+        width: i32,
+        height: i32,
+        translation_mode: CharacterTranslationMode,
+    ) -> Self {
         Self {
             font_index,
             width,
@@ -33,6 +39,7 @@ impl SparseConsole {
             back_end: None,
             clipping: None,
             mouse_chars: (0, 0),
+            translation_mode,
         }
     }
 
@@ -80,6 +87,10 @@ impl SparseConsole {
 }
 
 impl ConsoleFrontEnd for SparseConsole {
+    fn get_translation_mode(&self) -> crate::CharacterTranslationMode {
+        self.translation_mode
+    }
+
     fn get_char_size(&self) -> (i32, i32) {
         (self.width, self.height)
     }

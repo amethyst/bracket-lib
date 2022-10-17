@@ -21,7 +21,7 @@ bracket_terminal::embedded_resource!(TILE_FONT3, "../resources/unicode_16x16.png
 
 fn main() -> BError {
     bracket_terminal::link_resource!(TILE_FONT3, "resources/unicode_16x16.png");
-
+ 
     let context = BTermBuilder::new()
         .with_dimensions(80, 50)
         .with_tile_dimensions(16, 16)

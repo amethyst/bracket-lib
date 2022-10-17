@@ -3,7 +3,7 @@ mod simple_console;
 use bracket_geometry::prelude::{Point, Rect};
 pub(crate) use simple_console::*;
 mod update_system;
-use crate::{BracketContext, FontCharType};
+use crate::{BracketContext, CharacterTranslationMode, FontCharType};
 pub(crate) use update_system::*;
 mod sparse_console;
 pub(crate) use sparse_console::*;
@@ -19,6 +19,7 @@ mod draw_batch;
 pub use draw_batch::*;
 
 pub(crate) trait ConsoleFrontEnd: Sync + Send {
+    fn get_translation_mode(&self) -> CharacterTranslationMode;
     fn get_char_size(&self) -> (i32, i32);
     fn get_pixel_size(&self) -> (f32, f32);
     fn at(&self, x: i32, y: i32) -> usize;

@@ -55,8 +55,10 @@ pub(crate) fn load_terminals(
                 width,
                 height,
                 features,
+                translation_mode,
             } => {
-                let mut console = SimpleConsole::new(*font_index, *width, *height);
+                let mut console =
+                    SimpleConsole::new(*font_index, *width, *height, *translation_mode);
                 console.initialize(&new_context.fonts, &mut meshes, features);
                 console.spawn(
                     &mut commands,
@@ -70,8 +72,10 @@ pub(crate) fn load_terminals(
                 width,
                 height,
                 features,
+                translation_mode,
             } => {
-                let mut console = SparseConsole::new(*font_index, *width, *height);
+                let mut console =
+                    SparseConsole::new(*font_index, *width, *height, *translation_mode);
                 console.initialize(&new_context.fonts, &mut meshes, features);
                 console.spawn(
                     &mut commands,

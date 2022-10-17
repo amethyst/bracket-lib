@@ -1,3 +1,4 @@
+use super::font_builder::CharacterTranslationMode;
 use crate::{
     consoles::{
         apply_all_batches, default_gutter_size, replace_meshes, update_mouse_position,
@@ -62,6 +63,7 @@ impl BTermBuilder {
                 width: 80,
                 height: 50,
                 features: HashSet::new(),
+                translation_mode: CharacterTranslationMode::Codepage437,
             }],
             palette: HashMap::new(),
             with_ortho_camera: true,
@@ -128,6 +130,17 @@ impl BTermBuilder {
         self
     }
 
+    pub fn with_translation_mode(mut self, mut mode: CharacterTranslationMode) -> Self {
+        if !self.layers.is_empty() {
+            let last_index = self.layers.len() - 1;
+            let term = self.layers.get_mut(last_index).unwrap();
+
+            // ???
+        }
+
+        self
+    }
+
     pub fn with_named_color<S: ToString, C: Into<RGBA>>(mut self, name: S, color: C) -> Self {
         self.palette.insert(name.to_string(), color.into());
         self
@@ -159,6 +172,7 @@ impl BTermBuilder {
             width,
             height,
             features: HashSet::new(),
+            translation_mode: CharacterTranslationMode::Codepage437,
         });
         self
     }
@@ -169,6 +183,7 @@ impl BTermBuilder {
             width,
             height,
             features: HashSet::new(),
+            translation_mode: CharacterTranslationMode::Codepage437,
         });
         self
     }

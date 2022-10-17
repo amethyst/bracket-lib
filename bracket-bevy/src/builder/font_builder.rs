@@ -21,3 +21,9 @@ impl TerminalBuilderFont {
         }
     }
 }
+
+#[derive(Eq, PartialEq, Copy, Clone, Debug, Hash)]
+pub enum CharacterTranslationMode {
+    Codepage437,
+    Unicode,
+}

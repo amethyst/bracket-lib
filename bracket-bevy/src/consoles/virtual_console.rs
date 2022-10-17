@@ -2,13 +2,14 @@ use bracket_color::prelude::RGBA;
 use bracket_geometry::prelude::{Point, Rect};
 
 use super::{common_draw, ConsoleFrontEnd, TerminalGlyph};
-use crate::{BracketContext, FontCharType};
+use crate::{BracketContext, CharacterTranslationMode, FontCharType};
 
 pub struct VirtualConsole {
     pub width: i32,
     pub height: i32,
     pub terminal: Vec<TerminalGlyph>,
     pub clipping: Option<Rect>,
+    pub translation_mode: CharacterTranslationMode,
 }
 
 impl VirtualConsole {
@@ -20,6 +21,7 @@ impl VirtualConsole {
             height: dimensions.y,
             terminal: Vec::with_capacity(num_tiles),
             clipping: None,
+            translation_mode: CharacterTranslationMode::Codepage437,
         };
         for _ in 0..num_tiles {
             console.terminal.push(TerminalGlyph::default());
@@ -51,6 +53,7 @@ impl VirtualConsole {
             height: lines.len() as i32,
             terminal: Vec::with_capacity(num_tiles),
             clipping: None,
+            translation_mode: CharacterTranslationMode::Codepage437,
         };
         //println!("{}x{}", console.width, console.height);
 
@@ -102,6 +105,10 @@ impl VirtualConsole {
 }
 
 impl ConsoleFrontEnd for VirtualConsole {
+    fn get_translation_mode(&self) -> crate::CharacterTranslationMode {
+        self.translation_mode
+    }
+
     fn get_char_size(&self) -> (i32, i32) {
         (self.width, self.height)
     }

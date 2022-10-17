@@ -1,7 +1,7 @@
 use super::{ColoredTextSpans, ConsoleFrontEnd, TextAlign};
 use crate::{
     prelude::{string_to_cp437, to_cp437},
-    BracketContext,
+    BracketContext, CharacterTranslationMode, FontCharType,
 };
 use bracket_color::prelude::*;
 
@@ -35,7 +35,11 @@ pub(crate) fn draw_box(
 }
 
 pub(crate) fn print(terminal: &mut dyn ConsoleFrontEnd, mut x: i32, y: i32, text: &str) {
-    let bytes = string_to_cp437(text);
+    let bytes = match terminal.get_translation_mode() {
+        CharacterTranslationMode::Codepage437 => string_to_cp437(text),
+        CharacterTranslationMode::Unicode => text.chars().map(|c| c as FontCharType).collect(),
+    };
+
     for glyph in bytes {
         terminal.set(x, y, WHITE.into(), BLACK.into(), glyph);
         x += 1;

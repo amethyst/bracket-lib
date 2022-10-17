@@ -556,3 +556,4 @@ pub fn to_char(c: u8) -> char {
 pub fn string_to_cp437<S: AsRef<str>>(input: S) -> Vec<FontCharType> {
     input.as_ref().chars().map(to_cp437).collect()
 }
+

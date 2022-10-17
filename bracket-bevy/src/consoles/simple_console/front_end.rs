@@ -5,7 +5,7 @@ use super::{
 use crate::{
     consoles::{common_draw, ConsoleFrontEnd, Rect, ScreenScaler},
     fonts::FontStore,
-    BracketContext, FontCharType, SimpleConsoleFeatures,
+    BracketContext, CharacterTranslationMode, FontCharType, SimpleConsoleFeatures,
 };
 use bevy::{
     prelude::{Assets, Commands, Handle, Mesh},
@@ -23,10 +23,16 @@ pub(crate) struct SimpleConsole {
     back_end: Option<Box<dyn SimpleConsoleBackend>>,
     clipping: Option<Rect>,
     mouse_chars: (i32, i32),
+    translation_mode: CharacterTranslationMode,
 }
 
 impl SimpleConsole {
-    pub fn new(font_index: usize, width: i32, height: i32) -> Self {
+    pub fn new(
+        font_index: usize,
+        width: i32,
+        height: i32,
+        translation_mode: CharacterTranslationMode,
+    ) -> Self {
         Self {
             font_index,
             width,
@@ -35,6 +41,7 @@ impl SimpleConsole {
             back_end: None,
             clipping: None,
             mouse_chars: (0, 0),
+            translation_mode,
         }
     }
 
@@ -90,6 +97,9 @@ impl SimpleConsole {
 }
 
 impl ConsoleFrontEnd for SimpleConsole {
+    fn get_translation_mode(&self) -> CharacterTranslationMode {
+        self.translation_mode
+    }
     fn get_char_size(&self) -> (i32, i32) {
         (self.width, self.height)
     }

@@ -6,7 +6,8 @@ fn main() {
         .with_named_color("blue", BLUE)
         .with_named_color("pink", Color::PINK)
         .with_simple_console(0, 80, 50)
-        .with_background(false);
+        .with_background(false)
+        .with_translation_mode(CharacterTranslationMode::Unicode);
 
     App::new()
         .add_plugins(DefaultPlugins)
