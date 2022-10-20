@@ -1,4 +1,5 @@
 use std::convert::{From, TryInto};
+use std::fmt::Display;
 use std::ops;
 use ultraviolet::Vec2;
 
@@ -117,6 +118,12 @@ impl Point {
         Self::new(v.x, v.y)
     }
     */
+}
+
+impl Display for Point {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{},{}", self.x, self.y)
+    }
 }
 
 impl From<(i32, i32)> for Point {
