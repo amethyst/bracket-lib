@@ -3,6 +3,7 @@ use bevy::{
     render::{render_resource::SamplerDescriptor, texture::ImageSampler},
 };
 
+#[derive(Resource)]
 pub(crate) struct ImagesToLoad(pub(crate) Vec<HandleUntyped>);
 
 pub(crate) fn fix_images(mut fonts: ResMut<ImagesToLoad>, mut images: ResMut<Assets<Image>>) {

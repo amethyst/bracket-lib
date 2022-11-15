@@ -3,11 +3,12 @@ use crate::{
     fonts::FontStore,
     FontCharType, TerminalScalingMode,
 };
-use bevy::{sprite::Mesh2dHandle, utils::HashMap};
+use bevy::{sprite::Mesh2dHandle, utils::HashMap, prelude::Resource};
 use bracket_color::prelude::RGBA;
 use bracket_geometry::prelude::{Point, Rect};
 use parking_lot::Mutex;
 
+#[derive(Resource)]
 pub struct BracketContext {
     pub(crate) fonts: Vec<FontStore>,
     pub(crate) terminals: Mutex<Vec<Box<dyn ConsoleFrontEnd>>>,

@@ -23,7 +23,7 @@ pub(crate) fn load_terminals(
 ) {
     if context.with_ortho_camera {
         commands
-            .spawn_bundle(Camera2dBundle::default())
+            .spawn(Camera2dBundle::default())
             .insert(BracketCamera);
     }
 

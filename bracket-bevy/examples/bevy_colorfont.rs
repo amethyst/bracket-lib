@@ -24,8 +24,8 @@ impl Default for TickResource {
 fn tick(ctx: Res<BracketContext>, tale_of_two_cities: Local<TickResource>) {
     ctx.cls();
     tale_of_two_cities.0.print_sub_rect(
-        Rect::with_size(0, 0, 79, 25),
-        Rect::with_exact(0, 0, 79, 25),
+        bracket_bevy::prelude::Rect::with_size(0, 0, 79, 25),
+        bracket_bevy::prelude::Rect::with_exact(0, 0, 79, 25),
         0,
         &ctx,
     );

@@ -1,3 +1,5 @@
+use bevy::prelude::Resource;
+
 pub(crate) struct FontScaler {
     chars_per_row: u16,
     n_rows: u16,
@@ -29,6 +31,7 @@ impl FontScaler {
     }
 }
 
+#[derive(Resource)]
 pub(crate) struct ScreenScaler {
     pub(crate) screen: (f32, f32),
     desired_gutter: f32,

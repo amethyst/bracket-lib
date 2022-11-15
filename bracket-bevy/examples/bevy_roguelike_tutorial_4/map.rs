@@ -1,4 +1,5 @@
 use crate::rect::Rect;
+use bevy::prelude::Resource;
 use bracket_bevy::{
     prelude::{to_cp437, RGB},
     BracketContext, RandomNumbers,
@@ -10,6 +11,9 @@ pub enum TileType {
     Wall,
     Floor,
 }
+
+#[derive(Resource)]
+pub struct Map(pub Vec<TileType>);
 
 pub fn xy_idx(x: i32, y: i32) -> usize {
     (y as usize * 80) + x as usize
@@ -70,7 +74,7 @@ fn apply_vertical_tunnel(map: &mut [TileType], y1: i32, y2: i32, x: i32) {
 
 /// Makes a new map using the algorithm from http://rogueliketutorials.com/tutorials/tcod/part-3/
 /// This gives a handful of random rooms and corridors joining them together.
-pub fn new_map_rooms_and_corridors(rng: &RandomNumbers) -> (Vec<Rect>, Vec<TileType>) {
+pub fn new_map_rooms_and_corridors(rng: &RandomNumbers) -> (Vec<Rect>, Map) {
     let mut map = vec![TileType::Wall; 80 * 50];
 
     let mut rooms: Vec<Rect> = Vec::new();
@@ -109,7 +113,7 @@ pub fn new_map_rooms_and_corridors(rng: &RandomNumbers) -> (Vec<Rect>, Vec<TileT
         }
     }
 
-    (rooms, map)
+    (rooms, Map(map))
 }
 
 pub fn draw_map(map: &[TileType], ctx: &BracketContext) {
