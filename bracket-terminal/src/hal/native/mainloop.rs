@@ -201,10 +201,13 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
                 if time_since_last_frame < wait_time {
                     // We're wrapping the spin sleeper in a feature now. If you want to use it,
                     // enable "low_cpu". Otherwise, it was causing input lag.
-                    #[cfg(feature = "low_cpu")]
                     let delay = u64::min(33, wait_time - time_since_last_frame);
                     //println!("Frame time: {}ms, Delay: {}ms", time_since_last_frame, delay);
-                    //*control_flow = ControlFlow::WaitUntil(Instant::now() + std::time::Duration::from_millis(delay));
+                    #[cfg(not(feature = "low_cpu"))]
+                    {
+                        std::thread::sleep(std::time::Duration::from_millis(delay));
+                        //*control_flow = ControlFlow::WaitUntil(Instant::now() + std::time::Duration::from_micros(delay));
+                    }
                     #[cfg(feature = "low_cpu")]
                     spin_sleeper.sleep(std::time::Duration::from_millis(delay));
                 } else {
