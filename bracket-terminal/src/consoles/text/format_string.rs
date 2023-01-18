@@ -22,7 +22,12 @@ impl ColoredTextSpans {
         };
         let mut color_stack = Vec::new();
 
-        for color_span in text.to_owned().split("#[") {
+        let text: String = match text.starts_with("#[") {
+            true => text.to_owned(),
+            false => "#[white]".to_string() + text,
+        };
+
+        for color_span in text.split("#[") {
             if color_span.is_empty() {
                 continue;
             }
@@ -45,5 +50,75 @@ impl ColoredTextSpans {
         }
 
         result
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    // use crate::prelude::*;
+
+    #[test]
+    fn no_colors() {
+        let text = "This is a simple message.";
+        let span = ColoredTextSpans::new(text);
+        assert_eq!(span.length, text.len());
+        assert_eq!(span.spans.len(), 1);
+        assert_eq!(span.spans[0].0, RGBA::from_u8(255, 255, 255, 255));
+        assert_eq!(span.spans[0].1, text);
+    }
+
+    #[test]
+    fn no_start_color() {
+        register_palette_color("blue", RGBA::from_u8(0, 0, 255, 255));
+
+        let text = "This is a #[blue]simple#[] message.";
+        let span = ColoredTextSpans::new(text);
+        assert_eq!(span.length, 25);
+        assert_eq!(span.spans.len(), 3);
+        assert_eq!(span.spans[0].0, RGBA::from_u8(255, 255, 255, 255));
+        assert_eq!(span.spans[0].1, "This is a ");
+        assert_eq!(span.spans[1].0, RGBA::from_u8(0, 0, 255, 255));
+        assert_eq!(span.spans[1].1, "simple");
+        assert_eq!(span.spans[2].0, RGBA::from_u8(255, 255, 255, 255));
+        assert_eq!(span.spans[2].1, " message.");
+    }
+
+    #[test]
+    fn start_color() {
+        let text = "#[white]This is a simple message.";
+        let span = ColoredTextSpans::new(text);
+        assert_eq!(span.length, text.len() - "$[white]".len());
+        assert_eq!(span.spans.len(), 1);
+        assert_eq!(span.spans[0].0, RGBA::from_u8(255, 255, 255, 255));
+        assert_eq!(span.spans[0].1, "This is a simple message.");
+    }
+
+    #[test]
+    fn color_with_pop() {
+        register_palette_color("blue", RGBA::from_u8(0, 0, 255, 255));
+
+        let text = "#[white]This is a #[blue]simple#[] message.";
+        let span = ColoredTextSpans::new(text);
+        assert_eq!(span.length, 25);
+        assert_eq!(span.spans.len(), 3);
+        assert_eq!(span.spans[0].0, RGBA::from_u8(255, 255, 255, 255));
+        assert_eq!(span.spans[0].1, "This is a ");
+        assert_eq!(span.spans[1].0, RGBA::from_u8(0, 0, 255, 255));
+        assert_eq!(span.spans[1].1, "simple");
+        assert_eq!(span.spans[2].0, RGBA::from_u8(255, 255, 255, 255));
+        assert_eq!(span.spans[2].1, " message.");
+    }
+
+    #[test]
+    fn pop_color() {
+        let text = "#[white]This#[] is a simple message.";
+        let span = ColoredTextSpans::new(text);
+        assert_eq!(span.length, 25);
+        assert_eq!(span.spans.len(), 2);
+        assert_eq!(span.spans[0].0, RGBA::from_u8(255, 255, 255, 255));
+        assert_eq!(span.spans[0].1, "This");
+        assert_eq!(span.spans[1].0, RGBA::from_u8(255, 255, 255, 255));
+        assert_eq!(span.spans[1].1, " is a simple message.");
     }
 }
