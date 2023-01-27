@@ -16,6 +16,7 @@ enum TileType {
     Floor,
 }
 
+#[derive(Resource)]
 struct State {
     map: Vec<TileType>,
     visited: Vec<bool>,

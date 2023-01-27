@@ -23,6 +23,7 @@ enum Mode {
     Moving,
 }
 
+#[derive(Resource)]
 struct State {
     map: Vec<TileType>,
     player_position: usize,

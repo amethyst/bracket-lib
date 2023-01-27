@@ -18,6 +18,7 @@ fn main() {
         .run();
 }
 
+#[derive(Resource)]
 struct Bouncer(i32);
 
 fn tick(ctx: Res<BracketContext>, mut bouncer: ResMut<Bouncer>) {

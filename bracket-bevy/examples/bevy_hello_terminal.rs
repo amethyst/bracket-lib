@@ -17,6 +17,7 @@ fn main() {
         .run();
 }
 
+#[derive(Resource)]
 struct State {
     y: i32,
     going_down: bool,

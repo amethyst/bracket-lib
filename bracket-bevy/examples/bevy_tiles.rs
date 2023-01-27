@@ -11,6 +11,7 @@ enum TileType {
     Floor,
 }
 
+#[derive(Resource)]
 struct State {
     map: Vec<TileType>,
     player_position: usize,

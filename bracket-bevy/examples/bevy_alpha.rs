@@ -34,8 +34,8 @@ fn tick(ctx: Res<BracketContext>, mut state: Local<State>) {
     ctx.set_active_console(0);
     ctx.cls();
     state.totc.print_sub_rect(
-        Rect::with_size(0, 0, 79, 49),
-        Rect::with_exact(0, 0, 79, 49),
+        bracket_bevy::prelude::Rect::with_size(0, 0, 79, 49),
+        bracket_bevy::prelude::Rect::with_exact(0, 0, 79, 49),
         0,
         &ctx,
     );
