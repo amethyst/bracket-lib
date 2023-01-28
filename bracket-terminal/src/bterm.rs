@@ -245,9 +245,10 @@ impl BTerm {
             self.width_pixels as f32 / max_sizes.0 as f32,
             self.height_pixels as f32 / max_sizes.1 as f32,
         );
+        let global_offset = console.get_offset();
         let mut offsets = (
-            center_x as f32 * font_size.0 * (scale - 1.0),
-            center_y as f32 * font_size.1 * (scale - 1.0),
+            (center_x as f32 + global_offset.0) * font_size.0 * (scale - 1.0),
+            (center_y as f32 + global_offset.1) * font_size.1 * (scale - 1.0),
         );
 
         let w: f32;
@@ -261,12 +262,19 @@ impl BTerm {
             offsets.1 -= be.screen_scaler.gutter_top as f32;
         }
 
-        let extent_x = (pos.0 as f32 + offsets.0) / w;
-        let extent_y = (pos.1 as f32 + offsets.1) / h;
+        let mut global_offset = console.get_offset();
+        global_offset.0 *= font_size.0 * scale;
+        global_offset.1 *= font_size.1 * scale;
+
+        let extent_x = (pos.0 as f32 + offsets.0 - global_offset.0) / w;
+        let extent_y = (pos.1 as f32 + offsets.1 + global_offset.1) / h;
         let mouse_x = f32::min(extent_x * max_sizes.0 as f32, max_sizes.0 as f32 - 1.0);
         let mouse_y = f32::min(extent_y * max_sizes.1 as f32, max_sizes.1 as f32 - 1.0);
 
-        (i32::max(0, mouse_x as i32), i32::max(0, mouse_y as i32))
+        (
+            i32::max(-1, mouse_x.floor() as i32),
+            i32::max(-1, mouse_y.floor() as i32),
+        )
     }
 
     /// Applies the current physical mouse position to the active console, and translates the coordinates into that console's coordinate space.
@@ -354,13 +362,16 @@ impl BTerm {
 
     /// Internal: mark a mouse press
     pub(crate) fn on_mouse_button(&mut self, button_num: usize, pressed: bool) {
-        if button_num == 0 {
-            self.left_click = true;
-        }
         let mut input = INPUT.lock();
         if pressed {
+            if button_num == 0 {
+                self.left_click = true;
+            }
             input.on_mouse_button_down(button_num);
         } else {
+            if button_num == 0 {
+                self.left_click = false;
+            }
             input.on_mouse_button_up(button_num);
         }
         input.push_event(BEvent::MouseClick {
