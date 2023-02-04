@@ -1,7 +1,3 @@
-#[cfg(feature = "parsing")]
-#[macro_use]
-extern crate lazy_static;
-
 mod random;
 
 #[cfg(feature = "parsing")]
