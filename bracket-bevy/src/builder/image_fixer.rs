@@ -13,8 +13,10 @@ pub(crate) fn fix_images(mut fonts: ResMut<ImagesToLoad>, mut images: ResMut<Ass
 
     for (handle, img) in images.iter_mut() {
         let mut to_remove = Vec::new();
-        if let Some(i) = fonts.0.iter().enumerate().find(|(_i, h)| h.id == handle) {
+
+        if let Some(i) = fonts.0.iter().enumerate().find(|(_i, h)| h.id() == handle) {
             img.sampler_descriptor = ImageSampler::Descriptor(SamplerDescriptor {
+
                 label: Some("LeaveItAlone"),
                 address_mode_u: bevy::render::render_resource::AddressMode::ClampToEdge,
                 address_mode_v: bevy::render::render_resource::AddressMode::ClampToEdge,

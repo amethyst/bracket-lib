@@ -7,11 +7,15 @@ use crate::{
 };
 use bevy::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
-    prelude::{CoreStage, Plugin, SystemStage, Resource},
+
+    prelude::{CoreSet, Plugin, Resource, Msaa, IntoSystemConfig, IntoSystemSetConfig},
+
     utils::HashMap,
 };
 use bracket_color::prelude::RGBA;
 use std::collections::HashSet;
+use bevy::prelude::Schedule;
+use crate::stageless_sets::{bracket_term_diagnostics::BracketTermDiagnostics, bracket_term_update::BracketTermUpdate};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TerminalScalingMode {
@@ -176,8 +180,10 @@ impl BTermBuilder {
 
 impl Plugin for BTermBuilder {
     fn build(&self, app: &mut bevy::prelude::App) {
-        app.insert_resource(bevy::prelude::Msaa { samples: 1 });
+        app.insert_resource(Msaa::Off);
         if self.with_diagnostics {
+            app.configure_set(BracketTermDiagnostics::BeforeCoreFixedUpdate.before(CoreSet::FixedUpdate).after(CoreSet::StateTransitions));
+            app.add_schedule(BracketTermDiagnostics::BeforeCoreFixedUpdate, Schedule::new());
             app.add_plugin(FrameTimeDiagnosticsPlugin);
         }
         if self.log_diagnostics {
@@ -187,26 +193,23 @@ impl Plugin for BTermBuilder {
         app.insert_resource(ScreenScaler::new(self.gutter));
         app.add_startup_system(load_terminals);
         if self.with_diagnostics {
-            app.add_stage_before(
-                CoreStage::Update,
-                "bracket_term_diagnostics",
-                SystemStage::single_threaded(),
-            );
-            app.add_system(update_timing);
-            app.add_system(update_mouse_position);
+            app.add_system(update_timing.in_base_set(BracketTermDiagnostics::BeforeCoreFixedUpdate));
+            app.add_system(update_mouse_position.in_base_set(BracketTermDiagnostics::BeforeCoreFixedUpdate));
         }
-        app.add_stage_after(
-            CoreStage::Update,
-            "bracket_term_update",
-            SystemStage::single_threaded(),
-        );
+        
+        app.configure_set(BracketTermUpdate.after(CoreSet::Update));
+        app.add_schedule(BracketTermUpdate, Schedule::new());
+        
         if self.auto_apply_batches {
-            app.add_system(apply_all_batches);
+            
+            app.add_system(apply_all_batches.in_base_set(BracketTermUpdate));
         }
-        app.add_system(update_consoles);
-        app.add_system(replace_meshes);
-        app.add_system(window_resize);
-        app.add_system(fix_images);
+        
+        app.add_system(update_consoles.in_base_set(BracketTermUpdate));
+        app.add_system(replace_meshes.in_base_set(BracketTermUpdate));
+        app.add_system(window_resize.in_base_set(BracketTermUpdate));
+        app.add_system(fix_images.in_base_set(BracketTermUpdate));
+        
         if self.with_random_number_generator {
             app.insert_resource(RandomNumbers::new());
         }
