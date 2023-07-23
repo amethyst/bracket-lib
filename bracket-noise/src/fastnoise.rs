@@ -2017,6 +2017,7 @@ impl FastNoise {
             + wd * GRAD_4D[lut_pos + 3]
     }
 
+    /// Returns a value between -1.0 and 1.0, inclusive
     pub fn get_noise3d(&self, mut x: f32, mut y: f32, mut z: f32) -> f32 {
         x *= self.frequency;
         y *= self.frequency;
@@ -2056,6 +2057,7 @@ impl FastNoise {
         }
     }
 
+    /// Returns a value between -1.0 and 1.0, inclusive
     pub fn get_noise(&self, mut x: f32, mut y: f32) -> f32 {
         x *= self.frequency;
         y *= self.frequency;
