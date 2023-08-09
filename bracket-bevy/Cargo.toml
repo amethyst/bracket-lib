@@ -1,6 +1,6 @@
 [package]
 name = "bracket-bevy"
-version = "0.9.0"
+version = "0.11.0"
 edition = "2021"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 publish = true
@@ -14,7 +14,7 @@ license = "MIT"
 
 [dependencies]
 
-bevy = "0.10.1"
+bevy = "0.11.0"
 parking_lot = "0.12"
 lazy_static = "1.4"
 bracket-random = { path = "../bracket-random" }

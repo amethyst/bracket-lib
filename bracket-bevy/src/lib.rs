@@ -11,8 +11,6 @@ mod random_resource;
 pub use consoles::{DrawBatch, VirtualConsole};
 pub use random_resource::*;
 mod textblock;
-mod stageless_sets;
-
 pub type FontCharType = u16;
 
 pub mod prelude {

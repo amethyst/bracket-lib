@@ -1,13 +1,12 @@
 use crate::{BracketCamera, BracketContext, TerminalScalingMode};
 use bevy::{
-    diagnostic::{Diagnostics, FrameTimeDiagnosticsPlugin},
+    diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin},
     ecs::event::Events,
     prelude::*,
     render::camera::RenderTarget,
     sprite::Mesh2dHandle,
     window::WindowResized,
 };
-use bevy::utils::petgraph::visit::NodeRef;
 use bevy::window::{PrimaryWindow, WindowRef};
 
 use super::{BracketMesh, ScreenScaler};
@@ -63,7 +62,7 @@ pub(crate) fn replace_meshes(
     ctx.mesh_replacement.retain(|(_, _, done)| !done);
 }
 
-pub(crate) fn update_timing(mut ctx: ResMut<BracketContext>, diagnostics: Res<Diagnostics>) {
+pub(crate) fn update_timing(mut ctx: ResMut<BracketContext>, diagnostics: Res<DiagnosticsStore>) {
     if let Some(fps_diagnostic) = diagnostics.get(FrameTimeDiagnosticsPlugin::FPS) {
         if let Some(fps_avg) = fps_diagnostic.measurement() {
             ctx.fps = fps_avg.value.round();
@@ -127,6 +126,7 @@ pub(crate) fn update_mouse_position(
         }
         // Is there a reason why the camera's RenderTarget should ever be an image??
         RenderTarget::Image(_) => { panic!("The camera RenderTarget was an image, we shouldn't reach this case!") }
+        RenderTarget::TextureView(_) => todo!(),
     }
     
     if wnd_opt.is_some() {
@@ -144,7 +144,7 @@ pub(crate) fn update_mouse_position(
             let world_pos = ndc_to_world.project_point3(ndc.extend(-1.0));
             let world_pos: Vec2 = world_pos.truncate();
 
-            let result = (world_pos.x, world_pos.y);
+            let result = (world_pos.x, world_pos.y * -1.0);
 
             context.set_mouse_pixel_position(result, &scaler);
         }
