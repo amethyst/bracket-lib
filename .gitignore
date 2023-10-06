@@ -6,3 +6,4 @@ Cargo.lock
 .vscode/launch.json
 manual/book/*
 dependency_order.md
+**/nohup.out
