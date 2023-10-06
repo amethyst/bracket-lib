@@ -7,7 +7,7 @@ pub struct ColoredTextSpans {
 }
 
 fn find_color(col_name: &str) -> RGBA {
-    if let Some(palette) = palette_color(&col_name) {
+    if let Some(palette) = palette_color(col_name) {
         palette
     } else {
         RGBA::from_u8(255, 255, 255, 255)

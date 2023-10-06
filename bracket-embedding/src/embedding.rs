@@ -3,8 +3,7 @@ use parking_lot::Mutex;
 use std::collections::HashMap;
 
 // These are included by default in `bracket-terminal`.
-const TERMINAL_8_8_BYTES: &[u8] =
-    include_bytes!("../resources/terminal8x8.png");
+const TERMINAL_8_8_BYTES: &[u8] = include_bytes!("../resources/terminal8x8.png");
 const TERMINAL_8_16_BYTES: &[u8] = include_bytes!("../resources/vga8x16.png");
 
 lazy_static! {
@@ -33,7 +32,7 @@ impl Dictionary {
     #[must_use]
     pub fn get_resource(&self, path: String) -> Option<&'static [u8]> {
         let fixed_path = if std::path::MAIN_SEPARATOR == '/' {
-            path 
+            path
         } else {
             path.replace(std::path::MAIN_SEPARATOR, "/")
         };

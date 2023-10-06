@@ -147,15 +147,15 @@ impl RGB {
     }
 
     /// Constructs a new RGB color, from 3 32-bit floats in the range 0..1
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `r` - the red component (0..1)
     /// * `g` - the green component (0..1)
     /// * `b` - the blue component (0..1)
-    /// 
+    ///
     /// # Example
-    /// 
+    ///
     /// ```rust
     /// use bracket_color::prelude::*;
     /// let red = RGB::from_f32(1.0, 0.0, 0.0);
@@ -175,15 +175,15 @@ impl RGB {
     }
 
     /// Constructs a new RGB color, from 3 bytes in the range 0..255
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `r` - the red component, ranged from 0 to 255
     /// * `g` - the green component, ranged from 0 to 255
     /// * `b` - the blue component, ranged from 0 to 255
-    /// 
+    ///
     /// # Example
-    /// 
+    ///
     /// ```rust
     /// use bracket_color::prelude::*;
     /// let red = RGB::from_u8(255, 0, 0);
@@ -200,13 +200,13 @@ impl RGB {
     }
 
     /// Construct an RGB color from a tuple of u8, or a named constant
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `col` a tuple of three `u8` values. See `from_u8`. These are usually provided from the `named` colors list.
-    /// 
+    ///
     /// # Example
-    /// 
+    ///
     /// ```rust
     /// use bracket_color::prelude::*;
     /// let red = RGB::named(RED);
@@ -219,13 +219,13 @@ impl RGB {
     }
 
     /// Constructs from an HTML color code (e.g. "#eeffee")
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `code` - an HTML color notation (e.g. "#ffeeff")
-    /// 
+    ///
     /// # Example
-    /// 
+    ///
     /// ```rust
     /// use bracket_color::prelude::*;
     /// let red = RGB::from_hex("#FF0000");
@@ -233,7 +233,7 @@ impl RGB {
     /// ```
     ///
     /// # Errors
-    /// 
+    ///
     /// See `HtmlColorConversionError`
     #[allow(clippy::cast_precision_loss)]
     pub fn from_hex<S: AsRef<str>>(code: S) -> Result<Self, HtmlColorConversionError> {

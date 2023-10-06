@@ -378,7 +378,7 @@ impl Console for FlexiConsole {
         for c in &self.tiles {
             let x = c.position.x as usize;
             let y = c.position.y as usize;
-            let cell = layer.get_mut(x as usize, y as usize).unwrap();
+            let cell = layer.get_mut(x, y).unwrap();
             cell.ch = u32::from(c.glyph);
             cell.fg = XpColor::from(c.fg);
             cell.bg = XpColor::from(c.bg);

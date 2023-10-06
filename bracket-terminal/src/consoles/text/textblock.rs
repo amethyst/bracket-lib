@@ -174,7 +174,7 @@ impl TextBlock {
 
                 CommandType::TextWrapper { block: t } => {
                     for word in t.split(' ') {
-                        let mut chrs = string_to_cp437(&word);
+                        let mut chrs = string_to_cp437(word);
                         chrs.push(32);
                         if self.cursor.0 + chrs.len() as i32 >= self.width {
                             self.cursor.0 = 0;
@@ -225,12 +225,12 @@ impl TextBuilder {
     }
 
     pub fn append(&mut self, text: &str) -> &mut Self {
-        let chrs = string_to_cp437(&text);
+        let chrs = string_to_cp437(text);
         self.commands.push(CommandType::Text { block: chrs });
         self
     }
     pub fn centered(&mut self, text: &str) -> &mut Self {
-        let chrs = string_to_cp437(&text);
+        let chrs = string_to_cp437(text);
         self.commands.push(CommandType::Centered { block: chrs });
         self
     }

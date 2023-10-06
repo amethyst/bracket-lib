@@ -7,7 +7,7 @@ use crate::{
 };
 use bevy::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
-    prelude::{CoreStage, Plugin, SystemStage, Resource},
+    prelude::{CoreStage, Plugin, Resource, SystemStage},
     utils::HashMap,
 };
 use bracket_color::prelude::RGBA;

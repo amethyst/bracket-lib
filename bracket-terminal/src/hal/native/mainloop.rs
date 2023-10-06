@@ -467,7 +467,7 @@ fn tock<GS: GameState>(
             }
 
             image::save_buffer(
-                &filename,
+                filename,
                 &image::imageops::flip_vertical(&img),
                 w,
                 h,
