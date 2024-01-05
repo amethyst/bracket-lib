@@ -16,9 +16,9 @@ impl GameState for State {
         let simple_x = self.x as i32;
         let fancy_x = self.x + 20.0;
 
-        draw_batch.print(Point::new(0, 0), format!("Simple Console"));
+        draw_batch.print(Point::new(0, 0), "Simple Console");
         draw_batch.print(Point::new(0, 1), format!("X={}", simple_x));
-        draw_batch.print(Point::new(20, 0), format!("Fancy Console"));
+        draw_batch.print(Point::new(20, 0), "Fancy Console");
         draw_batch.print(Point::new(20, 1), format!("X={:2}", fancy_x));
 
         draw_batch.print(Point::new(simple_x, 3), "@");
