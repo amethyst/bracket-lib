@@ -65,11 +65,12 @@ impl State {
     }
 
     pub fn is_exit_valid(&self, x: i32, y: i32) -> bool {
-        if x < 1 || x > 79 || y < 1 || y > 49 {
-            return false;
+        if (1..79).contains(&x) && (1..49).contains(&y) {
+            let idx = (y * 80) + x;
+            self.map[idx as usize] == TileType::Floor
+        } else {
+            false
         }
-        let idx = (y * 80) + x;
-        self.map[idx as usize] == TileType::Floor
     }
 }
 
@@ -141,7 +142,7 @@ impl GameState for State {
                 "X",
                 ColorPair::new(RGB::from_f32(0.0, 1.0, 1.0), RGB::from_f32(0.0, 1.0, 1.0)),
             );
-            if self.map[mouse_idx as usize] != TileType::Wall {
+            if self.map[mouse_idx] != TileType::Wall {
                 let path = a_star_search(self.player_position, mouse_idx, self);
                 if path.success {
                     for loc in path.steps.iter().skip(1) {
@@ -161,7 +162,7 @@ impl GameState for State {
                 }
             }
         } else {
-            self.player_position = self.path.steps[0] as usize;
+            self.player_position = self.path.steps[0];
             self.path.steps.remove(0);
             if self.path.steps.is_empty() {
                 self.mode = Mode::Waiting;
