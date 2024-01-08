@@ -58,38 +58,36 @@ pub fn init_raw<S: ToString>(
     }
 
     // Load our basic shaders
-    let mut shaders: Vec<Shader> = Vec::new();
+    // let mut shaders: Vec<Shader> = Vec::new();
 
-    shaders.push(Shader::new(
-        &gl,
-        shader_strings::CONSOLE_WITH_BG_VS,
-        shader_strings::CONSOLE_WITH_BG_FS,
-    ));
-    shaders.push(Shader::new(
-        &gl,
-        shader_strings::CONSOLE_NO_BG_VS,
-        shader_strings::CONSOLE_NO_BG_FS,
-    ));
-    shaders.push(Shader::new(
-        &gl,
-        shader_strings::BACKING_VS,
-        shader_strings::BACKING_FS,
-    ));
-    shaders.push(Shader::new(
-        &gl,
-        shader_strings::SCANLINES_VS,
-        shader_strings::SCANLINES_FS,
-    ));
-    shaders.push(Shader::new(
-        &gl,
-        shader_strings::FANCY_CONSOLE_VS,
-        shader_strings::FANCY_CONSOLE_FS,
-    ));
-    shaders.push(Shader::new(
-        &gl,
-        shader_strings::SPRITE_CONSOLE_VS,
-        shader_strings::SPRITE_CONSOLE_FS,
-    ));
+    let shaders = vec![
+        Shader::new(
+            &gl,
+            shader_strings::CONSOLE_WITH_BG_VS,
+            shader_strings::CONSOLE_WITH_BG_FS,
+        ),
+        Shader::new(
+            &gl,
+            shader_strings::CONSOLE_NO_BG_VS,
+            shader_strings::CONSOLE_NO_BG_FS,
+        ),
+        Shader::new(&gl, shader_strings::BACKING_VS, shader_strings::BACKING_FS),
+        Shader::new(
+            &gl,
+            shader_strings::SCANLINES_VS,
+            shader_strings::SCANLINES_FS,
+        ),
+        Shader::new(
+            &gl,
+            shader_strings::FANCY_CONSOLE_VS,
+            shader_strings::FANCY_CONSOLE_FS,
+        ),
+        Shader::new(
+            &gl,
+            shader_strings::SPRITE_CONSOLE_VS,
+            shader_strings::SPRITE_CONSOLE_FS,
+        ),
+    ];
 
     // Build the backing frame-buffer
     let initial_dpi_factor = windowed_context.window().scale_factor();
