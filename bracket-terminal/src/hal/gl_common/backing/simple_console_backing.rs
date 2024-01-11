@@ -13,8 +13,8 @@ pub struct SimpleConsoleBackend {
 
 impl SimpleConsoleBackend {
     pub fn new(width: usize, height: usize, gl: &glow::Context) -> SimpleConsoleBackend {
-        let vertex_capacity: usize = (13 * width as usize * height as usize) * 4;
-        let index_capacity: usize = 6 * width as usize * height as usize;
+        let vertex_capacity: usize = (13 * width * height) * 4;
+        let index_capacity: usize = 6 * width * height;
         let vao = SimpleConsoleBackend::init_gl_for_console(gl, vertex_capacity, index_capacity);
         let mut result = SimpleConsoleBackend {
             vao,
