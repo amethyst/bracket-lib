@@ -124,22 +124,15 @@ impl GameState for State {
         for (i, tile) in self.map.iter().enumerate() {
             // Render a tile depending upon the tile type; now we check visibility as well!
             let mut fg = RGB::from_f32(1.0, 1.0, 1.0);
-            let glyph;
-
-            match tile {
-                TileType::Floor => {
-                    glyph = 0;
-                }
-                TileType::Wall => {
-                    glyph = 1;
-                }
-            }
+            let glyph = match tile {
+                TileType::Floor => 0,
+                TileType::Wall => 1,
+            };
             if !self.visible[i] {
                 fg = fg * 0.3;
             } else {
                 let distance = 1.0
                     - (DistanceAlg::Pythagoras.distance2d(Point::new(x, y), player_position)
-                        as f32
                         / 10.0);
                 fg = RGB::from_f32(distance, distance, distance);
             }
@@ -175,7 +168,7 @@ impl GameState for State {
 
 impl BaseMap for State {
     fn is_opaque(&self, idx: usize) -> bool {
-        self.map[idx as usize] == TileType::Wall
+        self.map[idx] == TileType::Wall
     }
 }
 

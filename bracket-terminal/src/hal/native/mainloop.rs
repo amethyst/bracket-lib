@@ -46,11 +46,7 @@ fn on_resize(
     let (l, r, t, b) = be.screen_scaler.get_backing_buffer_output_coordinates();
     be.quad_vao = Some(setup_quad_gutter(be.gl.as_ref().unwrap(), l, r, t, b));
     if send_event {
-        bterm.resize_pixels(
-            physical_size.width as u32,
-            physical_size.height as u32,
-            be.resize_scaling,
-        );
+        bterm.resize_pixels(physical_size.width, physical_size.height, be.resize_scaling);
     }
     let gl = be.gl.as_ref().unwrap();
     unsafe {
@@ -131,7 +127,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
 
     // We're doing a little dance here to get around lifetime/borrow checking.
     // Removing the context data from BTerm in an atomic swap, so it isn't borrowed after move.
-    let wrap = { std::mem::replace(&mut BACKEND.lock().context_wrapper, None) };
+    let wrap = BACKEND.lock().context_wrapper.take();
     let unwrap = wrap.unwrap();
 
     let el = unwrap.el;
@@ -467,7 +463,7 @@ fn tock<GS: GameState>(
             }
 
             image::save_buffer(
-                &filename,
+                filename,
                 &image::imageops::flip_vertical(&img),
                 w,
                 h,

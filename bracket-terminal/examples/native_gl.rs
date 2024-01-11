@@ -1,7 +1,7 @@
 use bracket_terminal::prelude::*;
 #[cfg(feature = "opengl")]
 use glow::HasContext;
-use glow::{NativeVertexArray, NativeBuffer};
+use glow::{NativeBuffer, NativeVertexArray};
 use std::mem;
 
 bracket_terminal::add_wasm_support!();
@@ -63,7 +63,7 @@ fn gl_setup(gl: &glow::Context, state: &mut State) {
         gl.bind_buffer(glow::ARRAY_BUFFER, Some(vbo));
         gl.buffer_data_u8_slice(
             glow::ARRAY_BUFFER,
-            &vertices.align_to::<u8>().1,
+            vertices.align_to::<u8>().1,
             glow::STATIC_DRAW,
         );
 

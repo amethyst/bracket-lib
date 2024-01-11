@@ -39,7 +39,7 @@ impl GameState for State {
         }
 
         input.for_each_message(|event| {
-            bracket_terminal::console::log(&format!("{:#?}", event));
+            bracket_terminal::console::log(format!("{:#?}", event));
             if event == BEvent::CloseRequested {
                 ctx.quitting = true;
             }

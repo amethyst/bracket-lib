@@ -5,7 +5,7 @@ macro_rules! gl_error_wrap {
     ($gl:expr, $call:expr) => {
         $call;
         #[cfg(debug_assertions)]
-        crate::hal::gl_error($gl);
+        $crate::hal::gl_error($gl);
     };
 }
 
