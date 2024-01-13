@@ -1,4 +1,4 @@
-#![allow(dead_code)]
+#![allow(clippy::borrowed_box)]
 #[allow(unused_imports)]
 use crate::{
     prelude::{
@@ -21,6 +21,7 @@ pub struct DisplayConsole {
     pub font_index: usize,
 }
 
+#[derive(Default)]
 pub struct BTermInternal {
     pub fonts: Vec<Font>,
     pub shaders: Vec<Shader>,
@@ -30,17 +31,6 @@ pub struct BTermInternal {
 
 impl BTermInternal {
     pub fn new() -> Self {
-        Self {
-            fonts: Vec::new(),
-            shaders: Vec::new(),
-            consoles: Vec::new(),
-            sprite_sheets: Vec::new(),
-        }
-    }
-}
-
-impl Default for BTermInternal {
-    fn default() -> Self {
         Self {
             fonts: Vec::new(),
             shaders: Vec::new(),
@@ -1123,14 +1113,12 @@ pub fn letter_to_option(key: VirtualKeyCode) -> i32 {
     }
 }
 
-// Since num::clamp is still experimental, this is a simple integer clamper.
-fn iclamp(val: i32, min: i32, max: i32) -> i32 {
-    i32::max(min, i32::min(val, max))
-}
-
 #[cfg(test)]
 mod tests {
-    use super::iclamp;
+    // Since num::clamp is still experimental, this is a simple integer clamper.
+    fn iclamp(val: i32, min: i32, max: i32) -> i32 {
+        i32::max(min, i32::min(val, max))
+    }
 
     #[test]
     // Tests that we make an RGB triplet at defaults and it is black.
