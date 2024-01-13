@@ -868,19 +868,19 @@ pub fn render_draw_buffer(bterm: &mut BTerm) -> BResult<()> {
                 bterm.set(pos.x, pos.y, color.fg, color.bg, *glyph)
             }
             DrawCommand::SetBackground { pos, bg } => bterm.set_bg(pos.x, pos.y, *bg),
-            DrawCommand::Print { pos, text } => bterm.print(pos.x, pos.y, &text),
+            DrawCommand::Print { pos, text } => bterm.print(pos.x, pos.y, text),
             DrawCommand::PrintColor { pos, text, color } => {
-                bterm.print_color(pos.x, pos.y, color.fg, color.bg, &text)
+                bterm.print_color(pos.x, pos.y, color.fg, color.bg, text)
             }
-            DrawCommand::PrintCentered { y, text } => bterm.print_centered(*y, &text),
+            DrawCommand::PrintCentered { y, text } => bterm.print_centered(*y, text),
             DrawCommand::PrintColorCentered { y, text, color } => {
-                bterm.print_color_centered(*y, color.fg, color.bg, &text)
+                bterm.print_color_centered(*y, color.fg, color.bg, text)
             }
             DrawCommand::PrintCenteredAt { pos, text } => {
-                bterm.print_centered_at(pos.x, pos.y, &text)
+                bterm.print_centered_at(pos.x, pos.y, text)
             }
             DrawCommand::PrintColorCenteredAt { pos, text, color } => {
-                bterm.print_color_centered_at(pos.x, pos.y, color.fg, color.bg, &text)
+                bterm.print_color_centered_at(pos.x, pos.y, color.fg, color.bg, text)
             }
             DrawCommand::PrintRight { pos, text } => bterm.print_right(pos.x, pos.y, text),
             DrawCommand::PrintColorRight { pos, text, color } => {
