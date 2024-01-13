@@ -6,5 +6,8 @@
         "markdown",
         "latex",
         "plaintext"
+    ],
+    "github-actions.workflows.pinned.workflows": [
+        ".github/workflows/rust.yml"
     ]
 }

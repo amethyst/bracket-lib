@@ -341,7 +341,7 @@ impl Console for SparseConsole {
         for c in &self.tiles {
             let x = c.idx % self.width as usize;
             let y = c.idx / self.width as usize;
-            let cell = layer.get_mut(x as usize, y as usize).unwrap();
+            let cell = layer.get_mut(x, y).unwrap();
             cell.ch = u32::from(c.glyph);
             cell.fg = c.fg.into();
             cell.bg = c.bg.into();
