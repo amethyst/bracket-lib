@@ -78,11 +78,9 @@ impl Algorithm2D for State {
 
 impl State {
     pub fn new() -> Self {
-        let state = State {
+        State {
             map: vec![TileType::Floor; (W * H) as usize],
-        };
-
-        state
+        }
     }
 }
 
