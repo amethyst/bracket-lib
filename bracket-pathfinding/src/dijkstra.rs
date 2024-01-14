@@ -146,7 +146,7 @@ impl DijkstraMap {
         if threaded == RunThreaded::True {
             return;
         }
-        let mapsize: usize = (dm.size_x * dm.size_y) as usize;
+        let mapsize: usize = dm.size_x * dm.size_y;
         let mut open_list: VecDeque<(usize, f32)> = VecDeque::with_capacity(mapsize);
 
         for start in starts {
@@ -177,7 +177,7 @@ impl DijkstraMap {
     /// algorithm required to support that.
     /// Automatically branches to a parallel version if you provide more than 4 starting points
     pub fn build_weighted(dm: &mut DijkstraMap, starts: &[(usize, f32)], map: &dyn BaseMap) {
-        let mapsize: usize = (dm.size_x * dm.size_y) as usize;
+        let mapsize: usize = dm.size_x * dm.size_y;
         let mut open_list: VecDeque<(usize, f32)> = VecDeque::with_capacity(mapsize);
 
         for start in starts {
@@ -284,11 +284,7 @@ impl DijkstraMap {
             return None;
         }
 
-        exits.sort_by(|a, b| {
-            dm.map[a.0 as usize]
-                .partial_cmp(&dm.map[b.0 as usize])
-                .unwrap()
-        });
+        exits.sort_by(|a, b| dm.map[a.0].partial_cmp(&dm.map[b.0]).unwrap());
 
         Some(exits[0].0)
     }
@@ -330,11 +326,7 @@ impl DijkstraMap {
             return None;
         }
 
-        exits.sort_by(|a, b| {
-            dm.map[b.0 as usize]
-                .partial_cmp(&dm.map[a.0 as usize])
-                .unwrap()
-        });
+        exits.sort_by(|a, b| dm.map[b.0].partial_cmp(&dm.map[a.0]).unwrap());
 
         Some(exits[0].0)
     }
