@@ -25,4 +25,4 @@ jobs:
       if: matrix.os != 'windows-latest'
       run: |
         cargo check --all
-
+        

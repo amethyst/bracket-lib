@@ -32,6 +32,7 @@ pub const MAP_TILES: usize = MAP_WIDTH * MAP_HEIGHT;
 pub const START_POINT: Point = Point::constant(2, MAP_HEIGHT as i32 / 2);
 pub const END_POINT: Point = Point::constant(MAP_WIDTH as i32 - 2, MAP_HEIGHT as i32 / 2);
 
+#[derive(Default)]
 pub struct Map {
     pub tiles: Vec<char>,
 }
@@ -77,7 +78,7 @@ impl Map {
 
 impl BaseMap for Map {
     fn is_opaque(&self, idx: usize) -> bool {
-        self.tiles[idx as usize] == '#'
+        self.tiles[idx] == '#'
     }
 
     fn get_available_exits(&self, idx: usize) -> SmallVec<[(usize, f32); 10]> {

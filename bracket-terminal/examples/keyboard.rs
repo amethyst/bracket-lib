@@ -11,7 +11,7 @@ impl GameState for State {
         ctx.cls();
 
         for (y, line) in self.display_lines.iter().enumerate() {
-            ctx.print(0, y as i32, &line);
+            ctx.print(0, y as i32, line);
         }
 
         match ctx.key {

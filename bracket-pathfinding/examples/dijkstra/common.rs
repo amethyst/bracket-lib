@@ -76,7 +76,7 @@ impl Map {
 
 impl BaseMap for Map {
     fn is_opaque(&self, idx: usize) -> bool {
-        self.tiles[idx as usize] == '#'
+        self.tiles[idx] == '#'
     }
 
     fn get_available_exits(&self, idx: usize) -> SmallVec<[(usize, f32); 10]> {

@@ -61,7 +61,7 @@ mod tests {
 
     const TESTMAP_W: usize = 20;
     const TESTMAP_H: usize = 20;
-    const TESTMAP_TILES: usize = (TESTMAP_W * TESTMAP_H) as usize;
+    const TESTMAP_TILES: usize = TESTMAP_W * TESTMAP_H;
     const ALGORITHS: [FieldOfViewAlg; 2] = [
         FieldOfViewAlg::RecursiveShadowcasting,
         FieldOfViewAlg::SymmetricShadowcasting,

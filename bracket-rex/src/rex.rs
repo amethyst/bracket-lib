@@ -121,14 +121,12 @@ impl XpFile {
         let version = rdr.read_i32::<LittleEndian>()?;
         let num_layers = rdr.read_u32::<LittleEndian>()?;
 
-        let mut layers = Vec::<XpLayer>::new();
-        layers.reserve(num_layers as usize);
+        let mut layers: Vec<XpLayer> = Vec::with_capacity(num_layers as usize);
         for _ in 0..num_layers {
             let width = rdr.read_u32::<LittleEndian>()? as usize;
             let height = rdr.read_u32::<LittleEndian>()? as usize;
 
-            let mut cells = Vec::<XpCell>::new();
-            cells.reserve(width * height);
+            let mut cells: Vec<XpCell> = Vec::with_capacity(width * height);
             for _ in 0..width {
                 // column-major order
                 for _ in 0..height {
@@ -206,7 +204,7 @@ mod tests {
         assert_eq!(xp.layers[1].width, 8);
         assert_eq!(xp.layers[1].height, 4);
         assert_eq!(xp.layers[1].get(0, 0).unwrap().fg, XpColor::BLACK);
-        assert_eq!(xp.layers[1].get(0, 0).unwrap().bg.is_transparent(), true);
+        assert!(xp.layers[1].get(0, 0).unwrap().bg.is_transparent());
         assert_eq!(xp.layers[1].get(0, 0).unwrap().ch, 32);
         assert_eq!(xp.layers[1].get(2, 2).unwrap().ch, 'B' as u32);
         assert_eq!(xp.layers[0].get(0, 0).unwrap().fg, XpColor::new(0, 0, 255));

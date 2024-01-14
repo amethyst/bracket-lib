@@ -65,9 +65,7 @@ impl Scanline {
         let start_column = round_ties_up(Rational32::from_integer(self.depth) * self.start_slope);
         let end_column = round_ties_down(Rational32::from_integer(self.depth) * self.end_slope);
         let depth = self.depth;
-        (start_column..=end_column)
-            .into_iter()
-            .map(move |column| Tile { depth, column })
+        (start_column..=end_column).map(move |column| Tile { depth, column })
     }
 
     fn next(&self) -> Self {
