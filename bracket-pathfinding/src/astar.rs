@@ -53,7 +53,7 @@ impl Ord for Node {
 
 impl PartialOrd for Node {
     fn partial_cmp(&self, b: &Self) -> Option<Ordering> {
-        b.f.partial_cmp(&self.f)
+        Some(self.cmp(b))
     }
 }
 
@@ -235,7 +235,7 @@ mod test {
                 exits.push((self.len - 1, self.len as f32))
             }
             // step to next node
-            if idx <= self.len - 1 {
+            if idx < self.len {
                 exits.push((idx + 1, 1.0));
             }
 
