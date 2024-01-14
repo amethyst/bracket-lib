@@ -26,7 +26,7 @@ fn get_seed() -> u64 {
         SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
-            .as_secs() as u64
+            .as_secs()
     }
 }
 
@@ -182,7 +182,7 @@ mod tests {
         let test_data: Vec<i32> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         for _ in 0..100 {
             match rng.random_slice_index(&test_data) {
-                None => assert!(1 == 2),
+                None => panic!(),
                 Some(idx) => assert!(idx < test_data.len()),
             }
         }
@@ -201,7 +201,7 @@ mod tests {
         let test_data: Vec<i32> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         for _ in 0..100 {
             match rng.random_slice_entry(&test_data) {
-                None => assert!(1 == 2),
+                None => panic!(),
                 Some(e) => assert!(*e > 0 && *e < 11),
             }
         }
