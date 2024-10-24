@@ -371,4 +371,6 @@ fn partial_redraw(buffer: &mut Vec<OutputBuffer>) {
         }
         queue!(stdout(), Print(t.glyph)).expect("Command fail");
     });
+
+    stdout().flush().expect("Command fail");
 }
