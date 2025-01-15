@@ -13,7 +13,7 @@ categories = ["game-engines", "graphics"]
 license = "MIT"
 
 [dependencies]
-bevy = "0.9"
+bevy = { version = "0.15", features = [ "wayland" ] }
 parking_lot = "0.12"
 lazy_static = "1.4"
 bracket-random = { path = "../bracket-random" }

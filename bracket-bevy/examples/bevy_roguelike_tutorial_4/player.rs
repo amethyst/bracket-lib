@@ -1,24 +1,24 @@
 use bevy::prelude::*;
 
-pub fn player_input(keyboard: &Input<KeyCode>) -> (i32, i32) {
-    if keyboard.just_pressed(KeyCode::Left)
+pub fn player_input(keyboard: &ButtonInput<KeyCode>) -> (i32, i32) {
+    if keyboard.just_pressed(KeyCode::ArrowLeft)
         || keyboard.just_pressed(KeyCode::Numpad4)
-        || keyboard.just_pressed(KeyCode::H)
+        || keyboard.just_pressed(KeyCode::KeyH)
     {
         (-1, 0)
-    } else if keyboard.just_pressed(KeyCode::Right)
+    } else if keyboard.just_pressed(KeyCode::ArrowRight)
         || keyboard.just_pressed(KeyCode::Numpad6)
-        || keyboard.just_pressed(KeyCode::L)
+        || keyboard.just_pressed(KeyCode::KeyL)
     {
         (1, 0)
-    } else if keyboard.just_pressed(KeyCode::Up)
+    } else if keyboard.just_pressed(KeyCode::ArrowUp)
         || keyboard.just_pressed(KeyCode::Numpad8)
-        || keyboard.just_pressed(KeyCode::K)
+        || keyboard.just_pressed(KeyCode::KeyK)
     {
         (0, -1)
-    } else if keyboard.just_pressed(KeyCode::Down)
+    } else if keyboard.just_pressed(KeyCode::ArrowDown)
         || keyboard.just_pressed(KeyCode::Numpad2)
-        || keyboard.just_pressed(KeyCode::J)
+        || keyboard.just_pressed(KeyCode::KeyJ)
     {
         (0, 1)
     } else {

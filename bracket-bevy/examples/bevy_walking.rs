@@ -4,9 +4,9 @@ use bracket_bevy::prelude::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(BTermBuilder::simple_80x50().with_random_number_generator(true))
-        .add_startup_system(build_state)
-        .add_system(tick)
+        .add_plugins(BTermBuilder::simple_80x50().with_random_number_generator(true))
+        .add_systems(Startup, build_state)
+        .add_systems(Update, tick)
         .run();
 }
 
@@ -83,21 +83,21 @@ impl State {
     }
 }
 
-fn tick(ctx: Res<BracketContext>, mut state: ResMut<State>, keyboard: Res<Input<KeyCode>>) {
+fn tick(ctx: Res<BracketContext>, mut state: ResMut<State>, keyboard: Res<ButtonInput<KeyCode>>) {
     // Clear the screen
     ctx.cls();
 
     // Handle keyboard
-    if keyboard.just_pressed(KeyCode::Left) {
+    if keyboard.just_pressed(KeyCode::ArrowLeft) {
         state.move_player(-1, 0)
     }
-    if keyboard.just_pressed(KeyCode::Right) {
+    if keyboard.just_pressed(KeyCode::ArrowRight) {
         state.move_player(1, 0)
     }
-    if keyboard.just_pressed(KeyCode::Up) {
+    if keyboard.just_pressed(KeyCode::ArrowUp) {
         state.move_player(0, -1)
     }
-    if keyboard.just_pressed(KeyCode::Down) {
+    if keyboard.just_pressed(KeyCode::ArrowDown) {
         state.move_player(0, 1)
     }
 
