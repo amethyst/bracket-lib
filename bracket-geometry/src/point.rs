@@ -22,7 +22,8 @@ impl specs::prelude::Component for Point {
 
 #[cfg(feature = "bevy")]
 impl bevy::ecs::component::Component for Point {
-    type Storage = bevy::ecs::component::TableStorage;
+    const STORAGE_TYPE: bevy::ecs::component::StorageType =
+        bevy::ecs::component::StorageType::Table;
 }
 
 impl Point {
@@ -80,9 +81,9 @@ impl Point {
     }
 
     /// Converts the point to a usize tuple
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// This can panic if X or Y are not convertible to a `usize`.
     #[must_use]
     pub fn to_unsigned_tuple(self) -> (usize, usize) {
