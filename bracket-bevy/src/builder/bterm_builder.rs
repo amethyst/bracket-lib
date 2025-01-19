@@ -176,7 +176,6 @@ impl BTermBuilder {
 
 impl Plugin for BTermBuilder {
     fn build(&self, app: &mut bevy::prelude::App) {
-        // app.insert_resource(bevy::prelude::Msaa { samples: 1 });
         if self.with_diagnostics {
             app.add_plugins(FrameTimeDiagnosticsPlugin);
         }
@@ -187,18 +186,8 @@ impl Plugin for BTermBuilder {
         app.insert_resource(ScreenScaler::new(self.gutter));
         app.add_systems(Startup, load_terminals);
         if self.with_diagnostics {
-            // app.add_stage_before(
-            //     CoreStage::Update,
-            //     "bracket_term_diagnostics",
-            //     SystemStage::single_threaded(),
-            // );
             app.add_systems(PreUpdate, (update_timing, update_mouse_position));
         }
-        // app.add_stage_after(
-        //     CoreStage::Update,
-        //     "bracket_term_update",
-        //     SystemStage::single_threaded(),
-        // );
         if self.auto_apply_batches {
             app.add_systems(PostUpdate, apply_all_batches);
         }
