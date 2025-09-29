@@ -1,5 +1,7 @@
 # Welcome to bracket-lib
 
+> Note that you may need to run `cargo update` to pull some dependency updates. If you are coming from Hands-on Rust, the code is maintained [here](https://github.com/thebracket/handsonrust)
+
 ![](https://github.com/thebracket/bracket-lib/workflows/Rust/badge.svg)
 
 > You can read a tutorial series on writing a Roguelike with this library at: [https://bfnightly.bracketproductions.com/rustbook/](https://bfnightly.bracketproductions.com/rustbook/)
