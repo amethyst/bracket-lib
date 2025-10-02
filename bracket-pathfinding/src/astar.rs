@@ -1,6 +1,7 @@
 use bracket_algorithm_traits::prelude::BaseMap;
+use hashbrown::HashMap;
 use std::cmp::Ordering;
-use std::collections::{BinaryHeap, HashMap};
+use std::collections::BinaryHeap;
 use std::convert::TryInto;
 
 /// Bail out if the A* search exceeds this many steps.
