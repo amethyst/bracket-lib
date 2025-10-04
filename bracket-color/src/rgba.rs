@@ -109,16 +109,16 @@ impl RGBA {
     }
 
     /// Constructs a new RGB color, from 3 32-bit floats in the range 0..1
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `r` - the red component (0..1)
     /// * `g` - the green component (0..1)
     /// * `b` - the blue component (0..1)
     /// * `a` - the alpha component (0..1). 0 is transparent, 1 is solid.
-    /// 
+    ///
     /// # Example
-    /// 
+    ///
     /// ```rust
     /// use bracket_color::prelude::*;
     /// let red = RGBA::from_f32(1.0, 0.0, 0.0, 1.0);
@@ -141,15 +141,15 @@ impl RGBA {
     }
 
     /// Constructs a new RGB color, from 3 bytes in the range 0..255
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `r` - the red component, ranged from 0 to 255
     /// * `g` - the green component, ranged from 0 to 255
     /// * `b` - the blue component, ranged from 0 to 255
-    /// 
+    ///
     /// # Example
-    /// 
+    ///
     /// ```rust
     /// use bracket_color::prelude::*;
     /// let red = RGBA::from_u8(255, 0, 0, 255);
@@ -168,13 +168,13 @@ impl RGBA {
     }
 
     /// Construct an RGB color from a tuple of u8, or a named constant
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `col` a tuple of three `u8` values. See `from_u8`. These are usually provided from the `named` colors list.
-    /// 
+    ///
     /// # Example
-    /// 
+    ///
     /// ```rust
     /// use bracket_color::prelude::*;
     /// let red = RGBA::named(RED);
@@ -189,11 +189,11 @@ impl RGBA {
     /// Constructs from an HTML color code (e.g. "#eeffeeff")
     ///
     /// # Arguments
-    /// 
+    ///
     /// * `code` - an HTML color notation (e.g. "#ffeeffff")
-    /// 
+    ///
     /// # Example
-    /// 
+    ///
     /// ```rust
     /// use bracket_color::prelude::*;
     /// let red = RGBA::from_hex("#FF0000FF");
@@ -201,7 +201,7 @@ impl RGBA {
     /// ```
     ///
     /// # Errors
-    /// 
+    ///
     /// See `HtmlColorConversionError`
     #[allow(clippy::cast_precision_loss)]
     pub fn from_hex<S: AsRef<str>>(code: S) -> Result<Self, HtmlColorConversionError> {
@@ -298,7 +298,7 @@ impl RGBA {
     #[cfg(feature = "bevy")]
     #[must_use]
     pub fn as_rgba_f32(&self) -> [f32; 4] {
-        bevy::prelude::Color::as_linear_rgba_f32([self.r, self.g, self.b, self.a].into())
+        [self.r, self.g, self.b, self.a]
     }
 
     /// Applies a quick grayscale conversion to the color
@@ -388,14 +388,15 @@ impl From<[f32; 4]> for RGBA {
 #[cfg(feature = "bevy")]
 impl From<bevy::prelude::Color> for RGBA {
     fn from(item: bevy::prelude::Color) -> Self {
-        Self::from_f32(item.r(), item.g(), item.b(), item.a())
+        let item = item.to_srgba();
+        Self::from_f32(item.red, item.green, item.blue, item.alpha)
     }
 }
 
 #[cfg(feature = "bevy")]
 impl From<RGBA> for bevy::prelude::Color {
     fn from(item: RGBA) -> Self {
-        Self::from([item.r, item.g, item.b, item.a])
+        bevy::prelude::Color::srgba(item.r, item.g, item.b, item.a)
     }
 }
 

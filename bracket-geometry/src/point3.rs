@@ -21,7 +21,8 @@ impl specs::prelude::Component for Point3 {
 
 #[cfg(feature = "bevy")]
 impl bevy::ecs::component::Component for Point3 {
-    type Storage = bevy::ecs::component::TableStorage;
+    const STORAGE_TYPE: bevy::ecs::component::StorageType =
+        bevy::ecs::component::StorageType::Table;
 }
 
 impl Point3 {

@@ -4,10 +4,10 @@ use bracket_bevy::prelude::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(
+        .add_plugins(
             BTermBuilder::simple_80x50().with_scaling_mode(TerminalScalingMode::ResizeTerminals),
         )
-        .add_system(tick)
+        .add_systems(Update, tick)
         .run();
 }
 

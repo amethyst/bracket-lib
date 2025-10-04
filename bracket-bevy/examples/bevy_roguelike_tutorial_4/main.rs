@@ -14,9 +14,9 @@ pub use rect::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(BTermBuilder::simple_80x50().with_random_number_generator(true))
-        .add_startup_system(setup)
-        .add_system(tick)
+        .add_plugins(BTermBuilder::simple_80x50().with_random_number_generator(true))
+        .add_systems(Startup, setup)
+        .add_systems(Update, tick)
         .run();
 }
 
@@ -41,7 +41,7 @@ fn setup(mut commands: Commands, rng: Res<RandomNumbers>) {
 fn tick(
     ctx: Res<BracketContext>,
     map: Res<Map>,
-    keyboard: Res<Input<KeyCode>>,
+    keyboard: Res<ButtonInput<KeyCode>>,
     mut queries: ParamSet<(
         Query<&mut Position, With<Player>>,
         Query<(&Position, &Renderable)>,
