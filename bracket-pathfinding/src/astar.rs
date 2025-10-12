@@ -109,13 +109,13 @@ impl AStar {
         let s = Node {
             idx,
             f: q.g + cost + distance_to_end,
-            g: cost,
+            g: q.g + cost,
         };
 
         // If a node with the same position as successor is in the open list with a lower f, skip add
         let mut should_add = true;
         if let Some(e) = self.parents.get(&idx) {
-            if e.1 < s.g {
+            if e.1 <= s.g {
                 should_add = false;
             }
         }
