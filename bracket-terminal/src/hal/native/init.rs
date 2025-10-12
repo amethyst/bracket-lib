@@ -4,8 +4,10 @@ use crate::hal::scaler::ScreenScaler;
 use crate::hal::{setup_quad, Framebuffer, Shader};
 use crate::prelude::{BTerm, InitHints, BACKEND_INTERNAL};
 use crate::BResult;
-use glow::HasContext;
 use glutin::{event_loop::EventLoop, window::WindowBuilder, ContextBuilder};
+
+#[cfg(debug_assertions)]
+use glow::HasContext;
 
 pub fn init_raw<S: ToString>(
     width_pixels: u32,
