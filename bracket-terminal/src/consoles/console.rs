@@ -135,6 +135,10 @@ pub trait Console {
     /// drawing walls between tiles.
     fn set_offset(&mut self, x: f32, y: f32);
 
+    /// Return the current global offset (by character count, so 0.5 is half a character). Useful for
+    /// calculating mouse position.
+    fn get_offset(&self) -> (f32, f32);
+
     /// Specify a scale and center of the console.
     /// A scale above 1.0 will make the text larger.
     /// The center of the scale is at character position (center_x, center_y).
