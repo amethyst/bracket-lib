@@ -83,7 +83,7 @@ impl MultiTileSprite {
                 for x in 0..layer.width {
                     let cell = layer.get(x, y).unwrap();
                     if !cell.bg.is_transparent() {
-                        let idx = (y * (dimensions.x as usize)) + (x as usize);
+                        let idx = (y * (dimensions.x as usize)) + x;
                         tiles[idx].glyph = cell.ch as FontCharType;
                         tiles[idx].fg = cell.fg.into();
                         tiles[idx].bg = cell.bg.into();

@@ -613,6 +613,6 @@ impl BTermBuilder {
 
 fn path_join(a: &str, b: &str) -> String {
     use std::path::Path;
-    let path = Path::new(&a).join(&b);
+    let path = Path::new(&a).join(b);
     path.to_str().unwrap().to_string()
 }

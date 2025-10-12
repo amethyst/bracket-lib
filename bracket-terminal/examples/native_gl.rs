@@ -1,7 +1,7 @@
 use bracket_terminal::prelude::*;
 #[cfg(feature = "opengl")]
 use glow::HasContext;
-use glow::{NativeVertexArray, NativeBuffer};
+use glow::{NativeBuffer, NativeVertexArray};
 use std::mem;
 
 bracket_terminal::add_wasm_support!();

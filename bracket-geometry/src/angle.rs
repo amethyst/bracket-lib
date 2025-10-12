@@ -12,9 +12,9 @@ pub struct Radians(pub f32);
 
 impl Degrees {
     /// Creates a new angle in degrees.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `angle` - the angle to represent, in degrees.
     pub fn new(angle: f32) -> Self {
         Self(angle)
@@ -23,9 +23,9 @@ impl Degrees {
 
 impl Radians {
     /// Creates a new angle in radians.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `angle` - the angle to represent, in radians.
     pub fn new(angle: f32) -> Self {
         Self(angle)
