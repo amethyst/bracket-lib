@@ -5,9 +5,8 @@ use crate::prelude::{
 use bracket_color::prelude::RGBA;
 use bracket_geometry::prelude::{PointF, Rect};
 use bracket_rex::prelude::XpColor;
-use ultraviolet::Vec2;
-
 use std::any::Any;
+use ultraviolet::Vec2;
 
 /// Internal storage structure for sparse tiles.
 pub struct FlexiTile {
@@ -394,6 +393,12 @@ impl Console for FlexiConsole {
         self.is_dirty = true;
         self.offset_x = x * (2.0 / self.width as f32);
         self.offset_y = y * (2.0 / self.height as f32);
+    }
+
+    fn get_offset(&self) -> (f32, f32) {
+        let x = self.offset_x / (2.0 / self.width as f32);
+        let y = self.offset_y / (2.0 / self.height as f32);
+        (x, y)
     }
 
     fn set_scale(&mut self, scale: f32, center_x: i32, center_y: i32) {

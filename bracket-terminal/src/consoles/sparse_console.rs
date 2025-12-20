@@ -359,6 +359,12 @@ impl Console for SparseConsole {
         self.offset_y = y * (2.0 / self.height as f32);
     }
 
+    fn get_offset(&self) -> (f32, f32) {
+        let x = self.offset_x / (2.0 / self.width as f32);
+        let y = self.offset_y / (2.0 / self.height as f32);
+        (x, y)
+    }
+
     fn set_scale(&mut self, scale: f32, center_x: i32, center_y: i32) {
         self.is_dirty = true;
         self.scale = scale;
