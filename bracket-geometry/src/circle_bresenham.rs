@@ -14,9 +14,9 @@ pub struct BresenhamCircle {
 
 impl BresenhamCircle {
     /// Creates a new circle, using the Bresenham Circle algorithm.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `center` - the center of the circle.
     /// * `radius` - the radius of the desired circle.
     #[inline]
@@ -83,9 +83,9 @@ pub struct BresenhamCircleNoDiag {
 
 impl BresenhamCircleNoDiag {
     /// Creates a Bresenham Circle without allowing diagonal gaps.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `center` - the center of the circle
     /// * `radius` - the radius of the circle
     #[inline]

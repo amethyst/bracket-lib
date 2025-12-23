@@ -80,9 +80,9 @@ impl Point {
     }
 
     /// Converts the point to a usize tuple
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// This can panic if X or Y are not convertible to a `usize`.
     #[must_use]
     pub fn to_unsigned_tuple(self) -> (usize, usize) {

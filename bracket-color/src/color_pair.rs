@@ -16,9 +16,9 @@ impl ColorPair {
     #[inline]
     #[must_use]
     /// Creates a new `ColorPair`, from two given colors.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `fg` - The foreground color to use.
     /// * `bg` - The background color to use.
     pub fn new<COLOR, COLOR2>(fg: COLOR, bg: COLOR2) -> Self

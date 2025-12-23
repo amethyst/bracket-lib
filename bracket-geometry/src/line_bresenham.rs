@@ -101,23 +101,23 @@ impl Bresenham {
         }
     }
 
-        /// Return the next point without checking if we are past `end`.
-        #[inline]
-        pub fn advance(&mut self) -> Point {
-            let p = Point::new(self.x, self.y);
-    
-            if self.diff >= 0 {
-                self.y += 1;
-                self.diff -= self.dx;
-            }
-    
-            self.diff += self.dy;
-    
-            // loop inc
-            self.x += 1;
-    
-            self.octant.from_octant0(p)
+    /// Return the next point without checking if we are past `end`.
+    #[inline]
+    pub fn advance(&mut self) -> Point {
+        let p = Point::new(self.x, self.y);
+
+        if self.diff >= 0 {
+            self.y += 1;
+            self.diff -= self.dx;
         }
+
+        self.diff += self.dy;
+
+        // loop inc
+        self.x += 1;
+
+        self.octant.from_octant0(p)
+    }
 }
 
 impl Iterator for Bresenham {
@@ -195,7 +195,7 @@ mod tests {
             Point::new(2, 2),
             Point::new(3, 2),
             Point::new(4, 3),
-            Point::new(5, 3)
+            Point::new(5, 3),
         ];
         assert_eq!(res, expected);
 
@@ -218,7 +218,7 @@ mod tests {
             Point::new(4, 3),
             Point::new(3, 3),
             Point::new(2, 2),
-            Point::new(1, 2)
+            Point::new(1, 2),
         ];
         assert_eq!(res, expected);
 

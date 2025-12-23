@@ -1,4 +1,4 @@
-use glow::{NativeTexture, NativeBuffer, NativeVertexArray, NativeProgram, NativeFramebuffer};
+use glow::{NativeBuffer, NativeFramebuffer, NativeProgram, NativeTexture, NativeVertexArray};
 
 pub type TextureId = NativeTexture;
 pub type BufferId = NativeBuffer;
