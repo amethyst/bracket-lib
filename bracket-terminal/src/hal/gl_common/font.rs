@@ -40,9 +40,11 @@ impl Font {
 
     fn load_image(filename: &str) -> image::DynamicImage {
         let resource = EMBED.lock().get_resource(filename.to_string());
+        let path = std::path::Path::new(filename);
         match resource {
-            None => image::open(std::path::Path::new(&filename.to_string()))
-                .expect("Failed to load texture"),
+            None => {
+                image::open(path).expect(format!("Failed to load texture - {:?}", path).as_ref())
+            }
             Some(res) => image::load_from_memory(res).expect("Failed to load texture from memory"),
         }
     }
