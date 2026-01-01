@@ -1761,7 +1761,7 @@ impl FastNoise {
         let mut noise = FastNoise {
             rng: RandomNumberGenerator::seeded(seed),
             seed,
-            frequency: 0.0,
+            frequency: 1.0,
             interp: Interp::Quintic,
             noise_type: NoiseType::Simplex,
             octaves: 3,
