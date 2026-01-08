@@ -135,6 +135,7 @@ pub fn main_loop<GS: GameState>(mut bterm: BTerm, mut gamestate: GS) -> BResult<
         }
 
         gamestate.tick(&mut bterm);
+        bterm.mouse_changed = true;
 
         if output_buffer.is_none() {
             output_buffer = Some(full_redraw()?);

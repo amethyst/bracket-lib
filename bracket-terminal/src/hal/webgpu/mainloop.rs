@@ -349,6 +349,7 @@ fn tock<GS: GameState>(
 
     // Run the main loop
     gamestate.tick(bterm);
+    bterm.mouse_changed = false;
 
     // Tell each console to draw itself
     render_consoles().unwrap();

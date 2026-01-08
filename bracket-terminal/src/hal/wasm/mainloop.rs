@@ -107,6 +107,7 @@ fn tock<GS: GameState>(
     }
 
     gamestate.tick(bterm);
+    bterm.mouse_changed = false;
 
     // Console structure - doesn't really have to be every frame...
     rebuild_consoles();
