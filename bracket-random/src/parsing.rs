@@ -60,7 +60,7 @@ impl error::Error for DiceParseError {
 pub fn parse_dice_string(dice: &str) -> Result<DiceType, DiceParseError> {
     let dice = &dice.split_whitespace().collect::<Vec<_>>().join("");
     lazy_static! {
-        static ref DICE_RE: Regex = Regex::new(r"(\d+)d(\d+)([\+\-]\d+)?").unwrap();
+        static ref DICE_RE: Regex = Regex::new(r"^(\d+)d(\d+)([\+\-]\d+)?$").unwrap();
     }
     let mut result: DiceType = DiceType::default();
     let mut did_something = false;
@@ -136,6 +136,9 @@ mod tests {
     #[test]
     fn fail_parsing() {
         assert!(parse_dice_string("blah").is_err());
+        assert!(parse_dice_string("3d6garbage").is_err());
+        assert!(parse_dice_string("3d6+2garbage").is_err());
+        assert!(parse_dice_string("1d6 2d4").is_err());
     }
 
     #[cfg(feature = "serde")]
